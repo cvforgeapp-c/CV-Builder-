@@ -1,201 +1,415 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CV Builder - Professional CV Builder</title>
 <style>
 * { box-sizing: border-box; }
-body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: #f4f7f7; color: #173f3f; }
-.container { max-width: 780px; margin: auto; padding: 20px; }
-.card { background: white; border-radius: 18px; padding: 28px; box-shadow: 0 5px 25px rgba(0,0,0,.08); }
-.logo { text-align: center; font-size: 32px; font-weight: 800; color: #0d4f4f; letter-spacing: -0.5px; }
-.subtitle { text-align: center; color: #667; margin-bottom: 25px; font-size: 15px; }
-.progress { display: flex; gap: 4px; margin-bottom: 25px; }
-.progress div { flex: 1; height: 6px; background: #d9e3e3; border-radius: 10px; transition: background 0.3s; }
-.progress div.active { background: #c9a227; }
-.step { display: none; }
-.step.active { display: block; }
-h2 { margin-top: 0; color: #0d4f4f; font-size: 22px; }
-label { display: block; margin-top: 15px; margin-bottom: 6px; font-weight: 600; font-size: 14px; }
-input, textarea, select { width: 100%; padding: 12px 14px; border: 1px solid #ccd8d8; border-radius: 10px; font-size: 15px; font-family: inherit; }
-textarea { min-height: 110px; resize: vertical; }
-.buttons { display: flex; gap: 10px; margin-top: 25px; }
-button { flex: 1; padding: 14px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
-.next { background: #0d4f4f; color: white; }
-.next:hover { background: #083636; }
-.back { background: #e7eeee; color: #173f3f; }
-.back:hover { background: #d3dede; }
-.generate { background: #c9a227; color: white; }
-.generate:hover { background: #b08d1e; }
-.template-grid { display: grid; gap: 15px; margin-top: 18px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
-.template-option { width: 100%; text-align: left; background: #ffffff; border: 2px solid #d9e0e0; border-radius: 16px; padding: 18px; cursor: pointer; transition: all 0.2s ease; }
-.template-option:hover { border-color: #0d4f4f; transform: translateY(-2px); }
-.template-option.selected { border-color: #c9a227; background: #f8f5e9; box-shadow: 0 4px 15px rgba(201,162,39,.18); }
-.template-name { font-size: 18px; font-weight: bold; color: #173f3f; margin-bottom: 6px; }
-.template-description { color: #667; font-size: 13px; line-height: 1.4; }
-.template-badge { display: inline-block; margin-top: 12px; padding: 6px 10px; border-radius: 20px; background: #e7eeee; color: #173f3f; font-size: 12px; font-weight: bold; }
-.template-option.selected .template-badge { background: #c9a227; color: white; }
-.checkmark { float: right; display: none; color: #c9a227; font-size: 20px; font-weight: bold; }
-.template-option.selected .checkmark { display: block; }
-.color-section { margin-top: 20px; padding: 18px; background: #f7f9f9; border-radius: 14px; }
-.color-section h3 { margin: 0 0 6px; color: #173f3f; font-size: 16px; }
-.color-grid { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; align-items: center; }
-.color-option { width: 38px; height: 38px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 0 1px #ccd8d8; cursor: pointer; padding: 0; flex: none; }
-.color-option.selected { box-shadow: 0 0 0 2px #222, 0 3px 10px rgba(0,0,0,.18); transform: scale(1.08); }
-.custom-color-picker { width: 40px; height: 40px; border: none; padding: 0; border-radius: 50%; cursor: pointer; background: transparent; }
-@media(max-width:600px) { .container { padding: 10px; } .card { padding: 18px; } .buttons { flex-direction: column; } }
+body { 
+    margin: 0; 
+    font-family: 'Segoe UI', Arial, sans-serif; 
+    background: #f4f7f7; 
+    color: #173f3f; 
+    padding-bottom: 90px;
+}
+.container { 
+    max-width: 1200px; 
+    margin: auto; 
+    padding: 25px 20px; 
+}
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+.logo { 
+    font-size: 36px; 
+    font-weight: 800; 
+    color: #0d4f4f; 
+    letter-spacing: -0.5px; 
+}
+.subtitle { 
+    color: #667; 
+    margin-top: 6px; 
+    font-size: 16px; 
+}
+
+/* Single Page Grid Layout */
+.grid-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.card { 
+    background: white; 
+    border-radius: 16px; 
+    padding: 24px; 
+    box-shadow: 0 4px 20px rgba(0,0,0,.06); 
+    border: 1px solid #e2ecec;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+h2 { 
+    margin-top: 0; 
+    margin-bottom: 18px; 
+    color: #0d4f4f; 
+    font-size: 18px; 
+    border-bottom: 2px solid #edf2f2;
+    padding-bottom: 10px;
+}
+
+label { 
+    display: block; 
+    margin-top: 14px; 
+    margin-bottom: 6px; 
+    font-weight: 600; 
+    font-size: 13px; 
+}
+
+input, textarea, select { 
+    width: 100%; 
+    padding: 11px 13px; 
+    border: 1px solid #ccd8d8; 
+    border-radius: 8px; 
+    font-size: 14px; 
+    font-family: inherit; 
+    background: #fbfdff;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: #0d4f4f;
+    background: #ffffff;
+}
+
+textarea { 
+    min-height: 100px; 
+    resize: vertical; 
+}
+
+/* Template and Color Pickers */
+.template-grid { 
+    display: grid; 
+    gap: 15px; 
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+}
+.template-option { 
+    width: 100%; 
+    text-align: left; 
+    background: #ffffff; 
+    border: 2px solid #d9e0e0; 
+    border-radius: 12px; 
+    padding: 16px; 
+    cursor: pointer; 
+    transition: all 0.2s ease; 
+}
+.template-option:hover { 
+    border-color: #0d4f4f; 
+    transform: translateY(-2px); 
+}
+.template-option.selected { 
+    border-color: #c9a227; 
+    background: #f8f5e9; 
+    box-shadow: 0 4px 15px rgba(201,162,39,.18); 
+}
+.template-name { 
+    font-size: 16px; 
+    font-weight: bold; 
+    color: #173f3f; 
+    margin-bottom: 4px; 
+}
+.template-description { 
+    color: #667; 
+    font-size: 12px; 
+    line-height: 1.4; 
+}
+.template-badge { 
+    display: inline-block; 
+    margin-top: 10px; 
+    padding: 4px 8px; 
+    border-radius: 12px; 
+    background: #e7eeee; 
+    color: #173f3f; 
+    font-size: 11px; 
+    font-weight: bold; 
+}
+.template-option.selected .template-badge { 
+    background: #c9a227; 
+    color: white; 
+}
+.checkmark { 
+    float: right; 
+    display: none; 
+    color: #c9a227; 
+    font-size: 18px; 
+    font-weight: bold; 
+}
+.template-option.selected .checkmark { 
+    display: block; 
+}
+
+.color-pickers-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.color-section { 
+    padding: 16px; 
+    background: #f7f9f9; 
+    border-radius: 10px; 
+    border: 1px solid #e7eeee;
+}
+.color-section h3 { 
+    margin: 0 0 8px; 
+    color: #173f3f; 
+    font-size: 14px; 
+}
+.color-grid { 
+    display: flex; 
+    gap: 10px; 
+    flex-wrap: wrap; 
+    align-items: center; 
+}
+.color-option { 
+    width: 34px; 
+    height: 34px; 
+    border-radius: 50%; 
+    border: 3px solid white; 
+    box-shadow: 0 0 0 1px #ccd8d8; 
+    cursor: pointer; 
+    padding: 0; 
+    flex: none; 
+}
+.color-option.selected { 
+    box-shadow: 0 0 0 2px #222, 0 3px 10px rgba(0,0,0,.18); 
+    transform: scale(1.08); 
+}
+.custom-color-picker { 
+    width: 36px; 
+    height: 36px; 
+    border: none; 
+    padding: 0; 
+    border-radius: 50%; 
+    cursor: pointer; 
+    background: transparent; 
+}
+
+/* Sticky Action Footer Bar */
+.sticky-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #ffffff;
+    border-top: 1px solid #d9e3e3;
+    padding: 15px 20px;
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.08);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.generate-btn { 
+    width: 100%;
+    max-width: 500px;
+    padding: 16px; 
+    border: none; 
+    border-radius: 10px; 
+    font-size: 16px; 
+    font-weight: bold; 
+    cursor: pointer; 
+    background: #c9a227; 
+    color: white; 
+    transition: background 0.2s, transform 0.1s;
+    box-shadow: 0 4px 12px rgba(201,162,39,0.3);
+}
+.generate-btn:hover { 
+    background: #b08d1e; 
+    transform: translateY(-1px);
+}
+
+@media(max-width: 850px) { 
+    .grid-form { 
+        grid-template-columns: 1fr; 
+    } 
+    .container { 
+        padding: 15px 10px; 
+    } 
+    .card { 
+        padding: 18px; 
+    } 
+}
 </style>
 </head>
 <body>
+
 <div class="container">
-<div class="card">
-<div class="logo">CVForge</div>
-<div class="subtitle">Build a tailored, high-impact CV in minutes</div>
-<div class="progress">
-<div class="p active"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div>
-</div>
-<form method="POST" action="/generate" enctype="multipart/form-data">
+    <div class="header">
+        <div class="logo">CVForge</div>
+        <div class="subtitle">Build a tailored, high-impact CV in minutes</div>
+    </div>
 
-<div class="step active">
-<h2>1. Personal Information</h2>
-<label>Full Name *</label><input name="name" required placeholder="John Doe">
-<label>Professional Title</label><input name="title" maxlength="70" placeholder="e.g. Senior Software Engineer">
-<label>Profile Photo</label><input type="file" name="photo" accept="image/*">
-<label>Phone</label><input name="phone" placeholder="+1 (555) 000-0000">
-<label>Email</label><input name="email" placeholder="john@example.com">
-<label>Location</label><input name="location" placeholder="City, Country">
-<label>LinkedIn</label><input name="linkedin" placeholder="linkedin.com/in/username">
-<label>Website / Portfolio</label><input name="website" placeholder="github.com/username">
-<div class="buttons"><button type="button" class="next" onclick="nextStep()">Next →</button></div>
-</div>
+    <form method="POST" action="/generate" enctype="multipart/form-data">
+        <div class="grid-form">
 
-<div class="step">
-<h2>2. Professional Summary</h2>
-<label>Summary</label><textarea name="summary" maxlength="500" placeholder="Highlight your core expertise and achievements..."></textarea>
-<div class="buttons"><button type="button" class="back" onclick="prevStep()">← Back</button><button type="button" class="next" onclick="nextStep()">Next →</button></div>
-</div>
+            <!-- Template & Styling Selection (Top Full Width) -->
+            <div class="card full-width">
+                <h2>1. Choose Template & Styling</h2>
+                <input type="hidden" name="template" id="templateInput" value="modern">
+                <div class="template-grid">
+                    <button type="button" class="template-option selected" data-template="modern" onclick="selectTemplate(this)">
+                        <span class="checkmark">✓</span>
+                        <div class="template-name">Modern Professional</div>
+                        <div class="template-description">Two-column layout with sidebar and accent highlights.</div>
+                        <span class="template-badge">✓ Selected</span>
+                    </button>
+                    <button type="button" class="template-option" data-template="classic" onclick="selectTemplate(this)">
+                        <span class="checkmark">✓</span>
+                        <div class="template-name">Classic Professional</div>
+                        <div class="template-description">Traditional full-width header design.</div>
+                        <span class="template-badge">Select</span>
+                    </button>
+                    <button type="button" class="template-option" data-template="ats" onclick="selectTemplate(this)">
+                        <span class="checkmark">✓</span>
+                        <div class="template-name">ATS Clean</div>
+                        <div class="template-description">Single-column plain layout optimized for ATS tools.</div>
+                        <span class="template-badge">Select</span>
+                    </button>
+                </div>
 
-<div class="step">
-<h2>3. Work Experience</h2>
-<label>Experience</label><textarea name="experience" maxlength="1200" placeholder="Senior Developer - Tech Corp (2021 - Present)&#10;• Led cross-functional team of 6 engineers..."></textarea>
-<div class="buttons"><button type="button" class="back" onclick="prevStep()">← Back</button><button type="button" class="next" onclick="nextStep()">Next →</button></div>
-</div>
+                <div class="color-pickers-container">
+                    <div class="color-section">
+                        <h3>Custom Accent Color</h3>
+                        <input type="hidden" name="accent_color" id="accentColorInput" value="#F2B632">
+                        <div class="color-grid">
+                            <button type="button" class="color-option selected" data-color="#F2B632" style="background:#F2B632" onclick="selectColor(this)"></button>
+                            <button type="button" class="color-option" data-color="#1599A8" style="background:#1599A8" onclick="selectColor(this)"></button>
+                            <button type="button" class="color-option" data-color="#1769AA" style="background:#1769AA" onclick="selectColor(this)"></button>
+                            <button type="button" class="color-option" data-color="#8B2F3B" style="background:#8B2F3B" onclick="selectColor(this)"></button>
+                            <input type="color" class="custom-color-picker" id="customColorPicker" value="#F2B632" onchange="setCustomColor(this.value)" title="Pick Custom Accent Color">
+                        </div>
+                    </div>
 
-<div class="step">
-<h2>4. Key Projects</h2>
-<label>Projects</label><textarea name="projects" maxlength="800" placeholder="E-Commerce Redesign - Built scalable solution processing $2M+..."></textarea>
-<div class="buttons"><button type="button" class="back" onclick="prevStep()">← Back</button><button type="button" class="next" onclick="nextStep()">Next →</button></div>
-</div>
+                    <div class="color-section">
+                        <h3>Sidebar Theme (Modern Template)</h3>
+                        <input type="hidden" name="sidebar_color" id="sidebarColorInput" value="#173F49">
+                        <div class="color-grid">
+                            <button type="button" class="color-option selected" data-sidebar-color="#173F49" style="background:#173F49" onclick="selectSidebarColor(this)"></button>
+                            <button type="button" class="color-option" data-sidebar-color="#1F2937" style="background:#1F2937" onclick="selectSidebarColor(this)"></button>
+                            <button type="button" class="color-option" data-sidebar-color="#123B2A" style="background:#123B2A" onclick="selectSidebarColor(this)"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-<div class="step">
-<h2>5. Education</h2>
-<label>Education</label><textarea name="education" maxlength="600" placeholder="B.S. in Computer Science - University Name (2017 - 2021)"></textarea>
-<div class="buttons"><button type="button" class="back" onclick="prevStep()">← Back</button><button type="button" class="next" onclick="nextStep()">Next →</button></div>
-</div>
+            <!-- Personal Information -->
+            <div class="card">
+                <h2>2. Personal Information</h2>
+                <label>Full Name *</label>
+                <input name="name" required placeholder="John Doe">
 
-<div class="step">
-<h2>6. Skills</h2>
-<label>Skills</label><textarea name="skills" maxlength="400" placeholder="Python&#10;Flask&#10;React&#10;Docker"></textarea>
-<div class="buttons"><button type="button" class="back" onclick="prevStep()">← Back</button><button type="button" class="next" onclick="nextStep()">Next →</button></div>
-</div>
+                <label>Professional Title</label>
+                <input name="title" maxlength="70" placeholder="e.g. Senior Software Engineer">
 
-<div class="step">
-<h2>7. Certificates & Training</h2>
-<label>Certificates</label><textarea name="certificates" maxlength="500" placeholder="AWS Certified Solutions Architect - Amazon (2023)"></textarea>
-<div class="buttons"><button type="button" class="back" onclick="prevStep()">← Back</button><button type="button" class="next" onclick="nextStep()">Next →</button></div>
-</div>
+                <label>Profile Photo</label>
+                <input type="file" name="photo" accept="image/*">
 
-<div class="step">
-<h2>8. Languages</h2>
-<label>Languages</label><textarea name="languages" maxlength="250" placeholder="English - Native&#10;Spanish - Professional"></textarea>
-<div class="buttons"><button type="button" class="back" onclick="prevStep()">← Back</button><button type="button" class="next" onclick="nextStep()">Next →</button></div>
-</div>
+                <label>Phone</label>
+                <input name="phone" placeholder="+1 (555) 000-0000">
 
-<div class="step">
-<h2>9. Interests & Hobbies</h2>
-<label>Interests</label><textarea name="hobbies" maxlength="250" placeholder="Open Source Contributing&#10;Cryptocurrency Trading"></textarea>
-<div class="buttons"><button type="button" class="back" onclick="prevStep()">← Back</button><button type="button" class="next" onclick="nextStep()">Next →</button></div>
-</div>
+                <label>Email</label>
+                <input name="email" placeholder="john@example.com">
 
-<div class="step">
-<h2>10. References</h2>
-<label>References</label><textarea name="references" maxlength="500" placeholder="Jane Smith - Engineering Manager - Tech Corp (jane@example.com)"></textarea>
-<div class="buttons"><button type="button" class="back" onclick="prevStep()">← Back</button><button type="button" class="next" onclick="nextStep()">Next →</button></div>
-</div>
+                <label>Location</label>
+                <input name="location" placeholder="City, Country">
 
-<div class="step">
-<h2>11. Choose Template & Styling</h2>
-<input type="hidden" name="template" id="templateInput" value="modern">
-<div class="template-grid">
-<button type="button" class="template-option selected" data-template="modern" onclick="selectTemplate(this)">
-    <span class="checkmark">✓</span><div class="template-name">Modern Professional</div>
-    <div class="template-description">Two-column layout with sidebar and accent highlights.</div>
-    <span class="template-badge">✓ Selected</span>
-</button>
-<button type="button" class="template-option" data-template="classic" onclick="selectTemplate(this)">
-    <span class="checkmark">✓</span><div class="template-name">Classic Professional</div>
-    <div class="template-description">Traditional full-width header design.</div>
-    <span class="template-badge">Select</span>
-</button>
-<button type="button" class="template-option" data-template="ats" onclick="selectTemplate(this)">
-    <span class="checkmark">✓</span><div class="template-name">ATS Clean</div>
-    <div class="template-description">Single-column plain layout optimized for ATS tools.</div>
-    <span class="template-badge">Select</span>
-</button>
-</div>
+                <label>LinkedIn</label>
+                <input name="linkedin" placeholder="linkedin.com/in/username">
 
-<div class="color-section">
-<h3>Custom Accent Color</h3>
-<input type="hidden" name="accent_color" id="accentColorInput" value="#F2B632">
-<div class="color-grid">
-<button type="button" class="color-option selected" data-color="#F2B632" style="background:#F2B632" onclick="selectColor(this)"></button>
-<button type="button" class="color-option" data-color="#1599A8" style="background:#1599A8" onclick="selectColor(this)"></button>
-<button type="button" class="color-option" data-color="#1769AA" style="background:#1769AA" onclick="selectColor(this)"></button>
-<button type="button" class="color-option" data-color="#8B2F3B" style="background:#8B2F3B" onclick="selectColor(this)"></button>
-<input type="color" class="custom-color-picker" id="customColorPicker" value="#F2B632" onchange="setCustomColor(this.value)" title="Pick Custom Accent Color">
-</div>
-</div>
+                <label>Website / Portfolio</label>
+                <input name="website" placeholder="github.com/username">
+            </div>
 
-<div class="color-section">
-<h3>Sidebar Theme (Modern Template)</h3>
-<input type="hidden" name="sidebar_color" id="sidebarColorInput" value="#173F49">
-<div class="color-grid">
-<button type="button" class="color-option selected" data-sidebar-color="#173F49" style="background:#173F49" onclick="selectSidebarColor(this)"></button>
-<button type="button" class="color-option" data-sidebar-color="#1F2937" style="background:#1F2937" onclick="selectSidebarColor(this)"></button>
-<button type="button" class="color-option" data-sidebar-color="#123B2A" style="background:#123B2A" onclick="selectSidebarColor(this)"></button>
-</div>
-</div>
+            <!-- Professional Summary -->
+            <div class="card">
+                <h2>3. Professional Summary</h2>
+                <label>Summary</label>
+                <textarea name="summary" maxlength="500" placeholder="Highlight your core expertise and achievements..."></textarea>
+            </div>
 
-<div class="buttons">
-<button type="button" class="back" onclick="prevStep()">← Back</button>
-<button type="button" class="next" onclick="nextStep()">Next →</button>
-</div>
-</div>
+            <!-- Work Experience -->
+            <div class="card">
+                <h2>4. Work Experience</h2>
+                <label>Experience</label>
+                <textarea name="experience" maxlength="1200" style="min-height: 180px;" placeholder="Senior Developer - Tech Corp (2021 - Present)&#10;• Led cross-functional team of 6 engineers..."></textarea>
+            </div>
 
-<div class="step">
-<h2>12. Generate Your CV</h2>
-<p>Your resume data is fully set. Click below to generate your downloadable PDF document.</p>
-<div class="buttons">
-<button type="button" class="back" onclick="prevStep()">← Back</button>
-<button type="submit" class="generate">GENERATE & PREVIEW CV</button>
-</div>
-</div>
+            <!-- Key Projects -->
+            <div class="card">
+                <h2>5. Key Projects</h2>
+                <label>Projects</label>
+                <textarea name="projects" maxlength="800" style="min-height: 180px;" placeholder="E-Commerce Redesign - Built scalable solution processing $2M+..."></textarea>
+            </div>
 
-</form>
-</div>
+            <!-- Education -->
+            <div class="card">
+                <h2>6. Education</h2>
+                <label>Education</label>
+                <textarea name="education" maxlength="600" placeholder="B.S. in Computer Science - University Name (2017 - 2021)"></textarea>
+            </div>
+
+            <!-- Skills -->
+            <div class="card">
+                <h2>7. Skills</h2>
+                <label>Skills</label>
+                <textarea name="skills" maxlength="400" placeholder="Python&#10;Flask&#10;React&#10;Docker"></textarea>
+            </div>
+
+            <!-- Certificates & Training -->
+            <div class="card">
+                <h2>8. Certificates & Training</h2>
+                <label>Certificates</label>
+                <textarea name="certificates" maxlength="500" placeholder="AWS Certified Solutions Architect - Amazon (2023)"></textarea>
+            </div>
+
+            <!-- Languages -->
+            <div class="card">
+                <h2>9. Languages</h2>
+                <label>Languages</label>
+                <textarea name="languages" maxlength="250" placeholder="English - Native&#10;Spanish - Professional"></textarea>
+            </div>
+
+            <!-- Interests & Hobbies -->
+            <div class="card">
+                <h2>10. Interests & Hobbies</h2>
+                <label>Interests</label>
+                <textarea name="hobbies" maxlength="250" placeholder="Open Source Contributing&#10;Cryptocurrency Trading"></textarea>
+            </div>
+
+            <!-- References -->
+            <div class="card">
+                <h2>11. References</h2>
+                <label>References</label>
+                <textarea name="references" maxlength="500" placeholder="Jane Smith - Engineering Manager - Tech Corp (jane@example.com)"></textarea>
+            </div>
+
+        </div>
+
+        <!-- Sticky Action Bar at the Bottom -->
+        <div class="sticky-footer">
+            <button type="submit" class="generate-btn">GENERATE & PREVIEW CV</button>
+        </div>
+    </form>
 </div>
 
 <script>
-let currentStep = 0;
-const steps = document.querySelectorAll(".step");
-const progress = document.querySelectorAll(".progress .p");
-
-function showStep(index) {
-    steps.forEach((step, i) => step.classList.toggle("active", i === index));
-    progress.forEach((bar, i) => bar.classList.toggle("active", i <= index));
-    window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
 function selectTemplate(button) {
     document.querySelectorAll(".template-option").forEach(opt => {
         opt.classList.remove("selected");
@@ -226,9 +440,6 @@ function selectSidebarColor(button) {
     button.classList.add("selected");
     document.getElementById("sidebarColorInput").value = button.dataset.sidebarColor;
 }
-
-function nextStep() { if (currentStep < steps.length - 1) { currentStep++; showStep(currentStep); } }
-function prevStep() { if (currentStep > 0) { currentStep--; showStep(currentStep); } }
 </script>
 </body>
 </html>
