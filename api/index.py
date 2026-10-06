@@ -8,7 +8,8 @@ from flask import Flask, request, render_template, send_file
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # Now import the generator module
-from utils.generator import generate_cv
+from ..utils.generator import generate_cv
+
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
