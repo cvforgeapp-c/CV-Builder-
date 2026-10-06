@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CV Builder - Professional CV Builder</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: #f4f7f7; color: #173f3f; }
+.container { max-width: 780px; margin: auto; padding: 20px; }
+.card { background: white; border-radius: 18px; padding: 28px; box-shadow: 0 5px 25px rgba(0,0,0,.08); }
+.logo { text-align: center; font-size: 32px; font-weight: 800; color: #0d4f4f; letter-spacing: -0.5px; }
+.subtitle { text-align: center; color: #667; margin-bottom: 25px; font-size: 15px; }
+.progress { display: flex; gap: 4px; margin-bottom: 25px; }
+.progress div { flex: 1; height: 6px; background: #d9e3e3; border-radius: 10px; transition: background 0.3s; }
+.progress div.active { background: #c9a227; }
+.step { display: none; }
+.step.active { display: block; }
+h2 { margin-top: 0; color: #0d4f4f; font-size: 22px; }
+label { display: block; margin-top: 15px; margin-bottom: 6px; font-weight: 600; font-size: 14px; }
+input, textarea, select { width: 100%; padding: 12px 14px; border: 1px solid #ccd8d8; border-radius: 10px; font-size: 15px; font-family: inherit; }
+textarea { min-height: 110px; resize: vertical; }
+.buttons { display: flex; gap: 10px; margin-top: 25px; }
+button { flex: 1; padding: 14px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+.next { background: #0d4f4f; color: white; }
+.next:hover { background: #083636; }
+.back { background: #e7eeee; color: #173f3f; }
+.back:hover { background: #d3dede; }
+.generate { background: #c9a227; color: white; }
+.generate:hover { background: #b08d1e; }
+.template-grid { display: grid; gap: 15px; margin-top: 18px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.template-option { width: 100%; text-align: left; background: #ffffff; border: 2px solid #d9e0e0; border-radius: 16px; padding: 18px; cursor: pointer; transition: all 0.2s ease; }
+.template-option:hover { border-color: #0d4f4f; transform: translateY(-2px); }
+.template-option.selected { border-color: #c9a227; background: #f8f5e9; box-shadow: 0 4px 15px rgba(201,162,39,.18); }
+.template-name { font-size: 18px; font-weight: bold; color: #173f3f; margin-bottom: 6px; }
+.template-description { color: #667; font-size: 13px; line-height: 1.4; }
+.template-badge { display: inline-block; margin-top: 12px; padding: 6px 10px; border-radius: 20px; background: #e7eeee; color: #173f3f; font-size: 12px; font-weight: bold; }
+.template-option.selected .template-badge { background: #c9a227; color: white; }
+.checkmark { float: right; display: none; color: #c9a227; font-size: 20px; font-weight: bold; }
+.template-option.selected .checkmark { display: block; }
+.color-section { margin-top: 20px; padding: 18px; background: #f7f9f9; border-radius: 14px; }
+.color-section h3 { margin: 0 0 6px; color: #173f3f; font-size: 16px; }
+.color-grid { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; align-items: center; }
+.color-option { width: 38px; height: 38px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 0 1px #ccd8d8; cursor: pointer; padding: 0; flex: none; }
+.color-option.selected { box-shadow: 0 0 0 2px #222, 0 3px 10px rgba(0,0,0,.18); transform: scale(1.08); }
+.custom-color-picker { width: 40px; height: 40px; border: none; padding: 0; border-radius: 50%; cursor: pointer; background: transparent; }
+@media(max-width:600px) { .container { padding: 10px; } .card { padding: 18px; } .buttons { flex-direction: column; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="card">
+<div class="logo">CVForge</div>
+<div class="subtitle">Build a tailored, high-impact CV in minutes</div>
+<div class="progress">
+<div class="p active"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div>
+</div>
+<form method="POST" action="/generate" enctype="multipart/form-data">
+
+<div class="step active">
+<h2>1. Personal Information</h2>
+<label>Full Name *</label><input name="name" required placeholder="John Doe">
+<label>Professional Title</label><input name="title" maxlength="70" placeholder="e.g. Senior Software Engineer">
+<label>Profile Photo</label><input type="file" name="photo" accept="image/*">
+<label>Phone</label><input name="phone" placeholder="+1 (555) 000-0000">
+<label>Email</label><input name="email" placeholder="john@example.com">
+<label>Location</label><input name="location" placeholder="City, Country">
+<label>LinkedIn</label><input name="linkedin" placeholder="linkedin.com/in/username">
+<label>Website / Portfolio</label><input name="website" placeholder="github.com/username">
+<div class="buttons"><button type="button" class="next" onclick="nextStep()">Next →</button></div>
+</div>
+
+<div class="step">
+<h2>2. Professional Summary</h2>
+<label>Summary</label><textarea name="summary" maxlength="500" placeholder="Highlight your core expertise and achievements..."></textarea>
+<div class="buttons"><button type="button" class="back" onclick="prevStep()">← Back</button><button type="button" class="next" onclick="nextStep()">Next →</button></div>
+</div>
+
+<div class="step">
+<h2>3. Work Experience</h2>
+<label>Experience</label><textarea name="experience" maxlength="1200" placeholder="Senior Developer - Tech Corp (2021 - Present)&#10;• Led cross-functional team of 6 engineers..."></textarea>
+<div class="buttons"><button type="button" class="back" onclick="prevStep()">← Back</button><button type="button" class="next" onclick="nextStep()">Next →</button></div>
+</div>
+
+<div class="step">
+<h2>4. Key Projects</h2>
+<label>Projects</label><textarea name="projects" maxlength="800" placeholder="E-Commerce Redesign - Built scalable solution processing $2M+..."></textarea>
+<div class="buttons"><button type="button" class="back" onclick="prevStep()">← Back</button><button type="button" class="next" onclick="nextStep()">Next →</button></div>
+</div>
+
+<div class="step">
+<h2>5. Education</h2>
+<label>Education</label><textarea name="education" maxlength="600" placeholder="B.S. in Computer Science - University Name (2017 - 2021)"></textarea>
+<div class="buttons"><button type="button" class="back" onclick="prevStep()">← Back</button><button type="button" class="next" onclick="nextStep()">Next →</button></div>
+</div>
+
+<div class="step">
+<h2>6. Skills</h2>
+<label>Skills</label><textarea name="skills" maxlength="400" placeholder="Python&#10;Flask&#10;React&#10;Docker"></textarea>
+<div class="buttons"><button type="button" class="back" onclick="prevStep()">← Back</button><button type="button" class="next" onclick="nextStep()">Next →</button></div>
+</div>
+
+<div class="step">
+<h2>7. Certificates & Training</h2>
+<label>Certificates</label><textarea name="certificates" maxlength="500" placeholder="AWS Certified Solutions Architect - Amazon (2023)"></textarea>
+<div class="buttons"><button type="button" class="back" onclick="prevStep()">← Back</button><button type="button" class="next" onclick="nextStep()">Next →</button></div>
+</div>
+
+<div class="step">
+<h2>8. Languages</h2>
+<label>Languages</label><textarea name="languages" maxlength="250" placeholder="English - Native&#10;Spanish - Professional"></textarea>
+<div class="buttons"><button type="button" class="back" onclick="prevStep()">← Back</button><button type="button" class="next" onclick="nextStep()">Next →</button></div>
+</div>
+
+<div class="step">
+<h2>9. Interests & Hobbies</h2>
+<label>Interests</label><textarea name="hobbies" maxlength="250" placeholder="Open Source Contributing&#10;Cryptocurrency Trading"></textarea>
+<div class="buttons"><button type="button" class="back" onclick="prevStep()">← Back</button><button type="button" class="next" onclick="nextStep()">Next →</button></div>
+</div>
+
+<div class="step">
+<h2>10. References</h2>
+<label>References</label><textarea name="references" maxlength="500" placeholder="Jane Smith - Engineering Manager - Tech Corp (jane@example.com)"></textarea>
+<div class="buttons"><button type="button" class="back" onclick="prevStep()">← Back</button><button type="button" class="next" onclick="nextStep()">Next →</button></div>
+</div>
+
+<div class="step">
+<h2>11. Choose Template & Styling</h2>
+<input type="hidden" name="template" id="templateInput" value="modern">
+<div class="template-grid">
+<button type="button" class="template-option selected" data-template="modern" onclick="selectTemplate(this)">
+    <span class="checkmark">✓</span><div class="template-name">Modern Professional</div>
+    <div class="template-description">Two-column layout with sidebar and accent highlights.</div>
+    <span class="template-badge">✓ Selected</span>
+</button>
+<button type="button" class="template-option" data-template="classic" onclick="selectTemplate(this)">
+    <span class="checkmark">✓</span><div class="template-name">Classic Professional</div>
+    <div class="template-description">Traditional full-width header design.</div>
+    <span class="template-badge">Select</span>
+</button>
+<button type="button" class="template-option" data-template="ats" onclick="selectTemplate(this)">
+    <span class="checkmark">✓</span><div class="template-name">ATS Clean</div>
+    <div class="template-description">Single-column plain layout optimized for ATS tools.</div>
+    <span class="template-badge">Select</span>
+</button>
+</div>
+
+<div class="color-section">
+<h3>Custom Accent Color</h3>
+<input type="hidden" name="accent_color" id="accentColorInput" value="#F2B632">
+<div class="color-grid">
+<button type="button" class="color-option selected" data-color="#F2B632" style="background:#F2B632" onclick="selectColor(this)"></button>
+<button type="button" class="color-option" data-color="#1599A8" style="background:#1599A8" onclick="selectColor(this)"></button>
+<button type="button" class="color-option" data-color="#1769AA" style="background:#1769AA" onclick="selectColor(this)"></button>
+<button type="button" class="color-option" data-color="#8B2F3B" style="background:#8B2F3B" onclick="selectColor(this)"></button>
+<input type="color" class="custom-color-picker" id="customColorPicker" value="#F2B632" onchange="setCustomColor(this.value)" title="Pick Custom Accent Color">
+</div>
+</div>
+
+<div class="color-section">
+<h3>Sidebar Theme (Modern Template)</h3>
+<input type="hidden" name="sidebar_color" id="sidebarColorInput" value="#173F49">
+<div class="color-grid">
+<button type="button" class="color-option selected" data-sidebar-color="#173F49" style="background:#173F49" onclick="selectSidebarColor(this)"></button>
+<button type="button" class="color-option" data-sidebar-color="#1F2937" style="background:#1F2937" onclick="selectSidebarColor(this)"></button>
+<button type="button" class="color-option" data-sidebar-color="#123B2A" style="background:#123B2A" onclick="selectSidebarColor(this)"></button>
+</div>
+</div>
+
+<div class="buttons">
+<button type="button" class="back" onclick="prevStep()">← Back</button>
+<button type="button" class="next" onclick="nextStep()">Next →</button>
+</div>
+</div>
+
+<div class="step">
+<h2>12. Generate Your CV</h2>
+<p>Your resume data is fully set. Click below to generate your downloadable PDF document.</p>
+<div class="buttons">
+<button type="button" class="back" onclick="prevStep()">← Back</button>
+<button type="submit" class="generate">GENERATE & PREVIEW CV</button>
+</div>
+</div>
+
+</form>
+</div>
+</div>
+
+<script>
+let currentStep = 0;
+const steps = document.querySelectorAll(".step");
+const progress = document.querySelectorAll(".progress .p");
+
+function showStep(index) {
+    steps.forEach((step, i) => step.classList.toggle("active", i === index));
+    progress.forEach((bar, i) => bar.classList.toggle("active", i <= index));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function selectTemplate(button) {
+    document.querySelectorAll(".template-option").forEach(opt => {
+        opt.classList.remove("selected");
+        const b = opt.querySelector(".template-badge");
+        if (b) b.textContent = "Select";
+    });
+    button.classList.add("selected");
+    const badge = button.querySelector(".template-badge");
+    if (badge) badge.textContent = "✓ Selected";
+    document.getElementById("templateInput").value = button.dataset.template;
+}
+
+function selectColor(button) {
+    document.querySelectorAll(".color-option[data-color]").forEach(opt => opt.classList.remove("selected"));
+    button.classList.add("selected");
+    const color = button.dataset.color;
+    document.getElementById("accentColorInput").value = color;
+    document.getElementById("customColorPicker").value = color;
+}
+
+function setCustomColor(colorHex) {
+    document.querySelectorAll(".color-option[data-color]").forEach(opt => opt.classList.remove("selected"));
+    document.getElementById("accentColorInput").value = colorHex;
+}
+
+function selectSidebarColor(button) {
+    document.querySelectorAll(".color-option[data-sidebar-color]").forEach(opt => opt.classList.remove("selected"));
+    button.classList.add("selected");
+    document.getElementById("sidebarColorInput").value = button.dataset.sidebarColor;
+}
+
+function nextStep() { if (currentStep < steps.length - 1) { currentStep++; showStep(currentStep); } }
+function prevStep() { if (currentStep > 0) { currentStep--; showStep(currentStep); } }
+</script>
+</body>
+</html>
