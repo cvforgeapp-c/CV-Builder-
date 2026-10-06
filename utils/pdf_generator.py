@@ -1,4 +1,6 @@
 import os
+import math
+import re
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
@@ -12,45 +14,176 @@ FONT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__
 MONTSERRAT_EXTRA_BOLD = os.path.join(FONT_DIR, "Montserrat-ExtraBold.ttf")
 DANCING_SCRIPT = os.path.join(FONT_DIR, "DancingScript-Regular.ttf")
 
+HAS_MONTSERRAT = False
+HAS_DANCING = False
+
 if os.path.exists(MONTSERRAT_EXTRA_BOLD):
     try:
         pdfmetrics.registerFont(TTFont("Montserrat-ExtraBold", MONTSERRAT_EXTRA_BOLD))
+        HAS_MONTSERRAT = True
     except Exception as e:
-        print(f"Warning: Could not register Montserrat font: {e}")
+        print(f"Font error (Montserrat): {e}")
 
 if os.path.exists(DANCING_SCRIPT):
     try:
         pdfmetrics.registerFont(TTFont("DancingScript", DANCING_SCRIPT))
+        HAS_DANCING = True
     except Exception as e:
-        print(f"Warning: Could not register DancingScript font: {e}")
+        print(f"Font error (DancingScript): {e}")
 
 _modern_canvas = None
-PAGE_HEIGHT = 297 * mm
-PAGE_WIDTH = 210 * mm
-BOTTOM_MARGIN = 20 * mm
+PAGE_WIDTH, PAGE_HEIGHT = A4
+SIDEBAR_WIDTH = 75 * mm
+MAIN_MARGIN_LEFT = SIDEBAR_WIDTH + 10 * mm
+MAIN_WIDTH = PAGE_WIDTH - MAIN_MARGIN_LEFT - 10 * mm
+BOTTOM_MARGIN = 15 * mm
+
+SECTION_GAP = 7 * mm
+HEADER_GAP = 6 * mm
+ITEM_GAP = 3.5 * mm
+LINE_LEADING = 4.5 * mm
+
+def draw_circle_icon(c, x, y, radius, bg_color, icon_type):
+    c.saveState()
+    c.setFillColor(bg_color)
+    c.circle(x, y, radius, stroke=0, fill=1)
+    c.setFillColor(colors.white)
+    c.setStrokeColor(colors.white)
+    c.setLineWidth(1)
+    r = radius * 0.55
+
+    if icon_type == "experience":
+        c.rect(x - r*0.7, y - r*0.5, r*1.4, r*1.0, stroke=1, fill=0)
+        c.rect(x - r*0.3, y + r*0.5, r*0.6, r*0.3, stroke=1, fill=0)
+        c.line(x - r*0.7, y + r*0.1, x + r*0.7, y + r*0.1)
+    elif icon_type == "education":
+        p = c.beginPath()
+        p.moveTo(x - r*0.9, y)
+        p.lineTo(x, y + r*0.6)
+        p.lineTo(x + r*0.9, y)
+        p.lineTo(x, y - r*0.6)
+        p.close()
+        c.drawPath(p, stroke=1, fill=1)
+        c.rect(x - r*0.5, y - r*0.7, r*1.0, r*0.4, stroke=0, fill=1)
+    elif icon_type == "certificates":
+        c.rect(x - r*0.6, y - r*0.7, r*1.2, r*1.4, stroke=1, fill=0)
+        c.line(x - r*0.3, y + r*0.3, x + r*0.3, y + r*0.3)
+        c.line(x - r*0.3, y, x + r*0.3, y)
+    elif icon_type == "references":
+        c.circle(x, y + r*0.3, r*0.35, stroke=1, fill=1)
+        p = c.beginPath()
+        p.moveTo(x - r*0.6, y - r*0.6)
+        p.curveTo(x - r*0.6, y - r*0.1, x + r*0.6, y - r*0.1, x + r*0.6, y - r*0.6)
+        c.drawPath(p, stroke=1, fill=1)
+    elif icon_type == "contact":
+        c.circle(x, y + r*0.2, r*0.4, stroke=1, fill=0)
+        p = c.beginPath()
+        p.moveTo(x - r*0.3, y + r*0.1)
+        p.lineTo(x, y - r*0.6)
+        p.lineTo(x + r*0.3, y + r*0.1)
+        c.drawPath(p, stroke=1, fill=1)
+    elif icon_type == "skills":
+        c.circle(x, y, r*0.4, stroke=1, fill=0)
+        for angle in range(0, 360, 45):
+            rad = math.radians(angle)
+            c.line(x + r*0.4*math.cos(rad), y + r*0.4*math.sin(rad), x + r*0.75*math.cos(rad), y + r*0.75*math.sin(rad))
+    elif icon_type == "languages":
+        c.circle(x, y, r*0.7, stroke=1, fill=0)
+        c.line(x - r*0.7, y, x + r*0.7, y)
+        c.line(x, y - r*0.7, x, y + r*0.7)
+    elif icon_type == "interests":
+        p = c.beginPath()
+        p.moveTo(x, y - r*0.6)
+        p.curveTo(x - r*0.8, y, x - r*0.8, y + r*0.6, x, y + r*0.3)
+        p.curveTo(x + r*0.8, y + r*0.6, x + r*0.8, y, x, y - r*0.6)
+        c.drawPath(p, stroke=1, fill=1)
+
+    c.restoreState()
+
+def draw_sidebar_contact_icon(c, x, y, icon_type, color):
+    c.saveState()
+    c.setFillColor(color)
+    c.setStrokeColor(color)
+    c.setLineWidth(1)
+    r = 2.0 * mm
+
+    if icon_type == "phone":
+        c.rect(x - r*0.4, y - r*0.7, r*0.8, r*1.4, stroke=1, fill=0)
+        c.circle(x, y - r*0.4, 0.3, stroke=0, fill=1)
+    elif icon_type == "email":
+        c.rect(x - r*0.7, y - r*0.5, r*1.4, r*1.0, stroke=1, fill=0)
+        p = c.beginPath()
+        p.moveTo(x - r*0.7, y + r*0.5)
+        p.lineTo(x, y)
+        p.lineTo(x + r*0.7, y + r*0.5)
+        c.drawPath(p, stroke=1, fill=0)
+    elif icon_type == "location":
+        c.circle(x, y + r*0.2, r*0.4, stroke=1, fill=0)
+        p = c.beginPath()
+        p.moveTo(x - r*0.3, y + r*0.1)
+        p.lineTo(x, y - r*0.6)
+        p.lineTo(x + r*0.3, y + r*0.1)
+        c.drawPath(p, stroke=1, fill=1)
+    elif icon_type == "linkedin":
+        c.rect(x - r*0.6, y - r*0.6, r*1.2, r*1.2, stroke=1, fill=0)
+        c.setFont("Helvetica-Bold", 5)
+        c.drawString(x - r*0.3, y - r*0.3, "in")
+    elif icon_type == "website":
+        c.circle(x, y, r*0.6, stroke=1, fill=0)
+        c.line(x - r*0.6, y, x + r*0.6, y)
+        c.line(x, y - r*0.6, x, y + r*0.6)
+
+    c.restoreState()
 
 def clean(text):
     return str(text).strip() if text else ""
 
+def strip_bullets(text):
+    return re.sub(r'^[•\-\*\s]+', '', text.strip())
+
 def wrap_text(c, text, font, size, max_width):
-    words = clean(text).split()
+    if not text:
+        return []
+
     lines = []
-    current = ""
-    if c:
-        c.setFont(font, size)
+    for paragraph in str(text).splitlines():
+        paragraph = paragraph.strip()
+        if not paragraph:
+            continue
 
-    for word in words:
-        test = word if not current else current + " " + word
-        width = c.stringWidth(test, font, size) if c else stringWidth(test, font, size)
-        if width <= max_width:
-            current = test
-        else:
-            if current:
-                lines.append(current)
-            current = word
+        words = paragraph.split(" ")
+        current_line = ""
 
-    if current:
-        lines.append(current)
+        for word in words:
+            word_w = c.stringWidth(word, font, size) if c else stringWidth(word, font, size)
+            if word_w > max_width:
+                if current_line:
+                    lines.append(current_line)
+                    current_line = ""
+                sub_str = ""
+                for char in word:
+                    test_sub = sub_str + char
+                    test_w = c.stringWidth(test_sub, font, size) if c else stringWidth(test_sub, font, size)
+                    if test_w <= max_width:
+                        sub_str = test_sub
+                    else:
+                        lines.append(sub_str)
+                        sub_str = char
+                if sub_str:
+                    current_line = sub_str
+                continue
+
+            test_line = word if not current_line else current_line + " " + word
+            test_w = c.stringWidth(test_line, font, size) if c else stringWidth(test_line, font, size)
+
+            if test_w <= max_width:
+                current_line = test_line
+            else:
+                lines.append(current_line)
+                current_line = word
+
+        if current_line:
+            lines.append(current_line)
 
     return lines
 
@@ -59,51 +192,40 @@ def wrap(text, font, size, width):
         return []
     return wrap_text(_modern_canvas, text, font, size, width)
 
-def check_page_overflow(c, y, required_space, template_type, sidebar_color, accent_color):
-    if y - required_space < BOTTOM_MARGIN:
+def check_overflow(c, y, space_needed, sidebar_color):
+    if y - space_needed < BOTTOM_MARGIN:
         c.showPage()
-        new_y = PAGE_HEIGHT - 20 * mm
-        if template_type == "modern":
-            c.setFillColor(sidebar_color)
-            c.rect(0, 0, 78 * mm, PAGE_HEIGHT, fill=True, stroke=False)
-        elif template_type == "classic":
-            c.setFillColor(accent_color)
-            c.rect(0, PAGE_HEIGHT - 8 * mm, PAGE_WIDTH, 8 * mm, fill=True, stroke=False)
-        return new_y
+        c.setFillColor(sidebar_color)
+        c.rect(0, 0, SIDEBAR_WIDTH, PAGE_HEIGHT, fill=True, stroke=False)
+        return PAGE_HEIGHT - 20 * mm
     return y
 
-def modern(data, file_stream):
-    W, H = A4
-    c = canvas.Canvas(file_stream, pagesize=A4)
+def generate_modern(data, file):
+    c = canvas.Canvas(file, pagesize=A4)
     global _modern_canvas
     _modern_canvas = c
-    c.setTitle("CV - " + (data.get("name") or "My CV"))
+    c.setTitle("CV - " + (data.get("name") or "CV"))
 
-    teal = colors.HexColor("#053D47")
     sidebar_color = colors.HexColor(data.get("sidebar_color") or "#173F49")
     gold = colors.HexColor(data.get("accent_color") or "#F2B632")
     white = colors.white
-    dark = colors.HexColor("#123F4A")
-    muted = colors.HexColor("#5E6F73")
+    dark = colors.HexColor("#173F49")
+    text_dark = colors.HexColor("#2C3E50")
 
-    sidebar_w = 78 * mm
-    main_x = sidebar_w + 14 * mm
-    main_w = W - main_x - 13 * mm
-
-    c.setFillColor(colors.HexColor("#FAFCFB"))
-    c.rect(0, 0, W, H, stroke=0, fill=1)
+    c.setFillColor(colors.white)
+    c.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, fill=True, stroke=False)
     c.setFillColor(sidebar_color)
-    c.rect(0, 0, sidebar_w, H, stroke=0, fill=1)
+    c.rect(0, 0, SIDEBAR_WIDTH, PAGE_HEIGHT, fill=True, stroke=False)
 
-    photo_stream = data.get("photo_stream")
-    if photo_stream:
+    photo = data.get("photo")
+    photo_size = 48 * mm
+    photo_x = (SIDEBAR_WIDTH - photo_size) / 2
+    photo_y = PAGE_HEIGHT - 60 * mm
+
+    if photo and os.path.exists(photo):
         try:
-            photo_size = 48 * mm
-            photo_x = (sidebar_w - photo_size) / 2
-            photo_y = H - 63 * mm
-
             c.setFillColor(gold)
-            c.circle(photo_x + photo_size / 2, photo_y + photo_size / 2, photo_size / 2 + 2.2 * mm, stroke=0, fill=1)
+            c.circle(photo_x + photo_size / 2, photo_y + photo_size / 2, photo_size / 2 + 2 * mm, stroke=0, fill=1)
             c.setFillColor(colors.white)
             c.circle(photo_x + photo_size / 2, photo_y + photo_size / 2, photo_size / 2 + 0.8 * mm, stroke=0, fill=1)
 
@@ -111,280 +233,275 @@ def modern(data, file_stream):
             path = c.beginPath()
             path.circle(photo_x + photo_size / 2, photo_y + photo_size / 2, photo_size / 2)
             c.clipPath(path, stroke=0, fill=0)
-            c.drawImage(ImageReader(photo_stream), photo_x, photo_y, width=photo_size, height=photo_size, preserveAspectRatio=True, anchor="c", mask="auto")
+            c.drawImage(ImageReader(photo), photo_x, photo_y, width=photo_size, height=photo_size, preserveAspectRatio=True, anchor="c", mask="auto")
             c.restoreState()
         except Exception as e:
-            print(f"Error drawing photo: {e}")
+            print(f"Photo error: {e}")
 
-    def draw_lines(value, x, y, width, font="Helvetica", size=8.8, leading=4.6 * mm, color=dark, bullet=False):
+    def draw_lines(value, x, y, width, font="Helvetica", size=9, leading=LINE_LEADING, color=text_dark, bullet=False):
         if not value:
             return y
         c.setFillColor(color)
         c.setFont(font, size)
 
-        for paragraph in value.splitlines():
-            paragraph = paragraph.strip()
-            if not paragraph:
-                y -= leading * 0.55
+        for line_item in value.splitlines():
+            line_item = line_item.strip()
+            if not line_item:
                 continue
 
-            lines = wrap(paragraph, font, size, width)
-            for index, line in enumerate(lines):
-                prefix = "• " if (bullet and index == 0) else ("  " if bullet else "")
-                c.drawString(x, y, prefix + line)
+            clean_item = strip_bullets(line_item) if bullet else line_item
+            wrapped = wrap(clean_item, font, size, width - (4 * mm if bullet else 0))
+
+            for idx, line in enumerate(wrapped):
+                if bullet and idx == 0:
+                    c.drawString(x, y, "•")
+                    c.drawString(x + 3.5 * mm, y, line)
+                else:
+                    c.drawString(x + (3.5 * mm if bullet else 0), y, line)
                 y -= leading
         return y
 
-    def main_section(title, x, y, width):
-        c.setFillColor(teal)
-        c.circle(x + 5 * mm, y + 1 * mm, 5.2 * mm, stroke=0, fill=1)
+    def main_section_header(title, icon_type, x, y):
+        y -= SECTION_GAP
+        draw_circle_icon(c, x + 5 * mm, y + 1.5 * mm, 5 * mm, dark, icon_type)
         c.setFillColor(dark)
         c.setFont("Helvetica-Bold", 11.5)
-        c.drawString(x + 14 * mm, y, title.upper())
+        c.drawString(x + 12 * mm, y, title.upper())
         c.setStrokeColor(gold)
-        c.setLineWidth(1.1)
-        c.line(x + 12 * mm, y - 4.5 * mm, x + width, y - 4.5 * mm)
-        return y - 11.5 * mm
+        c.setLineWidth(1.2)
+        c.line(x + 12 * mm, y - 3.5 * mm, x + MAIN_WIDTH, y - 3.5 * mm)
+        return y - HEADER_GAP
 
-    def sidebar_section(title, x, y, width):
+    def sidebar_section_header(title, icon_type, x, y):
+        sw = SIDEBAR_WIDTH - 16 * mm
+        draw_circle_icon(c, x + 3 * mm, y + 1.2 * mm, 4 * mm, gold, icon_type)
         c.setFillColor(gold)
-        c.setFont("Helvetica-Bold", 10.5)
-        title_x = x + 2 * mm
-        c.drawString(title_x, y, title.upper())
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(x + 9 * mm, y, title.upper())
         c.setStrokeColor(gold)
         c.setLineWidth(1)
-        c.line(title_x, y - 2.2 * mm, x + width, y - 2.2 * mm)
-        return y - 9 * mm
+        c.line(x, y - 3 * mm, x + sw, y - 3 * mm)
+        return y - 7 * mm
 
-    sx = 10 * mm
-    sw = sidebar_w - 20 * mm
-    sy = H - 78 * mm
+    sx = 8 * mm
+    sw = SIDEBAR_WIDTH - 16 * mm
+    sy = PAGE_HEIGHT - 72 * mm
 
-    sy = check_page_overflow(c, sy, 6 * mm, "modern", sidebar_color, gold)
-    sy = sidebar_section("Contact", sx, sy, sw)
-
-    contact_items = [
-        data.get("phone"),
-        data.get("email"),
-        data.get("location"),
-        data.get("linkedin"),
-        data.get("website")
+    sy = sidebar_section_header("Contact", "contact", sx, sy)
+    contacts = [
+        ("phone", data.get("phone")),
+        ("email", data.get("email")),
+        ("location", data.get("location")),
+        ("linkedin", data.get("linkedin")),
+        ("website", data.get("website")),
     ]
 
-    for val in contact_items:
+    for icon, val in contacts:
         if val:
-            sy = draw_lines(val, sx + 2 * mm, sy, sw - 2 * mm, size=8.2, leading=4.8 * mm, color=white)
-    sy -= 2.0 * mm
+            draw_sidebar_contact_icon(c, sx + 2 * mm, sy + 1.2 * mm, icon, gold)
+            sy = draw_lines(val, sx + 6 * mm, sy, sw - 6 * mm, size=8.5, leading=4.2 * mm, color=white)
+            sy -= 1.5 * mm
 
-    if data.get("skills"):
-        sy = check_page_overflow(c, sy, 6 * mm, "modern", sidebar_color, gold)
-        sy -= 4 * mm
-        sy = sidebar_section("Skills", sx, sy, sw)
-        for skill in data["skills"].splitlines():
-            if skill.strip():
-                sy = draw_lines(skill.strip(), sx, sy, sw, size=9, leading=5 * mm, color=white, bullet=True)
+    for title, key, icon in [("Skills", "skills", "skills"), ("Languages", "languages", "languages"), ("Interests", "hobbies", "interests")]:
+        if data.get(key):
+            sy -= 2 * mm
+            sy = check_overflow(c, sy, 20 * mm, sidebar_color)
+            sy = sidebar_section_header(title, icon, sx, sy)
+            for item in data[key].splitlines():
+                if item.strip():
+                    sy = draw_lines(item.strip(), sx, sy, sw, size=8.5, leading=4.2 * mm, color=white, bullet=True)
 
-    if data.get("languages"):
-        sy = check_page_overflow(c, sy, 6 * mm, "modern", sidebar_color, gold)
-        sy -= 4 * mm
-        sy = sidebar_section("Languages", sx, sy, sw)
-        for lang in data["languages"].splitlines():
-            if lang.strip():
-                sy = draw_lines(lang.strip(), sx, sy, sw, size=9, leading=5 * mm, color=white, bullet=True)
+    name_font = "Montserrat-ExtraBold" if HAS_MONTSERRAT else "Helvetica-Bold"
+    name = (data.get("name") or "CV").upper()
 
-    name = (data.get("name") or "My CV").upper()
     c.setFillColor(dark)
-    c.setFont("Helvetica-Bold", 22)
-    c.drawString(main_x, H - 23 * mm, name[:45])
+    c.setFont(name_font, 22)
+    c.drawString(MAIN_MARGIN_LEFT, PAGE_HEIGHT - 22 * mm, name)
 
-    title = data.get("title") or ""
-    if title:
-        c.setFillColor(gold)
-        c.setFont("Helvetica-Bold", 14)
-        c.drawString(main_x, H - 31 * mm, title[:70].upper())
+    title = (data.get("title") or "").upper()
+    c.setFillColor(gold)
+    c.setFont("Helvetica-Bold", 11.5)
+    c.drawString(MAIN_MARGIN_LEFT, PAGE_HEIGHT - 28 * mm, title)
 
-    y = H - 43 * mm
+    my = PAGE_HEIGHT - 38 * mm
 
     if data.get("summary"):
-        y = draw_lines(data["summary"], main_x, y, main_w, size=9.5, leading=4.8 * mm, color=muted)
-        y -= 7 * mm
+        my = draw_lines(data["summary"], MAIN_MARGIN_LEFT, my, MAIN_WIDTH, size=9, leading=LINE_LEADING, color=text_dark)
 
     if data.get("experience"):
-        y = check_page_overflow(c, y, 15 * mm, "modern", sidebar_color, gold)
-        y = main_section("Experience", main_x, y, main_w)
-        y = draw_lines(data["experience"], main_x, y, main_w, size=8.8, leading=5.0 * mm, color=muted)
-        y -= 5 * mm
-
-    if data.get("projects"):
-        y = check_page_overflow(c, y, 15 * mm, "modern", sidebar_color, gold)
-        y = main_section("Projects", main_x, y, main_w)
-        y = draw_lines(data["projects"], main_x, y, main_w, size=8.8, leading=5.0 * mm, color=muted)
-        y -= 5 * mm
+        my = check_overflow(c, my, 25 * mm, sidebar_color)
+        my = main_section_header("Experience", "experience", MAIN_MARGIN_LEFT, my)
+        for line in data["experience"].split("\n"):
+            line = line.strip()
+            if not line:
+                continue
+            if "|" in line:
+                my -= ITEM_GAP
+                my = draw_lines(line, MAIN_MARGIN_LEFT, my, MAIN_WIDTH, font="Helvetica-Bold", size=9.5, leading=LINE_LEADING, color=dark)
+                my -= 1 * mm
+            else:
+                my = draw_lines(line, MAIN_MARGIN_LEFT, my, MAIN_WIDTH, size=8.8, leading=LINE_LEADING, color=text_dark, bullet=True)
 
     if data.get("education"):
-        y = check_page_overflow(c, y, 15 * mm, "modern", sidebar_color, gold)
-        y = main_section("Education", main_x, y, main_w)
-        y = draw_lines(data["education"], main_x, y, main_w, size=8.8, leading=5.0 * mm, color=muted)
-        y -= 5 * mm
+        my = check_overflow(c, my, 20 * mm, sidebar_color)
+        my = main_section_header("Education", "education", MAIN_MARGIN_LEFT, my)
+        for line in data["education"].splitlines():
+            if line.strip():
+                if "|" in line:
+                    my -= ITEM_GAP
+                    my = draw_lines(line.strip(), MAIN_MARGIN_LEFT, my, MAIN_WIDTH, font="Helvetica-Bold", size=9.5, leading=LINE_LEADING, color=dark)
+                    my -= 1 * mm
+                else:
+                    my = draw_lines(line.strip(), MAIN_MARGIN_LEFT, my, MAIN_WIDTH, size=8.8, leading=LINE_LEADING, color=text_dark, bullet=True)
 
     if data.get("certificates"):
-        y = check_page_overflow(c, y, 15 * mm, "modern", sidebar_color, gold)
-        y = main_section("Certificates", main_x, y, main_w)
-        y = draw_lines(data["certificates"], main_x, y, main_w, size=8.8, leading=5.0 * mm, color=muted)
-        y -= 5 * mm
+        my = check_overflow(c, my, 20 * mm, sidebar_color)
+        my = main_section_header("Certificates", "certificates", MAIN_MARGIN_LEFT, my)
+        for line in data["certificates"].splitlines():
+            if line.strip():
+                my = draw_lines(line.strip(), MAIN_MARGIN_LEFT, my, MAIN_WIDTH, size=8.8, leading=LINE_LEADING, color=text_dark, bullet=True)
 
     if data.get("references"):
-        y = check_page_overflow(c, y, 15 * mm, "modern", sidebar_color, gold)
-        y = main_section("References", main_x, y, main_w)
-        y = draw_lines(data["references"], main_x, y, main_w, size=8.8, leading=5.0 * mm, color=muted)
+        my = check_overflow(c, my, 20 * mm, sidebar_color)
+        my = main_section_header("References", "references", MAIN_MARGIN_LEFT, my)
+        my = draw_lines(data["references"], MAIN_MARGIN_LEFT, my, MAIN_WIDTH, size=8.8, leading=LINE_LEADING, color=text_dark, bullet=True)
+
+    sig_font = "DancingScript" if HAS_DANCING else "Helvetica-Oblique"
+    c.setFillColor(dark)
+    c.setFont(sig_font, 22)
+    c.drawString(MAIN_MARGIN_LEFT, my - 6 * mm, name.title())
+    c.setStrokeColor(gold)
+    c.setLineWidth(1)
+    c.line(MAIN_MARGIN_LEFT, my - 8 * mm, MAIN_MARGIN_LEFT + 60 * mm, my - 8 * mm)
 
     c.save()
 
-def classic(data, file_stream):
-    W, H = A4
-    c = canvas.Canvas(file_stream, pagesize=A4)
-    global _modern_canvas
-    _modern_canvas = c
-    c.setTitle("CV - " + (data.get("name") or "My CV"))
+def generate_classic(data, file):
+    c = canvas.Canvas(file, pagesize=A4)
+    c.setTitle("CV - " + (data.get("name") or "CV"))
+    
+    accent_color = colors.HexColor(data.get("accent_color") or "#1769AA")
+    dark_text = colors.HexColor("#222222")
+    margin = 15 * mm
+    width = PAGE_WIDTH - (2 * margin)
+    y = PAGE_HEIGHT - margin
 
-    accent = colors.HexColor(data.get("accent_color") or "#F2B632")
-    primary = colors.HexColor("#0D4F4F")
-    dark = colors.HexColor("#222222")
-
-    x = 18 * mm
-    w = W - 36 * mm
-    y = H - 22 * mm
-
-    c.setFillColor(primary)
+    c.setFillColor(dark_text)
     c.setFont("Helvetica-Bold", 24)
-    c.drawString(x, y, (data.get("name") or "My CV").upper())
+    c.drawString(margin, y, (data.get("name") or "FULL NAME").upper())
     y -= 7 * mm
 
-    if data.get("title"):
-        c.setFillColor(accent)
-        c.setFont("Helvetica-Bold", 13)
-        c.drawString(x, y, data["title"].upper())
-        y -= 7 * mm
-
-    c.setStrokeColor(primary)
-    c.setLineWidth(1.5)
-    c.line(x, y, x + w, y)
+    c.setFillColor(accent_color)
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(margin, y, (data.get("title") or "").upper())
     y -= 6 * mm
 
-    contacts = [val for val in [data.get("phone"), data.get("email"), data.get("location"), data.get("linkedin")] if val]
-    if contacts:
-        c.setFillColor(dark)
-        c.setFont("Helvetica", 8.5)
-        c.drawString(x, y, " | ".join(contacts))
-        y -= 8 * mm
-
-    def section(title, current_y):
-        c.setFillColor(primary)
-        c.setFont("Helvetica-Bold", 11)
-        c.drawString(x, current_y, title.upper())
-        c.setStrokeColor(accent)
-        c.setLineWidth(1)
-        c.line(x, current_y - 3 * mm, x + w, current_y - 3 * mm)
-        return current_y - 8 * mm
-
-    def draw_block(text, current_y):
-        if not text:
-            return current_y
-        c.setFillColor(dark)
-        c.setFont("Helvetica", 9)
-        for line in wrap(text, "Helvetica", 9, w):
-            c.drawString(x, current_y, line)
-            current_y -= 4.5 * mm
-        return current_y
-
-    sections = [
-        ("Summary", data.get("summary")),
-        ("Experience", data.get("experience")),
-        ("Projects", data.get("projects")),
-        ("Education", data.get("education")),
-        ("Skills", data.get("skills")),
-        ("Certificates", data.get("certificates")),
-        ("Languages", data.get("languages")),
-        ("References", data.get("references")),
-    ]
-
-    for title, content in sections:
-        if content:
-            y = check_page_overflow(c, y, 14 * mm, "classic", primary, accent)
-            y = section(title, y)
-            y = draw_block(content, y)
-            y -= 4 * mm
-
-    c.save()
-
-def ats(data, file_stream):
-    W, H = A4
-    c = canvas.Canvas(file_stream, pagesize=A4)
-    global _modern_canvas
-    _modern_canvas = c
-    c.setTitle("CV - " + (data.get("name") or "My CV"))
-
-    dark = colors.HexColor("#111111")
-    x = 18 * mm
-    w = W - 36 * mm
-    y = H - 20 * mm
-
-    c.setFillColor(dark)
-    c.setFont("Helvetica-Bold", 20)
-    c.drawString(x, y, (data.get("name") or "My CV"))
-    y -= 6 * mm
-
-    if data.get("title"):
-        c.setFont("Helvetica", 11)
-        c.drawString(x, y, data["title"])
-        y -= 6 * mm
-
-    contacts = [val for val in [data.get("phone"), data.get("email"), data.get("location"), data.get("linkedin")] if val]
-    if contacts:
-        c.setFont("Helvetica", 8.5)
-        c.drawString(x, y, " • ".join(contacts))
-        y -= 7 * mm
-
-    c.setStrokeColor(dark)
-    c.setLineWidth(0.8)
-    c.line(x, y, x + w, y)
+    c.setFont("Helvetica", 8.5)
+    c.setFillColor(dark_text)
+    contact_info = [data.get(k) for k in ["phone", "email", "location", "linkedin", "website"] if data.get(k)]
+    c.drawString(margin, y, "  |  ".join(contact_info))
+    y -= 4 * mm
+    
+    c.setStrokeColor(accent_color)
+    c.setLineWidth(1)
+    c.line(margin, y, margin + width, y)
     y -= 8 * mm
 
-    def draw_section(title, content, current_y):
-        if not content:
-            return current_y
-        current_y = check_page_overflow(c, current_y, 12 * mm, "ats", dark, dark)
-        c.setFont("Helvetica-Bold", 10)
-        c.drawString(x, current_y, title.upper())
-        current_y -= 4.5 * mm
+    def draw_section(title, text_key):
+        nonlocal y
+        if not data.get(text_key):
+            return
+        
+        c.setFont("Helvetica-Bold", 11)
+        c.setFillColor(accent_color)
+        c.drawString(margin, y, title.upper())
+        y -= 2 * mm
+        c.setStrokeColor(colors.lightgrey)
+        c.setLineWidth(0.5)
+        c.line(margin, y, margin + width, y)
+        y -= 5 * mm
 
-        c.setFont("Helvetica", 8.5)
-        for line in wrap(content, "Helvetica", 8.5, w):
-            c.drawString(x, current_y, line)
-            current_y -= 4 * mm
-        return current_y - 4 * mm
+        c.setFont("Helvetica", 9)
+        c.setFillColor(dark_text)
+        for line in str(data[text_key]).splitlines():
+            if line.strip():
+                lines = wrap_text(c, line.strip(), "Helvetica", 9, width)
+                for l in lines:
+                    c.drawString(margin, y, l)
+                    y -= LINE_LEADING
+        y -= 4 * mm
 
-    sections = [
-        ("Summary", data.get("summary")),
-        ("Experience", data.get("experience")),
-        ("Projects", data.get("projects")),
-        ("Education", data.get("education")),
-        ("Skills", data.get("skills")),
-        ("Certificates", data.get("certificates")),
-        ("Languages", data.get("languages")),
-        ("References", data.get("references")),
-    ]
-
-    for title, content in sections:
-        y = draw_section(title, content, y)
+    draw_section("Professional Summary", "summary")
+    draw_section("Work Experience", "experience")
+    draw_section("Education", "education")
+    draw_section("Skills", "skills")
+    draw_section("Certificates", "certificates")
+    draw_section("Languages", "languages")
 
     c.save()
 
-def generate_pdf(data, file_stream):
-    template = clean(data.get("template")).lower()
-    if template == "classic":
-        classic(data, file_stream)
-    elif template == "ats":
-        ats(data, file_stream)
+def generate_ats(data, file):
+    c = canvas.Canvas(file, pagesize=A4)
+    c.setTitle("CV - " + (data.get("name") or "CV"))
+    
+    dark_text = colors.HexColor("#000000")
+    margin = 18 * mm
+    width = PAGE_WIDTH - (2 * margin)
+    y = PAGE_HEIGHT - margin
+
+    c.setFont("Helvetica-Bold", 20)
+    c.setFillColor(dark_text)
+    c.drawString(margin, y, (data.get("name") or "").upper())
+    y -= 6 * mm
+
+    c.setFont("Helvetica", 10)
+    c.drawString(margin, y, data.get("title") or "")
+    y -= 5 * mm
+
+    contact_info = [data.get(k) for k in ["phone", "email", "location", "linkedin", "website"] if data.get(k)]
+    c.setFont("Helvetica", 8.5)
+    c.drawString(margin, y, " • ".join(contact_info))
+    y -= 4 * mm
+
+    c.setStrokeColor(colors.black)
+    c.setLineWidth(0.75)
+    c.line(margin, y, margin + width, y)
+    y -= 7 * mm
+
+    def draw_ats_section(title, text_key):
+        nonlocal y
+        if not data.get(text_key):
+            return
+        
+        c.setFont("Helvetica-Bold", 10.5)
+        c.drawString(margin, y, title.upper())
+        y -= 2 * mm
+        c.line(margin, y, margin + width, y)
+        y -= 4 * mm
+
+        c.setFont("Helvetica", 9)
+        for line in str(data[text_key]).splitlines():
+            if line.strip():
+                lines = wrap_text(c, line.strip(), "Helvetica", 9, width)
+                for l in lines:
+                    c.drawString(margin, y, l)
+                    y -= 4.2 * mm
+        y -= 3 * mm
+
+    draw_ats_section("Summary", "summary")
+    draw_ats_section("Experience", "experience")
+    draw_ats_section("Education", "education")
+    draw_ats_section("Skills", "skills")
+    draw_ats_section("Certificates", "certificates")
+
+    c.save()
+
+def generate_cv(template_type, data, output_path):
+    template_type = (template_type or "modern").lower()
+
+    if template_type == "classic":
+        generate_classic(data, output_path)
+    elif template_type == "ats":
+        generate_ats(data, output_path)
     else:
-        modern(data, file_stream)
+        generate_modern(data, output_path)
