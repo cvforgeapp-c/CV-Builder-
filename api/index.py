@@ -1,10 +1,19 @@
 import os
+import sys
 import tempfile
 import uuid
 from flask import Flask, request, render_template, send_file
+
+# Add project root directory to Python path so Vercel can find 'utils'
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+# Now import the generator module
 from utils.generator import generate_cv
 
-app = Flask(__name__, template_folder="../templates")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
+
+app = Flask(__name__, template_folder=TEMPLATE_DIR)
 
 @app.route("/")
 def index():
