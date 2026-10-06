@@ -27,38 +27,45 @@ a, button { flex: 1; text-align: center; text-decoration: none; padding: 15px; b
 <div class="card">
 <h1>Your CV Preview</h1>
 <div class="subtitle">Your professional CV has been formatted and generated successfully</div>
-<div class="preview-box" id="previewBox"><div class="loading" id="loading">Preparing your CV preview...</div></div>
+<div class="preview-box" id="previewBox">
+    <div class="loading" id="loading">Preparing your CV preview...</div>
+</div>
 <div class="buttons">
 <a class="edit" href="/">← Edit CV</a>
-<form action="/download" method="POST" style="flex: 1; margin: 0;">
-    <input type="hidden" name="pdf_data" value="{{ pdf_data }}">
-    <button class="download" type="submit">⬇ DOWNLOAD CV</button>
-</form>
+<button class="download" id="downloadBtn" type="button">⬇ DOWNLOAD CV</button>
 </div>
 </div>
 </div>
 
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-const pdfBase64 = "{{ pdf_data }}";
+
+// Use | safe filter to prevent Jinja escaping characters
+const pdfBase64 = "{{ pdf_data | safe }}";
 const previewBox = document.getElementById("previewBox");
 const loading = document.getElementById("loading");
 
 async function renderPDF() {
     try {
-        const binaryString = atob(pdfBase64);
+        if (!pdfBase64) throw new Error("No PDF data provided");
+        
+        // Clean any potential whitespace/newlines from string
+        const cleanBase64 = pdfBase64.replace(/\s/g, '');
+        const binaryString = atob(cleanBase64);
         const bytes = new Uint8Array(binaryString.length);
+        
         for (let i = 0; i < binaryString.length; i++) {
             bytes[i] = binaryString.charCodeAt(i);
         }
+        
         const pdf = await pdfjsLib.getDocument({ data: bytes }).promise;
-        loading.remove();
+        if (loading) loading.remove();
 
         for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
             const page = await pdf.getPage(pageNumber);
             const containerWidth = previewBox.clientWidth - 30;
             const originalViewport = page.getViewport({ scale: 1 });
-            const scale = containerWidth / originalViewport.width;
+            const scale = (containerWidth > 0 ? containerWidth : 800) / originalViewport.width;
             const viewport = page.getViewport({ scale: scale });
 
             const canvas = document.createElement("canvas");
@@ -70,16 +77,26 @@ async function renderPDF() {
             previewBox.appendChild(canvas);
             await page.render({ canvasContext: context, viewport: viewport }).promise;
         }
+
+        // Setup Download Button directly in browser memory without POST re-sending
+        document.getElementById("downloadBtn").addEventListener("click", () => {
+            const link = document.createElement("a");
+            link.href = "data:application/pdf;base64," + cleanBase64;
+            link.download = "CV.pdf";
+            link.click();
+        });
+
     } catch (error) {
-        loading.remove();
+        if (loading) loading.remove();
         const errorMessage = document.createElement("div");
         errorMessage.className = "error";
         errorMessage.textContent = "Unable to render PDF preview.";
         previewBox.appendChild(errorMessage);
-        console.error(error);
+        console.error("PDF Rendering Error:", error);
     }
 }
-renderPDF();
+
+document.addEventListener("DOMContentLoaded", renderPDF);
 </script>
 </body>
 </html>
