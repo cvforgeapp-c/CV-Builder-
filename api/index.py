@@ -2,17 +2,16 @@ import os
 import sys
 import tempfile
 import uuid
+import base64
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
 from flask import Flask, request, render_template, send_file
-from utils.pdf_generator import generate_cv
+from utils.generator import generate_cv
 
 TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
-
 app = Flask(__name__, template_folder=TEMPLATE_DIR)
 
 @app.route("/")
@@ -56,9 +55,15 @@ def generate():
     token = str(uuid.uuid4())
     pdf_path = os.path.join(tempfile.gettempdir(), f"CV_{token}.pdf")
 
+    # Generate the PDF file on disk
     generate_cv(selected_template, data, pdf_path)
 
-    return send_file(pdf_path, as_attachment=True, download_name=f"{data['name'] or 'CV'}.pdf")
+    # Read binary PDF and convert to base64 string for preview.html
+    with open(pdf_path, "rb") as f:
+        pdf_base64 = base64.b64encode(f.read()).decode("utf-8")
+
+    # Return preview page instead of direct file download
+    return render_template("preview.html", pdf_data=pdf_base64)
 
 if __name__ == "__main__":
     app.run(debug=True)
