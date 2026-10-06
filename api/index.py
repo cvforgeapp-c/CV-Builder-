@@ -9,7 +9,7 @@ if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
 from flask import Flask, request, render_template, send_file
-from utils.generator import generate_cv
+from utils.pdf_generator import generate_cv
 
 TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
 
