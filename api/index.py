@@ -10,6 +10,10 @@ app = Flask(__name__, template_folder="../templates")
 def index():
     return render_template("index.html")
 
+@app.route('/favicon.ico')
+def favicon():
+    return '', 204
+
 @app.route("/generate", methods=["POST"])
 def generate():
     data = {
