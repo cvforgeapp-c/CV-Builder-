@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - CVForge</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #eef2f5; 
+            color: #1e293b; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            padding: 20px; 
+        }
+
+        .auth-container { 
+            background: #fff; 
+            width: 100%; 
+            max-width: 450px; 
+            border-radius: 16px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+            padding: 40px; 
+        }
+
+        .auth-header { 
+            text-align: center; 
+            margin-bottom: 25px; 
+        }
+
+        .auth-header h1 { 
+            color: #02353C; 
+            font-size: 26px; 
+            font-weight: 700; 
+        }
+
+        .auth-header p { 
+            color: #64748b; 
+            font-size: 14px; 
+            margin-top: 5px; 
+        }
+
+        .flash-msg { 
+            background: #fef2f2; 
+            color: #991b1b; 
+            padding: 10px 14px; 
+            border-radius: 6px; 
+            font-size: 13px; 
+            margin-bottom: 20px; 
+            border: 1px solid #fecaca; 
+        }
+
+        label { 
+            display: block; 
+            font-weight: 600; 
+            font-size: 13px; 
+            color: #444; 
+            margin-top: 15px; 
+        }
+
+        input[type="email"], 
+        input[type="password"] { 
+            width: 100%; 
+            padding: 12px; 
+            margin-top: 6px; 
+            border: 1.5px solid #dcdfe6; 
+            border-radius: 6px; 
+            font-size: 14px; 
+            transition: border-color 0.2s; 
+        }
+
+        input[type="email"]:focus, 
+        input[type="password"]:focus { 
+            border-color: #02353C; 
+            outline: none; 
+        }
+
+        .btn-submit { 
+            width: 100%; 
+            margin-top: 25px; 
+            padding: 14px; 
+            background: linear-gradient(135deg, #02353C 0%, #05535E 100%); 
+            color: #fff; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 15px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            box-shadow: 0 4px 12px rgba(2, 53, 60, 0.25); 
+            transition: transform 0.2s; 
+        }
+
+        .btn-submit:hover { transform: translateY(-1px); }
+
+        .auth-footer { 
+            text-align: center; 
+            margin-top: 20px; 
+            font-size: 13px; 
+            color: #64748b; 
+        }
+
+        .auth-footer a { 
+            color: #02353C; 
+            font-weight: 600; 
+            text-decoration: none; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        <div class="auth-header">
+            <h1>Welcome Back</h1>
+            <p>Log in to access your saved CVs and AI tools</p>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="flash-msg">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('auth.login') }}" method="POST">
+            <label>Email Address</label>
+            <input type="email" name="email" required placeholder="name@example.com">
+
+            <label>Password</label>
+            <input type="password" name="password" required placeholder="Enter password">
+
+            <button type="submit" class="btn-submit">Log In</button>
+        </form>
+
+        <div class="auth-footer">
+            Don't have an account? <a href="{{ url_for('auth.register') }}">Sign up</a>
+        </div>
+    </div>
+
+</body>
+</html>
