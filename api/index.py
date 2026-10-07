@@ -14,13 +14,22 @@ from utils.pdf_generator import generate_cv
 TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
 app = Flask(__name__, template_folder=TEMPLATE_DIR)
 
+# Global session cache to store form data per token
+USER_SESSIONS = {}
+
+
 @app.route("/")
 def index():
-    return render_template("index.html")
+    token = request.args.get("token")
+    # Retrieve previous data if token exists, or pass an empty dictionary
+    user_data = USER_SESSIONS.get(token, {})
+    return render_template("index.html", data=user_data, token=token)
+
 
 @app.route('/favicon.ico')
 def favicon():
     return '', 204
+
 
 @app.route("/generate", methods=["POST"])
 def generate():
@@ -41,6 +50,7 @@ def generate():
         "languages": request.form.get("languages", ""),
         "hobbies": request.form.get("hobbies", ""),
         "references": request.form.get("references", ""),
+        "template": request.form.get("template", "modern"),
         "accent_color": request.form.get("accent_color", "#F2B632"),
         "sidebar_color": request.form.get("sidebar_color", "#173F49"),
     }
@@ -53,6 +63,10 @@ def generate():
 
     selected_template = request.form.get("template", "modern")
     token = str(uuid.uuid4())
+    
+    # Store form data under session token
+    USER_SESSIONS[token] = data
+
     pdf_path = os.path.join(tempfile.gettempdir(), f"CV_{token}.pdf")
 
     # Generate the PDF file on disk
@@ -62,8 +76,9 @@ def generate():
     with open(pdf_path, "rb") as f:
         pdf_base64 = base64.b64encode(f.read()).decode("utf-8")
 
-    # Return preview page instead of direct file download
-    return render_template("preview.html", pdf_data=pdf_base64)
+    # Return preview page with session token
+    return render_template("preview.html", pdf_data=pdf_base64, token=token)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
