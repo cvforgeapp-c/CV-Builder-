@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CVForge Preview</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -31,7 +32,7 @@ a, button { flex: 1; text-align: center; text-decoration: none; padding: 15px; b
     <div class="loading" id="loading">Preparing your CV preview...</div>
 </div>
 <div class="buttons">
-<a href="/?token={{ token }}" class="btn btn-back">← Edit Details</a>
+<a href="/builder?token={{ token }}" class="edit">← Edit Details</a>
 <button class="download" id="downloadBtn" type="button">⬇ DOWNLOAD CV</button>
 </div>
 </div>
