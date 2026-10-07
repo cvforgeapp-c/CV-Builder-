@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CVForge — AI-Powered ATS Resume Builder & Career Platform</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #f8fafc; 
+            color: #1e293b; 
+            line-height: 1.6; 
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 8%;
+            background: #ffffff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            font-size: 24px;
+            font-weight: 800;
+            color: #02353C;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #475569;
+            font-weight: 600;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: #02353C; }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #02353C 0%, #05535E 100%);
+            color: #ffffff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 12px rgba(2, 53, 60, 0.2);
+            transition: all 0.25s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(2, 53, 60, 0.3);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #1e293b;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.2s;
+        }
+
+        .btn-secondary:hover { background: #cbd5e1; }
+
+        .btn-accent {
+            background: #E5A93C;
+            color: #02353C;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 12px rgba(229, 169, 60, 0.3);
+            transition: all 0.25s ease;
+        }
+
+        .btn-accent:hover {
+            background: #d99a2b;
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 90px 8% 60px;
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero-title {
+            font-size: 48px;
+            font-weight: 800;
+            color: #02353C;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            color: #64748b;
+            margin-bottom: 35px;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 80px 8%;
+            background: #ffffff;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 32px;
+            color: #02353C;
+            font-weight: 700;
+            margin-bottom: 50px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: #f8fafc;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .feature-icon {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        .feature-card h3 {
+            color: #02353C;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .feature-card p {
+            color: #64748b;
+            font-size: 15px;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 80px 8%;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .pricing-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 40px;
+            border: 2px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .pricing-card.popular {
+            border-color: #02353C;
+            box-shadow: 0 10px 30px rgba(2, 53, 60, 0.1);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -15px;
+            right: 30px;
+            background: #E5A93C;
+            color: #02353C;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .price {
+            font-size: 38px;
+            font-weight: 800;
+            color: #02353C;
+            margin: 20px 0;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .pricing-features li {
+            padding: 8px 0;
+            color: #475569;
+            font-size: 15px;
+        }
+
+        .pricing-features li::before {
+            content: "✓ ";
+            color: #02353C;
+            font-weight: bold;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 8%;
+            background: #02353C;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title { font-size: 36px; }
+            .hero-actions { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a href="/" class="brand">CVForge</a>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#pricing">Pricing</a>
+            <a href="/auth/login">Login</a>
+            <a href="/" class="btn-primary">Build CV Free</a>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <header class="hero">
+        <h1 class="hero-title">Craft ATS-Optimized Resumes & Land Your Dream Role</h1>
+        <p class="hero-subtitle">Generate tailored CVs, match job descriptions with AI precision, and track your applications—all in one place.</p>
+        <div class="hero-actions">
+            <a href="/" class="btn-accent">Build Resume Now (Free)</a>
+            <a href="#features" class="btn-secondary">Explore AI Features</a>
+        </div>
+    </header>
+
+    <!-- FEATURES SECTION -->
+    <section class="features" id="features">
+        <h2 class="section-title">Built for Modern Job Seekers</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📄</div>
+                <h3>Instant PDF Generation</h3>
+                <p>Choose from professional, ATS-compliant templates and download pixel-perfect PDF resumes built with ReportLab rendering.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>AI ATS Match & Tailoring</h3>
+                <p>Upload target job descriptions to analyze keyword gaps, receive compatibility scores, and auto-tailor your bullet points.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Job Application Tracker</h3>
+                <p>Organize your job search with a dedicated Kanban status tracker. Monitor applications from saved to interview stages.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💼</div>
+                <h3>LinkedIn & Interview Prep</h3>
+                <p>Generate tailored cover letters, optimize your LinkedIn profile, and practice customized interview questions.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRICING SECTION -->
+    <section class="pricing" id="pricing">
+        <h2 class="section-title">Simple, Transparent Pricing</h2>
+        <div class="pricing-grid">
+            
+            <!-- FREE TIER -->
+            <div class="pricing-card">
+                <div>
+                    <h3>Free Standard</h3>
+                    <p style="color: #64748b;">Essential tools for quick resume building</p>
+                    <div class="price">$0</div>
+                    <ul class="pricing-features">
+                        <li>Unlimited standard PDF generations</li>
+                        <li>Access to ATS & Modern templates</li>
+                        <li>Live PDF preview & customization</li>
+                        <li>Form state memory ("Edit Details")</li>
+                    </ul>
+                </div>
+                <a href="/" class="btn-secondary" style="text-align: center;">Get Started Free</a>
+            </div>
+
+            <!-- PREMIUM TIER -->
+            <div class="pricing-card popular">
+                <div class="popular-badge">Recommended</div>
+                <div>
+                    <h3>Premium Pro</h3>
+                    <p style="color: #64748b;">Complete AI job hunting toolkit</p>
+                    <div class="price">$12 <span style="font-size: 16px; font-weight: normal; color: #64748b;">/ month</span></div>
+                    <ul class="pricing-features">
+                        <li>Everything in Free Tier</li>
+                        <li>AI Job URL & Description Scraper</li>
+                        <li>ATS Score Analyzer & Keyword Gap List</li>
+                        <li>One-click AI Resume & Cover Letter Tailoring</li>
+                        <li>Kanban Application Tracker Dashboard</li>
+                        <li>LinkedIn Profile & Interview Q&A Generator</li>
+                    </ul>
+                </div>
+                <a href="/auth/register" class="btn-accent" style="text-align: center;">Upgrade to Premium</a>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>&copy; 2026 CVForge Platform. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
