@@ -24,8 +24,15 @@
         h1 { 
             text-align: center; 
             color: #02353C; 
-            margin-bottom: 25px; 
+            margin-bottom: 6px; 
             font-weight: 700; 
+        }
+
+        .subtitle { 
+            text-align: center; 
+            color: #667; 
+            margin-bottom: 25px; 
+            font-size: 15px; 
         }
 
         label { 
@@ -111,6 +118,8 @@
 <body>
     <div class="container">
         <h1>CV Builder</h1>
+        <div class="subtitle">Build a tailored, high-impact CV in minutes</div>[span_1](start_span)[span_1](end_span)
+        
         <form action="/generate" method="POST" enctype="multipart/form-data">
             
             <!-- TEMPLATE CHOICE SELECTION -->
@@ -129,66 +138,66 @@
             <div class="row">
                 <div>
                     <label>Full Name</label>
-                    <input type="text" name="name" required>
+                    <input type="text" name="name" required placeholder="John Doe">[span_2](start_span)[span_2](end_span)
                 </div>
                 <div>
                     <label>Job Title</label>
-                    <input type="text" name="title" required>
+                    <input type="text" name="title" required placeholder="e.g. Senior Software Engineer">[span_3](start_span)[span_3](end_span)
                 </div>
             </div>
 
             <div class="row">
                 <div>
                     <label>Phone</label>
-                    <input type="text" name="phone">
+                    <input type="text" name="phone" placeholder="+1 (555) 000-0000">[span_4](start_span)[span_4](end_span)
                 </div>
                 <div>
                     <label>Email</label>
-                    <input type="text" name="email">
+                    <input type="text" name="email" placeholder="john@example.com">[span_5](start_span)[span_5](end_span)
                 </div>
             </div>
 
             <div class="row">
                 <div>
                     <label>Location</label>
-                    <input type="text" name="location">
+                    <input type="text" name="location" placeholder="City, Country">[span_6](start_span)[span_6](end_span)
                 </div>
                 <div>
                     <label>LinkedIn</label>
-                    <input type="text" name="linkedin">
+                    <input type="text" name="linkedin" placeholder="linkedin.com/in/username">[span_7](start_span)[span_7](end_span)
                 </div>
             </div>
 
             <label>Website</label>
-            <input type="text" name="website">
+            <input type="text" name="website" placeholder="github.com/username">[span_8](start_span)[span_8](end_span)
 
             <label>Profile Photo</label>
             <input type="file" name="photo" accept="image/*">
 
             <!-- MAIN CONTENT SECTIONS -->
             <label>Professional Summary</label>
-            <textarea name="summary"></textarea>
+            <textarea name="summary" placeholder="Highlight your core expertise and achievements..."></textarea>[span_9](start_span)[span_9](end_span)
 
             <label>Work Experience</label>
-            <textarea name="experience"></textarea>
+            <textarea name="experience" placeholder="Senior Developer - Tech Corp (2021 - Present)&#10;• Led cross-functional team of 6 engineers..."></textarea>[span_10](start_span)[span_10](end_span)
 
             <label>Education</label>
-            <textarea name="education"></textarea>
+            <textarea name="education" placeholder="B.S. in Computer Science - University Name (2017 - 2021)"></textarea>[span_11](start_span)[span_11](end_span)
 
             <label>Skills</label>
-            <textarea name="skills"></textarea>
+            <textarea name="skills" placeholder="Python&#10;Flask&#10;React&#10;Docker"></textarea>[span_12](start_span)[span_12](end_span)
 
             <label>Certificates</label>
-            <textarea name="certificates"></textarea>
+            <textarea name="certificates" placeholder="AWS Certified Solutions Architect - Amazon (2023)"></textarea>[span_13](start_span)[span_13](end_span)
 
             <label>Languages</label>
-            <textarea name="languages"></textarea>
+            <textarea name="languages" placeholder="English - Native&#10;Spanish - Professional"></textarea>[span_14](start_span)[span_14](end_span)
 
             <label>Interests / Hobbies</label>
-            <textarea name="hobbies"></textarea>
+            <textarea name="hobbies" placeholder="Open Source Contributing&#10;Cryptocurrency Trading"></textarea>[span_15](start_span)[span_15](end_span)
 
             <label>References</label>
-            <textarea name="references"></textarea>
+            <textarea name="references" placeholder="Jane Smith - Engineering Manager - Tech Corp (jane@example.com)"></textarea>[span_16](start_span)[span_16](end_span)
 
             <!-- COLOR SELECTION CONTROLS -->
             <div class="row">
