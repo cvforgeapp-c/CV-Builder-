@@ -9,7 +9,7 @@ import openai
 from datetime import datetime
 from bs4 import BeautifulSoup
 
-from flask import Flask, request, jsonify, redirect, url_for, render_template, Blueprint
+from flask import Flask, request, jsonify, redirect, url_for, render_template, Blueprint, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -46,6 +46,18 @@ class User(UserMixin, db.Model):
     paddle_subscription_id = db.Column(db.String(255), nullable=True)
     subscription_status = db.Column(db.String(50), default="free")
 
+    resumes = db.relationship('Resume', backref='owner', lazy=True)
+
+
+class Resume(db.Model):
+    __tablename__ = 'resumes'
+    id = db.Column(db.String(36), primary_key=True)
+    user_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+    title = db.Column(db.String(255), default="My Resume")
+    content_json = db.Column(db.JSON, nullable=True)
+    template_used = db.Column(db.String(50), default="modern")
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 
 class JobApplication(db.Model):
     __tablename__ = 'job_applications'
@@ -59,6 +71,84 @@ class JobApplication(db.Model):
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(user_id)
+
+
+# ============================================================
+# AUTHENTICATION ROUTES (AUTH BLUEPRINT)
+# ============================================================
+auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
+
+
+@auth_bp.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        if User.query.filter_by(email=email).first():
+            flash("Email already registered. Please log in.")
+            return redirect(url_for('auth.register'))
+
+        user = User(
+            id=str(uuid.uuid4()),
+            email=email,
+            password_hash=generate_password_hash(password)
+        )
+        db.session.add(user)
+        db.session.commit()
+        login_user(user)
+        return redirect('/dashboard')
+
+    return render_template('auth/register.html')
+
+
+@auth_bp.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        user = User.query.filter_by(email=email).first()
+
+        if user and check_password_hash(user.password_hash, password):
+            login_user(user)
+            return redirect('/dashboard')
+
+        flash("Invalid email or password.")
+        return redirect(url_for('auth.login'))
+
+    return render_template('auth/login.html')
+
+
+@auth_bp.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect('/')
+
+
+premium_app.register_blueprint(auth_bp)
+
+
+# ============================================================
+# DASHBOARD ROUTES
+# ============================================================
+dashboard_bp = Blueprint('dashboard', __name__, url_prefix='/dashboard')
+
+
+@dashboard_bp.route('')
+@login_required
+def home():
+    user_resumes = Resume.query.filter_by(user_id=current_user.id).all()
+    return render_template('dashboard/index.html', resumes=user_resumes, user=current_user)
+
+
+@dashboard_bp.route('/account', methods=['GET', 'POST'])
+@login_required
+def account():
+    return render_template('dashboard/account.html', user=current_user)
+
+
+premium_app.register_blueprint(dashboard_bp)
 
 
 # ============================================================
