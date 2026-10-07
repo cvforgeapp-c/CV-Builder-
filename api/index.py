@@ -19,7 +19,14 @@ USER_SESSIONS = {}
 
 
 @app.route("/")
+def landing():
+    """Serves the Landing Page showcasing Free vs Premium features"""
+    return render_template("landing.html")
+
+
+@app.route("/builder")
 def index():
+    """Serves the Free CV Builder interface"""
     token = request.args.get("token")
     # Retrieve previous data if token exists, or pass an empty dictionary
     user_data = USER_SESSIONS.get(token, {})
