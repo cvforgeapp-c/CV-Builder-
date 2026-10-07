@@ -71,7 +71,6 @@
             line-height: 1.4; 
         }
 
-        /* Two-Column Form Row Layout */
         .row { 
             display: flex; 
             gap: 20px; 
@@ -81,7 +80,6 @@
             flex: 1; 
         }
 
-        /* Submit Action Button Styling */
         .btn-submit {
             margin-top: 30px; 
             width: 100%; 
@@ -107,7 +105,6 @@
             transform: translateY(0); 
         }
 
-        /* Responsive Layout Adjustments */
         @media (max-width: 600px) { 
             body { padding: 12px; } 
             .container { padding: 20px; } 
@@ -127,9 +124,9 @@
                 <div>
                     <label>Template Choice</label>
                     <select name="template">
-                        <option value="modern" selected>Modern Two-Column (With Icons)</option>
-                        <option value="classic">International Classic</option>
-                        <option value="ats">ATS Clean Standard</option>
+                        <option value="modern" {% if data.get('template') == 'modern' %}selected{% endif %}>Modern Two-Column (With Icons)</option>
+                        <option value="classic" {% if data.get('template') == 'classic' %}selected{% endif %}>International Classic</option>
+                        <option value="ats" {% if data.get('template') == 'ats' %}selected{% endif %}>ATS Clean Standard</option>
                     </select>
                 </div>
             </div>
@@ -138,76 +135,76 @@
             <div class="row">
                 <div>
                     <label>Full Name</label>
-                    <input type="text" name="name" required placeholder="John Doe">
+                    <input type="text" name="name" required value="{{ data.get('name', '') }}" placeholder="John Doe">
                 </div>
                 <div>
                     <label>Job Title</label>
-                    <input type="text" name="title" required placeholder="e.g. Senior Software Engineer">
+                    <input type="text" name="title" required value="{{ data.get('title', '') }}" placeholder="e.g. Senior Software Engineer">
                 </div>
             </div>
 
             <div class="row">
                 <div>
                     <label>Phone</label>
-                    <input type="text" name="phone" placeholder="+1 (555) 000-0000">
+                    <input type="text" name="phone" value="{{ data.get('phone', '') }}" placeholder="+1 (555) 000-0000">
                 </div>
                 <div>
                     <label>Email</label>
-                    <input type="text" name="email" placeholder="john@example.com">
+                    <input type="text" name="email" value="{{ data.get('email', '') }}" placeholder="john@example.com">
                 </div>
             </div>
 
             <div class="row">
                 <div>
                     <label>Location</label>
-                    <input type="text" name="location" placeholder="City, Country">
+                    <input type="text" name="location" value="{{ data.get('location', '') }}" placeholder="City, Country">
                 </div>
                 <div>
                     <label>LinkedIn</label>
-                    <input type="text" name="linkedin" placeholder="linkedin.com/in/username">
+                    <input type="text" name="linkedin" value="{{ data.get('linkedin', '') }}" placeholder="linkedin.com/in/username">
                 </div>
             </div>
 
             <label>Website</label>
-            <input type="text" name="website" placeholder="github.com/username">
+            <input type="text" name="website" value="{{ data.get('website', '') }}" placeholder="github.com/username">
 
             <label>Profile Photo</label>
             <input type="file" name="photo" accept="image/*">
 
             <!-- MAIN CONTENT SECTIONS -->
             <label>Professional Summary</label>
-            <textarea name="summary" placeholder="Highlight your core expertise and achievements..."></textarea>
+            <textarea name="summary" placeholder="Highlight your core expertise and achievements...">{{ data.get('summary', '') }}</textarea>
 
             <label>Work Experience</label>
-            <textarea name="experience" placeholder="Senior Developer - Tech Corp (2021 - Present)&#10;• Led cross-functional team of 6 engineers..."></textarea>
+            <textarea name="experience" placeholder="Senior Developer - Tech Corp (2021 - Present)&#10;• Led cross-functional team of 6 engineers...">{{ data.get('experience', '') }}</textarea>
 
             <label>Education</label>
-            <textarea name="education" placeholder="B.S. in Computer Science - University Name (2017 - 2021)"></textarea>
+            <textarea name="education" placeholder="B.S. in Computer Science - University Name (2017 - 2021)">{{ data.get('education', '') }}</textarea>
 
             <label>Skills</label>
-            <textarea name="skills" placeholder="Python&#10;Flask&#10;React&#10;Docker"></textarea>
+            <textarea name="skills" placeholder="Python&#10;Flask&#10;React&#10;Docker">{{ data.get('skills', '') }}</textarea>
 
             <label>Certificates</label>
-            <textarea name="certificates" placeholder="AWS Certified Solutions Architect - Amazon (2023)"></textarea>
+            <textarea name="certificates" placeholder="AWS Certified Solutions Architect - Amazon (2023)">{{ data.get('certificates', '') }}</textarea>
 
             <label>Languages</label>
-            <textarea name="languages" placeholder="English - Native&#10;Spanish - Professional"></textarea>
+            <textarea name="languages" placeholder="English - Native&#10;Spanish - Professional">{{ data.get('languages', '') }}</textarea>
 
             <label>Interests / Hobbies</label>
-            <textarea name="hobbies" placeholder="Open Source Contributing&#10;Cryptocurrency Trading"></textarea>
+            <textarea name="hobbies" placeholder="Open Source Contributing&#10;Cryptocurrency Trading">{{ data.get('hobbies', '') }}</textarea>
 
             <label>References</label>
-            <textarea name="references" placeholder="Jane Smith - Engineering Manager - Tech Corp (jane@example.com)"></textarea>
+            <textarea name="references" placeholder="Jane Smith - Engineering Manager - Tech Corp (jane@example.com)">{{ data.get('references', '') }}</textarea>
 
             <!-- COLOR SELECTION CONTROLS -->
             <div class="row">
                 <div>
                     <label>Sidebar Color (Modern Template)</label>
-                    <input type="color" name="sidebar_color" value="#02353C">
+                    <input type="color" name="sidebar_color" value="{{ data.get('sidebar_color', '#02353C') }}">
                 </div>
                 <div>
                     <label>Accent Color</label>
-                    <input type="color" name="accent_color" value="#E5A93C">
+                    <input type="color" name="accent_color" value="{{ data.get('accent_color', '#E5A93C') }}">
                 </div>
             </div>
 
