@@ -1,51 +1,132 @@
 import os
-import tempfile
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.units import mm
-from reportlab.pdfgen import canvas
-from reportlab.platypus import Paragraph, Spacer, Frame, KeepTogether
+from reportlab.platypus import (
+    BaseDocTemplate, SimpleDocTemplate, PageTemplate, Frame, Paragraph,
+    Spacer, Flowable, FrameBreak
+)
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
-# Register Fonts
+# Register Custom Fonts
 try:
     pdfmetrics.registerFont(TTFont('Montserrat-ExtraBold', 'fonts/Montserrat-ExtraBold.ttf'))
     pdfmetrics.registerFont(TTFont('DancingScript', 'fonts/DancingScript-Regular.ttf'))
 except Exception:
-    pass  # Fallback to Helvetica if custom fonts are missing in environment
+    pass
 
 
-def draw_circle_icon(c, x, y, radius, bg_hex, icon_type):
-    """Draws custom vector contact and section icons in the sidebar."""
-    c.saveState()
-    c.setFillColor(colors.HexColor(bg_hex))
-    c.circle(x, y, radius, fill=1, stroke=0)
-    c.setStrokeColor(colors.white)
-    c.setFillColor(colors.white)
-    c.setLineWidth(1)
-    
-    # Simple vector representations for sidebar icons
-    if icon_type == 'phone':
-        c.rect(x - 2, y - 3, 4, 6, fill=0, stroke=1)
-    elif icon_type == 'email':
-        c.rect(x - 3, y - 2, 6, 4, fill=0, stroke=1)
-    elif icon_type == 'location':
-        c.circle(x, y + 1, 1.5, fill=0, stroke=1)
-    elif icon_type == 'linkedin':
-        c.drawString(x - 2, y - 2, "in")
-    elif icon_type == 'website':
-        c.circle(x, y, 2.5, fill=0, stroke=1)
-    c.restoreState()
+# ==========================================
+# CUSTOM DRAWABLE FLOWABLES (ICONS & LINES)
+# ==========================================
+class HRFlowable(Flowable):
+    """Horizontal rule with customizable color and margin padding."""
+    def __init__(self, width, color='#D0D7D9', thickness=0.75):
+        super().__init__()
+        self.width = width
+        self.color = color
+        self.thickness = thickness
+        self.height = 6
+
+    def draw(self):
+        self.canv.saveState()
+        self.canv.setStrokeColor(colors.HexColor(self.color))
+        self.canv.setLineWidth(self.thickness)
+        self.canv.line(0, 2, self.width, 2)
+        self.canv.restoreState()
 
 
+class IconParagraph(Flowable):
+    """Flowable row rendering a vector icon followed by styled text."""
+    def __init__(self, icon_type, paragraph, bg_hex="#173F49", icon_color="#FFFFFF"):
+        super().__init__()
+        self.icon_type = icon_type
+        self.paragraph = paragraph
+        self.bg_hex = bg_hex
+        self.icon_color = icon_color
+        self.width = 0
+        self.height = 0
+
+    def wrap(self, availWidth, availHeight):
+        p_w, p_h = self.paragraph.wrap(availWidth - 18, availHeight)
+        self.width = availWidth
+        self.height = max(14, p_h)
+        return self.width, self.height
+
+    def draw(self):
+        self.canv.saveState()
+        
+        # 1. Draw circular icon background
+        x, y = 6, self.height / 2
+        self.canv.setFillColor(colors.HexColor(self.bg_hex))
+        self.canv.circle(x, y, 6, fill=1, stroke=0)
+        
+        # 2. Draw vector glyphs
+        self.canv.setStrokeColor(colors.HexColor(self.icon_color))
+        self.canv.setFillColor(colors.HexColor(self.icon_color))
+        self.canv.setLineWidth(0.8)
+        
+        if self.icon_type == 'phone':
+            self.canv.rect(x - 1.5, y - 2.5, 3, 5, fill=0, stroke=1)
+        elif self.icon_type == 'email':
+            self.canv.rect(x - 2.5, y - 1.8, 5, 3.6, fill=0, stroke=1)
+        elif self.icon_type == 'location':
+            self.canv.circle(x, y + 0.8, 1.2, fill=0, stroke=1)
+            self.canv.line(x, y - 0.5, x, y - 2.5)
+        elif self.icon_type == 'linkedin':
+            self.canv.setFont("Helvetica-Bold", 5)
+            self.canv.drawString(x - 2, y - 1.8, "in")
+        elif self.icon_type == 'website':
+            self.canv.circle(x, y, 2.2, fill=0, stroke=1)
+            self.canv.line(x - 2.2, y, x + 2.2, y)
+        elif self.icon_type == 'experience':
+            self.canv.rect(x - 2.5, y - 2, 5, 4, fill=0, stroke=1)
+        elif self.icon_type == 'education':
+            self.canv.line(x - 3, y - 1, x, y + 2)
+            self.canv.line(x, y + 2, x + 3, y - 1)
+        elif self.icon_type in ['certificates', 'projects', 'references']:
+            self.canv.circle(x, y, 1.5, fill=1, stroke=0)
+
+        self.canv.restoreState()
+        
+        # 3. Draw text paragraph next to icon
+        self.paragraph.drawOn(self.canv, 16, (self.height - self.paragraph.height) / 2)
+
+
+# ==========================================
+# STYLES CONFIGURATION
+# ==========================================
 def get_common_styles(accent_hex, sidebar_hex):
     styles = getSampleStyleSheet()
     accent = colors.HexColor(accent_hex)
     dark = colors.HexColor('#1A252C')
-    
-    # Modern Main Column Section Headings
+
+    # Resolve Name & Title overlap with distinct leading and spaceAfter
+    styles.add(ParagraphStyle(
+        'CVName',
+        parent=styles['Normal'],
+        fontName='Helvetica-Bold',
+        fontSize=20,
+        leading=24,
+        textColor=colors.HexColor('#173F49'),
+        spaceBefore=0,
+        spaceAfter=2
+    ))
+
+    styles.add(ParagraphStyle(
+        'CVTitle',
+        parent=styles['Normal'],
+        fontName='Helvetica-Bold',
+        fontSize=10,
+        leading=13,
+        textColor=accent,
+        spaceBefore=0,
+        spaceAfter=10
+    ))
+
+    # Section Headings
     styles.add(ParagraphStyle(
         'MainSectionHeading',
         parent=styles['Normal'],
@@ -58,7 +139,6 @@ def get_common_styles(accent_hex, sidebar_hex):
         keepWithNext=True
     ))
 
-    # Standard Main Column Text
     styles.add(ParagraphStyle(
         'MainBodyText',
         parent=styles['Normal'],
@@ -66,11 +146,10 @@ def get_common_styles(accent_hex, sidebar_hex):
         fontSize=9,
         leading=13,
         textColor=dark,
-        spaceBefore=4,   # Extra space directly under section headers/lines
+        spaceBefore=3,
         spaceAfter=3
     ))
 
-    # Sidebar Headings
     styles.add(ParagraphStyle(
         'SidebarHeading',
         parent=styles['Normal'],
@@ -78,127 +157,202 @@ def get_common_styles(accent_hex, sidebar_hex):
         fontSize=10,
         leading=12,
         textColor=colors.white,
-        spaceBefore=12,
-        spaceAfter=6
+        spaceBefore=10,
+        spaceAfter=2,
+        keepWithNext=True
     ))
 
-    # Sidebar Body Text
     styles.add(ParagraphStyle(
         'SidebarBodyText',
         parent=styles['Normal'],
         fontName='Helvetica',
         fontSize=8.5,
         leading=12,
-        textColor=colors.HexColor('#E0E6E8')
+        textColor=colors.HexColor('#E0E6E8'),
+        spaceBefore=2,
+        spaceAfter=2
     ))
 
     return styles
 
 
 # ==========================================
-# 1. MODERN TEMPLATE
+# 1. MULTI-PAGE MODERN TEMPLATE
 # ==========================================
 def generate_modern(data, filename):
-    c = canvas.Canvas(filename, pagesize=A4)
     width, height = A4
     sidebar_w = 75 * mm
     accent_hex = data.get("accent_color", "#F2B632")
     sidebar_hex = data.get("sidebar_color", "#173F49")
-
-    # Draw Sidebar Background
-    c.setFillColor(colors.HexColor(sidebar_hex))
-    c.rect(0, 0, sidebar_w, height, fill=1, stroke=0)
-
-    # Draw Photo if exists
     photo_path = data.get("photo")
-    if photo_path and os.path.exists(photo_path):
-        try:
-            c.saveState()
-            # Circular clip path for photo
-            path = c.beginPath()
-            path.circle(sidebar_w / 2, height - 45 * mm, 22 * mm)
-            c.clipPath(path, stroke=0)
-            c.drawImage(photo_path, sidebar_w / 2 - 22 * mm, height - 67 * mm, width=44 * mm, height=44 * mm, preserveAspectRatio=True)
-            c.restoreState()
-            
-            # White border circle around photo
-            c.setStrokeColor(colors.white)
-            c.setLineWidth(2)
-            c.circle(sidebar_w / 2, height - 45 * mm, 22 * mm, fill=0, stroke=1)
-        except Exception:
-            pass
 
-    # Build Main Column Flowables
+    doc = BaseDocTemplate(filename, pagesize=A4, leftMargin=0, rightMargin=0, topMargin=0, bottomMargin=0)
+
+    # Frame 1: Sidebar Column
+    sidebar_frame = Frame(
+        8 * mm, 10 * mm, sidebar_w - 16 * mm, height - 20 * mm,
+        id='sidebar_frame', topPadding=0, bottomPadding=0, leftPadding=0, rightPadding=0
+    )
+
+    # Frame 2: Main Column
+    main_frame = Frame(
+        sidebar_w + 10 * mm, 15 * mm, width - sidebar_w - 20 * mm, height - 30 * mm,
+        id='main_frame', topPadding=0, bottomPadding=0, leftPadding=0, rightPadding=0
+    )
+
+    def draw_background(canvas_obj, document):
+        canvas_obj.saveState()
+        
+        # Draw full sidebar background on every page
+        canvas_obj.setFillColor(colors.HexColor(sidebar_hex))
+        canvas_obj.rect(0, 0, sidebar_w, height, fill=1, stroke=0)
+
+        # Draw profile photo on page 1
+        if document.page == 1 and photo_path and os.path.exists(photo_path):
+            try:
+                canvas_obj.saveState()
+                path = canvas_obj.beginPath()
+                path.circle(sidebar_w / 2, height - 45 * mm, 22 * mm)
+                canvas_obj.clipPath(path, stroke=0)
+                canvas_obj.drawImage(
+                    photo_path,
+                    sidebar_w / 2 - 22 * mm,
+                    height - 67 * mm,
+                    width=44 * mm,
+                    height=44 * mm,
+                    preserveAspectRatio=True
+                )
+                canvas_obj.restoreState()
+
+                canvas_obj.setStrokeColor(colors.white)
+                canvas_obj.setLineWidth(2)
+                canvas_obj.circle(sidebar_w / 2, height - 45 * mm, 22 * mm, fill=0, stroke=1)
+            except Exception:
+                pass
+
+        canvas_obj.restoreState()
+
+    template = PageTemplate(id='two_column', frames=[sidebar_frame, main_frame], onPage=draw_background)
+    doc.addPageTemplates([template])
+
     styles = get_common_styles(accent_hex, sidebar_hex)
-    main_story = []
+    story = []
 
-    # Candidate Name & Title Header
+    # ------------------------------------
+    # A. SIDEBAR COLUMN CONTENT
+    # ------------------------------------
+    top_spacer_height = 70 * mm if photo_path else 15 * mm
+    story.append(Spacer(1, top_spacer_height))
+
+    sidebar_inner_w = sidebar_w - 16 * mm
+
+    # Contact Details with Icons
+    contact_items = [
+        ("phone", data.get("phone")),
+        ("email", data.get("email")),
+        ("location", data.get("location")),
+        ("linkedin", data.get("linkedin")),
+        ("website", data.get("website"))
+    ]
+    active_contacts = [item for item in contact_items if item[1]]
+    
+    if active_contacts:
+        story.append(Paragraph("CONTACT", styles['SidebarHeading']))
+        story.append(HRFlowable(sidebar_inner_w, color='#FFFFFF'))
+        story.append(Spacer(1, 4))
+        for icon_type, val in active_contacts:
+            p = Paragraph(val, styles['SidebarBodyText'])
+            story.append(IconParagraph(icon_type, p, bg_hex=accent_hex, icon_color="#FFFFFF"))
+            story.append(Spacer(1, 2))
+        story.append(Spacer(1, 6))
+
+    # Helper for Sidebar Lists with Divider Lines
+    def add_sidebar_section(title, content_key):
+        if data.get(content_key):
+            story.append(Paragraph(title, styles['SidebarHeading']))
+            story.append(HRFlowable(sidebar_inner_w, color='#FFFFFF'))
+            story.append(Spacer(1, 4))
+            for item in data[content_key].split("\n"):
+                if item.strip():
+                    story.append(Paragraph(f"• {item.strip()}", styles['SidebarBodyText']))
+            story.append(Spacer(1, 6))
+
+    add_sidebar_section("SKILLS", "skills")
+    add_sidebar_section("LANGUAGES", "languages")
+    add_sidebar_section("INTERESTS", "hobbies")
+
+    # Move from Sidebar Frame into Main Frame
+    story.append(FrameBreak())
+
+    # ------------------------------------
+    # B. MAIN COLUMN CONTENT
+    # ------------------------------------
     name = data.get("name", "YOUR NAME").upper()
     title = data.get("title", "PROFESSIONAL TITLE").upper()
-    
-    main_story.append(Paragraph(f"<b><font size=18 color='#173F49'>{name}</font></b>", styles['Normal']))
-    main_story.append(Paragraph(f"<b><font size=10 color='{accent_hex}'>{title}</font></b>", styles['Normal']))
-    main_story.append(Spacer(1, 10))
+
+    story.append(Paragraph(name, styles['CVName']))
+    story.append(Paragraph(title, styles['CVTitle']))
 
     if data.get("summary"):
-        main_story.append(Paragraph(data["summary"], styles['MainBodyText']))
-        main_story.append(Spacer(1, 8))
+        story.append(Paragraph(data["summary"], styles['MainBodyText']))
+        story.append(Spacer(1, 6))
 
-    # Helper function to add sections with lines and clear spacing
-    def add_section(title_text, content_key):
+    main_column_w = width - sidebar_w - 20 * mm
+
+    # Helper for Main Column Sections with Icons and Divider Lines
+    def add_main_section(title_text, content_key, icon_type):
         if data.get(content_key):
-            main_story.append(Paragraph(f"<b>{title_text}</b>", styles['MainSectionHeading']))
-            # Adding Spacer ensures text does not collide with drawn line beneath section title
-            main_story.append(Spacer(1, 4))
+            heading_p = Paragraph(title_text, styles['MainSectionHeading'])
+            story.append(IconParagraph(icon_type, heading_p, bg_hex=sidebar_hex, icon_color="#FFFFFF"))
+            story.append(HRFlowable(main_column_w, color='#D0D7D9'))
+            
+            # Target Spacing below section line
+            story.append(Spacer(1, 6))
+
             for line in data[content_key].split("\n"):
                 if line.strip():
                     formatted = line.strip() if line.strip().startswith("•") else f"• {line.strip()}"
-                    main_story.append(Paragraph(formatted, styles['MainBodyText']))
-            main_story.append(Spacer(1, 8))
+                    story.append(Paragraph(formatted, styles['MainBodyText']))
+            story.append(Spacer(1, 8))
 
-    add_section("EXPERIENCE", "experience")
-    add_section("PROJECTS", "projects")
-    add_section("EDUCATION", "education")
-    add_section("CERTIFICATES", "certificates")
-    add_section("REFERENCES", "references")
+    add_main_section("EXPERIENCE", "experience", "experience")
+    add_main_section("PROJECTS", "projects", "projects")
+    add_main_section("EDUCATION", "education", "education")
+    add_main_section("CERTIFICATES", "certificates", "certificates")
+    add_main_section("REFERENCES", "references", "references")
 
-    # Add Signature if present
+    # Signature
     if data.get("name"):
         sig_font = 'DancingScript' if 'DancingScript' in pdfmetrics.getRegisteredFontNames() else 'Helvetica-Oblique'
-        main_story.append(Spacer(1, 10))
-        main_story.append(Paragraph(f"<font fontName='{sig_font}' size=16 color='#173F49'>{data['name']}</font>", styles['Normal']))
+        story.append(Spacer(1, 10))
+        story.append(Paragraph(f"<font fontName='{sig_font}' size=16 color='#173F49'>{data['name']}</font>", styles['Normal']))
 
-    # Frame for Main Content
-    main_frame = Frame(sidebar_w + 10 * mm, 15 * mm, width - sidebar_w - 20 * mm, height - 30 * mm, topPadding=0, bottomPadding=0)
-    main_frame.addFromList(main_story, c)
-
-    c.save()
+    doc.build(story)
 
 
 # ==========================================
 # 2. CLASSIC TEMPLATE
 # ==========================================
 def generate_classic(data, filename):
-    c = canvas.Canvas(filename, pagesize=A4)
-    width, height = A4
+    doc = SimpleDocTemplate(filename, pagesize=A4, leftMargin=15*mm, rightMargin=15*mm, topMargin=15*mm, bottomMargin=15*mm)
     styles = get_common_styles("#173F49", "#173F49")
     story = []
 
-    # Full Header
     name = data.get("name", "YOUR NAME").upper()
     title = data.get("title", "PROFESSIONAL TITLE").upper()
-    story.append(Paragraph(f"<font size=20 color='#173F49'><b>{name}</b></font>", styles['Normal']))
-    story.append(Paragraph(f"<font size=11 color='#555555'><b>{title}</b></font>", styles['Normal']))
+    story.append(Paragraph(name, styles['CVName']))
+    story.append(Paragraph(title, styles['CVTitle']))
     
     contact_info = " | ".join(filter(None, [data.get("phone"), data.get("email"), data.get("location"), data.get("linkedin")]))
     if contact_info:
-        story.append(Paragraph(f"<font size=8.5 color='#333333'>{contact_info}</font>", styles['Normal']))
+        story.append(Paragraph(contact_info, styles['MainBodyText']))
     story.append(Spacer(1, 10))
 
     def add_classic_section(title_text, content_key):
         if data.get(content_key):
-            story.append(Paragraph(f"<b><font color='#173F49'>{title_text}</font></b>", styles['MainSectionHeading']))
-            story.append(Spacer(1, 4))
+            story.append(Paragraph(title_text, styles['MainSectionHeading']))
+            story.append(HRFlowable(A4[0] - 30 * mm, color='#173F49'))
+            story.append(Spacer(1, 6))
             for line in data[content_key].split("\n"):
                 if line.strip():
                     story.append(Paragraph(line.strip(), styles['MainBodyText']))
@@ -211,31 +365,29 @@ def generate_classic(data, filename):
     add_classic_section("CERTIFICATES", "certificates")
     add_classic_section("REFERENCES", "references")
 
-    frame = Frame(15 * mm, 15 * mm, width - 30 * mm, height - 30 * mm)
-    frame.addFromList(story, c)
-    c.save()
+    doc.build(story)
 
 
 # ==========================================
-# 3. ATS CLEAN TEMPLATE
+# 3. ATS TEMPLATE
 # ==========================================
 def generate_ats(data, filename):
-    c = canvas.Canvas(filename, pagesize=A4)
-    width, height = A4
+    doc = SimpleDocTemplate(filename, pagesize=A4, leftMargin=15*mm, rightMargin=15*mm, topMargin=15*mm, bottomMargin=15*mm)
     styles = get_common_styles("#000000", "#000000")
     story = []
 
     name = data.get("name", "YOUR NAME").upper()
-    story.append(Paragraph(f"<font size=18><b>{name}</b></font>", styles['Normal']))
+    story.append(Paragraph(name, styles['CVName']))
     
     contacts = [data.get("phone"), data.get("email"), data.get("location"), data.get("linkedin")]
-    story.append(Paragraph(" • ".join(filter(None, contacts)), styles['Normal']))
+    story.append(Paragraph(" • ".join(filter(None, contacts)), styles['MainBodyText']))
     story.append(Spacer(1, 12))
 
     def add_ats_section(title_text, content_key):
         if data.get(content_key):
-            story.append(Paragraph(f"<b>{title_text.upper()}</b>", styles['MainSectionHeading']))
-            story.append(Spacer(1, 4))
+            story.append(Paragraph(title_text.upper(), styles['MainSectionHeading']))
+            story.append(HRFlowable(A4[0] - 30 * mm, color="#000000"))
+            story.append(Spacer(1, 6))
             for line in data[content_key].split("\n"):
                 if line.strip():
                     story.append(Paragraph(f"• {line.strip()}", styles['MainBodyText']))
@@ -248,9 +400,7 @@ def generate_ats(data, filename):
     add_ats_section("Certifications", "certificates")
     add_ats_section("References", "references")
 
-    frame = Frame(15 * mm, 15 * mm, width - 30 * mm, height - 30 * mm)
-    frame.addFromList(story, c)
-    c.save()
+    doc.build(story)
 
 
 # ==========================================
