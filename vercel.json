@@ -4,12 +4,40 @@
     {
       "src": "api/index.py",
       "use": "@vercel/python"
+    },
+    {
+      "src": "api/premium.py",
+      "use": "@vercel/python"
     }
   ],
   "routes": [
     {
       "src": "/favicon.ico",
       "status": 204
+    },
+    {
+      "src": "/api/v1/premium/(.*)",
+      "dest": "api/premium.py"
+    },
+    {
+      "src": "/auth/(.*)",
+      "dest": "api/premium.py"
+    },
+    {
+      "src": "/dashboard/(.*)",
+      "dest": "api/premium.py"
+    },
+    {
+      "src": "/dashboard",
+      "dest": "api/premium.py"
+    },
+    {
+      "src": "/applications/(.*)",
+      "dest": "api/premium.py"
+    },
+    {
+      "src": "/applications",
+      "dest": "api/premium.py"
     },
     {
       "src": "/(.*)",
