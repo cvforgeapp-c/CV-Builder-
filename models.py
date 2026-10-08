@@ -31,13 +31,12 @@ class Resume(db.Model):
     __tablename__ = 'resumes'
     
     id = db.Column(db.String(36), primary_key=True)
-    # Explicitly map Python user_id attribute to SQL "userId" column
     user_id = db.Column("userId", db.String(36), db.ForeignKey('users.id'), nullable=False)
     title = db.Column(db.String(255), default="My Resume")
-    content_json = db.Column("contentJson", db.JSON, nullable=True)
-    template_used = db.Column("templateUsed", db.String(50), default="modern")
-    accent_color = db.Column("accentColor", db.String(20), default="#E5A93C")
-    sidebar_color = db.Column("sidebarColor", db.String(20), default="#02353C")
+    content_json = db.Column("content_json", db.JSON, nullable=True)
+    template_used = db.Column("template_used", db.String(50), default="modern")
+    accent_color = db.Column("accent_color", db.String(20), default="#E5A93C")
+    sidebar_color = db.Column("sidebar_color", db.String(20), default="#02353C")
     updated_at = db.Column("updatedAt", db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
@@ -46,9 +45,9 @@ class JobApplication(db.Model):
     
     id = db.Column(db.String(36), primary_key=True)
     user_id = db.Column("userId", db.String(36), db.ForeignKey('users.id'), nullable=False)
-    company_name = db.Column("companyName", db.String(255), nullable=False)
-    role_title = db.Column("roleTitle", db.String(255), nullable=False)
+    company_name = db.Column("company_name", db.String(255), nullable=False)
+    role_title = db.Column("role_title", db.String(255), nullable=False)
     status = db.Column(db.String(50), default="Applied")
-    job_url = db.Column("jobUrl", db.Text, nullable=True)
-    ats_score = db.Column("atsScore", db.Integer, nullable=True)
-    applied_date = db.Column("appliedDate", db.DateTime, default=datetime.utcnow)
+    job_url = db.Column("job_url", db.Text, nullable=True)
+    ats_score = db.Column("ats_score", db.Integer, nullable=True)
+    applied_date = db.Column("applied_date", db.DateTime, default=datetime.utcnow)
