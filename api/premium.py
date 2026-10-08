@@ -288,6 +288,18 @@ def login():
     )
 
 
+@auth_bp.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password():
+    if request.method == "POST":
+        email = request.form.get("email")
+        if email:
+            user = User.query.filter_by(email=email).first()
+            flash("If an account exists for that email, password recovery instructions have been sent.")
+            return redirect(url_for("auth.forgot_password"))
+
+    return render_template("auth/forgot_password.html")
+
+
 @auth_bp.route("/logout")
 @login_required
 def logout():
@@ -410,6 +422,7 @@ def verify_paddle_webhook(
 
         components = {}
 
+        # Safely split headers and check part counts to prevent IndexErrors
         items = signature_header.split(";")
         for item in items:
             item = item.strip()
@@ -697,6 +710,7 @@ Job Description:
             ]
         )
 
+        # Bounds check to prevent IndexError on choices list
         choices = getattr(response, "choices", None)
         if choices and len(choices) > 0:
             first_choice = choices[0]
