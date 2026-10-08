@@ -100,10 +100,7 @@ class User(UserMixin, db.Model):
         nullable=False
     )
 
-    password_hash = db.Column(
-        db.String(255),
-        nullable=False
-    )
+    password_hash = db.Column("passwordHash", db.String(255), nullable=False)
 
     # Paddle subscription details
     is_premium = db.Column(
