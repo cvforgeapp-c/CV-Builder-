@@ -10,7 +10,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.String(36), primary_key=True)
     email = db.Column(db.String(255), unique=True, nullable=False)
     password_hash = db.Column("passwordHash", db.String(255), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column( "createdAt", db.DateTime, default=datetime.utcnow)
     
     # Entitlement / Subscription
     is_premium = db.Column(db.Boolean, default=False)
