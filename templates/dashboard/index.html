@@ -3,232 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - CVForge</title>
+    <title>Dashboard - CVForge AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; }
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: #f4f7f7; 
-            color: #173f3f; 
-            margin: 0; 
-            padding: 0; 
-        }
-
-        .navbar {
-            background: #02353C;
-            color: #fff;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .navbar a {
-            color: #fff;
-            text-decoration: none;
-            margin-left: 15px;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .container {
-            max-width: 1100px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-
-        .header-card {
-            background: #fff;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .badge-free { background: #e2ecec; color: #173f3f; }
-        .badge-premium { background: #E5A93C; color: #02353C; }
-
-        .btn-upgrade {
-            background: #E5A93C;
-            color: #02353C;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-upgrade:hover { background: #d99a2b; }
-
-        .btn-create {
-            background: #02353C;
-            color: #fff;
-            padding: 10px 18px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .resume-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .resume-card {
-            background: #fff;
-            border-radius: 10px;
-            padding: 20px;
-            border: 1px solid #e0e6e6;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 180px;
-        }
-
-        .resume-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #02353C;
-            margin: 0 0 5px 0;
-        }
-
-        .resume-meta {
-            font-size: 12px;
-            color: #667;
-        }
-
-        .card-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .btn-action {
-            flex: 1;
-            text-align: center;
-            padding: 8px;
-            border-radius: 5px;
-            font-size: 13px;
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        .btn-edit { background: #eef2f5; color: #02353C; }
-        .btn-edit:hover { background: #dcdfe6; }
-
-        .empty-state {
-            text-align: center;
-            padding: 50px 20px;
-            background: #fff;
-            border-radius: 12px;
-            border: 1px dashed #ccd8d8;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
     </style>
-
-    <!-- Load Paddle.js (Billing v2) -->
-    <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
 
-    <!-- NAVBAR -->
-    <div class="navbar">
-        <div style="font-size: 20px; font-weight: 800;">CVForge Dashboard</div>
-        <div>
-            <a href="/">Create CV</a>
-            <a href="{{ url_for('dashboard.account') }}">Account Settings</a>
-            <a href="{{ url_for('auth.logout') }}">Logout</a>
-        </div>
-    </div>
+    <!-- TOP NAVIGATION BAR -->
+    <nav class="bg-[#02353C] text-white border-b border-emerald-900/40 sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Brand Logo -->
+                <a href="/" class="flex items-center space-x-3">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#E5A93C] to-amber-300 flex items-center justify-center shadow-inner">
+                        <i class="fa-solid fa-file-invoice text-[#02353C] text-lg"></i>
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-white">CVForge <span class="text-[#E5A93C] text-xs px-2 py-0.5 bg-amber-400/10 border border-amber-400/20 rounded-full ml-1">AI</span></span>
+                </a>
 
-    <div class="container">
-        <!-- USER PROFILE & SUBSCRIPTION SUMMARY -->
-        <div class="header-card">
-            <div>
-                <h2 style="margin: 0 0 8px 0;">Welcome, {{ user.email }}</h2>
-                <div>
-                    Plan: 
-                    {% if user.is_premium %}
-                        <span class="badge badge-premium">Premium</span>
-                    {% else %}
-                        <span class="badge badge-free">Free Tier</span>
-                    {% endif %}
+                <!-- Desktop Nav Links -->
+                <div class="hidden md:flex items-center space-x-6 text-sm font-medium">
+                    <a href="/editor" class="text-slate-200 hover:text-white transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-plus text-xs text-[#E5A93C]"></i> Create CV
+                    </a>
+                    <a href="/dashboard/account" class="text-slate-200 hover:text-white transition-colors">
+                        Settings
+                    </a>
+                    <div class="h-4 w-[1px] bg-emerald-800/80"></div>
+                    <a href="/auth/logout" class="text-rose-300 hover:text-rose-200 transition-colors flex items-center gap-1.5">
+                        <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i> Logout
+                    </a>
+                </div>
+
+                <!-- Mobile Action Icon -->
+                <div class="md:hidden flex items-center space-x-3">
+                    <a href="/dashboard/account" class="p-2 text-slate-200 hover:text-white">
+                        <i class="fa-solid fa-gear text-lg"></i>
+                    </a>
+                    <a href="/auth/logout" class="p-2 text-rose-300 hover:text-rose-200">
+                        <i class="fa-solid fa-power-off text-lg"></i>
+                    </a>
                 </div>
             </div>
+        </div>
+    </nav>
 
-            {% if not user.is_premium %}
-                <button onclick="openPaddleCheckout()" class="btn-upgrade">⚡ Upgrade to Premium</button>
+    <!-- MAIN CONTENT WRAPPER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+        <!-- WELCOME BANNER & SUBSCRIPTION STATUS -->
+        <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div class="space-y-2">
+                <div class="flex items-center space-x-3">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+                        Welcome back!
+                    </h1>
+                    {% if user and user.is_premium %}
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-700 border border-amber-500/20">
+                            <i class="fa-solid fa-crown text-amber-500"></i> PRO PLAN
+                        </span>
+                    {% else %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+                            FREE TIER
+                        </span>
+                    {% endif %}
+                </div>
+                <p class="text-slate-500 text-sm sm:text-base flex items-center gap-2">
+                    <i class="fa-regular fa-envelope text-slate-400"></i>
+                    {{ user.email if user else 'user@example.com' }}
+                </p>
+            </div>
+
+            <!-- Upgrade / Account Action Card -->
+            {% if not user or not user.is_premium %}
+                <div class="bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl p-4 sm:p-5 shadow-lg shadow-amber-500/15 flex items-center justify-between gap-4 md:max-w-md w-full">
+                    <div class="space-y-1">
+                        <p class="font-bold text-sm tracking-wide text-amber-950 uppercase">Upgrade to Premium</p>
+                        <p class="text-xs text-amber-50">Unlock unlimited CV downloads & AI ATS keyword scoring.</p>
+                    </div>
+                    <a href="/pricing" class="bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs px-4 py-2.5 rounded-lg shadow transition-all shrink-0 flex items-center gap-1.5">
+                        <i class="fa-solid fa-bolt text-amber-400"></i> Upgrade
+                    </a>
+                </div>
             {% endif %}
         </div>
 
-        <!-- RESUMES SECTION HEADER -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h3 style="margin: 0;">My Saved Resumes</h3>
-            <a href="/" class="btn-create">+ Create New CV</a>
+        <!-- QUICK STATS METRICS -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <div class="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm flex items-center space-x-4">
+                <div class="w-12 h-12 rounded-lg bg-emerald-50 text-[#02353C] flex items-center justify-center text-xl shrink-0">
+                    <i class="fa-solid fa-file-alt"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Saved Resumes</p>
+                    <p class="text-2xl font-bold text-slate-800">{{ resumes|length if resumes else 0 }}</p>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm flex items-center space-x-4">
+                <div class="w-12 h-12 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xl shrink-0">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">AI Credits</p>
+                    <p class="text-2xl font-bold text-slate-800">{{ user.ai_credits_remaining if user and hasattr(user, 'ai_credits_remaining') else 3 }}</p>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm flex items-center space-x-4">
+                <div class="w-12 h-12 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xl shrink-0">
+                    <i class="fa-solid fa-briefcase"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Applications</p>
+                    <p class="text-2xl font-bold text-slate-800">0 Active</p>
+                </div>
+            </div>
         </div>
 
-        <!-- RESUME GRID / LIST -->
-        {% if resumes %}
-            <div class="resume-grid">
-                {% for resume in resumes %}
-                    <div class="resume-card">
-                        <div>
-                            <div class="resume-title">{{ resume.title or 'Untitled Resume' }}</div>
-                            <div class="resume-meta">Template: {{ resume.template_used|capitalize }}</div>
-                            <div class="resume-meta">Last Updated: {{ resume.updated_at.strftime('%b %d, %Y') }}</div>
+        <!-- RESUME COLLECTION SECTION -->
+        <div class="space-y-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900">My Saved Resumes</h2>
+                    <p class="text-slate-500 text-xs sm:text-sm">Manage, edit, or download your crafted documents.</p>
+                </div>
+                <a href="/editor" class="inline-flex items-center gap-2 bg-[#02353C] hover:bg-[#034a54] text-white font-medium text-sm px-4 py-2.5 rounded-xl shadow-sm transition-all">
+                    <i class="fa-solid fa-plus text-xs"></i>
+                    <span>Create New CV</span>
+                </a>
+            </div>
+
+            {% if resumes and resumes|length > 0 %}
+                <!-- RESUME CARDS GRID -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for resume in resumes %}
+                        <div class="bg-white rounded-xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col overflow-hidden group">
+                            <!-- Card Header Color Bar -->
+                            <div class="h-2 w-full" style="background-color: {{ resume.accent_color if resume.accent_color else '#E5A93C' }};"></div>
+                            
+                            <div class="p-5 flex-grow space-y-4">
+                                <div class="flex items-start justify-between gap-3">
+                                    <h3 class="font-bold text-slate-800 text-base line-clamp-1 group-hover:text-[#02353C] transition-colors">
+                                        {{ resume.title if resume.title else 'Untitled Resume' }}
+                                    </h3>
+                                    <span class="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200 shrink-0">
+                                        {{ resume.template_used if resume.template_used else 'Modern' }}
+                                    </span>
+                                </div>
+
+                                <p class="text-xs text-slate-400 flex items-center gap-1.5">
+                                    <i class="fa-regular fa-clock"></i>
+                                    Updated {{ resume.updated_at.strftime('%b %d, %Y') if resume.updated_at else 'Recently' }}
+                                </p>
+                            </div>
+
+                            <!-- Card Actions Footer -->
+                            <div class="px-5 py-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs font-medium">
+                                <a href="/editor?id={{ resume.id }}" class="text-[#02353C] hover:text-emerald-700 font-semibold flex items-center gap-1">
+                                    <i class="fa-solid fa-pen-to-square"></i> Edit Document
+                                </a>
+                                <div class="flex items-center space-x-3 text-slate-400">
+                                    <a href="/preview?id={{ resume.id }}" class="hover:text-slate-700" title="Preview PDF">
+                                        <i class="fa-solid fa-eye text-sm"></i>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                        <div class="card-actions">
-                            <a href="/?id={{ resume.id }}" class="btn-action btn-edit">Edit</a>
-                        </div>
+                    {% endfor %}
+                </div>
+
+            {% else %}
+                <!-- EMPTY STATE DESIGN -->
+                <div class="bg-white rounded-2xl border-2 border-dashed border-slate-200 p-8 sm:p-12 text-center space-y-5">
+                    <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto text-slate-400 text-2xl">
+                        <i class="fa-solid fa-file-circle-plus"></i>
                     </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="empty-state">
-                <h3 style="color: #667; margin-bottom: 15px;">No resumes saved yet</h3>
-                <a href="/" class="btn-create">Build Your First CV</a>
-            </div>
-        {% endif %}
-    </div>
+                    <div class="max-w-md mx-auto space-y-1">
+                        <h3 class="text-lg font-bold text-slate-800">No resumes saved yet</h3>
+                        <p class="text-slate-500 text-sm">Create your first AI-optimized CV in minutes using our professional templates.</p>
+                    </div>
+                    <a href="/editor" class="inline-flex items-center gap-2 bg-[#02353C] hover:bg-[#034a54] text-white font-medium text-sm px-5 py-2.5 rounded-xl shadow-sm transition-all">
+                        <i class="fa-solid fa-wand-magic-sparkles text-amber-400 text-xs"></i>
+                        Build Your First CV
+                    </a>
+                </div>
+            {% endif %}
+        </div>
 
-    <!-- PADDLE CHECKOUT SCRIPT -->
-    <script>
-        // Set environment to 'sandbox' or 'production'
-        Paddle.Environment.set('sandbox');
-        Paddle.Initialize({ 
-            token: 'test_01hxxxxxxxxx' // Replace with your Paddle Client Token
-        });
+    </main>
 
-        async function openPaddleCheckout() {
-            try {
-                const res = await fetch('/api/v1/premium/user-status');
-                const data = await res.json();
-
-                Paddle.Checkout.open({
-                    items: [{ priceId: data.paddle_price_id, quantity: 1 }],
-                    customer: { email: data.email },
-                    customData: { user_id: data.user_id }
-                });
-            } catch (err) {
-                console.error("Failed to launch checkout:", err);
-            }
-        }
-    </script>
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-200 py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-400">
+            &copy; 2026 CVForge AI. All rights reserved.
+        </div>
+    </footer>
 
 </body>
 </html>
