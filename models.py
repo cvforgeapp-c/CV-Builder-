@@ -14,8 +14,8 @@ class User(UserMixin, db.Model):
     
     # Entitlement / Subscription
     is_premium = db.Column(db.Boolean, default=False)
-    stripe_customer_id = db.Column(db.String(255), nullable=True)
-    stripe_subscription_id = db.Column(db.String(255), nullable=True)
+    paddle_customer_id = db.Column(db.String(255), nullable=True)
+    paddle_subscription_id = db.Column(db.String(255), nullable=True)
     subscription_status = db.Column(db.String(50), default="free")
     
     # Metering
