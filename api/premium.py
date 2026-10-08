@@ -64,6 +64,8 @@ db = SQLAlchemy(premium_app)
 
 login_manager = LoginManager(premium_app)
 login_manager.login_view = "auth.login"
+login_manager.login_message = "Please log in to access your account settings."
+login_manager.login_message_category = "info"
 
 
 # ============================================================
@@ -195,7 +197,7 @@ class JobApplication(db.Model):
 
 
 # ============================================================
-# LOGIN MANAGER
+# LOGIN MANAGER USER LOADER
 # ============================================================
 
 @login_manager.user_loader
@@ -405,7 +407,6 @@ def verify_paddle_webhook(
 
         components = {}
 
-        # Safely split headers and check part counts to prevent IndexErrors
         items = signature_header.split(";")
         for item in items:
             item = item.strip()
@@ -693,7 +694,6 @@ Job Description:
             ]
         )
 
-        # Bounds check to prevent IndexError on choices list
         choices = getattr(response, "choices", None)
         if choices and len(choices) > 0:
             first_choice = choices[0]
