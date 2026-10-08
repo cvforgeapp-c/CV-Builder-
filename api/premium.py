@@ -287,6 +287,29 @@ premium_app.register_blueprint(
 
 
 # ============================================================
+# PUBLIC ROOT & SETTINGS ROUTES
+# ============================================================
+
+@premium_app.route("/")
+def landing():
+    try:
+        return render_template("landing.html")
+    except Exception:
+        return render_template("index.html")
+
+
+@premium_app.route("/settings")
+def public_settings():
+    """Allows unauthenticated landing page visitors to view settings gracefully."""
+    if current_user.is_authenticated:
+        return redirect(url_for("dashboard.account"))
+    try:
+        return render_template("settings.html", user=None)
+    except Exception:
+        return render_template("dashboard/account.html", user=None)
+
+
+# ============================================================
 # DASHBOARD ROUTES
 # ============================================================
 
@@ -315,11 +338,35 @@ def home():
 @dashboard_bp.route("/account", methods=["GET", "POST"])
 @login_required
 def account():
+    if request.method == "POST":
+        new_email = request.form.get("email")
+        new_password = request.form.get("password")
 
-    return render_template(
-        "dashboard/account.html",
-        user=current_user
-    )
+        if new_email and new_email != current_user.email:
+            existing_user = User.query.filter_by(email=new_email).first()
+            if existing_user:
+                flash("This email is already in use.", "error")
+            else:
+                current_user.email = new_email
+                flash("Email updated successfully.", "success")
+
+        if new_password:
+            current_user.password_hash = generate_password_hash(new_password)
+            flash("Password updated successfully.", "success")
+
+        db.session.commit()
+        return redirect(url_for("dashboard.account"))
+
+    try:
+        return render_template(
+            "settings.html",
+            user=current_user
+        )
+    except Exception:
+        return render_template(
+            "dashboard/account.html",
+            user=current_user
+        )
 
 
 premium_app.register_blueprint(
