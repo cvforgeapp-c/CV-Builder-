@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Settings — CVForge</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+            padding-top: 68px;
+        }
+
+        /* Fixed Header */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 5%;
+            background: #ffffff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            width: 100%;
+            min-height: 64px;
+        }
+
+        .brand-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand {
+            font-size: 20px;
+            font-weight: 800;
+            color: #02353C;
+            text-decoration: none;
+            line-height: 1.1;
+        }
+
+        .brand-subtitle {
+            font-size: 10px;
+            color: #64748b;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .nav-back {
+            text-decoration: none;
+            color: #475569;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.2s;
+        }
+
+        .nav-back:hover { color: #02353C; }
+
+        /* Main Settings Layout */
+        .settings-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 30px;
+        }
+
+        /* Sidebar Navigation */
+        .settings-sidebar {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px 12px;
+            border: 1px solid #e2e8f0;
+            height: fit-content;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .sidebar-item a {
+            text-decoration: none;
+            color: #475569;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+
+        .sidebar-item.active a, .sidebar-item a:hover {
+            background: #f1f5f9;
+            color: #02353C;
+        }
+
+        /* Content Sections */
+        .settings-content {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 28px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .card-header {
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #02353C;
+        }
+
+        .card-subtitle {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* Form Inputs */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        input[type="text"], input[type="email"], input[type="password"], select {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: #02353C;
+        }
+
+        /* Subscription Card Highlights */
+        .subscription-banner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #02353C 0%, #05535E 100%);
+            color: #ffffff;
+            padding: 20px 24px;
+            border-radius: 12px;
+        }
+
+        .plan-badge {
+            background: #E5A93C;
+            color: #02353C;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            margin-left: 8px;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: #02353C;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover { background: #05535E; }
+
+        .btn-accent {
+            background: #E5A93C;
+            color: #02353C;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .btn-accent:hover { background: #d99a2b; }
+
+        .btn-danger {
+            background: #ef4444;
+            color: #ffffff;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-danger:hover { background: #dc2626; }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            .settings-container {
+                grid-template-columns: 1fr;
+                margin: 20px auto;
+            }
+
+            .sidebar-menu {
+                flex-direction: row;
+                overflow-x: auto;
+            }
+
+            .subscription-banner {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="brand-container">
+            <a href="/" class="brand">CVForge</a>
+            <span class="brand-subtitle">AI Resume Platform</span>
+        </div>
+        <a href="/dashboard" class="nav-back">← Back to Dashboard</a>
+    </nav>
+
+    <!-- SETTINGS MAIN CONTAINER -->
+    <div class="settings-container">
+        
+        <!-- SIDEBAR -->
+        <aside class="settings-sidebar">
+            <ul class="sidebar-menu">
+                <li class="sidebar-item active"><a href="#profile">👤 Profile</a></li>
+                <li class="sidebar-item"><a href="#subscription">💳 Subscription</a></li>
+                <li class="sidebar-item"><a href="#ai-preferences">🤖 AI Preferences</a></li>
+                <li class="sidebar-item"><a href="#security">🔒 Security</a></li>
+                <li class="sidebar-item"><a href="#danger">⚠️ Data & Privacy</a></li>
+            </ul>
+        </aside>
+
+        <!-- CONTENT -->
+        <main class="settings-content">
+            
+            <!-- PROFILE SECTION -->
+            <section class="card" id="profile">
+                <div class="card-header">
+                    <h2 class="card-title">Personal Profile</h2>
+                    <p class="card-subtitle">Manage your personal details used across your resumes and cover letters</p>
+                </div>
+                <form class="form-grid" onsubmit="event.preventDefault();">
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" value="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" value="user@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="jobTitle">Target Job Title</label>
+                        <input type="text" id="jobTitle" placeholder="e.g. Software Engineer">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="text" id="phone" placeholder="+1 (555) 000-0000">
+                    </div>
+                    <div class="form-group full-width">
+                        <button type="submit" class="btn-primary" style="width: fit-content;">Save Profile</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- SUBSCRIPTION SECTION -->
+            <section class="card" id="subscription">
+                <div class="card-header">
+                    <h2 class="card-title">Plan & Subscription</h2>
+                    <p class="card-subtitle">Manage your billing and tier access</p>
+                </div>
+                <div class="subscription-banner">
+                    <div>
+                        <h3 style="font-size: 18px; font-weight: 700;">CVForge Free Plan <span class="plan-badge">Free</span></h3>
+                        <p style="font-size: 13px; opacity: 0.9; margin-top: 4px;">Upgrade to unlock Application Tracking & Unlimited AI ATS Optimizations.</p>
+                    </div>
+                    <a href="/#pricing" class="btn-accent">Upgrade to Premium ($9.99/mo)</a>
+                </div>
+            </section>
+
+            <!-- AI PREFERENCES SECTION -->
+            <section class="card" id="ai-preferences">
+                <div class="card-header">
+                    <h2 class="card-title">AI & Generation Preferences</h2>
+                    <p class="card-subtitle">Customize how AI tailors your CV bullet points and cover letters</p>
+                </div>
+                <form class="form-grid" onsubmit="event.preventDefault();">
+                    <div class="form-group">
+                        <label for="aiTone">Default AI Writing Tone</label>
+                        <select id="aiTone">
+                            <option value="professional" selected>Professional & Executive</option>
+                            <option value="action">Action-Oriented & Metrics-Driven</option>
+                            <option value="creative">Creative & Engaging</option>
+                            <option value="technical">Technical & Precise</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="defaultTemplate">Default Resume Template</label>
+                        <select id="defaultTemplate">
+                            <option value="modern" selected>Modern Minimalist</option>
+                            <option value="classic">Classic Professional</option>
+                            <option value="tech">Tech Compact</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <button type="submit" class="btn-primary" style="width: fit-content;">Save Preferences</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- SECURITY SECTION -->
+            <section class="card" id="security">
+                <div class="card-header">
+                    <h2 class="card-title">Security</h2>
+                    <p class="card-subtitle">Update your password and keep your account secure</p>
+                </div>
+                <form class="form-grid" onsubmit="event.preventDefault();">
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password</label>
+                        <input type="password" id="currentPassword">
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" id="newPassword">
+                    </div>
+                    <div class="form-group full-width">
+                        <button type="submit" class="btn-primary" style="width: fit-content;">Update Password</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- DATA & PRIVACY SECTION -->
+            <section class="card" id="danger" style="border-color: #fee2e2;">
+                <div class="card-header">
+                    <h2 class="card-title" style="color: #dc2626;">Data & Privacy</h2>
+                    <p class="card-subtitle">Download your resume data or delete your account</p>
+                </div>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <button class="btn-primary" style="background: #475569;">Export All My CV Data (JSON)</button>
+                    <button class="btn-danger">Delete Account</button>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+</body>
+</html>
