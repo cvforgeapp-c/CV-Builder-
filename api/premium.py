@@ -93,6 +93,7 @@ def register():
             id=str(uuid.uuid4()),
             email=email,
             password_hash=generate_password_hash(password)
+            is_premium = True
         )
         db.session.add(user)
         db.session.commit()
