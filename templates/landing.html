@@ -57,6 +57,12 @@
             letter-spacing: 0.5px;
         }
 
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
         .nav-links {
             display: flex;
             gap: 20px;
@@ -73,6 +79,111 @@
         }
 
         .nav-links a:hover { color: #02353C; }
+
+        /* Hamburger Icon Button */
+        .hamburger-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 101;
+        }
+
+        .hamburger-bar {
+            width: 24px;
+            height: 2.5px;
+            background-color: #02353C;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        /* Mobile / Slide-over Menu Overlay */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(2, 53, 60, 0.4);
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 200;
+        }
+
+        .menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 280px;
+            height: 100%;
+            background: #ffffff;
+            box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+            padding: 30px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: right 0.3s ease;
+            z-index: 201;
+        }
+
+        .mobile-menu.active {
+            right: 0;
+        }
+
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .menu-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #02353C;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #64748b;
+            cursor: pointer;
+        }
+
+        .menu-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .menu-list a {
+            text-decoration: none;
+            color: #334155;
+            font-weight: 600;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: color 0.2s;
+        }
+
+        .menu-list a:hover {
+            color: #02353C;
+        }
 
         /* Buttons */
         .btn-primary {
@@ -334,16 +445,10 @@
         @media (max-width: 768px) {
             .navbar {
                 padding: 12px 5%;
-                flex-wrap: wrap;
-                gap: 10px;
             }
 
-            .nav-links {
-                gap: 12px;
-            }
-
-            .nav-links a {
-                font-size: 13px;
+            .desktop-only {
+                display: none !important;
             }
 
             .hero {
@@ -384,13 +489,45 @@
             <a href="/" class="brand">CVForge</a>
             <span class="brand-subtitle">AI Resume Platform</span>
         </div>
-        <div class="nav-links">
-            <a href="#features">Features</a>
-            <a href="#pricing">Plans</a>
-            <a href="/auth/login">Login</a>
-            <a href="/builder" class="btn-primary">Create CV Free</a>
+        
+        <div class="nav-right">
+            <div class="nav-links desktop-only">
+                <a href="#features">Features</a>
+                <a href="#pricing">Plans</a>
+                <a href="/auth/login">Login</a>
+                <a href="/builder" class="btn-primary">Create CV Free</a>
+            </div>
+
+            <!-- Hamburger Button -->
+            <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle Menu">
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+            </button>
         </div>
     </nav>
+
+    <!-- MOBILE / SLIDE-OVER MENU -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+    <aside class="mobile-menu" id="mobileMenu">
+        <div>
+            <div class="menu-header">
+                <span class="menu-title">CVForge Menu</span>
+                <button class="close-btn" id="closeBtn">&times;</button>
+            </div>
+            <ul class="menu-list">
+                <li><a href="#features" class="menu-link">✨ Features</a></li>
+                <li><a href="#pricing" class="menu-link">💳 Pricing Plans</a></li>
+                <li><a href="/dashboard/account" class="menu-link">⚙️ Settings</a></li>
+                <li><a href="/about" class="menu-link">ℹ️ About CVForge</a></li>
+                <li><a href="/privacy" class="menu-link">🔒 Privacy Policy</a></li>
+            </ul>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <a href="/auth/login" class="btn-secondary" style="width: 100%;">Login</a>
+            <a href="/builder" class="btn-primary" style="width: 100%;">Create CV Free</a>
+        </div>
+    </aside>
 
     <!-- HERO SECTION -->
     <header class="hero">
@@ -449,7 +586,7 @@
                         <li><span class="check-icon">✓</span> Create & edit CVs</li>
                         <li><span class="check-icon">✓</span> Standard templates</li>
                         <li><span class="check-icon">✓</span> PDF download</li>
-                        <li><span class="check-icon">✓</span> Basic application tracking</li>
+                        <li class="disabled"><span class="cross-icon">✕</span> Job Application Tracker</li>
                         <li class="disabled"><span class="cross-icon">✕</span> AI ATS Keyword Matching</li>
                         <li class="disabled"><span class="cross-icon">✕</span> Cover letter generator</li>
                         <li class="disabled"><span class="cross-icon">✕</span> LinkedIn profile optimization</li>
@@ -468,6 +605,7 @@
                         <div class="yearly-subtext">Or $79.00 /year (Save 34%)</div>
                     </div>
                     <ul class="feature-list">
+                        <li><span class="check-icon">✓</span> <strong>Job Application Tracker</strong> Dashboard</li>
                         <li><span class="check-icon">✓</span> <strong>Unlimited</strong> AI ATS Optimizations</li>
                         <li><span class="check-icon">✓</span> Job Description Keyword Matcher</li>
                         <li><span class="check-icon">✓</span> Premium PDF Template Designs</li>
@@ -487,6 +625,33 @@
     <footer>
         <p>&copy; 2026 CVForge Platform. All rights reserved.</p>
     </footer>
+
+    <!-- HAMBURGER JS -->
+    <script>
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const closeBtn = document.getElementById('closeBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const menuOverlay = document.getElementById('menuOverlay');
+        const menuLinks = document.querySelectorAll('.menu-link');
+
+        function openMenu() {
+            mobileMenu.classList.add('active');
+            menuOverlay.classList.add('active');
+        }
+
+        function closeMenu() {
+            mobileMenu.classList.remove('active');
+            menuOverlay.classList.remove('active');
+        }
+
+        hamburgerBtn.addEventListener('click', openMenu);
+        closeBtn.addEventListener('click', closeMenu);
+        menuOverlay.addEventListener('click', closeMenu);
+
+        menuLinks.forEach(link => {
+            link.addEventListener('click', closeMenu);
+        });
+    </script>
 
 </body>
 </html>
