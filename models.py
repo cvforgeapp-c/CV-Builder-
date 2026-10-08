@@ -32,7 +32,7 @@ class Resume(db.Model):
     id = db.Column(db.String(36), primary_key=True)
     user_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
     title = db.Column(db.String(255), default="My Resume")
-    content_json = db.Column(db.JSON, nullable=False)
+    content_json = db.Column(db.JSON, nullable=True)
     template_used = db.Column(db.String(50), default="modern")
     accent_color = db.Column(db.String(20), default="#E5A93C")
     sidebar_color = db.Column(db.String(20), default="#02353C")
