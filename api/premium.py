@@ -26,13 +26,16 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # APPLICATION CONFIGURATION
 # ============================================================
 
-# premium.py is inside the /api directory
+# premium.py is inside the /api directory.
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Project root is one level above /api
-PROJECT_ROOT = os.path.dirname(BASE_DIR)
+# The project root is one directory above /api.
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(BASE_DIR, os.pardir)
+)
 
-# Templates are stored in the project root /templates directory
+# Templates are stored in:
+# CV-Builder/templates/
 TEMPLATE_DIR = os.path.join(
     PROJECT_ROOT,
     "templates"
