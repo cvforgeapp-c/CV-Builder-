@@ -22,11 +22,17 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # Handle Path Imports for Vercel
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, os.pardir))
+
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-# Import shared DB instance and models
-from models import db, User, Resume, JobApplication
+# Import shared DB instance and models with fallback for Vercel package resolution
+try:
+    from models import db, User, Resume, JobApplication
+except ImportError:
+    from ..models import db, User, Resume, JobApplication
 
 # ============================================================
 # APPLICATION CONFIGURATION
@@ -101,10 +107,13 @@ def register():
             return redirect(url_for("auth.register"))
 
         try:
+            now = datetime.utcnow()
             user = User(
                 id=str(uuid.uuid4()),
                 email=email,
                 password_hash=generate_password_hash(password),
+                created_at=now,
+                updated_at=now,
                 is_premium=False,
                 subscription_status="free",
                 monthly_cv_generations=0,
