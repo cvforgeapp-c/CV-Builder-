@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - CVForge AI Resume Builder</title>
+    <title>Login - CVForge AI Resume Platform</title>
     <style>
         * { 
             box-sizing: border-box; 
@@ -25,14 +25,14 @@
             overflow-x: hidden;
         }
 
-        /* Ambient Background Glow */
+        /* Ambient Glow Effect */
         body::before {
             content: '';
             position: absolute;
-            width: 350px;
-            height: 350px;
-            background: rgba(229, 169, 60, 0.15);
-            filter: blur(90px);
+            width: 380px;
+            height: 380px;
+            background: rgba(229, 169, 60, 0.18);
+            filter: blur(100px);
             border-radius: 50%;
             top: 10%;
             left: 50%;
@@ -40,13 +40,13 @@
             pointer-events: none;
         }
 
-        /* Back link */
+        /* Back Navigation Link */
         .back-nav {
             position: absolute;
             top: 24px;
             left: 24px;
             text-decoration: none;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.85);
             font-size: 14px;
             font-weight: 600;
             display: flex;
@@ -60,7 +60,7 @@
             color: #E5A93C;
         }
 
-        /* Main Card */
+        /* Card Container */
         .auth-container { 
             background: #ffffff; 
             width: 100%; 
@@ -73,17 +73,18 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
+        /* Brand Badge */
         .brand-badge {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             text-decoration: none;
         }
 
         .brand-name {
-            font-size: 24px;
+            font-size: 26px;
             font-weight: 800;
             color: #02353C;
             letter-spacing: -0.5px;
@@ -102,7 +103,7 @@
 
         .auth-header { 
             text-align: center; 
-            margin-bottom: 28px; 
+            margin-bottom: 26px; 
         }
 
         .auth-header h1 { 
@@ -118,7 +119,7 @@
             margin-top: 6px; 
         }
 
-        /* Styled Flash Banner */
+        /* Flash Message Banner */
         .flash-msg { 
             background: #fff5f5; 
             color: #991b1b; 
@@ -137,15 +138,32 @@
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
         }
 
         label { 
-            display: block; 
             font-weight: 700; 
             font-size: 13px; 
             color: #334155; 
-            margin-bottom: 6px; 
+        }
+
+        .forgot-link {
+            font-size: 12px;
+            color: #05535E;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .forgot-link:hover {
+            color: #E5A93C;
         }
 
         input[type="email"], 
@@ -207,7 +225,6 @@
             color: #E5A93C;
         }
 
-        /* Mobile Adjustments */
         @media (max-width: 480px) {
             .back-nav {
                 position: relative;
@@ -217,7 +234,7 @@
                 align-self: flex-start;
             }
             .auth-container {
-                padding: 30px 20px;
+                padding: 32px 22px;
             }
         }
     </style>
@@ -228,7 +245,7 @@
 
     <div class="auth-container">
         
-        <!-- BRAND LOGO -->
+        <!-- BRAND BADGE -->
         <a href="/" class="brand-badge">
             <span class="brand-name">CVForge</span>
             <span class="brand-subtitle">AI</span>
@@ -261,7 +278,10 @@
             </div>
 
             <div class="form-group">
-                <label for="password">Password</label>
+                <div class="label-row">
+                    <label for="password">Password</label>
+                    <a href="{{ url_for('auth.forgot_password') }}" class="forgot-link">Forgot password?</a>
+                </div>
                 <input type="password" id="password" name="password" required placeholder="Enter password" autocomplete="current-password">
             </div>
 
