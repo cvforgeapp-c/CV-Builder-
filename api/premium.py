@@ -26,8 +26,17 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # APPLICATION CONFIGURATION
 # ============================================================
 
+# premium.py is inside the /api directory
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
+
+# Project root is one level above /api
+PROJECT_ROOT = os.path.dirname(BASE_DIR)
+
+# Templates are stored in the project root /templates directory
+TEMPLATE_DIR = os.path.join(
+    PROJECT_ROOT,
+    "templates"
+)
 
 premium_app = Flask(
     __name__,
@@ -191,6 +200,8 @@ class JobApplication(db.Model):
 
 @login_manager.user_loader
 def load_user(user_id):
+    if not user_id:
+        return None
     return User.query.get(user_id)
 
 
@@ -301,7 +312,7 @@ def landing():
 @premium_app.route("/settings")
 def public_settings():
     """Allows unauthenticated landing page visitors to view settings gracefully."""
-    if current_user.is_authenticated:
+    if current_user and getattr(current_user, "is_authenticated", False):
         return redirect(url_for("dashboard.account"))
     try:
         return render_template("settings.html", user=None)
@@ -326,7 +337,7 @@ def home():
 
     user_resumes = Resume.query.filter_by(
         user_id=current_user.id
-    ).all()
+    ).all() if current_user and hasattr(current_user, "id") else []
 
     return render_template(
         "dashboard/index.html",
@@ -342,7 +353,7 @@ def account():
         new_email = request.form.get("email")
         new_password = request.form.get("password")
 
-        if new_email and new_email != current_user.email:
+        if new_email and new_email != getattr(current_user, "email", None):
             existing_user = User.query.filter_by(email=new_email).first()
             if existing_user:
                 flash("This email is already in use.", "error")
@@ -386,6 +397,7 @@ def verify_paddle_webhook(
     if (
         not PADDLE_WEBHOOK_SECRET_KEY
         or not signature_header
+        or not isinstance(signature_header, str)
     ):
         return False
 
@@ -393,13 +405,17 @@ def verify_paddle_webhook(
 
         components = {}
 
-        # Safely split headers and strip spaces to prevent IndexErrors
-        for item in signature_header.split(";"):
+        # Safely split headers and check part counts to prevent IndexErrors
+        items = signature_header.split(";")
+        for item in items:
             item = item.strip()
             if "=" in item:
                 parts = item.split("=", 1)
                 if len(parts) == 2:
-                    components[parts[0].strip()] = parts[1].strip()
+                    key = parts[0].strip()
+                    val = parts[1].strip()
+                    if key and val:
+                        components[key] = val
 
         ts = components.get("ts")
         h1 = components.get("h1")
@@ -407,9 +423,8 @@ def verify_paddle_webhook(
         if not ts or not h1:
             return False
 
-        signed_payload = (
-            f"{ts}:{request_data.decode('utf-8')}"
-        )
+        decoded_body = request_data.decode("utf-8") if isinstance(request_data, bytes) else str(request_data)
+        signed_payload = f"{ts}:{decoded_body}"
 
         digest = hmac.new(
             PADDLE_WEBHOOK_SECRET_KEY.encode("utf-8"),
@@ -455,14 +470,14 @@ def get_user_status():
 
     return jsonify({
 
-        "user_id": current_user.id,
+        "user_id": getattr(current_user, "id", None),
 
-        "email": current_user.email,
+        "email": getattr(current_user, "email", None),
 
-        "is_premium": current_user.is_premium,
+        "is_premium": getattr(current_user, "is_premium", False),
 
-        "subscription_status": (
-            current_user.subscription_status
+        "subscription_status": getattr(
+            current_user, "subscription_status", "free"
         ),
 
         "paddle_price_id": (
@@ -510,6 +525,9 @@ def paddle_webhook():
         {}
     )
 
+    if not isinstance(event_data, dict):
+        event_data = {}
+
     # --------------------------------------------------------
     # SUBSCRIPTION CREATED / ACTIVATED
     # --------------------------------------------------------
@@ -523,6 +541,8 @@ def paddle_webhook():
             "custom_data",
             {}
         )
+        if not isinstance(custom_data, dict):
+            custom_data = {}
 
         user_id = custom_data.get(
             "user_id"
@@ -587,22 +607,24 @@ def paddle_webhook():
             "id"
         )
 
-        user = User.query.filter_by(
-            paddle_subscription_id=sub_id
-        ).first()
+        if sub_id:
 
-        if user:
+            user = User.query.filter_by(
+                paddle_subscription_id=sub_id
+            ).first()
 
-            user.is_premium = False
+            if user:
 
-            user.subscription_status = (
-                event_data.get(
-                    "status",
-                    "canceled"
+                user.is_premium = False
+
+                user.subscription_status = (
+                    event_data.get(
+                        "status",
+                        "canceled"
+                    )
                 )
-            )
 
-            db.session.commit()
+                db.session.commit()
 
 
     return jsonify({
@@ -621,7 +643,7 @@ def paddle_webhook():
 @login_required
 def analyze_ats():
 
-    if not current_user.is_premium:
+    if not getattr(current_user, "is_premium", False):
 
         return jsonify({
             "error": "Premium subscription required"
@@ -630,6 +652,9 @@ def analyze_ats():
     data = request.get_json(
         silent=True
     ) or {}
+
+    if not isinstance(data, dict):
+        data = {}
 
     cv_data = data.get(
         "cv_data"
@@ -668,9 +693,17 @@ Job Description:
             ]
         )
 
-        # Safeguard against potential IndexError on choices array
-        if response and getattr(response, "choices", None) and len(response.choices) > 0:
-            analysis_text = response.choices[0].message.content
+        # Bounds check to prevent IndexError on choices list
+        choices = getattr(response, "choices", None)
+        if choices and len(choices) > 0:
+            first_choice = choices[0]
+            message = getattr(first_choice, "message", None)
+            if message and hasattr(message, "content"):
+                analysis_text = message.content
+            elif isinstance(first_choice, dict) and "message" in first_choice:
+                analysis_text = first_choice["message"].get("content", "No content returned.")
+            else:
+                analysis_text = "Analysis completed, but response structure was unrecognized."
         else:
             analysis_text = "No response generated by OpenAI."
 
