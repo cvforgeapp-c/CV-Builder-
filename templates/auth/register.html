@@ -274,20 +274,17 @@
 
 <body>
 
-    <!-- Back to CVForge -->
     <a href="/" class="back-nav">
         ← Back to CVForge
     </a>
 
     <div class="auth-container">
 
-        <!-- BRAND -->
         <a href="/" class="brand-badge">
             <span class="brand-name">CVForge</span>
             <span class="brand-subtitle">AI</span>
         </a>
 
-        <!-- HEADER -->
         <div class="auth-header">
             <h1>Create Your Account</h1>
             <p>
@@ -295,7 +292,6 @@
             </p>
         </div>
 
-        <!-- FLASH MESSAGES -->
         {% with messages = get_flashed_messages() %}
             {% if messages %}
 
@@ -319,7 +315,6 @@
             {% endif %}
         {% endwith %}
 
-        <!-- REGISTRATION FORM -->
         <form
             action="{{ url_for('auth.register') }}"
             method="POST"
@@ -372,14 +367,12 @@
         </form>
 
 
-        <!-- TERMS -->
         <div class="terms">
             By creating an account, you agree to use CVForge
             responsibly and keep your account information secure.
         </div>
 
 
-        <!-- LOGIN LINK -->
         <div class="auth-footer">
 
             Already have an account?
