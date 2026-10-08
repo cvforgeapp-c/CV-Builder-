@@ -51,6 +51,7 @@
             font-size: 13px; 
             margin-bottom: 20px; 
             border: 1px solid #fecaca; 
+            text-align: center;
         }
 
         label { 
@@ -119,8 +120,12 @@
 
         {% with messages = get_flashed_messages() %}
             {% if messages %}
+                {% set seen_messages = [] %}
                 {% for message in messages %}
-                    <div class="flash-msg">{{ message }}</div>
+                    {% if message not in seen_messages %}
+                        {% set _ = seen_messages.append(message) %}
+                        <div class="flash-msg">{{ message }}</div>
+                    {% endif %}
                 {% endfor %}
             {% endif %}
         {% endwith %}
