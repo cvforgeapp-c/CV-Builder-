@@ -40,6 +40,7 @@
         .brand-container {
             display: flex;
             flex-direction: column;
+            flex-shrink: 0;
         }
 
         .brand {
@@ -60,16 +61,16 @@
         .nav-right {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 12px;
         }
 
-        .nav-links {
+        .desktop-nav {
             display: flex;
             gap: 20px;
             align-items: center;
         }
 
-        .nav-links a {
+        .desktop-nav a {
             text-decoration: none;
             color: #475569;
             font-weight: 600;
@@ -78,7 +79,7 @@
             white-space: nowrap;
         }
 
-        .nav-links a:hover { color: #02353C; }
+        .desktop-nav a:hover { color: #02353C; }
 
         /* Hamburger Icon Button */
         .hamburger-btn {
@@ -151,7 +152,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             padding-bottom: 15px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
@@ -194,7 +195,7 @@
             text-decoration: none;
             color: #e2e8f0;
             font-weight: 600;
-            font-size: 16px;
+            font-size: 15px;
             display: flex;
             align-items: center;
             gap: 14px;
@@ -226,6 +227,7 @@
             text-align: center;
             border: none;
             cursor: pointer;
+            white-space: nowrap;
         }
 
         .btn-primary:hover {
@@ -468,23 +470,14 @@
             width: 100%;
         }
 
-        /* Responsive Breakpoints */
-        @media (max-width: 768px) {
+        /* RESPONSIVE BREAKPOINTS: Hide text links on mobile to eliminate overlap */
+        @media (max-width: 900px) {
             .navbar {
                 padding: 12px 5%;
             }
 
-            .nav-links {
-                gap: 10px;
-            }
-
-            .nav-links a {
-                font-size: 12px;
-            }
-
-            .btn-primary {
-                padding: 8px 12px;
-                font-size: 12px;
+            .desktop-nav {
+                display: none; /* Moves links into hamburger on mobile */
             }
 
             .hero {
@@ -527,12 +520,15 @@
         </div>
         
         <div class="nav-right">
-            <div class="nav-links">
+            <!-- Desktop Only Navigation -->
+            <div class="desktop-nav">
                 <a href="#features">Features</a>
                 <a href="#pricing">Plans</a>
                 <a href="/auth/login">Login</a>
-                <a href="/builder" class="btn-primary">Create CV Free</a>
             </div>
+
+            <!-- Create CV Button -->
+            <a href="/builder" class="btn-primary">Create CV Free</a>
 
             <!-- Hamburger Button -->
             <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle Menu">
@@ -551,6 +547,9 @@
             <button class="close-btn" id="closeBtn">&times;</button>
         </div>
         <ul class="menu-list">
+            <li><a href="#features" class="menu-link">✨ Features</a></li>
+            <li><a href="#pricing" class="menu-link">💳 Plans</a></li>
+            <li><a href="/auth/login" class="menu-link">🔑 Login</a></li>
             <li><a href="/dashboard/account" class="menu-link">⚙️ Settings</a></li>
             <li><a href="/about" class="menu-link">ℹ️ About</a></li>
             <li><a href="/privacy" class="menu-link">🔒 Privacy</a></li>
