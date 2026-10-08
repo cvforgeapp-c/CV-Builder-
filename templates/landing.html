@@ -17,7 +17,7 @@
         }
 
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
             background: #f8fafc; 
             color: #1e293b; 
             line-height: 1.6; 
@@ -37,17 +37,29 @@
             width: 100%;
         }
 
+        .brand-container {
+            display: flex;
+            flex-direction: column;
+        }
+
         .brand {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 800;
             color: #02353C;
             text-decoration: none;
-            flex-shrink: 0;
+            line-height: 1.1;
+        }
+
+        .brand-subtitle {
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 600;
+            letter-spacing: 0.5px;
         }
 
         .nav-links {
             display: flex;
-            gap: 25px;
+            gap: 20px;
             align-items: center;
         }
 
@@ -55,7 +67,7 @@
             text-decoration: none;
             color: #475569;
             font-weight: 600;
-            font-size: 15px;
+            font-size: 14px;
             transition: color 0.2s;
             white-space: nowrap;
         }
@@ -66,7 +78,7 @@
         .btn-primary {
             background: linear-gradient(135deg, #02353C 0%, #05535E 100%);
             color: #ffffff !important;
-            padding: 10px 20px;
+            padding: 10px 18px;
             border-radius: 8px;
             font-weight: 600;
             text-decoration: none;
@@ -74,6 +86,8 @@
             box-shadow: 0 4px 12px rgba(2, 53, 60, 0.2);
             transition: all 0.25s ease;
             text-align: center;
+            border: none;
+            cursor: pointer;
         }
 
         .btn-primary:hover {
@@ -96,7 +110,7 @@
         .btn-secondary:hover { background: #cbd5e1; }
 
         .btn-accent {
-            background: #E5A93C;
+            background: linear-gradient(135deg, #E5A93C 0%, #d99a2b 100%);
             color: #02353C !important;
             padding: 14px 28px;
             border-radius: 8px;
@@ -106,33 +120,36 @@
             box-shadow: 0 4px 12px rgba(229, 169, 60, 0.3);
             transition: all 0.25s ease;
             text-align: center;
+            border: none;
+            cursor: pointer;
+            width: 100%;
         }
 
         .btn-accent:hover {
-            background: #d99a2b;
             transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(229, 169, 60, 0.4);
         }
 
         /* Hero Section */
         .hero {
-            padding: 80px 8% 50px;
+            padding: 70px 8% 40px;
             text-align: center;
             max-width: 900px;
             margin: 0 auto;
         }
 
         .hero-title {
-            font-size: 44px;
+            font-size: 42px;
             font-weight: 800;
             color: #02353C;
-            line-height: 1.25;
-            margin-bottom: 20px;
+            line-height: 1.2;
+            margin-bottom: 16px;
         }
 
         .hero-subtitle {
             font-size: 18px;
             color: #64748b;
-            margin-bottom: 35px;
+            margin-bottom: 30px;
         }
 
         .hero-actions {
@@ -142,152 +159,183 @@
             flex-wrap: wrap;
         }
 
-        /* Features Grid Section */
+        /* Features Section */
         .features {
-            padding: 70px 8%;
+            padding: 60px 8%;
             background: #ffffff;
             width: 100%;
         }
 
         .section-title {
             text-align: center;
-            font-size: 32px;
+            font-size: 30px;
             color: #02353C;
             font-weight: 700;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .section-subtitle {
             text-align: center;
             color: #64748b;
-            margin-bottom: 45px;
+            margin-bottom: 40px;
         }
 
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 25px;
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
         }
 
         .feature-card {
             background: #f8fafc;
-            padding: 28px;
+            padding: 24px;
             border-radius: 12px;
             border: 1px solid #e2e8f0;
         }
 
         .feature-icon {
-            font-size: 32px;
-            margin-bottom: 15px;
+            font-size: 30px;
+            margin-bottom: 12px;
         }
 
         .feature-card h3 {
             color: #02353C;
-            margin-bottom: 10px;
-            font-size: 20px;
+            margin-bottom: 8px;
+            font-size: 18px;
         }
 
         .feature-card p {
             color: #64748b;
-            font-size: 15px;
+            font-size: 14px;
         }
 
-        /* Free vs Premium Comparison Table */
-        .comparison-section {
+        /* Side-by-Side Pricing Cards */
+        .pricing-section {
             padding: 70px 8%;
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 0 auto;
             width: 100%;
         }
 
-        .table-responsive {
-            width: 100%;
-            overflow-x: auto;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            border: 1px solid #e2e8f0;
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            align-items: stretch;
+            margin-top: 20px;
+        }
+
+        .pricing-card {
             background: #ffffff;
+            border-radius: 16px;
+            padding: 35px 28px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
         }
 
-        .pricing-table {
-            width: 100%;
-            min-width: 600px;
-            border-collapse: collapse;
+        .pricing-card.popular {
+            border: 2px solid #E5A93C;
+            background: #fffdfa;
+            box-shadow: 0 10px 30px rgba(229, 169, 60, 0.15);
         }
 
-        .pricing-table th, .pricing-table td {
-            padding: 16px 20px;
-            text-align: left;
-        }
-
-        .pricing-table th {
-            background: #f1f5f9;
+        .popular-badge {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #E5A93C;
             color: #02353C;
-            font-size: 17px;
+            font-size: 12px;
+            font-weight: 800;
+            padding: 4px 16px;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .plan-title {
+            font-size: 22px;
             font-weight: 700;
-        }
-
-        .pricing-table th.premium-header {
-            background: #02353C;
-            color: #E5A93C;
-        }
-
-        .pricing-table tr {
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .pricing-table tr:last-child {
-            border-bottom: none;
-        }
-
-        .feature-name {
-            font-weight: 600;
-            color: #334155;
-            width: 45%;
-        }
-
-        .check-free {
             color: #02353C;
-            font-weight: bold;
+            margin-bottom: 10px;
         }
 
-        .check-premium {
-            color: #d97706;
-            font-weight: bold;
+        .plan-price {
+            font-size: 38px;
+            font-weight: 800;
+            color: #02353C;
+            line-height: 1;
         }
 
-        .cross {
+        .plan-period {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .yearly-subtext {
+            font-size: 13px;
+            color: #16a34a;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .feature-list li {
+            font-size: 14px;
+            color: #334155;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-list li.disabled {
             color: #cbd5e1;
+            text-decoration: line-through;
         }
 
-        .action-row {
-            background: #fafafa;
+        .check-icon {
+            color: #16a34a;
+            font-weight: bold;
         }
 
-        .action-row td {
-            padding: 20px;
+        .cross-icon {
+            color: #cbd5e1;
         }
 
         /* Footer */
         footer {
             text-align: center;
-            padding: 35px 8%;
+            padding: 30px 8%;
             background: #02353C;
             color: #94a3b8;
             font-size: 14px;
             width: 100%;
         }
 
-        /* Responsive Mobile Breakpoints */
+        /* Responsive Breakpoints */
         @media (max-width: 768px) {
             .navbar {
-                padding: 14px 5%;
-            }
-
-            .brand {
-                font-size: 20px;
+                padding: 12px 5%;
+                flex-wrap: wrap;
+                gap: 10px;
             }
 
             .nav-links {
@@ -298,17 +346,12 @@
                 font-size: 13px;
             }
 
-            .btn-primary {
-                padding: 8px 14px;
-                font-size: 13px;
-            }
-
             .hero {
-                padding: 40px 5% 30px;
+                padding: 40px 5% 25px;
             }
 
             .hero-title { 
-                font-size: 28px; 
+                font-size: 26px; 
             }
 
             .hero-subtitle {
@@ -317,23 +360,18 @@
 
             .hero-actions { 
                 flex-direction: column; 
-                width: 100%;
             }
 
             .hero-actions a {
                 width: 100%;
             }
 
-            .features, .comparison-section {
+            .features, .pricing-section {
                 padding: 40px 5%;
             }
 
             .section-title {
                 font-size: 24px;
-            }
-
-            footer {
-                padding: 25px 5%;
             }
         }
     </style>
@@ -342,10 +380,13 @@
 
     <!-- NAVBAR -->
     <nav class="navbar">
-        <a href="/" class="brand">CVForge</a>
+        <div class="brand-container">
+            <a href="/" class="brand">CVForge</a>
+            <span class="brand-subtitle">AI Resume Platform</span>
+        </div>
         <div class="nav-links">
             <a href="#features">Features</a>
-            <a href="#compare">Compare Plans</a>
+            <a href="#pricing">Plans</a>
             <a href="/auth/login">Login</a>
             <a href="/builder" class="btn-primary">Create CV Free</a>
         </div>
@@ -356,8 +397,8 @@
         <h1 class="hero-title">Craft ATS-Optimized Resumes & Land Your Dream Role</h1>
         <p class="hero-subtitle">Generate tailored CVs, match job descriptions with AI precision, and track your applications—all in one place.</p>
         <div class="hero-actions">
-            <a href="/builder" class="btn-accent">Build Resume Now (Free)</a>
-            <a href="#compare" class="btn-secondary">Explore Premium Features</a>
+            <a href="/builder" class="btn-accent" style="width: auto;">Build Resume Now (Free)</a>
+            <a href="#pricing" class="btn-secondary">Explore Premium Features</a>
         </div>
     </header>
 
@@ -389,107 +430,56 @@
         </div>
     </section>
 
-    <!-- FREE VS PREMIUM FEATURE COMPARISON -->
-    <section class="comparison-section" id="compare">
-        <h2 class="section-title">Free vs. Premium</h2>
-        <p class="section-subtitle">Choose the plan that fits your current career goals</p>
+    <!-- SIDE-BY-SIDE PRICING CARDS -->
+    <section class="pricing-section" id="pricing">
+        <h2 class="section-title">Simple, Transparent Pricing</h2>
+        <p class="section-subtitle">Choose the plan that fits your job search goals</p>
 
-        <div class="table-responsive">
-            <table class="pricing-table">
-                <thead>
-                    <tr>
-                        <th>Features</th>
-                        <th>Free</th>
-                        <th class="premium-header">Premium</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="feature-name">Create CV</td>
-                        <td class="check-free">✓</td>
-                        <td class="check-premium">✓</td>
-                    </tr>
-                    <tr>
-                        <td class="feature-name">Basic templates</td>
-                        <td class="check-free">✓</td>
-                        <td class="check-premium">✓</td>
-                    </tr>
-                    <tr>
-                        <td class="feature-name">PDF download</td>
-                        <td class="check-free">✓</td>
-                        <td class="check-premium">✓</td>
-                    </tr>
-                    <tr>
-                        <td class="feature-name">Basic editing</td>
-                        <td class="check-free">✓</td>
-                        <td class="check-premium">✓</td>
-                    </tr>
-                    <tr>
-                        <td class="feature-name">AI CV optimization</td>
-                        <td class="cross">—</td>
-                        <td class="check-premium">✓</td>
-                    </tr>
-                    <tr>
-                        <td class="feature-name">Job-description matching</td>
-                        <td class="cross">—</td>
-                        <td class="check-premium">✓</td>
-                    </tr>
-                    <tr>
-                        <td class="feature-name">ATS optimization</td>
-                        <td class="cross">—</td>
-                        <td class="check-premium">✓</td>
-                    </tr>
-                    <tr>
-                        <td class="feature-name">Multiple premium templates</td>
-                        <td class="cross">—</td>
-                        <td class="check-premium">✓</td>
-                    </tr>
-                    <tr>
-                        <td class="feature-name">Tailor CV for each job</td>
-                        <td class="cross">—</td>
-                        <td class="check-premium">✓</td>
-                    </tr>
-                    <tr>
-                        <td class="feature-name">Cover-letter generation</td>
-                        <td class="cross">—</td>
-                        <td class="check-premium">✓</td>
-                    </tr>
-                    <tr>
-                        <td class="feature-name">LinkedIn profile optimization</td>
-                        <td class="cross">—</td>
-                        <td class="check-premium">✓</td>
-                    </tr>
-                    <tr>
-                        <td class="feature-name">Keyword/ATS score</td>
-                        <td class="cross">—</td>
-                        <td class="check-premium">✓</td>
-                    </tr>
-                    <tr>
-                        <td class="feature-name">Multiple saved CV versions</td>
-                        <td class="cross">—</td>
-                        <td class="check-premium">✓</td>
-                    </tr>
-                    <tr>
-                        <td class="feature-name">Unlimited downloads</td>
-                        <td class="cross">—</td>
-                        <td class="check-premium">✓</td>
-                    </tr>
-                    <tr>
-                        <td class="feature-name">Premium PDF designs</td>
-                        <td class="cross">—</td>
-                        <td class="check-premium">✓</td>
-                    </tr>
-                    <tr class="action-row">
-                        <td></td>
-                        <td>
-                            <a href="/builder" class="btn-primary" style="display: block; width: 100%;">Build Free</a>
-                        </td>
-                        <td>
-                            <a href="/auth/register" class="btn-accent" style="display: block; width: 100%;">Get Premium</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="pricing-grid">
+            
+            <!-- FREE CARD -->
+            <div class="pricing-card">
+                <div>
+                    <div class="card-header">
+                        <div class="plan-title">Free Plan</div>
+                        <div class="plan-price">$0</div>
+                        <div class="plan-period">Forever free</div>
+                    </div>
+                    <ul class="feature-list">
+                        <li><span class="check-icon">✓</span> Create & edit CVs</li>
+                        <li><span class="check-icon">✓</span> Standard templates</li>
+                        <li><span class="check-icon">✓</span> PDF download</li>
+                        <li><span class="check-icon">✓</span> Basic application tracking</li>
+                        <li class="disabled"><span class="cross-icon">✕</span> AI ATS Keyword Matching</li>
+                        <li class="disabled"><span class="cross-icon">✕</span> Cover letter generator</li>
+                        <li class="disabled"><span class="cross-icon">✕</span> LinkedIn profile optimization</li>
+                    </ul>
+                </div>
+                <a href="/builder" class="btn-secondary" style="display: block; width: 100%;">Start Free</a>
+            </div>
+
+            <!-- PREMIUM CARD -->
+            <div class="pricing-card popular">
+                <div class="popular-badge">★ POPULAR</div>
+                <div>
+                    <div class="card-header">
+                        <div class="plan-title">CVForge Premium</div>
+                        <div class="plan-price">$9.99 <span style="font-size: 16px; font-weight: 500;">/month</span></div>
+                        <div class="yearly-subtext">Or $79.00 /year (Save 34%)</div>
+                    </div>
+                    <ul class="feature-list">
+                        <li><span class="check-icon">✓</span> <strong>Unlimited</strong> AI ATS Optimizations</li>
+                        <li><span class="check-icon">✓</span> Job Description Keyword Matcher</li>
+                        <li><span class="check-icon">✓</span> Premium PDF Template Designs</li>
+                        <li><span class="check-icon">✓</span> Targeted Cover Letter Generator</li>
+                        <li><span class="check-icon">✓</span> LinkedIn Profile Optimizer</li>
+                        <li><span class="check-icon">✓</span> Interview Question Practice</li>
+                        <li><span class="check-icon">✓</span> Priority Customer Support</li>
+                    </ul>
+                </div>
+                <a href="/auth/register" class="btn-accent">Get Premium Access</a>
+            </div>
+
         </div>
     </section>
 
