@@ -37,8 +37,21 @@ TEMPLATE_DIR = os.path.join(PROJECT_ROOT, "templates")
 premium_app = Flask(__name__, template_folder=TEMPLATE_DIR)
 
 premium_app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "cvforge-premium-key-998877")
-premium_app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", "sqlite:///:memory:")
+
+# Read database URL and dynamically enforce Psycopg v3 driver compatibility
+db_url = os.getenv("DATABASE_URL", "sqlite:///:memory:")
+
+if db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql+psycopg://", 1)
+elif db_url.startswith("postgresql://") and not db_url.startswith("postgresql+psycopg://"):
+    db_url = db_url.replace("postgresql://", "postgresql+psycopg://", 1)
+
+premium_app.config["SQLALCHEMY_DATABASE_URI"] = db_url
 premium_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+premium_app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "pool_pre_ping": True,
+    "pool_recycle": 300,
+}
 
 # Bind SQLAlchemy to application
 db.init_app(premium_app)
