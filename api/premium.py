@@ -11,62 +11,183 @@ from bs4 import BeautifulSoup
 
 from flask import Flask, request, jsonify, redirect, url_for, render_template, Blueprint, flash
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+from flask_login import (
+    LoginManager,
+    UserMixin,
+    login_user,
+    logout_user,
+    login_required,
+    current_user
+)
 from werkzeug.security import generate_password_hash, check_password_hash
+
+
+# ============================================================
+# APPLICATION CONFIGURATION
+# ============================================================
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
 
-premium_app = Flask(__name__, template_folder=TEMPLATE_DIR)
-premium_app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "cvforge-premium-key-998877")
-premium_app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL", "sqlite:///:memory:")
-premium_app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+premium_app = Flask(
+    __name__,
+    template_folder=TEMPLATE_DIR
+)
+
+premium_app.config["SECRET_KEY"] = os.getenv(
+    "SECRET_KEY",
+    "cvforge-premium-key-998877"
+)
+
+premium_app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
+    "DATABASE_URL",
+    "sqlite:///:memory:"
+)
+
+premium_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+
+# ============================================================
+# DATABASE / LOGIN
+# ============================================================
 
 db = SQLAlchemy(premium_app)
-login_manager = LoginManager(premium_app)
-login_manager.login_view = 'auth.login'
 
-# Paddle API Configurations (Set in Vercel Environment Variables)
+login_manager = LoginManager(premium_app)
+login_manager.login_view = "auth.login"
+
+
+# ============================================================
+# PADDLE CONFIGURATION
+# ============================================================
+
 PADDLE_API_KEY = os.getenv("PADDLE_API_KEY")
 PADDLE_WEBHOOK_SECRET_KEY = os.getenv("PADDLE_WEBHOOK_SECRET_KEY")
-PADDLE_ENV = os.getenv("PADDLE_ENV", "sandbox")  # 'sandbox' or 'production'
+PADDLE_ENV = os.getenv("PADDLE_ENV", "sandbox")
+
+PADDLE_PREMIUM_PRICE_ID = os.getenv(
+    "PADDLE_PREMIUM_PRICE_ID",
+    "pri_01hxxxxxxxxx"
+)
+
 
 # ============================================================
 # DATABASE MODELS
 # ============================================================
-class User(UserMixin, db.Model):
-    __tablename__ = 'users'
-    id = db.Column(db.String(36), primary_key=True)
-    email = db.Column(db.String(255), unique=True, nullable=False)
-    password_hash = db.Column(db.String(255), nullable=False)
-    
-    # Paddle Subscription Details
-    is_premium = db.Column(db.Boolean, default=False)
-    paddle_customer_id = db.Column(db.String(255), nullable=True)
-    paddle_subscription_id = db.Column(db.String(255), nullable=True)
-    subscription_status = db.Column(db.String(50), default="free")
 
-    resumes = db.relationship('Resume', backref='owner', lazy=True)
+class User(UserMixin, db.Model):
+    __tablename__ = "users"
+
+    id = db.Column(db.String(36), primary_key=True)
+
+    email = db.Column(
+        db.String(255),
+        unique=True,
+        nullable=False
+    )
+
+    password_hash = db.Column(
+        db.String(255),
+        nullable=False
+    )
+
+    # Paddle subscription details
+    is_premium = db.Column(
+        db.Boolean,
+        default=False
+    )
+
+    paddle_customer_id = db.Column(
+        db.String(255),
+        nullable=True
+    )
+
+    paddle_subscription_id = db.Column(
+        db.String(255),
+        nullable=True
+    )
+
+    subscription_status = db.Column(
+        db.String(50),
+        default="free"
+    )
+
+    resumes = db.relationship(
+        "Resume",
+        backref="owner",
+        lazy=True
+    )
 
 
 class Resume(db.Model):
-    __tablename__ = 'resumes'
-    id = db.Column(db.String(36), primary_key=True)
-    user_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
-    title = db.Column(db.String(255), default="My Resume")
-    content_json = db.Column(db.JSON, nullable=True)
-    template_used = db.Column(db.String(50), default="modern")
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    __tablename__ = "resumes"
+
+    id = db.Column(
+        db.String(36),
+        primary_key=True
+    )
+
+    user_id = db.Column(
+        db.String(36),
+        db.ForeignKey("users.id"),
+        nullable=False
+    )
+
+    title = db.Column(
+        db.String(255),
+        default="My Resume"
+    )
+
+    content_json = db.Column(
+        db.JSON,
+        nullable=True
+    )
+
+    template_used = db.Column(
+        db.String(50),
+        default="modern"
+    )
+
+    updated_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow
+    )
 
 
 class JobApplication(db.Model):
-    __tablename__ = 'job_applications'
-    id = db.Column(db.String(36), primary_key=True)
-    user_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
-    company_name = db.Column(db.String(255), nullable=False)
-    role_title = db.Column(db.String(255), nullable=False)
-    status = db.Column(db.String(50), default="Applied")
+    __tablename__ = "job_applications"
 
+    id = db.Column(
+        db.String(36),
+        primary_key=True
+    )
+
+    user_id = db.Column(
+        db.String(36),
+        db.ForeignKey("users.id"),
+        nullable=False
+    )
+
+    company_name = db.Column(
+        db.String(255),
+        nullable=False
+    )
+
+    role_title = db.Column(
+        db.String(255),
+        nullable=False
+    )
+
+    status = db.Column(
+        db.String(50),
+        default="Applied"
+    )
+
+
+# ============================================================
+# LOGIN MANAGER
+# ============================================================
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -74,197 +195,481 @@ def load_user(user_id):
 
 
 # ============================================================
-# AUTHENTICATION ROUTES (AUTH BLUEPRINT)
+# AUTHENTICATION ROUTES
 # ============================================================
-auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
+
+auth_bp = Blueprint(
+    "auth",
+    __name__,
+    url_prefix="/auth"
+)
 
 
-@auth_bp.route('/register', methods=['GET', 'POST'])
+@auth_bp.route("/register", methods=["GET", "POST"])
 def register():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
+
+    if request.method == "POST":
+
+        email = request.form.get("email")
+        password = request.form.get("password")
+
+        if not email or not password:
+            flash("Email and password are required.")
+            return redirect(url_for("auth.register"))
 
         if User.query.filter_by(email=email).first():
             flash("Email already registered. Please log in.")
-            return redirect(url_for('auth.register'))
+            return redirect(url_for("auth.register"))
 
         user = User(
             id=str(uuid.uuid4()),
             email=email,
-            password_hash=generate_password_hash(password)
-            is_premium = True
+            password_hash=generate_password_hash(password),
+            is_premium=False,
+            subscription_status="free"
         )
+
         db.session.add(user)
         db.session.commit()
+
         login_user(user)
-        return redirect('/dashboard')
 
-    return render_template('auth/register.html')
+        return redirect("/dashboard")
+
+    return render_template(
+        "auth/register.html"
+    )
 
 
-@auth_bp.route('/login', methods=['GET', 'POST'])
+@auth_bp.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-        user = User.query.filter_by(email=email).first()
 
-        if user and check_password_hash(user.password_hash, password):
+    if request.method == "POST":
+
+        email = request.form.get("email")
+        password = request.form.get("password")
+
+        user = User.query.filter_by(
+            email=email
+        ).first()
+
+        if user and check_password_hash(
+            user.password_hash,
+            password
+        ):
             login_user(user)
-            return redirect('/dashboard')
+
+            return redirect("/dashboard")
 
         flash("Invalid email or password.")
-        return redirect(url_for('auth.login'))
 
-    return render_template('auth/login.html')
+        return redirect(
+            url_for("auth.login")
+        )
+
+    return render_template(
+        "auth/login.html"
+    )
 
 
-@auth_bp.route('/logout')
+@auth_bp.route("/logout")
 @login_required
 def logout():
+
     logout_user()
-    return redirect('/')
+
+    return redirect("/")
 
 
-premium_app.register_blueprint(auth_bp)
+premium_app.register_blueprint(
+    auth_bp
+)
 
 
 # ============================================================
 # DASHBOARD ROUTES
 # ============================================================
-dashboard_bp = Blueprint('dashboard', __name__, url_prefix='/dashboard')
+
+dashboard_bp = Blueprint(
+    "dashboard",
+    __name__,
+    url_prefix="/dashboard"
+)
 
 
-@dashboard_bp.route('')
+@dashboard_bp.route("")
 @login_required
 def home():
-    user_resumes = Resume.query.filter_by(user_id=current_user.id).all()
-    return render_template('dashboard/index.html', resumes=user_resumes, user=current_user)
+
+    user_resumes = Resume.query.filter_by(
+        user_id=current_user.id
+    ).all()
+
+    return render_template(
+        "dashboard/index.html",
+        resumes=user_resumes,
+        user=current_user
+    )
 
 
-@dashboard_bp.route('/account', methods=['GET', 'POST'])
+@dashboard_bp.route("/account", methods=["GET", "POST"])
 @login_required
 def account():
-    return render_template('dashboard/account.html', user=current_user)
+
+    return render_template(
+        "dashboard/account.html",
+        user=current_user
+    )
 
 
-premium_app.register_blueprint(dashboard_bp)
+premium_app.register_blueprint(
+    dashboard_bp
+)
 
 
 # ============================================================
-# PADDLE WEBHOOK VERIFICATION HELPER
+# PADDLE WEBHOOK VERIFICATION
 # ============================================================
-def verify_paddle_webhook(request_data, signature_header):
-    if not PADDLE_WEBHOOK_SECRET_KEY or not signature_header:
+
+def verify_paddle_webhook(
+    request_data,
+    signature_header
+):
+
+    if (
+        not PADDLE_WEBHOOK_SECRET_KEY
+        or not signature_header
+    ):
         return False
-    
-    try:
-        # Extract ts and h1 components from Paddle-Signature header
-        components = dict(item.split('=') for item in signature_header.split(';'))
-        ts = components.get('ts')
-        h1 = components.get('h1')
 
-        # Reconstruct signed payload
-        signed_payload = f"{ts}:{request_data.decode('utf-8')}"
-        
-        # Compute HMAC SHA256 hash
+    try:
+
+        components = {}
+
+        # Safely split headers and strip spaces to prevent IndexErrors
+        for item in signature_header.split(";"):
+            item = item.strip()
+            if "=" in item:
+                parts = item.split("=", 1)
+                if len(parts) == 2:
+                    components[parts[0].strip()] = parts[1].strip()
+
+        ts = components.get("ts")
+        h1 = components.get("h1")
+
+        if not ts or not h1:
+            return False
+
+        signed_payload = (
+            f"{ts}:{request_data.decode('utf-8')}"
+        )
+
         digest = hmac.new(
-            PADDLE_WEBHOOK_SECRET_KEY.encode('utf-8'),
-            signed_payload.encode('utf-8'),
+            PADDLE_WEBHOOK_SECRET_KEY.encode("utf-8"),
+            signed_payload.encode("utf-8"),
             hashlib.sha256
         ).hexdigest()
 
-        return hmac.compare_digest(digest, h1)
+        return hmac.compare_digest(
+            digest,
+            h1
+        )
+
     except Exception as e:
-        print(f"Paddle HMAC Verification Error: {e}")
+
+        print(
+            f"Paddle HMAC Verification Error: {e}"
+        )
+
         return False
 
 
 # ============================================================
-# PHASE 1 & 2: PREMIUM ROUTE MODULE (PADDLE INTEGRATED)
+# PREMIUM API BLUEPRINT
 # ============================================================
-premium_bp = Blueprint('premium_api', __name__, url_prefix='/api/v1/premium')
+
+premium_bp = Blueprint(
+    "premium_api",
+    __name__,
+    url_prefix="/api/v1/premium"
+)
 
 
-@premium_bp.route('/user-status', methods=['GET'])
+# ============================================================
+# USER PREMIUM STATUS
+# ============================================================
+
+@premium_bp.route(
+    "/user-status",
+    methods=["GET"]
+)
 @login_required
 def get_user_status():
-    """Returns current user details to initialize Paddle Overlay Checkout on Frontend"""
+
     return jsonify({
+
         "user_id": current_user.id,
+
         "email": current_user.email,
+
         "is_premium": current_user.is_premium,
-        "paddle_price_id": os.getenv("PADDLE_PREMIUM_PRICE_ID", "pri_01hxxxxxxxxx")
+
+        "subscription_status": (
+            current_user.subscription_status
+        ),
+
+        "paddle_price_id": (
+            PADDLE_PREMIUM_PRICE_ID
+        )
+
     })
 
 
-@premium_bp.route('/webhook/paddle', methods=['POST'])
+# ============================================================
+# PADDLE WEBHOOK
+# ============================================================
+
+@premium_bp.route(
+    "/webhook/paddle",
+    methods=["POST"]
+)
 def paddle_webhook():
-    """Listens for Paddle Billing Events (Billing v2)"""
-    signature = request.headers.get('Paddle-Signature')
+
+    signature = request.headers.get(
+        "Paddle-Signature"
+    )
+
     payload = request.get_data()
 
-    if not verify_paddle_webhook(payload, signature):
-        return jsonify({"error": "Invalid signature"}), 400
+    if not verify_paddle_webhook(
+        payload,
+        signature
+    ):
 
-    data = request.json
-    event_type = data.get("event_type")
-    event_data = data.get("data", {})
+        return jsonify({
+            "error": "Invalid signature"
+        }), 400
 
-    # 1. Subscription Created or Activated
-    if event_type in ["subscription.created", "subscription.activated"]:
-        custom_data = event_data.get("custom_data", {})
-        user_id = custom_data.get("user_id")
-        
+    data = request.get_json(
+        silent=True
+    ) or {}
+
+    event_type = data.get(
+        "event_type"
+    )
+
+    event_data = data.get(
+        "data",
+        {}
+    )
+
+    # --------------------------------------------------------
+    # SUBSCRIPTION CREATED / ACTIVATED
+    # --------------------------------------------------------
+
+    if event_type in [
+        "subscription.created",
+        "subscription.activated"
+    ]:
+
+        custom_data = event_data.get(
+            "custom_data",
+            {}
+        )
+
+        user_id = custom_data.get(
+            "user_id"
+        )
+
         user = None
+
         if user_id:
-            user = User.query.get(user_id)
+
+            user = User.query.get(
+                user_id
+            )
+
         else:
-            # Fallback lookup by customer email
-            customer_id = event_data.get("customer_id")
-            user = User.query.filter_by(paddle_customer_id=customer_id).first()
+
+            customer_id = event_data.get(
+                "customer_id"
+            )
+
+            if customer_id:
+
+                user = User.query.filter_by(
+                    paddle_customer_id=customer_id
+                ).first()
 
         if user:
+
             user.is_premium = True
-            user.subscription_status = event_data.get("status", "active")
-            user.paddle_customer_id = event_data.get("customer_id")
-            user.paddle_subscription_id = event_data.get("id")
+
+            user.subscription_status = (
+                event_data.get(
+                    "status",
+                    "active"
+                )
+            )
+
+            user.paddle_customer_id = (
+                event_data.get(
+                    "customer_id"
+                )
+            )
+
+            user.paddle_subscription_id = (
+                event_data.get(
+                    "id"
+                )
+            )
+
             db.session.commit()
 
-    # 2. Subscription Canceled or Past Due
-    elif event_type in ["subscription.canceled", "subscription.past_due"]:
-        sub_id = event_data.get("id")
-        user = User.query.filter_by(paddle_subscription_id=sub_id).first()
+
+    # --------------------------------------------------------
+    # SUBSCRIPTION CANCELED / PAST DUE
+    # --------------------------------------------------------
+
+    elif event_type in [
+        "subscription.canceled",
+        "subscription.past_due"
+    ]:
+
+        sub_id = event_data.get(
+            "id"
+        )
+
+        user = User.query.filter_by(
+            paddle_subscription_id=sub_id
+        ).first()
+
         if user:
+
             user.is_premium = False
-            user.subscription_status = event_data.get("status", "canceled")
+
+            user.subscription_status = (
+                event_data.get(
+                    "status",
+                    "canceled"
+                )
+            )
+
             db.session.commit()
 
-    return jsonify({"status": "success"}), 200
+
+    return jsonify({
+        "status": "success"
+    }), 200
 
 
-@premium_bp.route('/analyze-ats', methods=['POST'])
+# ============================================================
+# PREMIUM ATS ANALYSIS
+# ============================================================
+
+@premium_bp.route(
+    "/analyze-ats",
+    methods=["POST"]
+)
 @login_required
 def analyze_ats():
+
     if not current_user.is_premium:
-        return jsonify({"error": "Premium subscription required"}), 403
 
-    cv_data = request.json.get('cv_data')
-    job_desc = request.json.get('job_description')
+        return jsonify({
+            "error": "Premium subscription required"
+        }), 403
 
-    prompt = f"Provide ATS Score (0-100) and list missing keywords:\nCV: {json.dumps(cv_data)}\nJob: {job_desc}"
-    response = openai.ChatCompletion.create(
-        model="gpt-4o",
-        messages=[{"role": "user", "content": prompt}]
+    data = request.get_json(
+        silent=True
+    ) or {}
+
+    cv_data = data.get(
+        "cv_data"
     )
-    return jsonify({"analysis": response.choices[0].message.content})
+
+    job_desc = data.get(
+        "job_description"
+    )
+
+    if not cv_data or not job_desc:
+
+        return jsonify({
+            "error": "CV data and job description are required."
+        }), 400
+
+    prompt = f"""
+Provide an ATS Score from 0-100 and list
+missing keywords.
+
+CV:
+{json.dumps(cv_data)}
+
+Job Description:
+{job_desc}
+"""
+
+    try:
+
+        response = openai.ChatCompletion.create(
+            model="gpt-4o",
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ]
+        )
+
+        # Safeguard against potential IndexError on choices array
+        if response and getattr(response, "choices", None) and len(response.choices) > 0:
+            analysis_text = response.choices[0].message.content
+        else:
+            analysis_text = "No response generated by OpenAI."
+
+        return jsonify({
+            "analysis": analysis_text
+        })
+
+    except Exception as e:
+
+        print(
+            f"ATS analysis error: {e}"
+        )
+
+        return jsonify({
+            "error": "Unable to analyze CV at this time."
+        }), 500
 
 
-premium_app.register_blueprint(premium_bp)
+premium_app.register_blueprint(
+    premium_bp
+)
+
+
+# ============================================================
+# VERCEL ENTRY POINT
+# ============================================================
+
+app = premium_app
+
+
+# ============================================================
+# DATABASE INITIALIZATION
+# ============================================================
 
 with premium_app.app_context():
+
     db.create_all()
 
+
+# ============================================================
+# LOCAL DEVELOPMENT
+# ============================================================
+
 if __name__ == "__main__":
-    premium_app.run(debug=True, port=5001)
+
+    premium_app.run(
+        debug=True,
+        port=5001
+    )
