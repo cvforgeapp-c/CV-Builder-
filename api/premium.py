@@ -230,6 +230,70 @@ def preview():
         return redirect("/dashboard")
 
 # ============================================================
+# SAVE RESUME ENDPOINT
+# ============================================================
+
+@premium_app.route("/api/v1/resumes/save", methods=["POST"])
+@login_required
+def save_resume():
+    title = request.form.get("title", "My CV")
+
+    content_data = {
+        "target_role": request.form.get("target_role", ""),
+        "full_name": request.form.get("full_name", ""),
+        "email": request.form.get("email", ""),
+        "phone": request.form.get("phone", ""),
+        "location": request.form.get("location", ""),
+        "linkedin": request.form.get("linkedin", ""),
+        "portfolio": request.form.get("portfolio", ""),
+        "summary": request.form.get("summary", ""),
+        "company": request.form.get("company", ""),
+        "job_title": request.form.get("job_title", ""),
+        "job_location": request.form.get("job_location", ""),
+        "job_dates": request.form.get("job_dates", ""),
+        "experience_bullets": request.form.get("experience_bullets", ""),
+        "education_degree": request.form.get("education_degree", ""),
+        "education_school": request.form.get("education_school", ""),
+        "education_dates": request.form.get("education_dates", ""),
+        "education_honors": request.form.get("education_honors", ""),
+        "skills_tech": request.form.get("skills_tech", ""),
+        "skills_soft": request.form.get("skills_soft", ""),
+        "certifications": request.form.get("certifications", ""),
+        "projects": request.form.get("projects", ""),
+        "languages": request.form.get("languages", "")
+    }
+
+    resume_id = request.args.get("id") or str(uuid.uuid4())
+    resume = db.session.get(Resume, resume_id)
+
+    if resume and resume.user_id == current_user.id:
+        resume.title = title
+        resume.content_json = content_data
+        resume.updated_at = datetime.utcnow()
+    else:
+        resume = Resume(
+            id=resume_id,
+            user_id=current_user.id,
+            title=title,
+            content_json=content_data,
+            template_used="modern",
+            accent_color="#E5A93C",
+            sidebar_color="#02353C",
+            updated_at=datetime.utcnow()
+        )
+        db.session.add(resume)
+
+    try:
+        db.session.commit()
+        flash("Resume saved successfully!", "success")
+        return redirect("/dashboard")
+    except Exception as e:
+        db.session.rollback()
+        print(f"Save Resume Error: {e}")
+        flash("Failed to save resume.", "error")
+        return redirect("/editor")
+
+# ============================================================
 # DASHBOARD ROUTES
 # ============================================================
 
