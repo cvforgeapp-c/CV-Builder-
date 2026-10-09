@@ -7,11 +7,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            color: #0f172a;
+            font-family: 'Inter', sans-serif; 
+            color: #111827;
         }
 
         /* Strict A4 Single-Column Dimension for ATS Parsing & Export */
@@ -20,8 +19,7 @@
             min-height: 297mm;
             margin: auto;
             background: #ffffff;
-            box-shadow: 0 20px 40px -15px rgba(2, 53, 60, 0.12);
-            border-radius: 4px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
         }
 
         @media print {
@@ -37,75 +35,74 @@
                 width: 100% !important;
                 min-height: auto !important;
                 margin: 0 !important;
-                padding: 12mm !important;
-                border: none !important;
+                padding: 15mm !important;
             }
         }
     </style>
 </head>
-<body class="bg-slate-900/5 antialiased min-h-screen flex flex-col selection:bg-amber-100 selection:text-[#02353C]">
+<body class="bg-slate-100 antialiased min-h-screen flex flex-col">
 
-    <!-- ACTION HEADER BAR -->
-    <header class="no-print bg-[#02353C] text-white sticky top-0 z-50 shadow-lg border-b border-white/10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <a href="/dashboard" class="flex items-center gap-2.5 text-xs font-bold uppercase tracking-wider hover:text-amber-300 transition-colors">
-                <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-amber-400">
-                    <i class="fa-solid fa-arrow-left text-xs"></i>
+    <!-- FULL-WIDTH PROFESSIONAL BRAND ACTION HEADER BAR -->
+    <header class="no-print bg-gradient-to-r from-[#012228] via-[#02353C] to-[#012228] text-white sticky top-0 z-50 shadow-xl border-b border-white/10 w-full backdrop-blur-md">
+        <div class="w-full px-6 sm:px-12 h-20 flex items-center justify-between">
+            <a href="/dashboard" class="group flex items-center gap-3.5 text-xs font-extrabold uppercase tracking-wider text-white transition-all">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-[#E5A93C] flex items-center justify-center text-[#02353C] shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform">
+                    <i class="fa-solid fa-arrow-left text-sm font-black"></i>
                 </div>
-                <span>Dashboard</span>
+                <div class="flex flex-col">
+                    <span class="text-[10px] uppercase tracking-widest text-amber-400/90 font-bold">CVForge AI</span>
+                    <span class="text-xs font-extrabold tracking-tight text-white group-hover:text-amber-300 transition-colors">Back to Dashboard</span>
+                </div>
             </a>
 
             <div class="flex items-center gap-3">
-                <a href="/editor?id={{ resume.id if resume else '' }}" class="bg-white/10 hover:bg-white/20 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 border border-white/10">
+                <a href="/editor?id={{ resume.id if resume else '' }}" class="bg-white/10 hover:bg-white/15 text-white font-bold text-xs px-5 py-3 rounded-xl transition-all flex items-center gap-2 border border-white/15 shadow-sm hover:border-amber-400/50 active:scale-95">
+                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
                     <i class="fa-solid fa-pen-to-square text-amber-400"></i>
-                    <span>Edit Content</span>
+                    <span>Edit CV</span>
                 </a>
-                <button onclick="window.print()" class="bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-300 hover:to-amber-400 text-[#02353C] font-extrabold text-xs px-5 py-2.5 rounded-xl transition-all shadow-md flex items-center gap-2 active:scale-95">
+                <button onclick="window.print()" class="bg-gradient-to-r from-amber-400 via-amber-300 to-[#E5A93C] hover:from-amber-300 hover:to-amber-400 text-[#02353C] font-black text-xs px-6 py-3 rounded-xl transition-all shadow-lg shadow-amber-500/20 flex items-center gap-2.5 active:scale-95 border border-amber-200/50">
                     <i class="fa-solid fa-file-pdf text-sm"></i>
-                    <span>Download PDF</span>
+                    <span>Download PDF / Print</span>
                 </button>
             </div>
         </div>
     </header>
 
     <!-- ATS SINGLE-COLUMN DOCUMENT CONTAINER -->
-    <main class="flex-grow py-10 px-4 sm:px-6">
+    <main class="flex-grow py-8 px-4 sm:px-6">
         
         {% if resume %}
-        <div class="a4-page p-12 sm:p-14 text-slate-900 border border-slate-200/80">
+        <div class="a4-page p-12 sm:p-16 text-slate-900 border border-slate-200">
             
-            <!-- HEADER SECTION: High-End Linear Brand Layout -->
-            <div class="border-b-2 border-[#02353C]/15 pb-6 mb-6">
-                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-                    <div>
-                        <h1 class="text-2xl sm:text-3xl font-extrabold text-[#02353C] tracking-tight uppercase">
-                            {{ resume.content_json.full_name if (resume.content_json and resume.content_json.full_name) else 'Your Full Name' }}
-                        </h1>
-                        
-                        {% if resume.content_json and resume.content_json.target_role %}
-                            <p class="text-xs font-bold text-amber-700 tracking-widest mt-1 uppercase">
-                                {{ resume.content_json.target_role }}
-                            </p>
-                        {% endif %}
-                    </div>
-                </div>
+            <!-- HEADER SECTION: Standard Linear Flow -->
+            <div class="text-center border-b border-slate-300 pb-5 mb-6">
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 uppercase tracking-wide">
+                    {{ resume.content_json.full_name if (resume.content_json and resume.content_json.full_name) else 'Your Full Name' }}[span_0](start_span)[span_0](end_span)
+                </h1>
+                
+                {% if resume.content_json and resume.content_json.target_role %}
+                    <p class="text-sm font-semibold text-slate-700 tracking-wider mt-1 uppercase">
+                        {{ resume.content_json.target_role }}[span_1](start_span)[span_1](end_span)
+                    </p>
+                {% endif %}
 
-                <!-- Clean Contact Info Badges -->
-                <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-600 mt-3.5 font-medium">
+                <!-- Contact Info Line -->
+                <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-slate-600 mt-2 font-medium">
                     {% if resume.content_json and resume.content_json.email %}
-                        <span class="flex items-center gap-1.5"><i class="fa-regular fa-envelope text-[#02353C]"></i> {{ resume.content_json.email }}</span>
+                        <span>{{ resume.content_json.email }}</span>[span_2](start_span)[span_2](end_span)
                     {% endif %}
                     {% if resume.content_json and resume.content_json.phone %}
-                        <span class="flex items-center gap-1.5"><i class="fa-solid fa-phone text-[#02353C]"></i> {{ resume.content_json.phone }}</span>
+                        <span>• {{ resume.content_json.phone }}</span>[span_3](start_span)[span_3](end_span)
                     {% endif %}
                     {% if resume.content_json and resume.content_json.location %}
-                        <span class="flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-[#02353C]"></i> {{ resume.content_json.location }}</span>
+                        <span>• {{ resume.content_json.location }}</span>[span_4](start_span)[span_4](end_span)
                     {% endif %}
                     {% if resume.content_json and resume.content_json.linkedin %}
-                        <span class="flex items-center gap-1.5"><i class="fa-brands fa-linkedin text-[#02353C]"></i> {{ resume.content_json.linkedin }}</span>
+                        <span>• {{ resume.content_json.linkedin }}</span>[span_5](start_span)[span_5](end_span)
                     {% endif %}
                     {% if resume.content_json and resume.content_json.portfolio %}
-                        <span class="flex items-center gap-1.5"><i class="fa-solid fa-globe text-[#02353C]"></i> {{ resume.content_json.portfolio }}</span>
+                        <span>• {{ resume.content_json.portfolio }}</span>[span_6](start_span)[span_6](end_span)
                     {% endif %}
                 </div>
             </div>
@@ -113,12 +110,11 @@
             <!-- SECTION 1: PROFESSIONAL SUMMARY -->
             {% if resume.content_json and resume.content_json.summary %}
             <div class="mb-5">
-                <h2 class="text-xs font-extrabold uppercase tracking-widest text-[#02353C] border-b border-[#02353C]/20 pb-1 mb-2.5 flex items-center gap-2">
-                    <span class="w-1.5 h-3.5 bg-amber-500 rounded-full"></span>
+                <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 border-slate-900 pb-1 mb-2">
                     Professional Summary
                 </h2>
-                <p class="text-xs sm:text-[13px] text-slate-700 leading-relaxed font-normal">
-                    {{ resume.content_json.summary }}
+                <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                    {{ resume.content_json.summary }}[span_7](start_span)[span_7](end_span)
                 </p>
             </div>
             {% endif %}
@@ -126,8 +122,7 @@
             <!-- SECTION 2: PROFESSIONAL EXPERIENCE -->
             {% if resume.content_json and (resume.content_json.company or resume.content_json.experience_bullets) %}
             <div class="mb-5">
-                <h2 class="text-xs font-extrabold uppercase tracking-widest text-[#02353C] border-b border-[#02353C]/20 pb-1 mb-3 flex items-center gap-2">
-                    <span class="w-1.5 h-3.5 bg-amber-500 rounded-full"></span>
+                <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 border-slate-900 pb-1 mb-3">
                     Professional Experience
                 </h2>
 
@@ -135,23 +130,23 @@
                     <div>
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between">
                             <h3 class="font-bold text-slate-900 text-xs sm:text-sm">
-                                {{ resume.content_json.job_title if resume.content_json.job_title else 'Role Title' }}
+                                {{ resume.content_json.job_title if resume.content_json.job_title else 'Role Title' }}[span_8](start_span)[span_8](end_span)
                                 {% if resume.content_json.company %}
-                                    <span class="font-semibold text-[#02353C]">@ {{ resume.content_json.company }}</span>
+                                    <span class="font-normal text-slate-700">| {{ resume.content_json.company }}</span>[span_9](start_span)[span_9](end_span)
                                 {% endif %}
                             </h3>
-                            <span class="text-[11px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200/60 mt-0.5 sm:mt-0 w-fit">
-                                {{ resume.content_json.job_dates if resume.content_json.job_dates else '' }}
+                            <span class="text-xs font-medium text-slate-600">
+                                {{ resume.content_json.job_dates if resume.content_json.job_dates else '' }}[span_10](start_span)[span_10](end_span)
                             </span>
                         </div>
 
                         {% if resume.content_json.job_location %}
-                            <p class="text-[11px] font-medium text-slate-500 mt-0.5">{{ resume.content_json.job_location }}</p>
+                            <p class="text-xs text-slate-600 mb-1">{{ resume.content_json.job_location }}</p>[span_11](start_span)[span_11](end_span)
                         {% endif %}
 
                         {% if resume.content_json.experience_bullets %}
-                            <div class="text-xs sm:text-[13px] text-slate-700 leading-relaxed whitespace-pre-line mt-1.5 font-normal">
-                                {{ resume.content_json.experience_bullets }}
+                            <div class="text-xs text-slate-700 leading-relaxed whitespace-pre-line mt-1">
+                                {{ resume.content_json.experience_bullets }}[span_12](start_span)[span_12](end_span)
                             </div>
                         {% endif %}
                     </div>
@@ -162,25 +157,24 @@
             <!-- SECTION 3: EDUCATION -->
             {% if resume.content_json and (resume.content_json.education_degree or resume.content_json.education_school) %}
             <div class="mb-5">
-                <h2 class="text-xs font-extrabold uppercase tracking-widest text-[#02353C] border-b border-[#02353C]/20 pb-1 mb-3 flex items-center gap-2">
-                    <span class="w-1.5 h-3.5 bg-amber-500 rounded-full"></span>
+                <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 border-slate-900 pb-1 mb-3">
                     Education
                 </h2>
 
                 <div>
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between">
                         <h3 class="font-bold text-slate-900 text-xs sm:text-sm">
-                            {{ resume.content_json.education_degree if resume.content_json.education_degree else '' }}
+                            {{ resume.content_json.education_degree if resume.content_json.education_degree else '' }}[span_13](start_span)[span_13](end_span)
                             {% if resume.content_json.education_school %}
-                                <span class="font-semibold text-[#02353C]">| {{ resume.content_json.education_school }}</span>
+                                <span class="font-normal text-slate-700">, {{ resume.content_json.education_school }}</span>[span_14](start_span)[span_14](end_span)
                             {% endif %}
                         </h3>
-                        <span class="text-[11px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded mt-0.5 sm:mt-0 w-fit">
-                            {{ resume.content_json.education_dates if resume.content_json.education_dates else '' }}
+                        <span class="text-xs font-medium text-slate-600">
+                            {{ resume.content_json.education_dates if resume.content_json.education_dates else '' }}[span_15](start_span)[span_15](end_span)
                         </span>
                     </div>
                     {% if resume.content_json.education_honors %}
-                        <p class="text-xs text-amber-700 font-semibold mt-1">{{ resume.content_json.education_honors }}</p>
+                        <p class="text-xs text-slate-700 font-medium mt-0.5">{{ resume.content_json.education_honors }}</p>[span_16](start_span)[span_16](end_span)
                     {% endif %}
                 </div>
             </div>
@@ -189,22 +183,21 @@
             <!-- SECTION 4: SKILLS & CERTIFICATIONS -->
             {% if resume.content_json and (resume.content_json.skills_tech or resume.content_json.certifications) %}
             <div class="mb-5">
-                <h2 class="text-xs font-extrabold uppercase tracking-widest text-[#02353C] border-b border-[#02353C]/20 pb-1 mb-3 flex items-center gap-2">
-                    <span class="w-1.5 h-3.5 bg-amber-500 rounded-full"></span>
+                <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 border-slate-900 pb-1 mb-3">
                     Skills & Certifications
                 </h2>
 
-                <div class="space-y-1.5 text-xs sm:text-[13px] text-slate-700">
+                <div class="space-y-1 text-xs text-slate-700">
                     {% if resume.content_json.skills_tech %}
-                        <p><strong class="text-[#02353C] font-bold">Technical Skills:</strong> <span class="font-normal">{{ resume.content_json.skills_tech }}</span></p>
+                        <p><strong class="text-slate-900">Technical Skills:</strong> {{ resume.content_json.skills_tech }}</p>[span_17](start_span)[span_17](end_span)
                     {% endif %}
 
                     {% if resume.content_json.skills_soft %}
-                        <p><strong class="text-[#02353C] font-bold">Core Competencies:</strong> <span class="font-normal">{{ resume.content_json.skills_soft }}</span></p>
+                        <p><strong class="text-slate-900">Core Competencies:</strong> {{ resume.content_json.skills_soft }}</p>[span_18](start_span)[span_18](end_span)
                     {% endif %}
 
                     {% if resume.content_json.certifications %}
-                        <p><strong class="text-[#02353C] font-bold">Certifications & Licenses:</strong> <span class="font-normal">{{ resume.content_json.certifications }}</span></p>
+                        <p><strong class="text-slate-900">Certifications & Licenses:</strong> {{ resume.content_json.certifications }}</p>[span_19](start_span)[span_19](end_span)
                     {% endif %}
                 </div>
             </div>
@@ -213,23 +206,22 @@
             <!-- SECTION 5: PROJECTS & LANGUAGES -->
             {% if resume.content_json and (resume.content_json.projects or resume.content_json.languages) %}
             <div>
-                <h2 class="text-xs font-extrabold uppercase tracking-widest text-[#02353C] border-b border-[#02353C]/20 pb-1 mb-3 flex items-center gap-2">
-                    <span class="w-1.5 h-3.5 bg-amber-500 rounded-full"></span>
+                <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 border-slate-900 pb-1 mb-3">
                     Additional Information
                 </h2>
 
-                <div class="space-y-2 text-xs sm:text-[13px] text-slate-700">
+                <div class="space-y-2 text-xs text-slate-700">
                     {% if resume.content_json.projects %}
                     <div>
-                        <strong class="text-[#02353C] font-bold">Key Projects / Research:</strong>
-                        <p class="mt-0.5 leading-relaxed font-normal">{{ resume.content_json.projects }}</p>
+                        <strong class="text-slate-900">Key Projects / Research:</strong>
+                        <p class="mt-0.5 leading-relaxed">{{ resume.content_json.projects }}</p>[span_20](start_span)[span_20](end_span)
                     </div>
                     {% endif %}
 
                     {% if resume.content_json.languages %}
                     <div>
-                        <strong class="text-[#02353C] font-bold">Languages:</strong>
-                        <span class="ml-1 font-normal">{{ resume.content_json.languages }}</span>
+                        <strong class="text-slate-900">Languages:</strong>
+                        <span class="ml-1">{{ resume.content_json.languages }}</span>[span_21](start_span)[span_21](end_span)
                     </div>
                     {% endif %}
                 </div>
