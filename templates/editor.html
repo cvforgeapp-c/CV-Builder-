@@ -38,7 +38,7 @@
             </div>
             <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">Forge Your Career Advantage</h1>
             <p class="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-2xl">
-                Build an executive, ATS-friendly resume tailored for top employers worldwide. Fill in your details or use AI Assist to refine your bullet points.
+                Build an executive, ATS-friendly resume tailored for top employers worldwide. Fill in your details or use AI Assist to polish your bullet points.
             </p>
         </div>
 
@@ -57,7 +57,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Target Professional Title</label>
-                        <input type="text" name="target_role" placeholder="e.g. Vice President of Marketing / Senior Software Engineer" value="{{ resume.content_json.target_role if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#02353C] focus:outline-none text-sm">
+                        <input type="text" name="target_role" placeholder="e.g. Vice President of Marketing / Pediatrician / Senior Software Engineer" value="{{ resume.content_json.target_role if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#02353C] focus:outline-none text-sm">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Full Name</label>
@@ -86,24 +86,29 @@
                 </div>
             </div>
 
-            <!-- SECTION 2: PROFESSIONAL SUMMARY -->
+            <!-- SECTION 2: PROFESSIONAL SUMMARY WITH DYNAMIC AI ASSIST -->
             <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-3">
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                     <h2 class="text-base font-bold text-[#02353C] flex items-center gap-2">
                         <i class="fa-solid fa-user-pen text-amber-500"></i> Professional Summary
                     </h2>
-                    <button type="button" onclick="generateAISummary()" class="text-xs bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300/80 px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5">
-                        <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i> AI Assist
+                    <button type="button" onclick="generateAIField('summary', 'summaryText')" class="text-xs bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300/80 px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5">
+                        <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i> AI Generate
                     </button>
                 </div>
                 <textarea id="summaryText" name="summary" rows="4" placeholder="Write a brief 3-4 sentence overview of your professional background, key accomplishments, and value proposition..." class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#02353C] focus:outline-none text-sm leading-relaxed">{{ resume.content_json.summary if resume and resume.content_json else '' }}</textarea>
             </div>
 
-            <!-- SECTION 3: WORK & PROFESSIONAL EXPERIENCE -->
+            <!-- SECTION 3: WORK & PROFESSIONAL EXPERIENCE WITH DYNAMIC AI ASSIST -->
             <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-4">
-                <h2 class="text-base font-bold text-[#02353C] flex items-center gap-2 border-b border-slate-100 pb-3">
-                    <i class="fa-solid fa-briefcase text-amber-500"></i> Work & Professional Experience
-                </h2>
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <h2 class="text-base font-bold text-[#02353C] flex items-center gap-2">
+                        <i class="fa-solid fa-briefcase text-amber-500"></i> Work & Professional Experience
+                    </h2>
+                    <button type="button" onclick="generateAIField('experience', 'experienceBulletsText')" class="text-xs bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300/80 px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5">
+                        <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i> AI Polish Bullets
+                    </button>
+                </div>
 
                 <div class="space-y-4">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -113,7 +118,7 @@
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Job Title</label>
-                            <input type="text" name="job_title" placeholder="e.g. Senior Financial Analyst / Project Manager" value="{{ resume.content_json.job_title if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
+                            <input type="text" name="job_title" placeholder="e.g. Senior Financial Analyst / Clinical Resident" value="{{ resume.content_json.job_title if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Location</label>
@@ -126,7 +131,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Key Accomplishments & Bullet Points (Metric-Driven)</label>
-                        <textarea name="experience_bullets" rows="4" placeholder="- Spearheaded cross-functional initiative that increased annual recurring revenue by 18%&#10;- Managed $2.5M operational budget while maintaining 99.8% compliance efficiency&#10;- Optimized workflow procedures, cutting client onboarding time by 40%" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm leading-relaxed">{{ resume.content_json.experience_bullets if resume and resume.content_json else '' }}</textarea>
+                        <textarea id="experienceBulletsText" name="experience_bullets" rows="4" placeholder="- Spearheaded cross-functional initiative that increased annual recurring revenue by 18%&#10;- Managed $2.5M operational budget while maintaining 99.8% compliance efficiency&#10;- Optimized workflow procedures, cutting client onboarding time by 40%" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm leading-relaxed">{{ resume.content_json.experience_bullets if resume and resume.content_json else '' }}</textarea>
                     </div>
                 </div>
             </div>
@@ -140,7 +145,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Degree Name</label>
-                        <input type="text" name="education_degree" placeholder="e.g. B.S. in Business Administration / M.S. in Data Science" value="{{ resume.content_json.education_degree if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
+                        <input type="text" name="education_degree" placeholder="e.g. B.S. in Business Administration / Doctor of Medicine (M.D.)" value="{{ resume.content_json.education_degree if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Institution & Location</label>
@@ -166,29 +171,34 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Technical / Professional Skills</label>
-                        <input type="text" name="skills_tech" placeholder="e.g. Financial Modeling, Python, Salesforce, SEO Strategy, SQL" value="{{ resume.content_json.skills_tech if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
+                        <input type="text" name="skills_tech" placeholder="e.g. Financial Modeling, Python, Patient Diagnostics, Salesforce, SQL" value="{{ resume.content_json.skills_tech if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Soft Skills & Leadership</label>
-                        <input type="text" name="skills_soft" placeholder="e.g. Cross-Functional Leadership, Strategic Planning, Negotiation" value="{{ resume.content_json.skills_soft if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
+                        <input type="text" name="skills_soft" placeholder="e.g. Cross-Functional Leadership, Clinical Care, Strategic Planning" value="{{ resume.content_json.skills_soft if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
                     </div>
                     <div class="sm:col-span-2">
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Certifications & Professional Licenses</label>
-                        <input type="text" name="certifications" placeholder="e.g. PMP, CFA Level II, AWS Certified Solutions Architect, CPA" value="{{ resume.content_json.certifications if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
+                        <input type="text" name="certifications" placeholder="e.g. PMP, Medical License, CFA Level II, AWS Certified Solutions Architect" value="{{ resume.content_json.certifications if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
                     </div>
                 </div>
             </div>
 
-            <!-- SECTION 6: PROJECTS & LANGUAGES -->
+            <!-- SECTION 6: PROJECTS & LANGUAGES WITH DYNAMIC AI ASSIST -->
             <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-4">
-                <h2 class="text-base font-bold text-[#02353C] flex items-center gap-2 border-b border-slate-100 pb-3">
-                    <i class="fa-solid fa-globe text-amber-500"></i> Projects & Languages
-                </h2>
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <h2 class="text-base font-bold text-[#02353C] flex items-center gap-2">
+                        <i class="fa-solid fa-globe text-amber-500"></i> Projects & Languages
+                    </h2>
+                    <button type="button" onclick="generateAIField('project', 'projectsText')" class="text-xs bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300/80 px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5">
+                        <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i> AI Summarize Project
+                    </button>
+                </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Key Projects or Research</label>
-                        <textarea name="projects" rows="3" placeholder="e.g. Global Supply Chain Audit: Re-architected logistics distribution across 12 US hubs..." class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm leading-relaxed">{{ resume.content_json.projects if resume and resume.content_json else '' }}</textarea>
+                        <textarea id="projectsText" name="projects" rows="3" placeholder="e.g. Global Supply Chain Audit: Re-architected logistics distribution across 12 US hubs..." class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm leading-relaxed">{{ resume.content_json.projects if resume and resume.content_json else '' }}</textarea>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Languages (with Fluency Levels)</label>
@@ -211,17 +221,50 @@
 
     </main>
 
+    <!-- DYNAMIC CLIENT-SIDE OPENAI AI ASSIST SCRIPT -->
     <script>
-        function generateAISummary() {
-            const summaryArea = document.getElementById('summaryText');
-            if (summaryArea.value.trim() !== "" && !confirm("Do you want to overwrite your existing summary with AI?")) {
+        async function generateAIField(fieldType, targetElementId) {
+            const targetArea = document.getElementById(targetElementId);
+            const targetRole = document.querySelector('input[name="target_role"]').value || "Professional";
+            const jobTitle = document.querySelector('input[name="job_title"]').value || "";
+            const skills = document.querySelector('input[name="skills_tech"]').value || "";
+            const currentInput = targetArea.value.trim();
+
+            if (currentInput !== "" && !confirm("Do you want AI Assist to optimize your text based on your current inputs?")) {
                 return;
             }
-            summaryArea.value = "Generating summary with AI Assist...";
-            
-            setTimeout(() => {
-                summaryArea.value = "Results-driven professional with a proven track record of driving operational efficiency and organizational growth. Experienced in leading cross-functional teams, executing high-impact strategic initiatives, and delivering scalable business solutions across competitive global markets.";
-            }, 1200);
+
+            const previousValue = targetArea.value;
+            targetArea.value = "AI Assist is optimizing content for " + targetRole + "...";
+
+            try {
+                const response = await fetch('/api/v1/ai/generate-field', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        field_type: fieldType,
+                        target_role: targetRole,
+                        job_title: jobTitle,
+                        skills: skills,
+                        current_input: currentInput
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.result) {
+                    targetArea.value = data.result;
+                } else {
+                    alert(data.error || "Unable to generate AI content at this time.");
+                    targetArea.value = previousValue;
+                }
+            } catch (err) {
+                console.error("AI Assist Generation Error:", err);
+                alert("Connection error. Could not connect to AI Assist.");
+                targetArea.value = previousValue;
+            }
         }
     </script>
 
