@@ -282,6 +282,7 @@ def save_resume():
     if resume and resume.user_id == current_user.id:
         resume.title = title
         resume.content_json = content_data
+        resume.template_used = "ats"
         resume.updated_at = datetime.utcnow()
     else:
         resume = Resume(
@@ -289,10 +290,11 @@ def save_resume():
             user_id=current_user.id,
             title=title,
             content_json=content_data,
+            optimized_json={},
             original_text="",
-            template_used="modern",
-            accent_color="#E5A93C",
-            sidebar_color="#02353C",
+            template_used="ats",  # <-- Updated default template to strict ATS single-column
+            accent_color="#000000",
+            sidebar_color="#000000",
             updated_at=datetime.utcnow()
         )
         db.session.add(resume)
@@ -320,18 +322,16 @@ def save_resume():
 @premium_app.route("/api/v1/ai/generate-field", methods=["POST"])
 @login_required
 def generate_ai_field():
-    # Check credit balance for Free Tier users
     if not getattr(current_user, "is_premium", False) and getattr(current_user, "ai_credits_remaining", 0) <= 0:
         return jsonify({"error": "No AI credits remaining. Please upgrade to Premium."}), 403
 
     data = request.get_json(silent=True) or {}
-    field_type = data.get("field_type", "summary")  # 'summary', 'experience', 'project'
+    field_type = data.get("field_type", "summary")
     target_role = data.get("target_role", "Professional")
     job_title = data.get("job_title", "")
     skills = data.get("skills", "")
     current_input = data.get("current_input", "")
 
-    # Build dynamically tailored prompts based on field type
     if field_type == "experience":
         prompt = f"""
         Transform these raw notes or work duties into 3 high-impact, ATS-optimized resume bullet points for a {target_role} ({job_title}).
@@ -353,7 +353,7 @@ def generate_ai_field():
         - Highlight project scope, implementation, and delivered impact.
         - Return ONLY the clean paragraph text without quotation marks.
         """
-    else:  # summary
+    else:
         prompt = f"""
         Write a high-impact, professional 3-sentence executive summary for a CV.
         Target Professional Role: {target_role}
@@ -369,7 +369,6 @@ def generate_ai_field():
     try:
         api_key = os.getenv("OPENAI_API_KEY")
         
-        # If API Key is not set in environment, deliver structured fallback text
         if not api_key:
             if field_type == "experience":
                 fallback_text = f"- Spearheaded strategic initiatives as {target_role}, increasing operational efficiency by 22%.\n- Optimized core workflows and cross-functional processes to maintain 99.5% delivery compliance.\n- Directed team execution aligned with global industry best practices."
@@ -380,7 +379,6 @@ def generate_ai_field():
             
             return jsonify({"result": fallback_text})
 
-        # Dual OpenAI SDK Compatibility (handles SDK v1.0+ and legacy v0.28)
         if hasattr(openai, "OpenAI"):
             client = openai.OpenAI(api_key=api_key)
             response = client.chat.completions.create(
@@ -400,7 +398,6 @@ def generate_ai_field():
             )
             generated_text = response.choices[0].message.content.strip()
 
-        # Deduct credit for free tier users
         if not getattr(current_user, "is_premium", False):
             current_user.ai_credits_remaining = max(0, current_user.ai_credits_remaining - 1)
             db.session.commit()
@@ -430,7 +427,6 @@ def home():
     try:
         user_resumes = Resume.query.filter_by(user_id=current_user.id).all() if current_user and hasattr(current_user, "id") else []
         
-        # Safely parse content_json if stored as string in PostgreSQL
         for resume in user_resumes:
             if isinstance(resume.content_json, str):
                 try:
