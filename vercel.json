@@ -32,6 +32,22 @@
       "dest": "api/premium.py"
     },
     {
+      "src": "/editor/(.*)",
+      "dest": "api/premium.py"
+    },
+    {
+      "src": "/editor",
+      "dest": "api/premium.py"
+    },
+    {
+      "src": "/pricing",
+      "dest": "api/premium.py"
+    },
+    {
+      "src": "/preview",
+      "dest": "api/premium.py"
+    },
+    {
       "src": "/applications/(.*)",
       "dest": "api/premium.py"
     },
