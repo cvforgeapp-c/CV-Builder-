@@ -300,8 +300,43 @@
 
     </main>
 
-    <!-- CLIENT-SIDE OPENAI AI ASSIST SCRIPT -->
+    <!-- CLIENT-SIDE FORM SUBMISSION & OPENAI AI ASSIST SCRIPT -->
     <script>
+        document.getElementById('cvForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const form = this;
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => data[key] = value);
+
+            const saveUrl = form.getAttribute('action');
+
+            try {
+                const response = await fetch(saveUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.redirect_url) {
+                    window.location.href = result.redirect_url;
+                } else if (response.redirected) {
+                    window.location.href = response.url;
+                } else {
+                    alert(result.error || "Failed to save CV. Please try again.");
+                }
+            } catch (err) {
+                console.error("Save CV Submission Error:", err);
+                form.submit();
+            }
+        });
+
         async function generateAIField(fieldType, targetElementId) {
             const targetArea = document.getElementById(targetElementId);
             const targetRole = document.querySelector('input[name="target_role"]').value || "Professional";
