@@ -20,6 +20,14 @@
       "dest": "api/premium.py"
     },
     {
+      "src": "/api/v1/resumes/(.*)",
+      "dest": "api/premium.py"
+    },
+    {
+      "src": "/api/v1/ai/(.*)",
+      "dest": "api/premium.py"
+    },
+    {
       "src": "/auth/(.*)",
       "dest": "api/premium.py"
     },
@@ -37,6 +45,10 @@
     },
     {
       "src": "/editor",
+      "dest": "api/premium.py"
+    },
+    {
+      "src": "/builder",
       "dest": "api/premium.py"
     },
     {
