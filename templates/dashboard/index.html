@@ -139,7 +139,7 @@
                                         {{ resume.title if resume.title else 'Untitled Resume' }}
                                     </h3>
                                     <span class="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200 shrink-0">
-                                        {{ resume.template_used if resume.template_used else 'Modern' }}
+                                        {{ resume.content_json.target_role if (resume.content_json and resume.content_json.target_role) else (resume.template_used if resume.template_used else 'Modern') }}
                                     </span>
                                 </div>
 
@@ -153,8 +153,8 @@
                                 <a href="/editor?id={{ resume.id }}" class="text-[#02353C] hover:text-emerald-700 font-semibold flex items-center gap-1">
                                     <i class="fa-solid fa-pen-to-square"></i> Edit
                                 </a>
-                                <a href="/preview?id={{ resume.id }}" class="text-slate-400 hover:text-slate-700" title="Preview PDF">
-                                    <i class="fa-solid fa-eye text-sm"></i>
+                                <a href="/preview?id={{ resume.id }}" class="text-slate-500 hover:text-slate-800 font-semibold flex items-center gap-1" title="View / Print PDF">
+                                    <i class="fa-solid fa-eye text-sm"></i> View / PDF
                                 </a>
                             </div>
                         </div>
