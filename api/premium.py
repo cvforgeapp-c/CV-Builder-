@@ -238,7 +238,7 @@ def preview():
         return redirect("/dashboard")
 
 # ============================================================
-# SAVE RESUME ENDPOINT (WITH POSTGRES NOT NULL FIX)
+# SAVE RESUME ENDPOINT (POSTGRES SAFEGUARD & DIRECT PREVIEW REDIRECT)
 # ============================================================
 
 @premium_app.route("/api/v1/resumes/save", methods=["POST"])
@@ -309,7 +309,8 @@ def save_resume():
     try:
         db.session.commit()
         flash("Resume saved successfully!", "success")
-        return redirect("/dashboard")
+        # Direct redirect to preview/download route for the saved CV
+        return redirect(f"/preview?id={resume.id}")
     except Exception as e:
         db.session.rollback()
         print(f"Save Resume Error: {e}")
