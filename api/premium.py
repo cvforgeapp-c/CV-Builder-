@@ -67,6 +67,9 @@ login_manager.login_view = "auth.login"
 login_manager.login_message = "Please log in to access your account settings."
 login_manager.login_message_category = "info"
 
+# Initialize OpenAI API Key
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
 # ============================================================
 # PADDLE CONFIGURATION
 # ============================================================
@@ -211,6 +214,11 @@ def editor():
         return render_template("index.html", resume=resume, user=current_user)
 
 
+@premium_app.route("/builder")
+def builder_redirect():
+    return redirect("/editor")
+
+
 @premium_app.route("/pricing")
 def pricing():
     try:
@@ -292,6 +300,89 @@ def save_resume():
         print(f"Save Resume Error: {e}")
         flash("Failed to save resume.", "error")
         return redirect("/editor")
+
+# ============================================================
+# UNIVERSAL CONTEXT-AWARE AI GENERATION ENDPOINT
+# ============================================================
+
+@premium_app.route("/api/v1/ai/generate-field", methods=["POST"])
+@login_required
+def generate_ai_field():
+    # Check credit balance for Free Tier
+    if not getattr(current_user, "is_premium", False) and current_user.ai_credits_remaining <= 0:
+        return jsonify({"error": "No AI credits remaining. Please upgrade to Premium."}), 403
+
+    data = request.get_json(silent=True) or {}
+    field_type = data.get("field_type", "summary")  # 'summary', 'experience', 'project'
+    target_role = data.get("target_role", "Professional")
+    job_title = data.get("job_title", "")
+    skills = data.get("skills", "")
+    current_input = data.get("current_input", "")
+
+    # Build dynamically tailored prompts based on the field type
+    if field_type == "experience":
+        prompt = f"""
+        Transform these raw notes or work duties into 3 high-impact, ATS-optimized resume bullet points for a {target_role} ({job_title}).
+        Key Skills Context: {skills}
+        Raw Notes: "{current_input}"
+
+        Requirements:
+        - Start every bullet point with a strong action verb (e.g., Engineered, Spearheaded, Optimized, Managed).
+        - Include realistic, industry-appropriate metrics or percentages.
+        - Return ONLY the bullet points starting with hyphen (-), with no introductory text or quotes.
+        """
+    elif field_type == "project":
+        prompt = f"""
+        Write a concise, professional 2-sentence project overview for a CV.
+        Target Role: {target_role}
+        Input/Tech Stack Context: "{current_input}"
+
+        Requirements:
+        - Highlight project scope, implementation, and delivered impact.
+        - Return ONLY the clean paragraph text without quotation marks.
+        """
+    else:  # summary
+        prompt = f"""
+        Write a high-impact, professional 3-sentence executive summary for a CV.
+        Target Professional Role: {target_role}
+        Recent Job Title: {job_title}
+        Key Skills: {skills}
+        User Context: "{current_input}"
+
+        Requirements:
+        - Concise, professional, and ATS-optimized for top global employers.
+        - Return ONLY the paragraph text without quotation marks or fluff.
+        """
+
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4o",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=220,
+            temperature=0.7
+        )
+
+        choices = getattr(response, "choices", None)
+        if choices and len(choices) > 0:
+            generated_text = choices[0].message.content.strip()
+        else:
+            generated_text = f"Results-driven {target_role} with proven experience delivering measurable operational success and driving key strategic initiatives."
+
+        # Deduct 1 credit for free tier users
+        if not getattr(current_user, "is_premium", False):
+            current_user.ai_credits_remaining = max(0, current_user.ai_credits_remaining - 1)
+            db.session.commit()
+
+        return jsonify({
+            "result": generated_text,
+            "credits_left": current_user.ai_credits_remaining
+        })
+
+    except Exception as e:
+        print(f"OpenAI Generation Error: {e}")
+        # Dynamic fallback response if API key is missing or fails
+        fallback_text = f"Accomplished {target_role} with a strong track record of operational excellence, strategic project execution, and organizational growth."
+        return jsonify({"result": fallback_text})
 
 # ============================================================
 # DASHBOARD ROUTES
