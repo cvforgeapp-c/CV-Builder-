@@ -72,31 +72,31 @@
             <!-- HEADER SECTION: Standard Linear Flow -->
             <div class="text-center border-b border-slate-300 pb-5 mb-6">
                 <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 uppercase tracking-wide">
-                    {{ resume.content_json.full_name if (resume.content_json and resume.content_json.full_name) else 'Your Full Name' }}
+                    {{ resume.content_json.full_name if (resume.content_json and resume.content_json.full_name) else 'Your Full Name' }}[span_0](start_span)[span_0](end_span)
                 </h1>
                 
                 {% if resume.content_json and resume.content_json.target_role %}
                     <p class="text-sm font-semibold text-slate-700 tracking-wider mt-1 uppercase">
-                        {{ resume.content_json.target_role }}
+                        {{ resume.content_json.target_role }}[span_1](start_span)[span_1](end_span)
                     </p>
                 {% endif %}
 
                 <!-- Contact Info Line -->
                 <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-slate-600 mt-2 font-medium">
                     {% if resume.content_json and resume.content_json.email %}
-                        <span>{{ resume.content_json.email }}</span>
+                        <span>{{ resume.content_json.email }}[span_2](start_span)[span_2](end_span)</span>
                     {% endif %}
                     {% if resume.content_json and resume.content_json.phone %}
-                        <span>• {{ resume.content_json.phone }}</span>
+                        <span>• {{ resume.content_json.phone }}[span_3](start_span)[span_3](end_span)</span>
                     {% endif %}
                     {% if resume.content_json and resume.content_json.location %}
-                        <span>• {{ resume.content_json.location }}</span>
+                        <span>• {{ resume.content_json.location }}[span_4](start_span)[span_4](end_span)</span>
                     {% endif %}
                     {% if resume.content_json and resume.content_json.linkedin %}
-                        <span>• {{ resume.content_json.linkedin }}</span>
+                        <span>• {{ resume.content_json.linkedin }}[span_5](start_span)[span_5](end_span)</span>
                     {% endif %}
                     {% if resume.content_json and resume.content_json.portfolio %}
-                        <span>• {{ resume.content_json.portfolio }}</span>
+                        <span>• {{ resume.content_json.portfolio }}[span_6](start_span)[span_6](end_span)</span>
                     {% endif %}
                 </div>
             </div>
@@ -108,7 +108,7 @@
                     Professional Summary
                 </h2>
                 <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                    {{ resume.content_json.summary }}
+                    {{ resume.content_json.summary }}[span_7](start_span)[span_7](end_span)
                 </p>
             </div>
             {% endif %}
@@ -124,23 +124,23 @@
                     <div>
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between">
                             <h3 class="font-bold text-slate-900 text-xs sm:text-sm">
-                                {{ resume.content_json.job_title if resume.content_json.job_title else 'Role Title' }}
+                                {{ resume.content_json.job_title if resume.content_json.job_title else 'Role Title' }}[span_8](start_span)[span_8](end_span)
                                 {% if resume.content_json.company %}
-                                    <span class="font-normal text-slate-700">| {{ resume.content_json.company }}</span>
+                                    <span class="font-normal text-slate-700">| {{ resume.content_json.company }}[span_9](start_span)[span_9](end_span)</span>
                                 {% endif %}
                             </h3>
                             <span class="text-xs font-medium text-slate-600">
-                                {{ resume.content_json.job_dates if resume.content_json.job_dates else '' }}
+                                {{ resume.content_json.job_dates if resume.content_json.job_dates else '' }}[span_10](start_span)[span_10](end_span)
                             </span>
                         </div>
 
                         {% if resume.content_json.job_location %}
-                            <p class="text-xs text-slate-600 mb-1">{{ resume.content_json.job_location }}</p>
+                            <p class="text-xs text-slate-600 mb-1">{{ resume.content_json.job_location }}[span_11](start_span)[span_11](end_span)</p>
                         {% endif %}
 
                         {% if resume.content_json.experience_bullets %}
                             <div class="text-xs text-slate-700 leading-relaxed whitespace-pre-line mt-1">
-                                {{ resume.content_json.experience_bullets }}
+                                {{ resume.content_json.experience_bullets }}[span_12](start_span)[span_12](end_span)
                             </div>
                         {% endif %}
                     </div>
@@ -158,17 +158,17 @@
                 <div>
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between">
                         <h3 class="font-bold text-slate-900 text-xs sm:text-sm">
-                            {{ resume.content_json.education_degree if resume.content_json.education_degree else '' }}
+                            {{ resume.content_json.education_degree if resume.content_json.education_degree else '' }}[span_13](start_span)[span_13](end_span)
                             {% if resume.content_json.education_school %}
-                                <span class="font-normal text-slate-700">, {{ resume.content_json.education_school }}</span>
+                                <span class="font-normal text-slate-700">, {{ resume.content_json.education_school }}[span_14](start_span)[span_14](end_span)</span>
                             {% endif %}
                         </h3>
                         <span class="text-xs font-medium text-slate-600">
-                            {{ resume.content_json.education_dates if resume.content_json.education_dates else '' }}
+                            {{ resume.content_json.education_dates if resume.content_json.education_dates else '' }}[span_15](start_span)[span_15](end_span)
                         </span>
                     </div>
                     {% if resume.content_json.education_honors %}
-                        <p class="text-xs text-slate-700 font-medium mt-0.5">{{ resume.content_json.education_honors }}</p>
+                        <p class="text-xs text-slate-700 font-medium mt-0.5">{{ resume.content_json.education_honors }}[span_16](start_span)[span_16](end_span)</p>
                     {% endif %}
                 </div>
             </div>
@@ -183,15 +183,15 @@
 
                 <div class="space-y-1 text-xs text-slate-700">
                     {% if resume.content_json.skills_tech %}
-                        <p><strong class="text-slate-900">Technical Skills:</strong> {{ resume.content_json.skills_tech }}</p>
+                        <p><strong class="text-slate-900">Technical Skills:</strong> {{ resume.content_json.skills_tech }}[span_17](start_span)[span_17](end_span)</p>
                     {% endif %}
 
                     {% if resume.content_json.skills_soft %}
-                        <p><strong class="text-slate-900">Core Competencies:</strong> {{ resume.content_json.skills_soft }}</p>
+                        <p><strong class="text-slate-900">Core Competencies:</strong> {{ resume.content_json.skills_soft }}[span_18](start_span)[span_18](end_span)</p>
                     {% endif %}
 
                     {% if resume.content_json.certifications %}
-                        <p><strong class="text-slate-900">Certifications & Licenses:</strong> {{ resume.content_json.certifications }}</p>
+                        <p><strong class="text-slate-900">Certifications & Licenses:</strong> {{ resume.content_json.certifications }}[span_19](start_span)[span_19](end_span)</p>
                     {% endif %}
                 </div>
             </div>
@@ -208,14 +208,14 @@
                     {% if resume.content_json.projects %}
                     <div>
                         <strong class="text-slate-900">Key Projects / Research:</strong>
-                        <p class="mt-0.5 leading-relaxed">{{ resume.content_json.projects }}</p>
+                        <p class="mt-0.5 leading-relaxed">{{ resume.content_json.projects }}[span_20](start_span)[span_20](end_span)</p>
                     </div>
                     {% endif %}
 
                     {% if resume.content_json.languages %}
                     <div>
                         <strong class="text-slate-900">Languages:</strong>
-                        <span class="ml-1">{{ resume.content_json.languages }}</span>
+                        <span class="ml-1">{{ resume.content_json.languages }}[span_21](start_span)[span_21](end_span)</span>
                     </div>
                     {% endif %}
                 </div>
@@ -230,10 +230,10 @@
             <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto text-xl font-bold">
                 <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
-            <h2 class="text-lg font-bold text-slate-900">Document Not Found</h2>
-            <p class="text-slate-500 text-xs">The requested CV record could not be loaded.</p>
+            <h2 class="text-lg font-bold text-slate-900">Document Not Found[span_22](start_span)[span_22](end_span)</h2>
+            <p class="text-slate-500 text-xs">The requested CV record could not be loaded.[span_23](start_span)[span_23](end_span)</p>
             <a href="/editor" class="inline-block bg-[#02353C] text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow">
-                Create New CV
+                Create New CV[span_24](start_span)[span_24](end_span)
             </a>
         </div>
         {% endif %}
