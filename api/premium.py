@@ -238,7 +238,7 @@ def preview():
         return redirect("/dashboard")
 
 # ============================================================
-# SAVE RESUME ENDPOINT (POSTGRES SAFEGUARD & DIRECT PREVIEW REDIRECT)
+# SAVE RESUME ENDPOINT (SAFEGUARDED INSERT & DIRECT PREVIEW REDIRECT)
 # ============================================================
 
 @premium_app.route("/api/v1/resumes/save", methods=["POST"])
@@ -279,37 +279,24 @@ def save_resume():
         resume.content_json = content_data
         resume.updated_at = datetime.utcnow()
     else:
-        # Dynamically map attributes to satisfy potential ORM naming variations
-        resume_kwargs = {
-            "id": resume_id,
-            "user_id": current_user.id,
-            "title": title,
-            "content_json": content_data,
-            "template_used": "modern",
-            "accent_color": "#E5A93C",
-            "sidebar_color": "#02353C",
-            "updated_at": datetime.utcnow()
-        }
-
-        # Satisfy NOT NULL constraints on originalText/original_text in Postgres
-        if hasattr(Resume, "originalText"):
-            resume_kwargs["originalText"] = ""
-        elif hasattr(Resume, "original_text"):
-            resume_kwargs["original_text"] = ""
-
-        # Satisfy NOT NULL constraints on parsedData/parsed_data if present
-        if hasattr(Resume, "parsedData"):
-            resume_kwargs["parsedData"] = {}
-        elif hasattr(Resume, "parsed_data"):
-            resume_kwargs["parsed_data"] = {}
-
-        resume = Resume(**resume_kwargs)
+        # Explicit mapping for new rows to prevent database constraint exceptions
+        resume = Resume(
+            id=resume_id,
+            user_id=current_user.id,
+            title=title,
+            content_json=content_data,
+            original_text="",
+            parsed_data={},
+            template_used="modern",
+            accent_color="#E5A93C",
+            sidebar_color="#02353C",
+            updated_at=datetime.utcnow()
+        )
         db.session.add(resume)
 
     try:
         db.session.commit()
         flash("Resume saved successfully!", "success")
-        # Direct redirect to preview/download route for the saved CV
         return redirect(f"/preview?id={resume.id}")
     except Exception as e:
         db.session.rollback()
@@ -413,7 +400,6 @@ def generate_ai_field():
 
     except Exception as e:
         print(f"OpenAI Generation Exception: {e}")
-        # Return elegant fallback text instead of breaking UI with connection errors
         if field_type == "experience":
             fallback_text = f"- Accelerated project delivery timelines for {target_role} operations by 25%.\n- Implemented process automation strategies reducing manual workload overhead.\n- Mentored junior team members and aligned cross-functional objectives."
         elif field_type == "project":
