@@ -52,7 +52,7 @@
             <div class="space-y-1">
                 <div class="flex items-center space-x-2.5">
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Welcome back!</h1>
-                    {% if user and user.is_premium %}
+                    {% if user and getattr(user, 'is_premium', False) %}
                         <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
                             <i class="fa-solid fa-crown text-amber-600"></i> PRO
                         </span>
@@ -64,11 +64,11 @@
                 </div>
                 <p class="text-slate-500 text-xs sm:text-sm flex items-center gap-1.5">
                     <i class="fa-regular fa-envelope text-slate-400"></i>
-                    {{ user.email if user else 'user@example.com' }}
+                    {{ user.email if user and user.email else 'user@example.com' }}
                 </p>
             </div>
 
-            {% if not user or not user.is_premium %}
+            {% if not user or not getattr(user, 'is_premium', False) %}
                 <div class="bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl p-3.5 sm:p-4 shadow flex items-center justify-between gap-3 md:max-w-md w-full">
                     <div class="space-y-0.5">
                         <p class="font-bold text-xs uppercase tracking-wider text-amber-950">Upgrade to Premium</p>
@@ -139,7 +139,7 @@
                                         {{ resume.title if resume.title else 'Untitled Resume' }}
                                     </h3>
                                     <span class="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200 shrink-0">
-                                        {{ resume.content_json.target_role if (resume.content_json and resume.content_json.target_role) else (resume.template_used if resume.template_used else 'Modern') }}
+                                        {{ resume.content_json.target_role if (resume.content_json is mapping and resume.content_json.get('target_role')) else (resume.template_used if resume.template_used else 'Modern') }}
                                     </span>
                                 </div>
 
