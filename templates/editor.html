@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CV Builder - CVForge AI</title>
+    <title>Build Your CV - CVForge AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -13,14 +13,14 @@
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
 
-    <!-- TOP BAR -->
+    <!-- NAVIGATION HEADER -->
     <nav class="bg-[#02353C] text-white px-4 sm:px-8 py-3.5 flex items-center justify-between sticky top-0 z-50 shadow-md">
         <a href="/dashboard" class="flex items-center gap-2 font-semibold text-sm hover:text-amber-300 transition-colors">
-            <i class="fa-solid fa-arrow-left text-amber-400"></i> Dashboard
+            <i class="fa-solid fa-arrow-left text-amber-400"></i> Back to Dashboard
         </a>
         <div class="flex items-center gap-3">
-            <span class="text-xs bg-amber-400/20 text-amber-300 border border-amber-400/30 px-3 py-1 rounded-full font-semibold hidden sm:inline-block">
-                <i class="fa-solid fa-wand-magic-sparkles text-amber-400 mr-1"></i> Global CV Standard
+            <span class="text-xs bg-amber-400/10 text-amber-300 border border-amber-400/20 px-3 py-1 rounded-full font-medium hidden sm:inline-block">
+                <i class="fa-solid fa-shield-halved text-amber-400 mr-1"></i> ATS Global Standard
             </span>
             <button type="submit" form="cvForm" class="bg-[#E5A93C] hover:bg-amber-400 text-[#02353C] font-bold text-xs px-4 py-2 rounded-lg transition-all shadow-sm flex items-center gap-1.5">
                 <i class="fa-solid fa-floppy-disk"></i> Save CV
@@ -28,17 +28,23 @@
         </div>
     </nav>
 
-    <!-- BUILDER CONTAINER -->
+    <!-- MAIN FORM CONTAINER -->
     <main class="max-w-4xl mx-auto w-full px-4 py-8 space-y-6">
 
-        <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-2">
-            <h1 class="text-2xl font-bold text-slate-900">Create International Professional CV</h1>
-            <p class="text-slate-500 text-sm">Fill in your details below to build an ATS-compliant, globally accepted resume.</p>
+        <!-- BRAND HERO HOOK -->
+        <div class="bg-gradient-to-r from-[#02353C] to-[#044c56] text-white rounded-2xl p-6 sm:p-8 shadow-sm space-y-2">
+            <div class="flex items-center space-x-2 text-amber-400 text-xs font-bold uppercase tracking-widest">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> CVForge Career Engine
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">Forge Your Career Advantage</h1>
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-2xl">
+                Build an executive, ATS-friendly resume tailored for top employers worldwide. Fill in your details or use AI Assist to refine your bullet points.
+            </p>
         </div>
 
         <form id="cvForm" action="/api/v1/resumes/save" method="POST" class="space-y-6">
 
-            <!-- SECTION 1: HEADER & CONTACT INFO -->
+            <!-- SECTION 1: CONTACT INFORMATION -->
             <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-4">
                 <h2 class="text-base font-bold text-[#02353C] flex items-center gap-2 border-b border-slate-100 pb-3">
                     <i class="fa-solid fa-id-card text-amber-500"></i> Contact Information
@@ -46,41 +52,41 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Resume Document Title</label>
-                        <input type="text" name="title" value="{{ resume.title if resume else 'Software Developer CV' }}" required class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#02353C] focus:outline-none text-sm">
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Document Name (Internal Title)</label>
+                        <input type="text" name="title" placeholder="e.g. Executive Marketing Resume 2026" value="{{ resume.title if resume else '' }}" required class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#02353C] focus:outline-none text-sm">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Target Professional Title</label>
-                        <input type="text" name="target_role" placeholder="e.g. Senior Software Engineer" value="{{ resume.content_json.target_role if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#02353C] focus:outline-none text-sm">
+                        <input type="text" name="target_role" placeholder="e.g. Vice President of Marketing / Senior Software Engineer" value="{{ resume.content_json.target_role if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#02353C] focus:outline-none text-sm">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Full Name</label>
-                        <input type="text" name="full_name" placeholder="John Doe" value="{{ resume.content_json.full_name if resume and resume.content_json else '' }}" required class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#02353C] focus:outline-none text-sm">
+                        <input type="text" name="full_name" placeholder="e.g. Alex Morgan" value="{{ resume.content_json.full_name if resume and resume.content_json else '' }}" required class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#02353C] focus:outline-none text-sm">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Email Address</label>
-                        <input type="email" name="email" placeholder="john@example.com" value="{{ resume.content_json.email if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#02353C] focus:outline-none text-sm">
+                        <input type="email" name="email" placeholder="e.g. alex.morgan@example.com" value="{{ resume.content_json.email if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#02353C] focus:outline-none text-sm">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Phone (with Int. Code)</label>
-                        <input type="tel" name="phone" placeholder="+251 91 234 5678" value="{{ resume.content_json.phone if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#02353C] focus:outline-none text-sm">
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Phone Number (with country code)</label>
+                        <input type="tel" name="phone" placeholder="e.g. +1 (555) 019-2834" value="{{ resume.content_json.phone if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#02353C] focus:outline-none text-sm">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Location (City, Country)</label>
-                        <input type="text" name="location" placeholder="Addis Ababa, Ethiopia" value="{{ resume.content_json.location if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#02353C] focus:outline-none text-sm">
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Location (City, State / Country)</label>
+                        <input type="text" name="location" placeholder="e.g. New York, NY, USA" value="{{ resume.content_json.location if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#02353C] focus:outline-none text-sm">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">LinkedIn Profile URL</label>
-                        <input type="url" name="linkedin" placeholder="https://linkedin.com/in/username" value="{{ resume.content_json.linkedin if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#02353C] focus:outline-none text-sm">
+                        <input type="url" name="linkedin" placeholder="e.g. https://linkedin.com/in/alexmorgan" value="{{ resume.content_json.linkedin if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#02353C] focus:outline-none text-sm">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">GitHub / Portfolio URL</label>
-                        <input type="url" name="portfolio" placeholder="https://github.com/username" value="{{ resume.content_json.portfolio if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#02353C] focus:outline-none text-sm">
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Portfolio / Website URL</label>
+                        <input type="url" name="portfolio" placeholder="e.g. https://alexmorgan.com" value="{{ resume.content_json.portfolio if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#02353C] focus:outline-none text-sm">
                     </div>
                 </div>
             </div>
 
-            <!-- SECTION 2: PROFESSIONAL SUMMARY WITH AI ASSISTANT -->
+            <!-- SECTION 2: PROFESSIONAL SUMMARY -->
             <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-3">
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                     <h2 class="text-base font-bold text-[#02353C] flex items-center gap-2">
@@ -90,10 +96,10 @@
                         <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i> AI Assist
                     </button>
                 </div>
-                <textarea id="summaryText" name="summary" rows="4" placeholder="Results-driven professional with expertise in full-stack web application architecture..." class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#02353C] focus:outline-none text-sm leading-relaxed">{{ resume.content_json.summary if resume and resume.content_json else '' }}</textarea>
+                <textarea id="summaryText" name="summary" rows="4" placeholder="Write a brief 3-4 sentence overview of your professional background, key accomplishments, and value proposition..." class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#02353C] focus:outline-none text-sm leading-relaxed">{{ resume.content_json.summary if resume and resume.content_json else '' }}</textarea>
             </div>
 
-            <!-- SECTION 3: WORK EXPERIENCE -->
+            <!-- SECTION 3: WORK & PROFESSIONAL EXPERIENCE -->
             <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-4">
                 <h2 class="text-base font-bold text-[#02353C] flex items-center gap-2 border-b border-slate-100 pb-3">
                     <i class="fa-solid fa-briefcase text-amber-500"></i> Work & Professional Experience
@@ -103,24 +109,24 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Company / Organization</label>
-                            <input type="text" name="company" placeholder="e.g. Acme Tech" value="{{ resume.content_json.company if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
+                            <input type="text" name="company" placeholder="e.g. Deloitte / Google / Johns Hopkins" value="{{ resume.content_json.company if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Job Title</label>
-                            <input type="text" name="job_title" placeholder="e.g. Full-Stack Developer" value="{{ resume.content_json.job_title if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
+                            <input type="text" name="job_title" placeholder="e.g. Senior Financial Analyst / Project Manager" value="{{ resume.content_json.job_title if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Location (City, Country)</label>
-                            <input type="text" name="job_location" placeholder="Addis Ababa, Ethiopia" value="{{ resume.content_json.job_location if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Location</label>
+                            <input type="text" name="job_location" placeholder="e.g. Chicago, IL, USA" value="{{ resume.content_json.job_location if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Dates (e.g. Jan 2023 - Present)</label>
-                            <input type="text" name="job_dates" placeholder="Jan 2023 - Present" value="{{ resume.content_json.job_dates if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Dates Employed</label>
+                            <input type="text" name="job_dates" placeholder="e.g. Jan 2022 - Present" value="{{ resume.content_json.job_dates if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Key Achievements & Bullet Points (Quantifiable Impact)</label>
-                        <textarea name="experience_bullets" rows="3" placeholder="- Engineered REST APIs using Flask and Python, reducing latency by 35%&#10;- Led a team of 4 developers to build cloud microservices on Render" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm leading-relaxed">{{ resume.content_json.experience_bullets if resume and resume.content_json else '' }}</textarea>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Key Accomplishments & Bullet Points (Metric-Driven)</label>
+                        <textarea name="experience_bullets" rows="4" placeholder="- Spearheaded cross-functional initiative that increased annual recurring revenue by 18%&#10;- Managed $2.5M operational budget while maintaining 99.8% compliance efficiency&#10;- Optimized workflow procedures, cutting client onboarding time by 40%" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm leading-relaxed">{{ resume.content_json.experience_bullets if resume and resume.content_json else '' }}</textarea>
                     </div>
                 </div>
             </div>
@@ -128,25 +134,25 @@
             <!-- SECTION 4: EDUCATION -->
             <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-4">
                 <h2 class="text-base font-bold text-[#02353C] flex items-center gap-2 border-b border-slate-100 pb-3">
-                    <i class="fa-solid fa-graduation-cap text-amber-500"></i> Education & Academics
+                    <i class="fa-solid fa-graduation-cap text-amber-500"></i> Education & Academic Credentials
                 </h2>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Degree Name</label>
-                        <input type="text" name="education_degree" placeholder="e.g. B.Sc. in Computer Science" value="{{ resume.content_json.education_degree if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
+                        <input type="text" name="education_degree" placeholder="e.g. B.S. in Business Administration / M.S. in Data Science" value="{{ resume.content_json.education_degree if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Institution & Location</label>
-                        <input type="text" name="education_school" placeholder="e.g. Addis Ababa University" value="{{ resume.content_json.education_school if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
+                        <input type="text" name="education_school" placeholder="e.g. Harvard University, Cambridge, MA" value="{{ resume.content_json.education_school if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Graduation Date / Year</label>
-                        <input type="text" name="education_dates" placeholder="e.g. 2020 - 2024" value="{{ resume.content_json.education_dates if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Graduation Year</label>
+                        <input type="text" name="education_dates" placeholder="e.g. May 2021" value="{{ resume.content_json.education_dates if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Honors / Thesis (Optional)</label>
-                        <input type="text" name="education_honors" placeholder="e.g. First Class Honors / Thesis Title" value="{{ resume.content_json.education_honors if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Honors / Distinctions (Optional)</label>
+                        <input type="text" name="education_honors" placeholder="e.g. Magna Cum Laude / Dean's List" value="{{ resume.content_json.education_honors if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
                     </div>
                 </div>
             </div>
@@ -154,45 +160,45 @@
             <!-- SECTION 5: SKILLS & CERTIFICATIONS -->
             <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-4">
                 <h2 class="text-base font-bold text-[#02353C] flex items-center gap-2 border-b border-slate-100 pb-3">
-                    <i class="fa-solid fa-list-check text-amber-500"></i> Core Skills & Certifications
+                    <i class="fa-solid fa-list-check text-amber-500"></i> Core Skills & Credentials
                 </h2>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Technical Skills (Comma Separated)</label>
-                        <input type="text" name="skills_tech" placeholder="Python, Next.js, PostgreSQL, Tailwind CSS" value="{{ resume.content_json.skills_tech if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Technical / Professional Skills</label>
+                        <input type="text" name="skills_tech" placeholder="e.g. Financial Modeling, Python, Salesforce, SEO Strategy, SQL" value="{{ resume.content_json.skills_tech if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Soft Skills / Domain Expertise</label>
-                        <input type="text" name="skills_soft" placeholder="Agile Workflows, Leadership, Problem Solving" value="{{ resume.content_json.skills_soft if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Soft Skills & Leadership</label>
+                        <input type="text" name="skills_soft" placeholder="e.g. Cross-Functional Leadership, Strategic Planning, Negotiation" value="{{ resume.content_json.skills_soft if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
                     </div>
                     <div class="sm:col-span-2">
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Certifications & Licenses</label>
-                        <input type="text" name="certifications" placeholder="AWS Certified Developer, Professional Medical License" value="{{ resume.content_json.certifications if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Certifications & Professional Licenses</label>
+                        <input type="text" name="certifications" placeholder="e.g. PMP, CFA Level II, AWS Certified Solutions Architect, CPA" value="{{ resume.content_json.certifications if resume and resume.content_json else '' }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm">
                     </div>
                 </div>
             </div>
 
-            <!-- SECTION 6: PROJECTS, LANGUAGES & PUBLICATIONS -->
+            <!-- SECTION 6: PROJECTS & LANGUAGES -->
             <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-4">
                 <h2 class="text-base font-bold text-[#02353C] flex items-center gap-2 border-b border-slate-100 pb-3">
-                    <i class="fa-solid fa-globe text-amber-500"></i> Projects, Languages & Publications
+                    <i class="fa-solid fa-globe text-amber-500"></i> Projects & Languages
                 </h2>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Key Projects & Tech Stack</label>
-                        <textarea name="projects" rows="3" placeholder="CVForge AI: Built AI resume builder with Flask & PostgreSQL" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm leading-relaxed">{{ resume.content_json.projects if resume and resume.content_json else '' }}</textarea>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Key Projects or Research</label>
+                        <textarea name="projects" rows="3" placeholder="e.g. Global Supply Chain Audit: Re-architected logistics distribution across 12 US hubs..." class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm leading-relaxed">{{ resume.content_json.projects if resume and resume.content_json else '' }}</textarea>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Languages (with Fluency Levels)</label>
-                        <textarea name="languages" rows="3" placeholder="English (Full Professional), Amharic (Native), Afaan Oromoo (Professional)" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm leading-relaxed">{{ resume.content_json.languages if resume and resume.content_json else '' }}</textarea>
+                        <textarea name="languages" rows="3" placeholder="e.g. English (Native), Spanish (Full Professional), French (Intermediate)" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm leading-relaxed">{{ resume.content_json.languages if resume and resume.content_json else '' }}</textarea>
                     </div>
                 </div>
             </div>
 
-            <!-- FORM ACTIONS -->
-            <div class="flex items-center justify-between pt-2">
+            <!-- FORM FOOTER BUTTONS -->
+            <div class="flex items-center justify-between pt-4">
                 <a href="/dashboard" class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 font-medium text-sm hover:bg-slate-100 transition-colors">
                     Cancel
                 </a>
@@ -208,10 +214,13 @@
     <script>
         function generateAISummary() {
             const summaryArea = document.getElementById('summaryText');
-            summaryArea.value = "Generating summary with AI...";
+            if (summaryArea.value.trim() !== "" && !confirm("Do you want to overwrite your existing summary with AI?")) {
+                return;
+            }
+            summaryArea.value = "Generating summary with AI Assist...";
             
             setTimeout(() => {
-                summaryArea.value = "Results-driven professional with extensive expertise in full-stack web application development, database architecture, and cloud services. Proven track record in building scalable SaaS solutions and optimizing user workflows.";
+                summaryArea.value = "Results-driven professional with a proven track record of driving operational efficiency and organizational growth. Experienced in leading cross-functional teams, executing high-impact strategic initiatives, and delivering scalable business solutions across competitive global markets.";
             }, 1200);
         }
     </script>
