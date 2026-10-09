@@ -238,40 +238,45 @@ def preview():
         return redirect("/dashboard")
 
 # ============================================================
-# SAVE RESUME ENDPOINT (SAFEGUARDED INSERT & DIRECT PREVIEW REDIRECT)
+# SAVE RESUME ENDPOINT (DUAL DYNAMIC PAYLOAD & DIRECT PREVIEW REDIRECT)
 # ============================================================
 
 @premium_app.route("/api/v1/resumes/save", methods=["POST"])
 @login_required
 def save_resume():
-    title = request.form.get("title", "My CV")
+    if request.is_json:
+        data = request.get_json(silent=True) or {}
+    else:
+        data = request.form.to_dict()
+
+    title = data.get("title") or "My CV"
 
     content_data = {
-        "target_role": request.form.get("target_role", ""),
-        "full_name": request.form.get("full_name", ""),
-        "email": request.form.get("email", ""),
-        "phone": request.form.get("phone", ""),
-        "location": request.form.get("location", ""),
-        "linkedin": request.form.get("linkedin", ""),
-        "portfolio": request.form.get("portfolio", ""),
-        "summary": request.form.get("summary", ""),
-        "company": request.form.get("company", ""),
-        "job_title": request.form.get("job_title", ""),
-        "job_location": request.form.get("job_location", ""),
-        "job_dates": request.form.get("job_dates", ""),
-        "experience_bullets": request.form.get("experience_bullets", ""),
-        "education_degree": request.form.get("education_degree", ""),
-        "education_school": request.form.get("education_school", ""),
-        "education_dates": request.form.get("education_dates", ""),
-        "education_honors": request.form.get("education_honors", ""),
-        "skills_tech": request.form.get("skills_tech", ""),
-        "skills_soft": request.form.get("skills_soft", ""),
-        "certifications": request.form.get("certifications", ""),
-        "projects": request.form.get("projects", ""),
-        "languages": request.form.get("languages", "")
+        "target_role": data.get("target_role", ""),
+        "full_name": data.get("full_name", ""),
+        "email": data.get("email", ""),
+        "phone": data.get("phone", ""),
+        "location": data.get("location", ""),
+        "linkedin": data.get("linkedin", ""),
+        "portfolio": data.get("portfolio", ""),
+        "summary": data.get("summary", ""),
+        "company": data.get("company", ""),
+        "job_title": data.get("job_title", ""),
+        "job_location": data.get("job_location", ""),
+        "job_dates": data.get("job_dates", ""),
+        "experience_bullets": data.get("experience_bullets", ""),
+        "education_degree": data.get("education_degree", ""),
+        "education_school": data.get("education_school", ""),
+        "education_dates": data.get("education_dates", ""),
+        "education_honors": data.get("education_honors", ""),
+        "skills_tech": data.get("skills_tech", ""),
+        "skills_soft": data.get("skills_soft", ""),
+        "certifications": data.get("certifications", ""),
+        "projects": data.get("projects", ""),
+        "languages": data.get("languages", "")
     }
 
-    resume_id = request.args.get("id") or str(uuid.uuid4())
+    resume_id = request.args.get("id") or data.get("id") or str(uuid.uuid4())
     resume = db.session.get(Resume, resume_id)
 
     if resume and resume.user_id == current_user.id:
@@ -279,7 +284,6 @@ def save_resume():
         resume.content_json = content_data
         resume.updated_at = datetime.utcnow()
     else:
-        # Explicit mapping for new rows to prevent database constraint exceptions
         resume = Resume(
             id=resume_id,
             user_id=current_user.id,
@@ -295,13 +299,19 @@ def save_resume():
 
     try:
         db.session.commit()
+        
+        if request.is_json or request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return jsonify({"status": "success", "redirect_url": f"/preview?id={resume.id}"}), 200
+
         flash("Resume saved successfully!", "success")
         return redirect(f"/preview?id={resume.id}")
     except Exception as e:
         db.session.rollback()
         print(f"Save Resume Error: {e}")
+        if request.is_json:
+            return jsonify({"error": "Failed to save resume."}), 500
         flash("Failed to save resume.", "error")
-        return redirect("/editor")
+        return redirect(f"/editor?id={resume_id}")
 
 # ============================================================
 # UNIVERSAL CONTEXT-AWARE AI GENERATION ENDPOINT
