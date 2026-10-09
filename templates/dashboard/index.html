@@ -52,7 +52,7 @@
             <div class="space-y-1">
                 <div class="flex items-center space-x-2.5">
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Welcome back!</h1>
-                    {% if user and getattr(user, 'is_premium', False) %}
+                    {% if user and user.is_premium %}
                         <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
                             <i class="fa-solid fa-crown text-amber-600"></i> PRO
                         </span>
@@ -68,7 +68,7 @@
                 </p>
             </div>
 
-            {% if not user or not getattr(user, 'is_premium', False) %}
+            {% if not user or not user.is_premium %}
                 <div class="bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl p-3.5 sm:p-4 shadow flex items-center justify-between gap-3 md:max-w-md w-full">
                     <div class="space-y-0.5">
                         <p class="font-bold text-xs uppercase tracking-wider text-amber-950">Upgrade to Premium</p>
