@@ -35,7 +35,6 @@ class Resume(db.Model):
     title = db.Column(db.String(255), default="My Resume")
     content_json = db.Column("content_json", db.JSON, nullable=True)
     original_text = db.Column("originalText", db.Text, nullable=True, default="")
-    parsed_data = db.Column("parsedData", db.JSON, nullable=True, default=dict)
     template_used = db.Column("template_used", db.String(50), default="modern")
     accent_color = db.Column("accent_color", db.String(20), default="#E5A93C")
     sidebar_color = db.Column("sidebar_color", db.String(20), default="#02353C")
