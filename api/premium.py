@@ -195,6 +195,41 @@ def public_settings():
         return render_template("dashboard/account.html", user=None)
 
 # ============================================================
+# EDITOR, PRICING & PREVIEW ROUTES
+# ============================================================
+
+@premium_app.route("/editor")
+@login_required
+def editor():
+    resume_id = request.args.get("id")
+    resume = None
+    if resume_id:
+        resume = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first()
+    try:
+        return render_template("editor.html", resume=resume, user=current_user)
+    except Exception:
+        return render_template("index.html", resume=resume, user=current_user)
+
+
+@premium_app.route("/pricing")
+def pricing():
+    try:
+        return render_template("pricing.html", user=current_user)
+    except Exception:
+        return render_template("landing.html", user=current_user)
+
+
+@premium_app.route("/preview")
+@login_required
+def preview():
+    resume_id = request.args.get("id")
+    resume = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first() if resume_id else None
+    try:
+        return render_template("preview.html", resume=resume, user=current_user)
+    except Exception:
+        return redirect("/dashboard")
+
+# ============================================================
 # DASHBOARD ROUTES
 # ============================================================
 
