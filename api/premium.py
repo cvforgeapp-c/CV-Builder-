@@ -344,7 +344,7 @@ def save_resume():
         return redirect(f"/editor?id={resume_id}")
 
 # ============================================================
-# DUAL OPENAI & GEMINI AI GENERATION ENDPOINT
+# DUAL OPENAI & GEMINI AI GENERATION ENDPOINT WITH DIAGNOSTICS
 # ============================================================
 
 DEVELOPER_EMAILS = ["subhnllha@gmail.com"]
@@ -453,7 +453,7 @@ def generate_ai_field():
 
     generated_text = None
 
-    # 6. STEP 1: TRY OPENAI GENERATION (gpt-4o)
+    # 6. STEP 1: OPENAI GENERATION WITH EXPLICIT LOGGING
     openai_key = os.getenv("OPENAI_API_KEY")
     if openai_key:
         try:
@@ -465,7 +465,9 @@ def generate_ai_field():
                     max_tokens=250,
                     temperature=0.7
                 )
-                generated_text = response.choices[0].message.content.strip()
+                if response.choices and response.choices[0].message.content:
+                    generated_text = response.choices[0].message.content.strip()
+                    print("SUCCESS: AI Content generated via OpenAI gpt-4o")
             else:
                 openai.api_key = openai_key
                 response = openai.ChatCompletion.create(
@@ -474,23 +476,32 @@ def generate_ai_field():
                     max_tokens=250,
                     temperature=0.7
                 )
-                generated_text = response.choices[0].message.content.strip()
+                if response.choices and response.choices[0].message.content:
+                    generated_text = response.choices[0].message.content.strip()
+                    print("SUCCESS: AI Content generated via OpenAI ChatCompletion")
         except Exception as e:
-            print(f"OpenAI Attempt Failed: {e}")
+            print(f"CRITICAL OPENAI FAILURE: {type(e).__name__} - {str(e)}")
+    else:
+        print("OPENAI WARNING: OPENAI_API_KEY is missing from environment variables.")
 
-    # 7. STEP 2: FALLBACK TO GOOGLE GEMINI IF OPENAI FAILS
+    # 7. STEP 2: FALLBACK TO GOOGLE GEMINI WITH EXPLICIT LOGGING
     gemini_key = os.getenv("GEMINI_API_KEY")
     if not generated_text and gemini_key and genai:
         try:
+            genai.configure(api_key=gemini_key)
             gemini_model = genai.GenerativeModel('gemini-1.5-flash')
             gemini_response = gemini_model.generate_content(prompt)
             if gemini_response and gemini_response.text:
                 generated_text = gemini_response.text.strip()
+                print("SUCCESS: AI Content generated via Google Gemini")
         except Exception as e:
-            print(f"Gemini Attempt Failed: {e}")
+            print(f"CRITICAL GEMINI FAILURE: {type(e).__name__} - {str(e)}")
+    elif not generated_text and not gemini_key:
+        print("GEMINI WARNING: GEMINI_API_KEY is missing from environment variables.")
 
     # 8. STEP 3: INDUSTRY-TAILORED DYNAMIC FALLBACK IF BOTH APIS FAIL
     if not generated_text:
+        print("FALLBACK ENGAGED: Returning dynamic domain-specific template.")
         if field_type == "experience":
             if is_medical:
                 generated_text = (
@@ -518,7 +529,6 @@ def generate_ai_field():
             else:
                 generated_text = f"Led high-impact strategic initiative focused on {skills or target_role}. Delivered measurable operational performance gains ahead of project deadlines."
         elif field_type == "skills":
-            # 8-Domain Skill Fallback Lookup
             if any(w in role_lower for w in ["doctor", "physician", "pediatric", "clinical", "nurse", "medical", "health", "hospital"]):
                 generated_text = domain_fallbacks["healthcare"]
             elif any(w in role_lower for w in ["developer", "engineer", "software", "architect", "tech", "data", "full-stack", "backend", "frontend"]):
