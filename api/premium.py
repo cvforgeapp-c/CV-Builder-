@@ -329,15 +329,25 @@ def save_resume():
         return redirect(f"/editor?id={resume_id}")
 
 # ============================================================
-# DUAL OPENAI & GEMINI AI GENERATION ENDPOINT
+# DUAL OPENAI & GEMINI AI GENERATION ENDPOINT (WITH DEV BYPASS & DYNAMIC FALLBACK)
 # ============================================================
+
+DEVELOPER_EMAILS = ["subhnllha@gmail.com"]
 
 @premium_app.route("/api/v1/ai/generate-field", methods=["POST"])
 @login_required
 def generate_ai_field():
-    if not getattr(current_user, "is_premium", False) and getattr(current_user, "ai_credits_remaining", 0) <= 0:
+    # 1. DEVELOPER & PREMIUM CHECK
+    user_email = getattr(current_user, "email", "").lower().strip()
+    is_developer = user_email in DEVELOPER_EMAILS or user_email == "subhnllha@gmail.com"
+    
+    is_premium_user = getattr(current_user, "is_premium", False) or is_developer
+    credits_remaining = getattr(current_user, "ai_credits_remaining", 0)
+
+    if not is_premium_user and credits_remaining <= 0:
         return jsonify({"error": "No AI credits remaining. Please upgrade to Premium."}), 403
 
+    # 2. EXTRACT FORM PAYLOAD
     data = request.get_json(silent=True) or {}
     field_type = data.get("field_type", "summary")
     
@@ -347,42 +357,57 @@ def generate_ai_field():
     skills = data.get("skills") or ""
     current_input = data.get("current_input") or ""
 
+    # 3. BUILD CONTEXT STRING
     context_details = []
     if target_role: context_details.append(f"Target Role: {target_role}")
     if job_title: context_details.append(f"Recent Job Title: {job_title}")
     if full_name: context_details.append(f"Candidate Name: {full_name}")
     if skills: context_details.append(f"Technical & Core Skills: {skills}")
-    if current_input: context_details.append(f"User Notes: {current_input}")
+    if current_input: context_details.append(f"User Notes/Draft: {current_input}")
     
     context_str = "\n".join(context_details)
 
+    # 4. INDUSTRY-AWARE FALLBACK CONSTRUCTOR
+    role_lower = target_role.lower()
     skills_part = f" specializing in {skills}" if skills else ""
     job_part = f" with hands-on experience as a {job_title}" if job_title and job_title != target_role else ""
-    dynamic_fallback_summary = f"Dedicated {target_role}{job_part}{skills_part}. Proven ability to execute complex technical initiatives, optimize workflow standards, and deliver high-quality outcomes. Focused on driving continuous professional growth and domain excellence."
 
+    if any(word in role_lower for word in ["doctor", "physician", "pediatric", "clinical", "nurse", "medical", "health", "hospital"]):
+        impact_sentence = "Proven ability to deliver high-quality patient care, optimize triage workflows, and maintain strict clinical standards."
+        growth_sentence = "Dedicated to advancing patient health outcomes and fostering evidence-based healthcare excellence."
+    elif any(word in role_lower for word in ["developer", "engineer", "software", "architect", "tech", "data", "full-stack", "backend", "frontend"]):
+        impact_sentence = "Proven ability to architect scalable system solutions, optimize backend performance, and build maintainable code bases."
+        growth_sentence = "Focused on leveraging modern technical frameworks to engineer high-efficiency web applications."
+    else:
+        impact_sentence = "Proven ability to execute key strategic initiatives, optimize operational workflows, and drive cross-functional productivity."
+        growth_sentence = "Committed to delivering measurable business impact and driving continuous operational growth."
+
+    dynamic_fallback_summary = f"Dedicated {target_role}{job_part}{skills_part}. {impact_sentence} {growth_sentence}"
+
+    # 5. CONSTRUCT AI PROMPTS
     if field_type == "summary":
         prompt = f"""
         You are an elite ATS resume writer and executive career strategist.
-        Write a high-impact, 3-sentence professional summary for {full_name} using ALL provided details:
+        Write a high-impact, 3-sentence executive summary for {full_name} using ALL provided details below.
 
         Context:
         {context_str}
 
         Instructions:
-        1. Sentence 1: Combine Target Role ({target_role}) and Job Title ({job_title}).
-        2. Sentence 2: Weave in listed skills ({skills}).
+        1. Sentence 1: Combine Target Role ({target_role}) and Recent Experience ({job_title}).
+        2. Sentence 2: Seamlessly integrate 2 to 4 of their listed skills ({skills}).
         3. Sentence 3: End with a strong value statement on driving quality and impact.
-        4. Return ONLY the final paragraph.
+        4. Do NOT use generic filler sentences. Return ONLY the final paragraph.
         """
     elif field_type == "experience":
         prompt = f"""
-        Transform these details into 3 high-impact, ATS-optimized bullet points:
+        Transform these details into 3 high-impact, ATS-optimized bullet points for a resume:
         {context_str}
 
         Requirements:
-        - Start every bullet with a strong action verb.
+        - Start every bullet with a strong action verb (e.g., Engineered, Spearheaded, Optimized).
         - Integrate listed skills: {skills}.
-        - Return ONLY bullet points starting with hyphen (-).
+        - Return ONLY bullet points starting with a hyphen (-).
         """
     elif field_type == "project":
         prompt = f"""
@@ -395,15 +420,16 @@ def generate_ai_field():
         {context_str}
         """
     else:
-        prompt = f"Write an executive resume summary using:\n{context_str}"
+        prompt = f"Write an executive resume passage using:\n{context_str}"
 
     generated_text = None
 
-    # 1. TRY OPENAI FIRST
-    if os.getenv("OPENAI_API_KEY"):
+    # 6. STEP 1: TRY OPENAI GENERATION (gpt-4o)
+    openai_key = os.getenv("OPENAI_API_KEY")
+    if openai_key:
         try:
             if hasattr(openai, "OpenAI"):
-                client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+                client = openai.OpenAI(api_key=openai_key)
                 response = client.chat.completions.create(
                     model="gpt-4o",
                     messages=[{"role": "user", "content": prompt}],
@@ -412,7 +438,7 @@ def generate_ai_field():
                 )
                 generated_text = response.choices[0].message.content.strip()
             else:
-                openai.api_key = os.getenv("OPENAI_API_KEY")
+                openai.api_key = openai_key
                 response = openai.ChatCompletion.create(
                     model="gpt-4o",
                     messages=[{"role": "user", "content": prompt}],
@@ -423,8 +449,9 @@ def generate_ai_field():
         except Exception as e:
             print(f"OpenAI Attempt Failed: {e}")
 
-    # 2. FALLBACK TO GEMINI IF OPENAI WAS UNCONTAINED OR FAILED
-    if not generated_text and os.getenv("GEMINI_API_KEY") and genai:
+    # 7. STEP 2: FALLBACK TO GOOGLE GEMINI IF OPENAI FAILS
+    gemini_key = os.getenv("GEMINI_API_KEY")
+    if not generated_text and gemini_key and genai:
         try:
             gemini_model = genai.GenerativeModel('gemini-1.5-flash')
             gemini_response = gemini_model.generate_content(prompt)
@@ -433,10 +460,10 @@ def generate_ai_field():
         except Exception as e:
             print(f"Gemini Attempt Failed: {e}")
 
-    # 3. DYNAMIC SYNTHESIS FALLBACK IF BOTH APIS ARE UNREACHABLE
+    # 8. STEP 3: INDUSTRY-TAILORED DYNAMIC FALLBACK IF BOTH APIS FAIL
     if not generated_text:
         if field_type == "experience":
-            generated_text = f"- Spearheaded strategic initiatives as {job_title}, leveraging expertise in {skills or 'core domain practices'}.\n- Optimized operational workflows to maintain high efficiency.\n- Directed cross-functional project execution aligned with industry standards."
+            generated_text = f"- Spearheaded strategic initiatives as {job_title}, leveraging expertise in {skills or 'core domain practices'}.\n- Optimized operational workflows to maintain high compliance efficiency.\n- Directed cross-functional project execution aligned with industry standards."
         elif field_type == "skills":
             generated_text = skills if skills else "Strategic Planning, Process Optimization, Technical Execution, Workflow Automation"
         elif field_type == "project":
@@ -444,8 +471,8 @@ def generate_ai_field():
         else:
             generated_text = dynamic_fallback_summary
 
-    # Deduct credits for free tier users upon successful generation
-    if not getattr(current_user, "is_premium", False):
+    # 9. DEDUCT CREDITS ONLY FOR REGULAR NON-PREMIUM USERS
+    if not is_premium_user:
         current_user.ai_credits_remaining = max(0, current_user.ai_credits_remaining - 1)
         db.session.commit()
 
