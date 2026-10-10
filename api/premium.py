@@ -93,6 +93,21 @@ PADDLE_ENV = os.getenv("PADDLE_ENV", "sandbox")
 PADDLE_PREMIUM_PRICE_ID = os.getenv("PADDLE_PREMIUM_PRICE_ID", "pri_01hxxxxxxxxx")
 
 # ============================================================
+# DOMAIN FALLBACK DICTIONARY FOR AI SUGGEST SKILLS
+# ============================================================
+
+domain_fallbacks = {
+    "healthcare": "Pediatric Care, Neonatal Intensive Care (NICU), Clinical Pharmacology, WHO Growth Standards, Patient Diagnostics, Emergency Triage, Biostatistics, Medical Research, Patient Advocacy, Cross-Functional Leadership",
+    "tech": "Python, Flask, Next.js, React, TypeScript, PostgreSQL, REST APIs, Docker, Vercel Serverless, Tailwind CSS, System Architecture, Agile Methodologies",
+    "finance": "Financial Modeling, Risk Assessment, Quantitative Analysis, Portfolio Management, Budgeting & Forecasting, Regulatory Compliance, Financial Reporting, Valuation, Excel (VBA)",
+    "marketing": "Search Engine Optimization (SEO), Content Strategy, Digital Advertising (Meta/Google Ads), Marketing Automation, Brand Positioning, Social Media Analytics, Conversion Rate Optimization (CRO), Market Research",
+    "sales": "B2B Sales, CRM Management (Salesforce, HubSpot), Lead Generation, Account Management, Consultative Selling, Pipeline Management, Contract Negotiation, Revenue Forecasting",
+    "product": "Product Lifecycle Management, User Stories & Roadmapping, A/B Testing, Feature Prioritization, Customer Discovery, Agile/Scrum, Product Analytics (Mixpanel/Amplitude), Market Competitive Analysis",
+    "hr": "Talent Acquisition, Employee Relations, HR Information Systems (HRIS), Performance Management, Compensation & Benefits, Onboarding Strategy, Regulatory Labor Compliance, Organizational Development",
+    "general": "Strategic Planning, Process Optimization, Cross-Functional Project Management, Data Analysis, Stakeholder Engagement, Quality Assurance, Workflow Automation, Performance Metrics"
+}
+
+# ============================================================
 # LOGIN MANAGER USER LOADER
 # ============================================================
 
@@ -423,8 +438,15 @@ def generate_ai_field():
         """
     elif field_type == "skills":
         prompt = f"""
-        Suggest a list of comma-separated core technical & professional skills for a {target_role}:
+        You are an expert career coach and ATS optimization specialist.
+        Provide a comprehensive, comma-separated list of 10 to 12 highly relevant core technical, clinical, and professional skills tailored precisely for a {target_role}.
+
+        Context:
         {context_str}
+
+        Instructions:
+        - Include industry-specific hard skills, technical competencies, and essential professional capabilities.
+        - Return ONLY the comma-separated list of skills, with no extra formatting, bullets, or introductory text.
         """
     else:
         prompt = f"Write an executive resume passage using:\n{context_str}"
@@ -496,14 +518,23 @@ def generate_ai_field():
             else:
                 generated_text = f"Led high-impact strategic initiative focused on {skills or target_role}. Delivered measurable operational performance gains ahead of project deadlines."
         elif field_type == "skills":
-            if skills:
-                generated_text = skills
-            elif is_medical:
-                generated_text = "Pediatric Care, Neonatal ICU, Clinical Pharmacology, Patient Diagnostics, Emergency Triage, Medical Research"
-            elif is_tech:
-                generated_text = "Python, Flask, Next.js, React, TypeScript, PostgreSQL, REST APIs, Vercel Serverless, Tailwind CSS"
+            # 8-Domain Skill Fallback Lookup
+            if any(w in role_lower for w in ["doctor", "physician", "pediatric", "clinical", "nurse", "medical", "health", "hospital"]):
+                generated_text = domain_fallbacks["healthcare"]
+            elif any(w in role_lower for w in ["developer", "engineer", "software", "architect", "tech", "data", "full-stack", "backend", "frontend"]):
+                generated_text = domain_fallbacks["tech"]
+            elif any(w in role_lower for w in ["finance", "financial", "accounting", "auditor", "analyst", "banking", "investment"]):
+                generated_text = domain_fallbacks["finance"]
+            elif any(w in role_lower for w in ["marketing", "seo", "content", "social media", "brand", "growth"]):
+                generated_text = domain_fallbacks["marketing"]
+            elif any(w in role_lower for w in ["sales", "account executive", "business development", "crm"]):
+                generated_text = domain_fallbacks["sales"]
+            elif any(w in role_lower for w in ["product manager", "product owner", "scrum", "ux"]):
+                generated_text = domain_fallbacks["product"]
+            elif any(w in role_lower for w in ["hr", "human resources", "recruiter", "talent", "people"]):
+                generated_text = domain_fallbacks["hr"]
             else:
-                generated_text = "Strategic Planning, Process Optimization, Cross-Functional Leadership, Project Management, Quality Assurance"
+                generated_text = domain_fallbacks["general"]
         else:
             generated_text = dynamic_fallback_summary
 
