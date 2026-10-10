@@ -148,7 +148,7 @@ def get_gemini_api_key():
 
 
 # ============================================================
-# SHARED AI GENERATION HELPERS (MODERN GOOGLE-GENAI CLIENT)
+# SHARED AI GENERATION HELPERS
 # ============================================================
 
 AI_SYSTEM_INSTRUCTIONS = """
@@ -190,19 +190,27 @@ def generate_with_gemini(prompt, api_key=None):
         + prompt
     )
 
-    # Initialize modern client (fully compatible with new AQ. keys)
     client = genai.Client(api_key=api_key)
 
-    response = client.models.generate_content(
-        model="gemini-2.0-flash",
-        contents=full_prompt,
-    )
+    # Primary target model with automatic fallback list
+    candidate_models = ["gemini-3.8-flash", "gemini-2.5-flash", "gemini-1.5-flash"]
+    last_exception = None
 
-    generated_text = getattr(response, "text", None)
-    if generated_text and generated_text.strip():
-        return generated_text.strip()
+    for model_name in candidate_models:
+        try:
+            response = client.models.generate_content(
+                model=model_name,
+                contents=full_prompt,
+            )
 
-    raise RuntimeError("Gemini returned an empty response.")
+            generated_text = getattr(response, "text", None)
+            if generated_text and generated_text.strip():
+                return generated_text.strip()
+        except Exception as exc:
+            last_exception = exc
+            print(f"Model {model_name} failed: {exc}. Trying next candidate...")
+
+    raise RuntimeError(f"All Gemini models failed. Last error: {last_exception}")
 
 
 def generate_ai_text(prompt):
@@ -555,6 +563,7 @@ def generate_ai_field():
     if not has_candidate_content:
         return jsonify({
             "error": "Please provide your CV information, existing draft, or skills before generating this field.",
+            "button_action": "FILL_DETAILS"
         }), 400
 
     context_details = []
