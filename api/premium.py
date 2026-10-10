@@ -9,11 +9,16 @@ import openai
 from datetime import datetime
 from bs4 import BeautifulSoup
 
-# Import Google Generative AI SDK
+# Import Modern Google GenAI SDK with Legacy Fallback
 try:
-    import google.generativeai as genai
+    from google import genai as new_genai
 except ImportError:
-    genai = None
+    new_genai = None
+
+try:
+    import google.generativeai as legacy_genai
+except ImportError:
+    legacy_genai = None
 
 from flask import Flask, request, jsonify, redirect, url_for, render_template, Blueprint, flash
 from flask_login import (
@@ -80,8 +85,11 @@ gemini_api_key = os.getenv("GEMINI_API_KEY") or os.getenv("gemini_api_key")
 if openai_api_key:
     openai.api_key = openai_api_key
 
-if gemini_api_key and genai:
-    genai.configure(api_key=gemini_api_key)
+if gemini_api_key and legacy_genai:
+    try:
+        legacy_genai.configure(api_key=gemini_api_key)
+    except Exception:
+        pass
 
 # ============================================================
 # PADDLE CONFIGURATION
@@ -453,15 +461,14 @@ def generate_ai_field():
 
     generated_text = None
 
-    # Fetch Case-Insensitive API Keys
     active_openai_key = os.getenv("OPENAI_API_KEY") or os.getenv("openai_api_key")
     active_gemini_key = os.getenv("GEMINI_API_KEY") or os.getenv("gemini_api_key")
 
-    # 6. STEP 1: OPENAI GENERATION (WITH 10s TIMEOUT & LOW RETRIES TO PREVENT HANGS)
+    # 6. STEP 1: OPENAI GENERATION (max_retries=0 TO PREVENT VERCEL RETRY DELAYS)
     if active_openai_key:
         try:
             if hasattr(openai, "OpenAI"):
-                client = openai.OpenAI(api_key=active_openai_key, timeout=10.0, max_retries=1)
+                client = openai.OpenAI(api_key=active_openai_key, timeout=5.0, max_retries=0)
                 response = client.chat.completions.create(
                     model="gpt-4o",
                     messages=[{"role": "user", "content": prompt}],
@@ -471,33 +478,31 @@ def generate_ai_field():
                 if response.choices and response.choices[0].message.content:
                     generated_text = response.choices[0].message.content.strip()
                     print("SUCCESS: Generated via OpenAI gpt-4o")
-            else:
-                openai.api_key = active_openai_key
-                response = openai.ChatCompletion.create(
-                    model="gpt-4o",
-                    messages=[{"role": "user", "content": prompt}],
-                    max_tokens=250,
-                    temperature=0.7
-                )
-                if response.choices and response.choices[0].message.content:
-                    generated_text = response.choices[0].message.content.strip()
-                    print("SUCCESS: Generated via OpenAI ChatCompletion")
         except Exception as e:
-            print(f"OPENAI ATTEMPT FAILED: {type(e).__name__} - {str(e)}. Handing off to Gemini...")
+            print(f"OPENAI SKIPPED/FAILED: {type(e).__name__} - {str(e)}. Switching to Gemini...")
 
-    # 7. STEP 2: IMMEDIATE FALLBACK TO GOOGLE GEMINI IF OPENAI FAILS OR TIMES OUT
-    if not generated_text and active_gemini_key and genai:
+    # 7. STEP 2: IMMEDIATE GOOGLE GEMINI EXECUTION
+    if not generated_text and active_gemini_key:
         try:
-            genai.configure(api_key=active_gemini_key)
-            gemini_model = genai.GenerativeModel('gemini-1.5-flash')
-            gemini_response = gemini_model.generate_content(prompt)
-            if gemini_response and gemini_response.text:
-                generated_text = gemini_response.text.strip()
-                print("SUCCESS: Generated via Google Gemini gemini-1.5-flash")
+            if new_genai:
+                client = new_genai.Client(api_key=active_gemini_key)
+                response = client.models.generate_content(
+                    model='gemini-2.5-flash',
+                    contents=prompt,
+                )
+                if response and response.text:
+                    generated_text = response.text.strip()
+                    print("SUCCESS: Generated via Google GenAI SDK (gemini-2.5-flash)")
+            elif legacy_genai:
+                model = legacy_genai.GenerativeModel('gemini-1.5-flash')
+                response = model.generate_content(prompt)
+                if response and response.text:
+                    generated_text = response.text.strip()
+                    print("SUCCESS: Generated via Legacy Gemini SDK")
         except Exception as e:
-            print(f"GEMINI ATTEMPT FAILED: {type(e).__name__} - {str(e)}")
+            print(f"GEMINI FAILED: {type(e).__name__} - {str(e)}")
 
-    # 8. STEP 3: INDUSTRY-TAILORED DYNAMIC FALLBACK IF BOTH APIS ARE UNREACHABLE
+    # 8. STEP 3: DYNAMIC FALLBACK ENGINE
     if not generated_text:
         print("FALLBACK ENGAGED: Generating dynamic domain-specific content.")
         if field_type == "experience":
@@ -738,7 +743,7 @@ def analyze_ats():
 
     try:
         if hasattr(openai, "OpenAI"):
-            client = openai.OpenAI(api_key=active_openai_key or os.getenv("OPENAI_API_KEY"), timeout=10.0, max_retries=1)
+            client = openai.OpenAI(api_key=active_openai_key or os.getenv("OPENAI_API_KEY"), timeout=5.0, max_retries=0)
             response = client.chat.completions.create(
                 model="gpt-4o",
                 messages=[{"role": "user", "content": prompt}]
