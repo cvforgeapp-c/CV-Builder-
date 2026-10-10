@@ -329,7 +329,7 @@ def save_resume():
         return redirect(f"/editor?id={resume_id}")
 
 # ============================================================
-# DUAL OPENAI & GEMINI AI GENERATION ENDPOINT (DYNAMIC PROMPTS & MULTI-DOMAIN FALLBACKS)
+# DUAL OPENAI & GEMINI AI GENERATION ENDPOINT
 # ============================================================
 
 DEVELOPER_EMAILS = ["subhnllha@gmail.com"]
@@ -357,55 +357,81 @@ def generate_ai_field():
     skills = data.get("skills") or ""
     current_input = data.get("current_input") or ""
 
-    # 3. UPDATED DYNAMIC PROMPT BUILDER
+    # 3. BUILD CONTEXT STRING
+    context_details = []
+    if target_role: context_details.append(f"Target Role: {target_role}")
+    if job_title: context_details.append(f"Recent Job Title: {job_title}")
+    if full_name: context_details.append(f"Candidate Name: {full_name}")
+    if skills: context_details.append(f"Technical & Core Skills: {skills}")
+    if current_input: context_details.append(f"User Notes/Draft: {current_input}")
+    
+    context_str = "\n".join(context_details)
+
+    # 4. INDUSTRY CLASSIFICATION & DYNAMIC FALLBACK CONSTRUCTOR
+    role_lower = (target_role + " " + job_title).lower()
+    is_medical = any(word in role_lower for word in ["doctor", "physician", "pediatric", "clinical", "nurse", "medical", "health", "hospital"])
+    is_tech = any(word in role_lower for word in ["developer", "engineer", "software", "architect", "tech", "data", "full-stack", "backend", "frontend"])
+
+    skills_part = f" specializing in {skills}" if skills else ""
+    job_part = f" with hands-on experience as a {job_title}" if job_title and job_title != target_role else ""
+
+    if is_medical:
+        impact_sentence = "Proven ability to deliver high-quality patient care, optimize triage workflows, and maintain strict clinical standards."
+        growth_sentence = "Dedicated to advancing patient health outcomes and fostering evidence-based healthcare excellence."
+    elif is_tech:
+        impact_sentence = "Proven ability to architect scalable system solutions, optimize backend performance, and build maintainable code bases."
+        growth_sentence = "Focused on leveraging modern technical frameworks to engineer high-efficiency web applications."
+    else:
+        impact_sentence = "Proven ability to execute key strategic initiatives, optimize operational workflows, and drive cross-functional productivity."
+        growth_sentence = "Committed to delivering measurable business impact and driving continuous operational growth."
+
+    dynamic_fallback_summary = f"Dedicated {target_role}{job_part}{skills_part}. {impact_sentence} {growth_sentence}"
+
+    # 5. CONSTRUCT AI PROMPTS
     if field_type == "summary":
         prompt = f"""
         You are an elite ATS resume writer and executive career strategist.
-        Write a high-impact, 3-sentence executive summary for {full_name} who is transitioning from their recent role as '{job_title}' to the target role of '{target_role}'.
+        Write a high-impact, 3-sentence executive summary for {full_name} using ALL provided details below.
 
-        Context & Client Inputs:
-        - Target Role: {target_role}
-        - Recent Job Title: {job_title}
-        - Key Skills: {skills}
-        - Additional Notes: {current_input}
+        Context:
+        {context_str}
 
-        Dynamic Generation Rules:
-        1. Tailor the tone, metrics, and vocabulary specifically to the domain of '{target_role}' (e.g., clinical/patient outcomes for healthcare, system architecture/scalability for tech, revenue/growth for sales).
-        2. Sentence 1: Connect the transition from '{job_title}' to '{target_role}' naturally.
-        3. Sentence 2: Seamlessly weave in at least 2 to 3 core tools or technical skills from: [{skills}].
-        4. Sentence 3: End with a high-value impact statement reflecting success metrics relevant to '{target_role}'.
-        5. Do NOT use generic filler sentences or uniform templates. Return ONLY the final paragraph.
+        Instructions:
+        1. Sentence 1: Combine Target Role ({target_role}) and Recent Experience ({job_title}).
+        2. Sentence 2: Seamlessly integrate 2 to 4 of their listed skills ({skills}).
+        3. Sentence 3: End with a strong value statement on driving quality and impact.
+        4. Do NOT use generic filler sentences. Return ONLY the final paragraph.
         """
     elif field_type == "experience":
         prompt = f"""
-        Transform these details into 3 high-impact, ATS-optimized bullet points for a resume targeting the role of '{target_role}':
-        - Recent Job Title: {job_title}
-        - Skills to Integrate: {skills}
-        - Additional Context: {current_input}
+        Transform these details into 3 high-impact, ATS-optimized bullet points for a resume:
+        {context_str}
 
         Requirements:
-        - Start every bullet with a strong industry-specific action verb (e.g., Architected, Spearheaded, Optimized, Directed).
-        - Explicitly incorporate the listed skills: [{skills}].
-        - Emphasize workflow efficiency or domain-specific achievements.
+        - Start every bullet with a strong action verb (e.g., Engineered, Spearheaded, Optimized).
+        - Integrate listed skills: {skills}.
         - Return ONLY bullet points starting with a hyphen (-).
         """
     elif field_type == "project":
         prompt = f"""
-        Write a concise 2-sentence project overview tailored to a '{target_role}' using these details:
-        - Skills/Tech: {skills}
-        - Details: {current_input}
+        Write a concise 2-sentence project overview for {full_name} using these details:
+        {context_str}
+
+        Instructions:
+        - Highlight project scope, technical implementation, and delivered impact.
+        - Return ONLY clean paragraph text with no quotes.
         """
     elif field_type == "skills":
         prompt = f"""
-        Suggest a comprehensive list of comma-separated core technical and professional skills tailored specifically for a '{target_role}' with background experience as '{job_title}':
-        - Input Skills: {skills}
+        Suggest a list of comma-separated core technical & professional skills for a {target_role}:
+        {context_str}
         """
     else:
-        prompt = f"Write an executive resume passage for a '{target_role}' using:\n{current_input}"
+        prompt = f"Write an executive resume passage using:\n{context_str}"
 
     generated_text = None
 
-    # 4. STEP 1: TRY OPENAI GENERATION (gpt-4o)
+    # 6. STEP 1: TRY OPENAI GENERATION (gpt-4o)
     openai_key = os.getenv("OPENAI_API_KEY")
     if openai_key:
         try:
@@ -430,7 +456,7 @@ def generate_ai_field():
         except Exception as e:
             print(f"OpenAI Attempt Failed: {e}")
 
-    # 5. STEP 2: FALLBACK TO GOOGLE GEMINI IF OPENAI FAILS
+    # 7. STEP 2: FALLBACK TO GOOGLE GEMINI IF OPENAI FAILS
     gemini_key = os.getenv("GEMINI_API_KEY")
     if not generated_text and gemini_key and genai:
         try:
@@ -441,127 +467,47 @@ def generate_ai_field():
         except Exception as e:
             print(f"Gemini Attempt Failed: {e}")
 
-    # 6. STEP 3: EXPANDED MULTI-PROFESSION DYNAMIC FALLBACK IF BOTH APIS FAIL
+    # 8. STEP 3: INDUSTRY-TAILORED DYNAMIC FALLBACK IF BOTH APIS FAIL
     if not generated_text:
-        role_lower = target_role.lower()
-        skills_part = f" specializing in {skills}" if skills else ""
-        job_part = f" with hands-on experience as a {job_title}" if job_title and job_title != target_role else ""
-
-        domain_fallbacks = {
-            "healthcare": {
-                "keywords": ["doctor", "physician", "pediatric", "clinical", "nurse", "medical", "health", "hospital", "surgeon"],
-                "impact": "Proven ability to deliver high-quality patient care, optimize triage workflows, and maintain strict clinical safety standards.",
-                "growth": "Dedicated to advancing patient health outcomes and fostering evidence-based healthcare excellence.",
-                "skills": "Patient Care, Clinical Triage, Medical Diagnostics, Treatment Planning, Electronic Health Records (EHR), Patient Safety, Pharmacology",
-                "bullets": [
-                    f"Administered comprehensive patient care as a {job_title or target_role}, utilizing expertise in {skills or 'clinical guidelines'}.",
-                    "Optimized clinical workflows and diagnostic turnaround times while ensuring full compliance with medical safety regulations.",
-                    "Collaborated within multidisciplinary hospital teams to elevate patient recovery metrics and treatment success rates."
-                ],
-                "project": f"Led clinical quality initiative focusing on {skills or target_role}. Improved patient tracking efficiency and cross-departmental coordination."
-            },
-            "tech": {
-                "keywords": ["developer", "engineer", "software", "architect", "tech", "data", "full-stack", "backend", "frontend", "devops", "ml", "ai"],
-                "impact": "Proven ability to architect scalable system solutions, optimize performance bottlenecks, and build robust software architectures.",
-                "growth": "Focused on leveraging modern technical stacks to engineer high-availability applications and drive digital transformation.",
-                "skills": "Python, JavaScript, TypeScript, React, Node.js, SQL, RESTful APIs, Git, Docker, System Architecture, CI/CD",
-                "bullets": [
-                    f"Engineered and deployed scalable backend services as a {job_title or target_role}, leveraging {skills or 'modern frameworks'}.",
-                    "Optimized application performance and reduced system latency through rigorous code refactoring and database tuning.",
-                    "Integrated automated CI/CD deployment pipelines, increasing release reliability and cross-team deployment speed."
-                ],
-                "project": f"Architected high-throughput system leveraging {skills or target_role}, cutting execution latency and enhancing data throughput."
-            },
-            "finance": {
-                "keywords": ["finance", "financial", "accountant", "analyst", "audit", "banking", "treasury", "controller", "investment"],
-                "impact": "Proven ability to drive fiscal optimization, manage complex financial forecasting, and ensure rigorous regulatory compliance.",
-                "growth": "Committed to delivering strategic financial insights and maximizing capital efficiency across portfolios.",
-                "skills": "Financial Modeling, Budgeting, Variance Analysis, Risk Assessment, GAAP, Excel, Auditing, Cash Flow Management",
-                "bullets": [
-                    f"Managed comprehensive financial models and budgeting frameworks as a {job_title or target_role}, utilizing {skills or 'financial analytics'}.",
-                    "Identified cost-reduction opportunities and optimized capital allocation, driving measurable improvements in profit margins.",
-                    "Executed precise financial audits and risk assessments to safeguard institutional assets against market volatility."
-                ],
-                "project": f"Developed automated financial modeling dashboard using {skills or target_role}, streamlining quarterly forecasting accuracy."
-            },
-            "marketing": {
-                "keywords": ["marketing", "growth", "social media", "content", "brand", "seo", "campaign", "copywriter", "pr"],
-                "impact": "Proven ability to scale digital acquisition channels, boost brand positioning, and optimize multi-channel conversion funnels.",
-                "growth": "Focused on leveraging data-driven campaign strategies to maximize user engagement and return on ad spend.",
-                "skills": "SEO, Google Analytics, Content Strategy, A/B Testing, Paid Social Advertising, Email Marketing, Brand Positioning",
-                "bullets": [
-                    f"Orchestrated multi-channel marketing campaigns as a {job_title or target_role}, leveraging expertise in {skills or 'digital growth'}.",
-                    "Executed rigorous A/B testing frameworks that elevated user acquisition metrics and improved organic conversion rates.",
-                    "Analyzed audience engagement metrics to refine brand messaging and scale customer retention initiatives."
-                ],
-                "project": f"Launched growth marketing initiative utilizing {skills or target_role}, scaling web traffic and customer acquisition KPIs."
-            },
-            "sales": {
-                "keywords": ["sales", "account executive", "business development", "partnership", "rep", "b2b", "ae"],
-                "impact": "Proven ability to accelerate revenue growth, penetrate new market segments, and build high-value client pipelines.",
-                "growth": "Committed to driving enterprise client acquisition and exceeding aggressive annual sales quotas.",
-                "skills": "B2B Sales, Pipeline Management, CRM (Salesforce), Contract Negotiation, Lead Generation, Account Management, Cold Outreach",
-                "bullets": [
-                    f"Spearheaded enterprise client acquisition as a {job_title or target_role}, leveraging mastery in {skills or 'pipeline management'}.",
-                    "Negotiated high-value B2B contracts and forged strategic partnerships that expanded territorial market share.",
-                    "Optimized sales conversion funnels, consistently surpassing quota targets and boosting annual recurring revenue (ARR)."
-                ],
-                "project": f"Executed strategic sales enablement initiative focusing on {skills or target_role}, expanding key account retention."
-            },
-            "product": {
-                "keywords": ["product manager", "product owner", "scrum", "agile", "program manager", "project manager"],
-                "impact": "Proven ability to translate business vision into structured product roadmaps and drive cross-functional product execution.",
-                "growth": "Focused on aligning user needs with technical deliverables to maximize product adoption and market fit.",
-                "skills": "Agile Methodologies, Product Roadmapping, User Research, Backlog Grooming, Cross-Functional Leadership, Jira, Wireframing",
-                "bullets": [
-                    f"Led end-to-end product lifecycles as a {job_title or target_role}, utilizing {skills or 'Agile frameworks'}.",
-                    "Synthesized user feedback and market research to prioritize feature backlogs and accelerate time-to-market.",
-                    "Facilitated cross-functional collaboration between engineering, design, and marketing teams to meet key product milestones."
-                ],
-                "project": f"Managed product rollout leveraging {skills or target_role}, driving user retention and feature adoption metrics."
-            },
-            "hr": {
-                "keywords": ["hr", "human resources", "recruiter", "talent", "people operations"],
-                "impact": "Proven ability to scale high-performing talent pipelines, enhance employee engagement, and optimize HR operations.",
-                "growth": "Dedicated to cultivating positive organizational cultures and aligning talent strategy with business growth.",
-                "skills": "Talent Acquisition, Employee Relations, Performance Management, HRIS, Onboarding, Compensation & Benefits, Compliance",
-                "bullets": [
-                    f"Streamlined full-lifecycle recruitment and talent operations as a {job_title or target_role}, leveraging {skills or 'talent sourcing'}.",
-                    "Designed and implemented employee retention and professional development programs that boosted team morale.",
-                    "Optimized HR compliance workflows and performance management frameworks across diverse departments."
-                ],
-                "project": f"Spearheaded HR automation project utilizing {skills or target_role}, cutting onboarding cycle times significantly."
-            }
-        }
-
-        matched_domain = "general"
-        for domain, data in domain_fallbacks.items():
-            if any(kw in role_lower for kw in data["keywords"]):
-                matched_domain = domain
-                break
-
-        if matched_domain != "general":
-            dom = domain_fallbacks[matched_domain]
-            fallback_summary = f"Dedicated {target_role}{job_part}{skills_part}. {dom['impact']} {dom['growth']}"
-            fallback_skills = skills if skills else dom["skills"]
-            fallback_bullets = "\n".join([f"- {b}" for b in dom['bullets']])
-            fallback_project = dom['project']
-        else:
-            fallback_summary = f"Dedicated {target_role}{job_part}{skills_part}. Proven ability to execute key strategic initiatives, optimize operational workflows, and drive cross-functional productivity. Committed to delivering measurable business impact and driving continuous operational growth."
-            fallback_skills = skills if skills else "Strategic Planning, Process Optimization, Cross-Functional Leadership, Performance Management"
-            fallback_bullets = f"- Spearheaded strategic initiatives as {job_title or target_role}, leveraging expertise in {skills or 'core domain practices'}.\n- Optimized operational workflows to maintain high efficiency and compliance standards.\n- Directed cross-functional project execution aligned with organizational growth targets."
-            fallback_project = f"Led high-impact project execution focused on {skills or target_role}. Delivered measurable efficiency gains ahead of schedule."
-
         if field_type == "experience":
-            generated_text = fallback_bullets
+            if is_medical:
+                generated_text = (
+                    f"- Directed clinical diagnostic and patient care protocols as {job_title}, ensuring 100% adherence to national health regulations.\n"
+                    f"- Managed specialized treatments and patient evaluations utilizing {skills or 'evidence-based clinical practices'}.\n"
+                    f"- Streamlined emergency triage and admission procedures, cutting average patient processing time by 20%."
+                )
+            elif is_tech:
+                generated_text = (
+                    f"- Architected and deployed production software components as {job_title}, improving application throughput by 30%.\n"
+                    f"- Implemented automated workflows and resilient API endpoints using {skills or 'modern frameworks'}.\n"
+                    f"- Optimized database queries and system performance to maintain high availability across core infrastructure."
+                )
+            else:
+                generated_text = (
+                    f"- Spearheaded key operational projects as {job_title}, driving cross-functional efficiency across major deliverables.\n"
+                    f"- Leveraged domain expertise in {skills or 'strategic planning and leadership'} to optimize workflow output by 25%.\n"
+                    f"- Directed performance evaluations and stakeholder engagement aligned with top industry benchmarks."
+                )
         elif field_type == "project":
-            generated_text = fallback_project
+            if is_medical:
+                generated_text = f"Led high-impact clinical research project focused on {skills or target_role}. Delivered measurable diagnostic efficiency gains and optimized patient care tracking workflows."
+            elif is_tech:
+                generated_text = f"Architected and deployed high-performance web solution centered around {skills or target_role}. Optimized serverless API throughput and reduced system response latency by 35%."
+            else:
+                generated_text = f"Led high-impact strategic initiative focused on {skills or target_role}. Delivered measurable operational performance gains ahead of project deadlines."
         elif field_type == "skills":
-            generated_text = fallback_skills
+            if skills:
+                generated_text = skills
+            elif is_medical:
+                generated_text = "Pediatric Care, Neonatal ICU, Clinical Pharmacology, Patient Diagnostics, Emergency Triage, Medical Research"
+            elif is_tech:
+                generated_text = "Python, Flask, Next.js, React, TypeScript, PostgreSQL, REST APIs, Vercel Serverless, Tailwind CSS"
+            else:
+                generated_text = "Strategic Planning, Process Optimization, Cross-Functional Leadership, Project Management, Quality Assurance"
         else:
-            generated_text = fallback_summary
+            generated_text = dynamic_fallback_summary
 
-    # 7. DEDUCT CREDITS ONLY FOR REGULAR NON-PREMIUM USERS
+    # 9. DEDUCT CREDITS ONLY FOR REGULAR NON-PREMIUM USERS
     if not is_premium_user:
         current_user.ai_credits_remaining = max(0, current_user.ai_credits_remaining - 1)
         db.session.commit()
