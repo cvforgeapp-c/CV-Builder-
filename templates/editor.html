@@ -70,7 +70,7 @@
                 </p>
             </div>
 
-            <button type="button" onclick="closeModal()" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-300 hover:to-amber-400 text-[#02353C] font-extrabold text-xs uppercase tracking-wider shadow-lg active:scale-95 transition-all">
+            <button id="modalActionBtn" type="button" onclick="handleModalAction()" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-300 hover:to-amber-400 text-[#02353C] font-extrabold text-xs uppercase tracking-wider shadow-lg active:scale-95 transition-all">
                 Got it, let's fill details
             </button>
         </div>
@@ -258,7 +258,7 @@
                 </div>
             </div>
 
-            <!-- SECTION 5: SKILLS & CERTIFICATIONS WITH AI ASSIST -->
+            <!-- SECTION 5: SKILLS & CREDENTIALS WITH AI ASSIST -->
             <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xl shadow-slate-900/10 overflow-hidden space-y-5 p-6 sm:p-8">
                 <div class="glass-card-header -mx-6 sm:-mx-8 -mt-6 sm:-mt-8 p-6 sm:p-8 border-b border-slate-100 flex items-center justify-between">
                     <div class="flex items-center gap-3">
@@ -334,23 +334,35 @@
 
     </main>
 
-    <!-- CLIENT-SIDE SCRIPT WITH CUSTOM MODAL POPUP -->
+    <!-- CLIENT-SIDE SCRIPT WITH TARGETED ERROR ACTIONS -->
     <script>
-        function showModal(title, message, focusInputName = null) {
+        let currentModalAction = 'FILL_DETAILS';
+
+        function showModal(title, message, buttonText = "Got it, let's fill details", actionType = 'FILL_DETAILS') {
             const modal = document.getElementById('aiModal');
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('modalMessage').innerHTML = message;
-            modal.classList.add('modal-active');
+            
+            const btn = document.getElementById('modalActionBtn');
+            btn.innerText = buttonText;
+            currentModalAction = actionType;
 
-            if (focusInputName) {
-                const targetInput = document.querySelector(`input[name="${focusInputName}"]`);
-                if (targetInput) targetInput.focus();
-            }
+            modal.classList.add('modal-active');
         }
 
         function closeModal() {
             const modal = document.getElementById('aiModal');
             modal.classList.remove('modal-active');
+        }
+
+        function handleModalAction() {
+            if (currentModalAction === 'REFILL_CREDIT') {
+                window.location.href = '/pricing';
+            } else if (currentModalAction === 'PAY') {
+                window.location.href = '/pricing';
+            } else {
+                closeModal();
+            }
         }
 
         document.getElementById('cvForm').addEventListener('submit', async function(e) {
@@ -380,7 +392,7 @@
                 } else if (response.redirected) {
                     window.location.href = response.url;
                 } else {
-                    showModal("Save Error", result.error || "Failed to save CV. Please try again.");
+                    showModal("Save Error", result.error || "Failed to save CV. Please try again.", "Close", "CLOSE");
                 }
             } catch (err) {
                 console.error("Save CV Submission Error:", err);
@@ -391,7 +403,6 @@
         async function generateAIField(fieldType, targetElementId) {
             const targetArea = document.getElementById(targetElementId);
             
-            // Get form field values
             const targetRoleInput = document.querySelector('input[name="target_role"]');
             const jobTitleInput = document.querySelector('input[name="job_title"]');
             const fullNameInput = document.querySelector('input[name="full_name"]');
@@ -403,19 +414,20 @@
             const skills = skillsInput ? skillsInput.value.trim() : "";
             const currentInput = targetArea ? targetArea.value.trim() : "";
 
-            // BEAUTIFUL CUSTOM MODAL VALIDATION
             if (!targetRole && !jobTitle && !skills && !currentInput) {
                 showModal(
-                    "Role Details Needed", 
-                    "Please fill in at least a <strong class='text-slate-900'>Target Professional Title</strong>, <strong class='text-slate-900'>Job Title</strong>, or <strong class='text-slate-900'>Skills</strong> first so AI Assist can generate a tailored, high-impact output!",
-                    "target_role"
+                    "Input Required for AI Assist", 
+                    "Please provide a <strong class='text-slate-900'>Target Professional Title</strong>, <strong class='text-slate-900'>Job Title</strong>, or <strong class='text-slate-900'>Skills</strong> so AI Assist can generate a high-impact, tailored output!",
+                    "Got it, let's fill details",
+                    "FILL_DETAILS"
                 );
+                if (targetRoleInput) targetRoleInput.focus();
                 return;
             }
 
             const previousValue = targetArea ? targetArea.value : "";
             if (targetArea) {
-                targetArea.value = "AI Assist is optimizing content for " + (targetRole || jobTitle || "your profile") + "...";
+                targetArea.value = "AI Assist is generating content for " + (targetRole || jobTitle || "your profile") + "...";
             }
 
             try {
@@ -439,12 +451,18 @@
                 if (response.ok && data.result) {
                     if (targetArea) targetArea.value = data.result;
                 } else {
-                    showModal("AI Assist Error", data.error || "Unable to generate AI content at this time.");
+                    const action = data.button_action || 'TRY_AGAIN';
+                    let btnText = "Got it, try again";
+                    
+                    if (action === 'REFILL_CREDIT') btnText = "Refill credit";
+                    else if (action === 'PAY') btnText = "Pay";
+
+                    showModal("AI Assist Error", data.error || "Unable to generate AI content at this time.", btnText, action);
                     if (targetArea) targetArea.value = previousValue;
                 }
             } catch (err) {
                 console.error("AI Assist Generation Error:", err);
-                showModal("Connection Error", "Could not connect to AI Assist service. Please check your connection.");
+                showModal("Connection Error", "Connection error encountered while communicating with the AI service. Please check your network and try again.", "Got it, try again", "TRY_AGAIN");
                 if (targetArea) targetArea.value = previousValue;
             }
         }
