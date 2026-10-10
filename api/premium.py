@@ -578,9 +578,10 @@ def generate_ai_field():
     try:
         generated_text = generate_ai_text(prompt)
     except Exception as exc:
-        print(f"AI generation unavailable: {type(exc).__name__}: {exc}")
+        err_msg = str(exc)
+        print(f"AI generation error: {type(exc).__name__}: {err_msg}")
         return jsonify({
-            "error": "AI generation is temporarily unavailable. Your credit has not been deducted. Please try again.",
+            "error": f"Gemini Error ({type(exc).__name__}): {err_msg}",
             "code": "AI_PROVIDERS_UNAVAILABLE",
         }), 503
 
@@ -597,7 +598,7 @@ def generate_ai_field():
             db.session.rollback()
             print(f"AI credit deduction error: {exc}")
             return jsonify({
-                "error": "The result was generated, but your credit could not be updated. Please refresh and check your account before retrying.",
+                "error": f"Credit update error: {str(exc)}",
                 "result": generated_text,
             }), 500
     else:
@@ -837,7 +838,7 @@ def analyze_ats():
         return jsonify({"analysis": analysis_text}), 200
     except Exception as exc:
         print(f"ATS analysis error: {type(exc).__name__}: {exc}")
-        return jsonify({"error": "Unable to analyze the CV at this time. Please try again later."}), 503
+        return jsonify({"error": f"ATS Analysis Error: {str(exc)}"}), 503
 
 
 premium_app.register_blueprint(premium_bp)
