@@ -10,13 +10,15 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 
 # ============================================================
-# GOOGLE GENERATIVE AI SDK (EXCLUSIVE PROVIDER)
+# MODERN GOOGLE GENAI SDK (SUPPORTS NEW AQ. KEYS)
 # ============================================================
 
 try:
-    import google.generativeai as genai
+    from google import genai
+    from google.genai import types
 except ImportError:
     genai = None
+    types = None
 
 # ============================================================
 # FLASK IMPORTS
@@ -146,7 +148,7 @@ def get_gemini_api_key():
 
 
 # ============================================================
-# SHARED AI GENERATION HELPERS (GEMINI EXCLUSIVE)
+# SHARED AI GENERATION HELPERS (MODERN GOOGLE-GENAI CLIENT)
 # ============================================================
 
 AI_SYSTEM_INSTRUCTIONS = """
@@ -180,7 +182,7 @@ def generate_with_gemini(prompt, api_key=None):
         raise RuntimeError("Gemini API key is not configured in environment variables.")
 
     if not genai:
-        raise RuntimeError("Google Generative AI SDK is not installed.")
+        raise RuntimeError("Google GenAI SDK (google-genai) is not installed.")
 
     full_prompt = (
         AI_SYSTEM_INSTRUCTIONS
@@ -188,14 +190,12 @@ def generate_with_gemini(prompt, api_key=None):
         + prompt
     )
 
-    genai.configure(api_key=api_key)
-    
-    # Updated to gemini-1.5-flash-latest to ensure full version compatibility
-    model = genai.GenerativeModel("gemini-1.5-flash-latest")
+    # Initialize modern client (fully compatible with new AQ. keys)
+    client = genai.Client(api_key=api_key)
 
-    response = model.generate_content(
-        full_prompt,
-        request_options={"timeout": 30},
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=full_prompt,
     )
 
     generated_text = getattr(response, "text", None)
@@ -585,6 +585,7 @@ def generate_ai_field():
         return jsonify({
             "error": f"Gemini Error ({type(exc).__name__}): {err_msg}",
             "code": "AI_PROVIDERS_UNAVAILABLE",
+            "button_action": "TRY_AGAIN"
         }), 503
 
     if not is_premium_user:
