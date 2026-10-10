@@ -9,6 +9,12 @@ import openai
 from datetime import datetime
 from bs4 import BeautifulSoup
 
+# Import Google Generative AI SDK
+try:
+    import google.generativeai as genai
+except ImportError:
+    genai = None
+
 from flask import Flask, request, jsonify, redirect, url_for, render_template, Blueprint, flash
 from flask_login import (
     LoginManager,
@@ -67,8 +73,15 @@ login_manager.login_view = "auth.login"
 login_manager.login_message = "Please log in to access your account settings."
 login_manager.login_message_category = "info"
 
-# Initialize OpenAI API Key
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# Initialize AI API Keys
+openai_api_key = os.getenv("OPENAI_API_KEY")
+gemini_api_key = os.getenv("GEMINI_API_KEY")
+
+if openai_api_key:
+    openai.api_key = openai_api_key
+
+if gemini_api_key and genai:
+    genai.configure(api_key=gemini_api_key)
 
 # ============================================================
 # PADDLE CONFIGURATION
@@ -238,7 +251,7 @@ def preview():
         return redirect("/dashboard")
 
 # ============================================================
-# SAVE RESUME ENDPOINT (DUAL DYNAMIC PAYLOAD & DIRECT PREVIEW REDIRECT)
+# SAVE RESUME ENDPOINT
 # ============================================================
 
 @premium_app.route("/api/v1/resumes/save", methods=["POST"])
@@ -316,7 +329,7 @@ def save_resume():
         return redirect(f"/editor?id={resume_id}")
 
 # ============================================================
-# UNIVERSAL CONTEXT-AWARE AI GENERATION ENDPOINT (ENHANCED HIERARCHY)
+# DUAL OPENAI & GEMINI AI GENERATION ENDPOINT
 # ============================================================
 
 @premium_app.route("/api/v1/ai/generate-field", methods=["POST"])
@@ -328,127 +341,115 @@ def generate_ai_field():
     data = request.get_json(silent=True) or {}
     field_type = data.get("field_type", "summary")
     
-    # Smart role fallback hierarchy
-    target_role = data.get("target_role") or data.get("job_title") or "Experienced Specialist"
-    job_title = data.get("job_title", "")
-    full_name = data.get("full_name", "the candidate")
-    skills = data.get("skills", "")
-    current_input = data.get("current_input", "")
+    target_role = data.get("target_role") or "Experienced Specialist"
+    job_title = data.get("job_title") or target_role
+    full_name = data.get("full_name") or "Candidate"
+    skills = data.get("skills") or ""
+    current_input = data.get("current_input") or ""
 
-    # Build context string
     context_details = []
     if target_role: context_details.append(f"Target Role: {target_role}")
     if job_title: context_details.append(f"Recent Job Title: {job_title}")
     if full_name: context_details.append(f"Candidate Name: {full_name}")
     if skills: context_details.append(f"Technical & Core Skills: {skills}")
-    if current_input: context_details.append(f"User Notes/Draft: {current_input}")
+    if current_input: context_details.append(f"User Notes: {current_input}")
     
     context_str = "\n".join(context_details)
 
+    skills_part = f" specializing in {skills}" if skills else ""
+    job_part = f" with hands-on experience as a {job_title}" if job_title and job_title != target_role else ""
+    dynamic_fallback_summary = f"Dedicated {target_role}{job_part}{skills_part}. Proven ability to execute complex technical initiatives, optimize workflow standards, and deliver high-quality outcomes. Focused on driving continuous professional growth and domain excellence."
+
     if field_type == "summary":
         prompt = f"""
-        You are an elite ATS resume writer. Write a powerful, high-impact 3-sentence executive summary for a resume using the following details:
+        You are an elite ATS resume writer and executive career strategist.
+        Write a high-impact, 3-sentence professional summary for {full_name} using ALL provided details:
 
+        Context:
         {context_str}
 
-        Guidelines:
-        1. Sentence 1: State professional identity, domain expertise, and key strengths.
-        2. Sentence 2: Highlight core technical competencies and specialized tools/methodologies.
-        3. Sentence 3: State value proposition and key impact metrics.
-        4. Tone: Executive, confident, and ATS-optimized. Do NOT use generic filler sentences. Return ONLY the final paragraph.
+        Instructions:
+        1. Sentence 1: Combine Target Role ({target_role}) and Job Title ({job_title}).
+        2. Sentence 2: Weave in listed skills ({skills}).
+        3. Sentence 3: End with a strong value statement on driving quality and impact.
+        4. Return ONLY the final paragraph.
         """
     elif field_type == "experience":
         prompt = f"""
-        Transform these details or work responsibilities into 3 high-impact, ATS-optimized resume bullet points for a resume using the following details:
-
+        Transform these details into 3 high-impact, ATS-optimized bullet points:
         {context_str}
 
-        Guidelines:
-        - Start every bullet point with a strong action verb (e.g., Engineered, Spearheaded, Optimized, Managed).
-        - Include realistic, industry-appropriate metrics or percentages.
-        - Return ONLY the bullet points starting with hyphen (-), with no introductory text or quotes.
+        Requirements:
+        - Start every bullet with a strong action verb.
+        - Integrate listed skills: {skills}.
+        - Return ONLY bullet points starting with hyphen (-).
         """
     elif field_type == "project":
         prompt = f"""
-        Write a concise, professional 2-sentence project or research overview for a resume using the following details:
-
+        Write a concise 2-sentence project overview using these details:
         {context_str}
-
-        Guidelines:
-        - Highlight project scope, implementation, and delivered impact.
-        - Return ONLY the clean paragraph text without quotation marks.
         """
     elif field_type == "skills":
         prompt = f"""
-        Suggest a comprehensive, ATS-optimized list of comma-separated technical and professional skills using the following details:
-
+        Suggest a list of comma-separated core technical & professional skills for a {target_role}:
         {context_str}
-
-        Guidelines:
-        - Provide high-demand industry keywords relevant to the target role.
-        - Return ONLY the comma-separated skill list string, with no extra conversational text or quotes.
         """
     else:
-        prompt = f"""
-        You are an elite ATS resume writer. Write a powerful, high-impact professional text passage using the following details:
+        prompt = f"Write an executive resume summary using:\n{context_str}"
 
-        {context_str}
+    generated_text = None
 
-        Return ONLY the final clean text passage.
-        """
-
-    try:
-        api_key = os.getenv("OPENAI_API_KEY")
-        
-        if not api_key:
-            if field_type == "experience":
-                fallback_text = f"- Spearheaded strategic initiatives as {target_role}, increasing operational efficiency by 25%.\n- Optimized core workflows and cross-functional execution to maintain 99.8% delivery compliance.\n- Directed execution aligned with global industry standards and targets."
-            elif field_type == "project":
-                fallback_text = f"Led end-to-end execution of high-impact technical initiatives for {target_role}. Optimized workflow performance and delivered measurable business outcomes ahead of schedule."
-            elif field_type == "skills":
-                fallback_text = f"Strategic Leadership, Data Analysis, Cross-Functional Collaboration, Process Optimization, Technical Execution"
+    # 1. TRY OPENAI FIRST
+    if os.getenv("OPENAI_API_KEY"):
+        try:
+            if hasattr(openai, "OpenAI"):
+                client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+                response = client.chat.completions.create(
+                    model="gpt-4o",
+                    messages=[{"role": "user", "content": prompt}],
+                    max_tokens=250,
+                    temperature=0.7
+                )
+                generated_text = response.choices[0].message.content.strip()
             else:
-                fallback_text = f"Accomplished {target_role} with a proven track record of delivering measurable operational success, leading high-performing teams, and executing strategic initiatives across competitive markets."
-            
-            return jsonify({"result": fallback_text})
+                openai.api_key = os.getenv("OPENAI_API_KEY")
+                response = openai.ChatCompletion.create(
+                    model="gpt-4o",
+                    messages=[{"role": "user", "content": prompt}],
+                    max_tokens=250,
+                    temperature=0.7
+                )
+                generated_text = response.choices[0].message.content.strip()
+        except Exception as e:
+            print(f"OpenAI Attempt Failed: {e}")
 
-        if hasattr(openai, "OpenAI"):
-            client = openai.OpenAI(api_key=api_key)
-            response = client.chat.completions.create(
-                model="gpt-4o",
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=220,
-                temperature=0.7
-            )
-            generated_text = response.choices[0].message.content.strip()
-        else:
-            openai.api_key = api_key
-            response = openai.ChatCompletion.create(
-                model="gpt-4o",
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=220,
-                temperature=0.7
-            )
-            generated_text = response.choices[0].message.content.strip()
+    # 2. FALLBACK TO GEMINI IF OPENAI WAS UNCONTAINED OR FAILED
+    if not generated_text and os.getenv("GEMINI_API_KEY") and genai:
+        try:
+            gemini_model = genai.GenerativeModel('gemini-1.5-flash')
+            gemini_response = gemini_model.generate_content(prompt)
+            if gemini_response and gemini_response.text:
+                generated_text = gemini_response.text.strip()
+        except Exception as e:
+            print(f"Gemini Attempt Failed: {e}")
 
-        if not getattr(current_user, "is_premium", False):
-            current_user.ai_credits_remaining = max(0, current_user.ai_credits_remaining - 1)
-            db.session.commit()
-
-        return jsonify({"result": generated_text})
-
-    except Exception as e:
-        print(f"OpenAI Generation Exception: {e}")
+    # 3. DYNAMIC SYNTHESIS FALLBACK IF BOTH APIS ARE UNREACHABLE
+    if not generated_text:
         if field_type == "experience":
-            fallback_text = f"- Accelerated project delivery timelines for {target_role} operations by 25%.\n- Implemented process automation strategies reducing manual workload overhead.\n- Mentored junior team members and aligned cross-functional objectives."
-        elif field_type == "project":
-            fallback_text = f"Architected dynamic solutions for {target_role} workflow optimization. Delivered quantifiable performance gains across primary operational benchmarks."
+            generated_text = f"- Spearheaded strategic initiatives as {job_title}, leveraging expertise in {skills or 'core domain practices'}.\n- Optimized operational workflows to maintain high efficiency.\n- Directed cross-functional project execution aligned with industry standards."
         elif field_type == "skills":
-            fallback_text = f"Strategic Planning, Technical Execution, Workflow Automation, Quality Assurance, Leadership"
+            generated_text = skills if skills else "Strategic Planning, Process Optimization, Technical Execution, Workflow Automation"
+        elif field_type == "project":
+            generated_text = f"Led high-impact project execution focused on {skills or target_role}. Delivered measurable efficiency gains ahead of schedule."
         else:
-            fallback_text = f"Results-driven {target_role} with an extensive background in executing key strategic milestones and driving organizational efficiency."
-        
-        return jsonify({"result": fallback_text})
+            generated_text = dynamic_fallback_summary
+
+    # Deduct credits for free tier users upon successful generation
+    if not getattr(current_user, "is_premium", False):
+        current_user.ai_credits_remaining = max(0, current_user.ai_credits_remaining - 1)
+        db.session.commit()
+
+    return jsonify({"result": generated_text})
 
 # ============================================================
 # DASHBOARD ROUTES
