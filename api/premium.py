@@ -85,7 +85,6 @@ premium_app = Flask(
     template_folder=TEMPLATE_DIR,
 )
 
-# Configure SECRET_KEY in Vercel environment variables.
 premium_app.config["SECRET_KEY"] = (
     os.getenv("SECRET_KEY")
     or os.getenv("secret_key")
@@ -173,7 +172,7 @@ if gemini_api_key and legacy_genai:
 
 
 # ============================================================
-# SHARED AI GENERATION HELPERS
+# SHARED AI GENERATION HELPERS (GEMINI PRIMARY)
 # ============================================================
 
 AI_SYSTEM_INSTRUCTIONS = """
@@ -233,7 +232,6 @@ def generate_with_openai(prompt, api_key=None):
         temperature=0.3,
     )
 
-    # Safe index check for choices
     if not response or not getattr(response, "choices", None) or len(response.choices) == 0:
         raise RuntimeError("OpenAI returned no choices.")
 
@@ -308,30 +306,35 @@ def generate_with_gemini(prompt, api_key=None):
 
 
 def generate_ai_text(prompt):
-    openai_key = get_openai_api_key()
+    """
+    Try Gemini first (Primary) and OpenAI second (Fallback).
+    """
     gemini_key = get_gemini_api_key()
+    openai_key = get_openai_api_key()
 
     errors = []
 
-    if openai_key:
-        try:
-            result = generate_with_openai(prompt, openai_key)
-            print("SUCCESS: Generated using OpenAI.")
-            return result
-        except Exception as exc:
-            print(f"OPENAI FAILED: {type(exc).__name__}: {exc}. Trying Gemini.")
-            errors.append(f"OpenAI: {type(exc).__name__}")
-
+    # 1. TRY GEMINI FIRST
     if gemini_key:
         try:
             result = generate_with_gemini(prompt, gemini_key)
             print("SUCCESS: Generated using Gemini.")
             return result
         except Exception as exc:
-            print(f"GEMINI FAILED: {type(exc).__name__}: {exc}")
+            print(f"GEMINI FAILED: {type(exc).__name__}: {exc}. Trying OpenAI.")
             errors.append(f"Gemini: {type(exc).__name__}")
 
-    if not openai_key and not gemini_key:
+    # 2. TRY OPENAI AS FALLBACK
+    if openai_key:
+        try:
+            result = generate_with_openai(prompt, openai_key)
+            print("SUCCESS: Generated using OpenAI.")
+            return result
+        except Exception as exc:
+            print(f"OPENAI FAILED: {type(exc).__name__}: {exc}")
+            errors.append(f"OpenAI: {type(exc).__name__}")
+
+    if not gemini_key and not openai_key:
         raise RuntimeError("No AI provider API keys are configured.")
 
     raise RuntimeError("All configured AI providers failed. " + "; ".join(errors))
