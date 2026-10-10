@@ -10,13 +10,13 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 
 # ============================================================
-# GOOGLE GENAI SDK: STABLE LEGACY CONFIGURATION
+# GOOGLE GENERATIVE AI SDK (EXCLUSIVE PROVIDER)
 # ============================================================
 
 try:
-    import google.generativeai as legacy_genai
+    import google.generativeai as genai
 except ImportError:
-    legacy_genai = None
+    genai = None
 
 # ============================================================
 # FLASK IMPORTS
@@ -145,15 +145,6 @@ def get_gemini_api_key():
     )
 
 
-gemini_api_key = get_gemini_api_key()
-
-if gemini_api_key and legacy_genai:
-    try:
-        legacy_genai.configure(api_key=gemini_api_key)
-    except Exception as exc:
-        print(f"Gemini configuration warning: {exc}")
-
-
 # ============================================================
 # SHARED AI GENERATION HELPERS (GEMINI EXCLUSIVE)
 # ============================================================
@@ -186,7 +177,10 @@ def generate_with_gemini(prompt, api_key=None):
     api_key = api_key or get_gemini_api_key()
 
     if not api_key:
-        raise RuntimeError("Gemini API key is not configured.")
+        raise RuntimeError("Gemini API key is not configured in environment variables.")
+
+    if not genai:
+        raise RuntimeError("Google Generative AI SDK is not installed.")
 
     full_prompt = (
         AI_SYSTEM_INSTRUCTIONS
@@ -194,39 +188,33 @@ def generate_with_gemini(prompt, api_key=None):
         + prompt
     )
 
-    if legacy_genai:
-        legacy_genai.configure(api_key=api_key)
-        model = legacy_genai.GenerativeModel("gemini-1.5-flash")
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel("gemini-1.5-flash")
 
-        response = model.generate_content(
-            full_prompt,
-            request_options={"timeout": 30},
-        )
+    response = model.generate_content(
+        full_prompt,
+        request_options={"timeout": 30},
+    )
 
-        generated_text = getattr(response, "text", None)
-        if generated_text and generated_text.strip():
-            return generated_text.strip()
+    generated_text = getattr(response, "text", None)
+    if generated_text and generated_text.strip():
+        return generated_text.strip()
 
-        raise RuntimeError("Gemini returned an empty response.")
-
-    raise RuntimeError("Google Generative AI SDK is not installed.")
+    raise RuntimeError("Gemini returned an empty response.")
 
 
 def generate_ai_text(prompt):
-    """
-    Generate text exclusively using Google Gemini to avoid OpenAI limits.
-    """
     gemini_key = get_gemini_api_key()
 
     if not gemini_key:
-        raise RuntimeError("Gemini API key is not configured in environment variables.")
+        raise RuntimeError("GEMINI_API_KEY environment variable is missing.")
 
     try:
         result = generate_with_gemini(prompt, gemini_key)
         print("SUCCESS: Generated using Gemini.")
         return result
     except Exception as exc:
-        print(f"GEMINI FAILED: {type(exc).__name__}: {exc}")
+        print(f"GEMINI GENERATION FAILED: {type(exc).__name__}: {exc}")
         raise RuntimeError(f"Gemini generation failed: {type(exc).__name__}: {exc}")
 
 
@@ -691,7 +679,7 @@ def account():
 premium_app.register_blueprint(dashboard_bp)
 
 # ============================================================
-# PADDLE WEBHOOK VERIFICATION (GUARDED AGAINST INDEX ERRORS)
+# PADDLE WEBHOOK VERIFICATION
 # ============================================================
 
 def verify_paddle_webhook(request_data, signature_header):
