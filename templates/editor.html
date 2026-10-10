@@ -229,22 +229,27 @@
                 </div>
             </div>
 
-            <!-- SECTION 5: SKILLS & CERTIFICATIONS -->
+            <!-- SECTION 5: SKILLS & CERTIFICATIONS WITH AI ASSIST -->
             <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xl shadow-slate-900/10 overflow-hidden space-y-5 p-6 sm:p-8">
-                <div class="glass-card-header -mx-6 sm:-mx-8 -mt-6 sm:-mt-8 p-6 sm:p-8 border-b border-slate-100 flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-[#02353C]/10 text-[#02353C] flex items-center justify-center font-bold">
-                        <i class="fa-solid fa-list-check text-amber-500 text-lg"></i>
+                <div class="glass-card-header -mx-6 sm:-mx-8 -mt-6 sm:-mt-8 p-6 sm:p-8 border-b border-slate-100 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-[#02353C]/10 text-[#02353C] flex items-center justify-center font-bold">
+                            <i class="fa-solid fa-list-check text-amber-500 text-lg"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-900">Core Skills & Credentials</h2>
+                            <p class="text-slate-500 text-xs">Technical proficiencies, board licenses, and certifications.</p>
+                        </div>
                     </div>
-                    <div>
-                        <h2 class="text-lg font-bold text-slate-900">Core Skills & Credentials</h2>
-                        <p class="text-slate-500 text-xs">Technical proficiencies, board licenses, and certifications.</p>
-                    </div>
+                    <button type="button" onclick="generateAIField('skills', 'skillsTechText')" class="bg-amber-50 hover:bg-amber-100/80 text-amber-900 border border-amber-300/80 px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-2 active:scale-95">
+                        <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i> AI Suggest Skills
+                    </button>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Technical / Professional Skills</label>
-                        <input type="text" name="skills_tech" placeholder="e.g. Financial Modeling, Python, Patient Diagnostics, Salesforce, SQL" value="{{ resume.content_json.skills_tech if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-2.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
+                        <input id="skillsTechText" type="text" name="skills_tech" placeholder="e.g. Financial Modeling, Python, Patient Diagnostics, Salesforce, SQL" value="{{ resume.content_json.skills_tech if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-2.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Soft Skills & Leadership</label>
@@ -341,15 +346,18 @@
             const targetArea = document.getElementById(targetElementId);
             const targetRole = document.querySelector('input[name="target_role"]').value || "Professional";
             const jobTitle = document.querySelector('input[name="job_title"]').value || "";
+            const fullName = document.querySelector('input[name="full_name"]').value || "";
             const skills = document.querySelector('input[name="skills_tech"]').value || "";
-            const currentInput = targetArea.value.trim();
+            const currentInput = targetArea ? targetArea.value.trim() : "";
 
             if (currentInput !== "" && !confirm("Do you want AI Assist to optimize your text based on your current inputs?")) {
                 return;
             }
 
-            const previousValue = targetArea.value;
-            targetArea.value = "AI Assist is optimizing content for " + targetRole + "...";
+            const previousValue = targetArea ? targetArea.value : "";
+            if (targetArea) {
+                targetArea.value = "AI Assist is optimizing content for " + targetRole + "...";
+            }
 
             try {
                 const response = await fetch('/api/v1/ai/generate-field', {
@@ -361,6 +369,7 @@
                         field_type: fieldType,
                         target_role: targetRole,
                         job_title: jobTitle,
+                        full_name: fullName,
                         skills: skills,
                         current_input: currentInput
                     })
@@ -369,15 +378,15 @@
                 const data = await response.json();
 
                 if (response.ok && data.result) {
-                    targetArea.value = data.result;
+                    if (targetArea) targetArea.value = data.result;
                 } else {
                     alert(data.error || "Unable to generate AI content at this time.");
-                    targetArea.value = previousValue;
+                    if (targetArea) targetArea.value = previousValue;
                 }
             } catch (err) {
                 console.error("AI Assist Generation Error:", err);
                 alert("Connection error. Could not connect to AI Assist.");
-                targetArea.value = previousValue;
+                if (targetArea) targetArea.value = previousValue;
             }
         }
     </script>
