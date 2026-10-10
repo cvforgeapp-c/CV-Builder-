@@ -5,7 +5,6 @@ import json
 import hmac
 import hashlib
 import httpx
-import openai
 
 from datetime import datetime
 from bs4 import BeautifulSoup
@@ -144,13 +143,6 @@ login_manager.login_message_category = "info"
 # AI API CONFIGURATION
 # ============================================================
 
-def get_openai_api_key():
-    return (
-        os.getenv("OPENAI_API_KEY")
-        or os.getenv("openai_api_key")
-    )
-
-
 def get_gemini_api_key():
     return (
         os.getenv("GEMINI_API_KEY")
@@ -158,11 +150,7 @@ def get_gemini_api_key():
     )
 
 
-openai_api_key = get_openai_api_key()
 gemini_api_key = get_gemini_api_key()
-
-if openai_api_key:
-    openai.api_key = openai_api_key
 
 if gemini_api_key and legacy_genai:
     try:
@@ -172,7 +160,7 @@ if gemini_api_key and legacy_genai:
 
 
 # ============================================================
-# SHARED AI GENERATION HELPERS (GEMINI PRIMARY)
+# SHARED AI GENERATION HELPERS (GEMINI EXCLUSIVE)
 # ============================================================
 
 AI_SYSTEM_INSTRUCTIONS = """
@@ -197,54 +185,6 @@ FACTUAL ACCURACY RULES:
    resume intended for the user.
 9. Follow the requested output format.
 """
-
-
-def generate_with_openai(prompt, api_key=None):
-    api_key = api_key or get_openai_api_key()
-
-    if not api_key:
-        raise RuntimeError("OpenAI API key is not configured.")
-
-    client = openai.OpenAI(
-        api_key=api_key,
-        timeout=httpx.Timeout(
-            connect=10.0,
-            read=30.0,
-            write=10.0,
-            pool=10.0,
-        ),
-        max_retries=0,
-    )
-
-    response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[
-            {
-                "role": "system",
-                "content": AI_SYSTEM_INSTRUCTIONS,
-            },
-            {
-                "role": "user",
-                "content": prompt,
-            },
-        ],
-        max_tokens=700,
-        temperature=0.3,
-    )
-
-    if not response or not getattr(response, "choices", None) or len(response.choices) == 0:
-        raise RuntimeError("OpenAI returned no choices.")
-
-    first_choice = response.choices[0]
-    if not first_choice or not getattr(first_choice, "message", None):
-        raise RuntimeError("OpenAI returned an invalid choice structure.")
-
-    generated_text = first_choice.message.content
-
-    if not generated_text or not generated_text.strip():
-        raise RuntimeError("OpenAI returned an empty response.")
-
-    return generated_text.strip()
 
 
 def generate_with_gemini(prompt, api_key=None):
@@ -307,37 +247,20 @@ def generate_with_gemini(prompt, api_key=None):
 
 def generate_ai_text(prompt):
     """
-    Try Gemini first (Primary) and OpenAI second (Fallback).
+    Generate text exclusively using Google Gemini to avoid OpenAI limits.
     """
     gemini_key = get_gemini_api_key()
-    openai_key = get_openai_api_key()
 
-    errors = []
+    if not gemini_key:
+        raise RuntimeError("Gemini API key is not configured in environment variables.")
 
-    # 1. TRY GEMINI FIRST
-    if gemini_key:
-        try:
-            result = generate_with_gemini(prompt, gemini_key)
-            print("SUCCESS: Generated using Gemini.")
-            return result
-        except Exception as exc:
-            print(f"GEMINI FAILED: {type(exc).__name__}: {exc}. Trying OpenAI.")
-            errors.append(f"Gemini: {type(exc).__name__}")
-
-    # 2. TRY OPENAI AS FALLBACK
-    if openai_key:
-        try:
-            result = generate_with_openai(prompt, openai_key)
-            print("SUCCESS: Generated using OpenAI.")
-            return result
-        except Exception as exc:
-            print(f"OPENAI FAILED: {type(exc).__name__}: {exc}")
-            errors.append(f"OpenAI: {type(exc).__name__}")
-
-    if not gemini_key and not openai_key:
-        raise RuntimeError("No AI provider API keys are configured.")
-
-    raise RuntimeError("All configured AI providers failed. " + "; ".join(errors))
+    try:
+        result = generate_with_gemini(prompt, gemini_key)
+        print("SUCCESS: Generated using Gemini.")
+        return result
+    except Exception as exc:
+        print(f"GEMINI FAILED: {type(exc).__name__}: {exc}")
+        raise RuntimeError(f"Gemini generation failed: {type(exc).__name__}: {exc}")
 
 
 # ============================================================
@@ -950,12 +873,12 @@ def analyze_ats():
 
     prompt = f"Analyze the candidate's CV against the supplied job description.\n\nCV DATA:\n{cv_json}\n\nJOB DESCRIPTION:\n{job_desc}\n\nReturn a useful ATS analysis containing:\n1. An estimated ATS match score from 0 to 100.\n2. Keywords found in the CV.\n3. Important job-description keywords missing from the CV.\n4. Relevant strengths supported by the CV.\n5. Suggestions for improving alignment.\n6. Specific CV sections that could be improved."
 
-    active_openai_key = get_openai_api_key()
-    if not active_openai_key:
-        return jsonify({"error": "ATS analysis is temporarily unavailable. The OpenAI API key is not configured."}), 503
+    gemini_key = get_gemini_api_key()
+    if not gemini_key:
+        return jsonify({"error": "ATS analysis is temporarily unavailable. The Gemini API key is not configured."}), 503
 
     try:
-        analysis_text = generate_with_openai(prompt, active_openai_key)
+        analysis_text = generate_with_gemini(prompt, gemini_key)
         return jsonify({"analysis": analysis_text}), 200
     except Exception as exc:
         print(f"ATS analysis error: {type(exc).__name__}: {exc}")
