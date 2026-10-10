@@ -43,9 +43,38 @@
             box-shadow: 0 0 0 4px rgba(2, 53, 60, 0.08);
             outline: none;
         }
+
+        /* Modal Transitions */
+        .modal-active {
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
+        .modal-active .modal-card {
+            transform: scale(1) !important;
+        }
     </style>
 </head>
 <body class="bg-studio-ambient text-slate-800 antialiased min-h-screen flex flex-col selection:bg-amber-400 selection:text-[#02353C]">
+
+    <!-- CUSTOM BRANDED MODAL NOTIFICATION -->
+    <div id="aiModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
+        <div class="modal-card max-w-md w-full bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-100 transform scale-95 transition-all duration-300 text-center space-y-5">
+            <div class="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto text-2xl shadow-inner border border-amber-500/20">
+                <i class="fa-solid fa-wand-magic-sparkles animate-bounce"></i>
+            </div>
+            
+            <div class="space-y-2">
+                <h3 id="modalTitle" class="text-xl font-bold text-slate-900">Input Required for AI Assist</h3>
+                <p id="modalMessage" class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                    Please provide a <strong class="text-slate-900">Target Title</strong>, <strong class="text-slate-900">Job Title</strong>, or <strong class="text-slate-900">Skills</strong> so AI Assist can generate a high-impact, tailored summary!
+                </p>
+            </div>
+
+            <button type="button" onclick="closeModal()" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-300 hover:to-amber-400 text-[#02353C] font-extrabold text-xs uppercase tracking-wider shadow-lg active:scale-95 transition-all">
+                Got it, let's fill details
+            </button>
+        </div>
+    </div>
 
     <!-- GLASSMORTIC NAVIGATION HEADER -->
     <nav class="glass-nav text-white px-4 sm:px-8 py-3.5 flex items-center justify-between sticky top-0 z-50 shadow-lg">
@@ -305,8 +334,25 @@
 
     </main>
 
-    <!-- CLIENT-SIDE FORM SUBMISSION & OPENAI AI ASSIST SCRIPT -->
+    <!-- CLIENT-SIDE SCRIPT WITH CUSTOM MODAL POPUP -->
     <script>
+        function showModal(title, message, focusInputName = null) {
+            const modal = document.getElementById('aiModal');
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMessage').innerHTML = message;
+            modal.classList.add('modal-active');
+
+            if (focusInputName) {
+                const targetInput = document.querySelector(`input[name="${focusInputName}"]`);
+                if (targetInput) targetInput.focus();
+            }
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('aiModal');
+            modal.classList.remove('modal-active');
+        }
+
         document.getElementById('cvForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -334,7 +380,7 @@
                 } else if (response.redirected) {
                     window.location.href = response.url;
                 } else {
-                    alert(result.error || "Failed to save CV. Please try again.");
+                    showModal("Save Error", result.error || "Failed to save CV. Please try again.");
                 }
             } catch (err) {
                 console.error("Save CV Submission Error:", err);
@@ -357,14 +403,13 @@
             const skills = skillsInput ? skillsInput.value.trim() : "";
             const currentInput = targetArea ? targetArea.value.trim() : "";
 
-            // REQUISITE CHECK: Warn user if key fields are empty to ensure high-quality output
+            // BEAUTIFUL CUSTOM MODAL VALIDATION
             if (!targetRole && !jobTitle && !skills && !currentInput) {
-                alert("Please fill in at least a 'Target Professional Title', 'Job Title', or 'Skills' first so AI Assist can generate a tailored, high-impact summary!");
-                if (targetRoleInput) targetRoleInput.focus();
-                return;
-            }
-
-            if (currentInput !== "" && !confirm("Do you want AI Assist to optimize your text based on your current inputs?")) {
+                showModal(
+                    "Role Details Needed", 
+                    "Please fill in at least a <strong class='text-slate-900'>Target Professional Title</strong>, <strong class='text-slate-900'>Job Title</strong>, or <strong class='text-slate-900'>Skills</strong> first so AI Assist can generate a tailored, high-impact output!",
+                    "target_role"
+                );
                 return;
             }
 
@@ -394,12 +439,12 @@
                 if (response.ok && data.result) {
                     if (targetArea) targetArea.value = data.result;
                 } else {
-                    alert(data.error || "Unable to generate AI content at this time.");
+                    showModal("AI Assist Error", data.error || "Unable to generate AI content at this time.");
                     if (targetArea) targetArea.value = previousValue;
                 }
             } catch (err) {
                 console.error("AI Assist Generation Error:", err);
-                alert("Connection error. Could not connect to AI Assist.");
+                showModal("Connection Error", "Could not connect to AI Assist service. Please check your connection.");
                 if (targetArea) targetArea.value = previousValue;
             }
         }
