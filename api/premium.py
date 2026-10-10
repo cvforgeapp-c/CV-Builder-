@@ -189,7 +189,9 @@ def generate_with_gemini(prompt, api_key=None):
     )
 
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel("gemini-1.5-flash")
+    
+    # Updated to gemini-1.5-flash-latest to ensure full version compatibility
+    model = genai.GenerativeModel("gemini-1.5-flash-latest")
 
     response = model.generate_content(
         full_prompt,
