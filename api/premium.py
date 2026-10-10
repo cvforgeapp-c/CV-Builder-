@@ -452,6 +452,7 @@ def generate_ai_field():
                 "keywords": ["doctor", "physician", "pediatric", "clinical", "nurse", "medical", "health", "hospital", "surgeon"],
                 "impact": "Proven ability to deliver high-quality patient care, optimize triage workflows, and maintain strict clinical safety standards.",
                 "growth": "Dedicated to advancing patient health outcomes and fostering evidence-based healthcare excellence.",
+                "skills": "Patient Care, Clinical Triage, Medical Diagnostics, Treatment Planning, Electronic Health Records (EHR), Patient Safety, Pharmacology",
                 "bullets": [
                     f"Administered comprehensive patient care as a {job_title or target_role}, utilizing expertise in {skills or 'clinical guidelines'}.",
                     "Optimized clinical workflows and diagnostic turnaround times while ensuring full compliance with medical safety regulations.",
@@ -463,6 +464,7 @@ def generate_ai_field():
                 "keywords": ["developer", "engineer", "software", "architect", "tech", "data", "full-stack", "backend", "frontend", "devops", "ml", "ai"],
                 "impact": "Proven ability to architect scalable system solutions, optimize performance bottlenecks, and build robust software architectures.",
                 "growth": "Focused on leveraging modern technical stacks to engineer high-availability applications and drive digital transformation.",
+                "skills": "Python, JavaScript, TypeScript, React, Node.js, SQL, RESTful APIs, Git, Docker, System Architecture, CI/CD",
                 "bullets": [
                     f"Engineered and deployed scalable backend services as a {job_title or target_role}, leveraging {skills or 'modern frameworks'}.",
                     "Optimized application performance and reduced system latency through rigorous code refactoring and database tuning.",
@@ -474,6 +476,7 @@ def generate_ai_field():
                 "keywords": ["finance", "financial", "accountant", "analyst", "audit", "banking", "treasury", "controller", "investment"],
                 "impact": "Proven ability to drive fiscal optimization, manage complex financial forecasting, and ensure rigorous regulatory compliance.",
                 "growth": "Committed to delivering strategic financial insights and maximizing capital efficiency across portfolios.",
+                "skills": "Financial Modeling, Budgeting, Variance Analysis, Risk Assessment, GAAP, Excel, Auditing, Cash Flow Management",
                 "bullets": [
                     f"Managed comprehensive financial models and budgeting frameworks as a {job_title or target_role}, utilizing {skills or 'financial analytics'}.",
                     "Identified cost-reduction opportunities and optimized capital allocation, driving measurable improvements in profit margins.",
@@ -485,6 +488,7 @@ def generate_ai_field():
                 "keywords": ["marketing", "growth", "social media", "content", "brand", "seo", "campaign", "copywriter", "pr"],
                 "impact": "Proven ability to scale digital acquisition channels, boost brand positioning, and optimize multi-channel conversion funnels.",
                 "growth": "Focused on leveraging data-driven campaign strategies to maximize user engagement and return on ad spend.",
+                "skills": "SEO, Google Analytics, Content Strategy, A/B Testing, Paid Social Advertising, Email Marketing, Brand Positioning",
                 "bullets": [
                     f"Orchestrated multi-channel marketing campaigns as a {job_title or target_role}, leveraging expertise in {skills or 'digital growth'}.",
                     "Executed rigorous A/B testing frameworks that elevated user acquisition metrics and improved organic conversion rates.",
@@ -496,6 +500,7 @@ def generate_ai_field():
                 "keywords": ["sales", "account executive", "business development", "partnership", "rep", "b2b", "ae"],
                 "impact": "Proven ability to accelerate revenue growth, penetrate new market segments, and build high-value client pipelines.",
                 "growth": "Committed to driving enterprise client acquisition and exceeding aggressive annual sales quotas.",
+                "skills": "B2B Sales, Pipeline Management, CRM (Salesforce), Contract Negotiation, Lead Generation, Account Management, Cold Outreach",
                 "bullets": [
                     f"Spearheaded enterprise client acquisition as a {job_title or target_role}, leveraging mastery in {skills or 'pipeline management'}.",
                     "Negotiated high-value B2B contracts and forged strategic partnerships that expanded territorial market share.",
@@ -507,6 +512,7 @@ def generate_ai_field():
                 "keywords": ["product manager", "product owner", "scrum", "agile", "program manager", "project manager"],
                 "impact": "Proven ability to translate business vision into structured product roadmaps and drive cross-functional product execution.",
                 "growth": "Focused on aligning user needs with technical deliverables to maximize product adoption and market fit.",
+                "skills": "Agile Methodologies, Product Roadmapping, User Research, Backlog Grooming, Cross-Functional Leadership, Jira, Wireframing",
                 "bullets": [
                     f"Led end-to-end product lifecycles as a {job_title or target_role}, utilizing {skills or 'Agile frameworks'}.",
                     "Synthesized user feedback and market research to prioritize feature backlogs and accelerate time-to-market.",
@@ -518,6 +524,7 @@ def generate_ai_field():
                 "keywords": ["hr", "human resources", "recruiter", "talent", "people operations"],
                 "impact": "Proven ability to scale high-performing talent pipelines, enhance employee engagement, and optimize HR operations.",
                 "growth": "Dedicated to cultivating positive organizational cultures and aligning talent strategy with business growth.",
+                "skills": "Talent Acquisition, Employee Relations, Performance Management, HRIS, Onboarding, Compensation & Benefits, Compliance",
                 "bullets": [
                     f"Streamlined full-lifecycle recruitment and talent operations as a {job_title or target_role}, leveraging {skills or 'talent sourcing'}.",
                     "Designed and implemented employee retention and professional development programs that boosted team morale.",
@@ -536,10 +543,12 @@ def generate_ai_field():
         if matched_domain != "general":
             dom = domain_fallbacks[matched_domain]
             fallback_summary = f"Dedicated {target_role}{job_part}{skills_part}. {dom['impact']} {dom['growth']}"
+            fallback_skills = skills if skills else dom["skills"]
             fallback_bullets = "\n".join([f"- {b}" for b in dom['bullets']])
             fallback_project = dom['project']
         else:
             fallback_summary = f"Dedicated {target_role}{job_part}{skills_part}. Proven ability to execute key strategic initiatives, optimize operational workflows, and drive cross-functional productivity. Committed to delivering measurable business impact and driving continuous operational growth."
+            fallback_skills = skills if skills else "Strategic Planning, Process Optimization, Cross-Functional Leadership, Performance Management"
             fallback_bullets = f"- Spearheaded strategic initiatives as {job_title or target_role}, leveraging expertise in {skills or 'core domain practices'}.\n- Optimized operational workflows to maintain high efficiency and compliance standards.\n- Directed cross-functional project execution aligned with organizational growth targets."
             fallback_project = f"Led high-impact project execution focused on {skills or target_role}. Delivered measurable efficiency gains ahead of schedule."
 
@@ -548,7 +557,7 @@ def generate_ai_field():
         elif field_type == "project":
             generated_text = fallback_project
         elif field_type == "skills":
-            generated_text = skills if skills else "Strategic Planning, Process Optimization, Technical Execution, Workflow Automation"
+            generated_text = fallback_skills
         else:
             generated_text = fallback_summary
 
