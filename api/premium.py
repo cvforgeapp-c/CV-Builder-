@@ -199,34 +199,27 @@ def generate_with_gemini(prompt, api_key=None):
         + prompt
     )
 
-    # Modern Google GenAI SDK
+    # 1. Modern Google GenAI SDK (google.genai)
     if new_genai:
-        client = new_genai.Client(
-            api_key=api_key,
-            http_options={
-                "timeout": 30000,
-            },
-        )
+        try:
+            client = new_genai.Client(api_key=api_key)
+            
+            response = client.models.generate_content(
+                model="gemini-1.5-flash",
+                contents=full_prompt,
+            )
 
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=full_prompt,
-        )
+            generated_text = getattr(response, "text", None)
+            if generated_text and generated_text.strip():
+                return generated_text.strip()
+        except Exception as exc:
+            print(f"Modern GenAI SDK failed: {exc}. Trying legacy SDK...")
 
-        generated_text = getattr(response, "text", None)
-
-        if generated_text and generated_text.strip():
-            return generated_text.strip()
-
-        raise RuntimeError("Gemini returned an empty response.")
-
-    # Legacy Google Generative AI SDK
+    # 2. Legacy Google Generative AI SDK (google.generativeai)
     if legacy_genai:
         legacy_genai.configure(api_key=api_key)
 
-        model = legacy_genai.GenerativeModel(
-            "gemini-1.5-flash"
-        )
+        model = legacy_genai.GenerativeModel("gemini-1.5-flash")
 
         response = model.generate_content(
             full_prompt,
@@ -240,9 +233,7 @@ def generate_with_gemini(prompt, api_key=None):
 
         raise RuntimeError("Legacy Gemini returned an empty response.")
 
-    raise RuntimeError(
-        "Neither the modern nor the legacy Gemini SDK is installed."
-    )
+    raise RuntimeError("Neither modern nor legacy Gemini SDK produced a result.")
 
 
 def generate_ai_text(prompt):
