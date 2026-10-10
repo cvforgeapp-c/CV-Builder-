@@ -10,13 +10,8 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 
 # ============================================================
-# GOOGLE GENAI SDK: MODERN SDK WITH LEGACY FALLBACK
+# GOOGLE GENAI SDK: STABLE LEGACY CONFIGURATION
 # ============================================================
-
-try:
-    from google import genai as new_genai
-except ImportError:
-    new_genai = None
 
 try:
     import google.generativeai as legacy_genai
@@ -156,7 +151,7 @@ if gemini_api_key and legacy_genai:
     try:
         legacy_genai.configure(api_key=gemini_api_key)
     except Exception as exc:
-        print(f"Gemini legacy configuration warning: {exc}")
+        print(f"Gemini configuration warning: {exc}")
 
 
 # ============================================================
@@ -199,26 +194,8 @@ def generate_with_gemini(prompt, api_key=None):
         + prompt
     )
 
-    # 1. Modern Google GenAI SDK (google.genai)
-    if new_genai:
-        try:
-            client = new_genai.Client(api_key=api_key)
-            
-            response = client.models.generate_content(
-                model="gemini-1.5-flash",
-                contents=full_prompt,
-            )
-
-            generated_text = getattr(response, "text", None)
-            if generated_text and generated_text.strip():
-                return generated_text.strip()
-        except Exception as exc:
-            print(f"Modern GenAI SDK failed: {exc}. Trying legacy SDK...")
-
-    # 2. Legacy Google Generative AI SDK (google.generativeai)
     if legacy_genai:
         legacy_genai.configure(api_key=api_key)
-
         model = legacy_genai.GenerativeModel("gemini-1.5-flash")
 
         response = model.generate_content(
@@ -227,13 +204,12 @@ def generate_with_gemini(prompt, api_key=None):
         )
 
         generated_text = getattr(response, "text", None)
-
         if generated_text and generated_text.strip():
             return generated_text.strip()
 
-        raise RuntimeError("Legacy Gemini returned an empty response.")
+        raise RuntimeError("Gemini returned an empty response.")
 
-    raise RuntimeError("Neither modern nor legacy Gemini SDK produced a result.")
+    raise RuntimeError("Google Generative AI SDK is not installed.")
 
 
 def generate_ai_text(prompt):
