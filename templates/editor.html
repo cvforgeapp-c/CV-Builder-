@@ -344,11 +344,25 @@
 
         async function generateAIField(fieldType, targetElementId) {
             const targetArea = document.getElementById(targetElementId);
-            const targetRole = document.querySelector('input[name="target_role"]').value || "Professional";
-            const jobTitle = document.querySelector('input[name="job_title"]').value || "";
-            const fullName = document.querySelector('input[name="full_name"]').value || "";
-            const skills = document.querySelector('input[name="skills_tech"]').value || "";
+            
+            // Get form field values
+            const targetRoleInput = document.querySelector('input[name="target_role"]');
+            const jobTitleInput = document.querySelector('input[name="job_title"]');
+            const fullNameInput = document.querySelector('input[name="full_name"]');
+            const skillsInput = document.querySelector('input[name="skills_tech"]');
+
+            const targetRole = targetRoleInput ? targetRoleInput.value.trim() : "";
+            const jobTitle = jobTitleInput ? jobTitleInput.value.trim() : "";
+            const fullName = fullNameInput ? fullNameInput.value.trim() : "";
+            const skills = skillsInput ? skillsInput.value.trim() : "";
             const currentInput = targetArea ? targetArea.value.trim() : "";
+
+            // REQUISITE CHECK: Warn user if key fields are empty to ensure high-quality output
+            if (!targetRole && !jobTitle && !skills && !currentInput) {
+                alert("Please fill in at least a 'Target Professional Title', 'Job Title', or 'Skills' first so AI Assist can generate a tailored, high-impact summary!");
+                if (targetRoleInput) targetRoleInput.focus();
+                return;
+            }
 
             if (currentInput !== "" && !confirm("Do you want AI Assist to optimize your text based on your current inputs?")) {
                 return;
@@ -356,7 +370,7 @@
 
             const previousValue = targetArea ? targetArea.value : "";
             if (targetArea) {
-                targetArea.value = "AI Assist is optimizing content for " + targetRole + "...";
+                targetArea.value = "AI Assist is optimizing content for " + (targetRole || jobTitle || "your profile") + "...";
             }
 
             try {
@@ -367,7 +381,7 @@
                     },
                     body: JSON.stringify({
                         field_type: fieldType,
-                        target_role: targetRole,
+                        target_role: targetRole || jobTitle || "Professional",
                         job_title: jobTitle,
                         full_name: fullName,
                         skills: skills,
