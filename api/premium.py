@@ -48,10 +48,10 @@ TEMPLATE_DIR = os.path.join(PROJECT_ROOT, "templates")
 
 premium_app = Flask(__name__, template_folder=TEMPLATE_DIR)
 
-premium_app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "cvforge-premium-key-998877")
+premium_app.config["SECRET_KEY"] = os.getenv("SECRET_KEY") or os.getenv("secret_key") or "cvforge-premium-key-998877"
 
 # Read database URL and dynamically enforce Psycopg v3 driver compatibility
-db_url = os.getenv("DATABASE_URL", "sqlite:///:memory:")
+db_url = os.getenv("DATABASE_URL") or os.getenv("database_url") or "sqlite:///:memory:"
 
 if db_url.startswith("postgres://"):
     db_url = db_url.replace("postgres://", "postgresql+psycopg://", 1)
@@ -73,9 +73,9 @@ login_manager.login_view = "auth.login"
 login_manager.login_message = "Please log in to access your account settings."
 login_manager.login_message_category = "info"
 
-# Initialize AI API Keys
-openai_api_key = os.getenv("OPENAI_API_KEY")
-gemini_api_key = os.getenv("GEMINI_API_KEY")
+# Initialize AI API Keys (Supports both UPPERCASE and lowercase environment variables)
+openai_api_key = os.getenv("OPENAI_API_KEY") or os.getenv("openai_api_key")
+gemini_api_key = os.getenv("GEMINI_API_KEY") or os.getenv("gemini_api_key")
 
 if openai_api_key:
     openai.api_key = openai_api_key
@@ -87,8 +87,8 @@ if gemini_api_key and genai:
 # PADDLE CONFIGURATION
 # ============================================================
 
-PADDLE_API_KEY = os.getenv("PADDLE_API_KEY")
-PADDLE_WEBHOOK_SECRET_KEY = os.getenv("PADDLE_WEBHOOK_SECRET_KEY")
+PADDLE_API_KEY = os.getenv("PADDLE_API_KEY") or os.getenv("paddle_api_key")
+PADDLE_WEBHOOK_SECRET_KEY = os.getenv("PADDLE_WEBHOOK_SECRET_KEY") or os.getenv("paddle_webhook_secret_key")
 PADDLE_ENV = os.getenv("PADDLE_ENV", "sandbox")
 PADDLE_PREMIUM_PRICE_ID = os.getenv("PADDLE_PREMIUM_PRICE_ID", "pri_01hxxxxxxxxx")
 
@@ -344,7 +344,7 @@ def save_resume():
         return redirect(f"/editor?id={resume_id}")
 
 # ============================================================
-# DUAL OPENAI & GEMINI AI GENERATION ENDPOINT WITH DIAGNOSTICS
+# DUAL OPENAI & GEMINI AI GENERATION ENDPOINT
 # ============================================================
 
 DEVELOPER_EMAILS = ["subhnllha@gmail.com"]
@@ -453,12 +453,15 @@ def generate_ai_field():
 
     generated_text = None
 
-    # 6. STEP 1: OPENAI GENERATION WITH EXPLICIT LOGGING
-    openai_key = os.getenv("OPENAI_API_KEY")
-    if openai_key:
+    # Fetch Case-Insensitive API Keys
+    active_openai_key = os.getenv("OPENAI_API_KEY") or os.getenv("openai_api_key")
+    active_gemini_key = os.getenv("GEMINI_API_KEY") or os.getenv("gemini_api_key")
+
+    # 6. STEP 1: OPENAI GENERATION (WITH 10s TIMEOUT & LOW RETRIES TO PREVENT HANGS)
+    if active_openai_key:
         try:
             if hasattr(openai, "OpenAI"):
-                client = openai.OpenAI(api_key=openai_key)
+                client = openai.OpenAI(api_key=active_openai_key, timeout=10.0, max_retries=1)
                 response = client.chat.completions.create(
                     model="gpt-4o",
                     messages=[{"role": "user", "content": prompt}],
@@ -467,9 +470,9 @@ def generate_ai_field():
                 )
                 if response.choices and response.choices[0].message.content:
                     generated_text = response.choices[0].message.content.strip()
-                    print("SUCCESS: AI Content generated via OpenAI gpt-4o")
+                    print("SUCCESS: Generated via OpenAI gpt-4o")
             else:
-                openai.api_key = openai_key
+                openai.api_key = active_openai_key
                 response = openai.ChatCompletion.create(
                     model="gpt-4o",
                     messages=[{"role": "user", "content": prompt}],
@@ -478,30 +481,25 @@ def generate_ai_field():
                 )
                 if response.choices and response.choices[0].message.content:
                     generated_text = response.choices[0].message.content.strip()
-                    print("SUCCESS: AI Content generated via OpenAI ChatCompletion")
+                    print("SUCCESS: Generated via OpenAI ChatCompletion")
         except Exception as e:
-            print(f"CRITICAL OPENAI FAILURE: {type(e).__name__} - {str(e)}")
-    else:
-        print("OPENAI WARNING: OPENAI_API_KEY is missing from environment variables.")
+            print(f"OPENAI ATTEMPT FAILED: {type(e).__name__} - {str(e)}. Handing off to Gemini...")
 
-    # 7. STEP 2: FALLBACK TO GOOGLE GEMINI WITH EXPLICIT LOGGING
-    gemini_key = os.getenv("GEMINI_API_KEY")
-    if not generated_text and gemini_key and genai:
+    # 7. STEP 2: IMMEDIATE FALLBACK TO GOOGLE GEMINI IF OPENAI FAILS OR TIMES OUT
+    if not generated_text and active_gemini_key and genai:
         try:
-            genai.configure(api_key=gemini_key)
+            genai.configure(api_key=active_gemini_key)
             gemini_model = genai.GenerativeModel('gemini-1.5-flash')
             gemini_response = gemini_model.generate_content(prompt)
             if gemini_response and gemini_response.text:
                 generated_text = gemini_response.text.strip()
-                print("SUCCESS: AI Content generated via Google Gemini")
+                print("SUCCESS: Generated via Google Gemini gemini-1.5-flash")
         except Exception as e:
-            print(f"CRITICAL GEMINI FAILURE: {type(e).__name__} - {str(e)}")
-    elif not generated_text and not gemini_key:
-        print("GEMINI WARNING: GEMINI_API_KEY is missing from environment variables.")
+            print(f"GEMINI ATTEMPT FAILED: {type(e).__name__} - {str(e)}")
 
-    # 8. STEP 3: INDUSTRY-TAILORED DYNAMIC FALLBACK IF BOTH APIS FAIL
+    # 8. STEP 3: INDUSTRY-TAILORED DYNAMIC FALLBACK IF BOTH APIS ARE UNREACHABLE
     if not generated_text:
-        print("FALLBACK ENGAGED: Returning dynamic domain-specific template.")
+        print("FALLBACK ENGAGED: Generating dynamic domain-specific content.")
         if field_type == "experience":
             if is_medical:
                 generated_text = (
@@ -740,7 +738,7 @@ def analyze_ats():
 
     try:
         if hasattr(openai, "OpenAI"):
-            client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+            client = openai.OpenAI(api_key=active_openai_key or os.getenv("OPENAI_API_KEY"), timeout=10.0, max_retries=1)
             response = client.chat.completions.create(
                 model="gpt-4o",
                 messages=[{"role": "user", "content": prompt}]
