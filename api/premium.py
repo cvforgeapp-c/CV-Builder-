@@ -292,7 +292,7 @@ def save_resume():
             content_json=content_data,
             optimized_json={},
             original_text="",
-            template_used="ats",  # <-- Updated default template to strict ATS single-column
+            template_used="ats",
             accent_color="#000000",
             sidebar_color="#000000",
             updated_at=datetime.utcnow()
@@ -316,7 +316,7 @@ def save_resume():
         return redirect(f"/editor?id={resume_id}")
 
 # ============================================================
-# UNIVERSAL CONTEXT-AWARE AI GENERATION ENDPOINT
+# UNIVERSAL CONTEXT-AWARE AI GENERATION ENDPOINT (UPDATED)
 # ============================================================
 
 @premium_app.route("/api/v1/ai/generate-field", methods=["POST"])
@@ -329,12 +329,14 @@ def generate_ai_field():
     field_type = data.get("field_type", "summary")
     target_role = data.get("target_role", "Professional")
     job_title = data.get("job_title", "")
+    full_name = data.get("full_name", "")
     skills = data.get("skills", "")
     current_input = data.get("current_input", "")
 
     if field_type == "experience":
         prompt = f"""
         Transform these raw notes or work duties into 3 high-impact, ATS-optimized resume bullet points for a {target_role} ({job_title}).
+        Candidate Name: {full_name}
         Key Skills Context: {skills}
         Raw Notes: "{current_input}"
 
@@ -347,23 +349,38 @@ def generate_ai_field():
         prompt = f"""
         Write a concise, professional 2-sentence project overview for a CV.
         Target Role: {target_role}
+        Candidate Name: {full_name}
         Input/Tech Stack Context: "{current_input}"
 
         Requirements:
         - Highlight project scope, implementation, and delivered impact.
         - Return ONLY the clean paragraph text without quotation marks.
         """
-    else:
+    elif field_type == "skills":
         prompt = f"""
-        Write a high-impact, professional 3-sentence executive summary for a CV.
-        Target Professional Role: {target_role}
-        Recent Job Title: {job_title}
-        Key Skills: {skills}
-        User Context: "{current_input}"
+        Suggest a comprehensive, ATS-optimized list of comma-separated technical and professional skills for a {target_role}.
+        Candidate Name: {full_name}
+        Current Input Skills: "{current_input}"
 
         Requirements:
-        - Concise, professional, and ATS-optimized for top global employers.
-        - Return ONLY the paragraph text without quotation marks or fluff.
+        - Provide high-demand industry keywords relevant to the target role.
+        - Return ONLY the comma-separated skill list string, with no extra conversational text or quotes.
+        """
+    else:
+        prompt = f"""
+        You are an expert ATS resume writer and executive career strategist. 
+        Generate a powerful, high-impact Professional Summary (3-4 sentences max) for a resume based on the following user details:
+
+        - Target Role: {target_role}
+        - Candidate Name: {full_name}
+        - Core Skills/Technologies: {skills}
+        - Existing Notes/Draft: "{current_input}"
+
+        Instructions:
+        1. Start immediately with the professional identity, seniority, and years of experience tailored to the target role.
+        2. Integrate core technical and domain competencies naturally to capture high-value ATS keywords.
+        3. Highlight measurable value or track record metrics.
+        4. Maintain an executive, confident tone. Avoid generic filler words or bullet points. Return ONLY the paragraph text.
         """
 
     try:
@@ -374,6 +391,8 @@ def generate_ai_field():
                 fallback_text = f"- Spearheaded strategic initiatives as {target_role}, increasing operational efficiency by 22%.\n- Optimized core workflows and cross-functional processes to maintain 99.5% delivery compliance.\n- Directed team execution aligned with global industry best practices."
             elif field_type == "project":
                 fallback_text = f"Led end-to-end execution of high-impact initiative for {target_role} responsibilities. Optimized workflow performance and delivered scalable outcomes ahead of project deadlines."
+            elif field_type == "skills":
+                fallback_text = f"Strategic Planning, Data Analysis, Project Management, Cross-Functional Leadership, Process Optimization"
             else:
                 fallback_text = f"Results-driven {target_role} with proven experience delivering measurable operational success and driving key strategic initiatives across competitive global markets."
             
@@ -410,6 +429,8 @@ def generate_ai_field():
             fallback_text = f"- Accelerated project delivery timelines for {target_role} operations by 25%.\n- Implemented process automation strategies reducing manual workload overhead.\n- Mentored junior team members and aligned cross-functional objectives."
         elif field_type == "project":
             fallback_text = f"Architected dynamic solutions for {target_role} workflow optimization. Delivered quantifiable performance gains across primary operational benchmarks."
+        elif field_type == "skills":
+            fallback_text = f"Strategic Planning, Technical Execution, Workflow Automation, Quality Assurance, Leadership"
         else:
             fallback_text = f"Accomplished {target_role} with a strong track record of operational excellence, strategic project execution, and organizational growth."
         
