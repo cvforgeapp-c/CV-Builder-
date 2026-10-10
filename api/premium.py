@@ -6,10 +6,14 @@ import hmac
 import hashlib
 import httpx
 import openai
+
 from datetime import datetime
 from bs4 import BeautifulSoup
 
-# Import Modern Google GenAI SDK with Legacy Fallback
+# ============================================================
+# GOOGLE GENAI SDK: MODERN SDK WITH LEGACY FALLBACK
+# ============================================================
+
 try:
     from google import genai as new_genai
 except ImportError:
@@ -20,26 +24,51 @@ try:
 except ImportError:
     legacy_genai = None
 
-from flask import Flask, request, jsonify, redirect, url_for, render_template, Blueprint, flash
+# ============================================================
+# FLASK IMPORTS
+# ============================================================
+
+from flask import (
+    Flask,
+    request,
+    jsonify,
+    redirect,
+    url_for,
+    render_template,
+    Blueprint,
+    flash,
+)
+
 from flask_login import (
     LoginManager,
     login_user,
     logout_user,
     login_required,
-    current_user
+    current_user,
 )
-from werkzeug.security import generate_password_hash, check_password_hash
 
-# Handle Path Imports for Vercel
+from werkzeug.security import (
+    generate_password_hash,
+    check_password_hash,
+)
+
+# ============================================================
+# PATH CONFIGURATION FOR VERCEL
+# ============================================================
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, os.pardir))
 
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
+
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-# Import shared DB instance and models with fallback for Vercel package resolution
+# ============================================================
+# DATABASE MODELS
+# ============================================================
+
 try:
     from models import db, User, Resume, JobApplication
 except ImportError:
@@ -51,36 +80,88 @@ except ImportError:
 
 TEMPLATE_DIR = os.path.join(PROJECT_ROOT, "templates")
 
-premium_app = Flask(__name__, template_folder=TEMPLATE_DIR)
+premium_app = Flask(
+    __name__,
+    template_folder=TEMPLATE_DIR,
+)
 
-premium_app.config["SECRET_KEY"] = os.getenv("SECRET_KEY") or os.getenv("secret_key") or "cvforge-premium-key-998877"
+# Configure SECRET_KEY in Vercel environment variables.
+# The development fallback should not be used in production.
+premium_app.config["SECRET_KEY"] = (
+    os.getenv("SECRET_KEY")
+    or os.getenv("secret_key")
+    or "cvforge-premium-key-998877"
+)
 
-# Read database URL and dynamically enforce Psycopg v3 driver compatibility
-db_url = os.getenv("DATABASE_URL") or os.getenv("database_url") or "sqlite:///:memory:"
+# ============================================================
+# DATABASE CONFIGURATION
+# ============================================================
+
+db_url = (
+    os.getenv("DATABASE_URL")
+    or os.getenv("database_url")
+    or "sqlite:///:memory:"
+)
 
 if db_url.startswith("postgres://"):
-    db_url = db_url.replace("postgres://", "postgresql+psycopg://", 1)
-elif db_url.startswith("postgresql://") and not db_url.startswith("postgresql+psycopg://"):
-    db_url = db_url.replace("postgresql://", "postgresql+psycopg://", 1)
+    db_url = db_url.replace(
+        "postgres://",
+        "postgresql+psycopg://",
+        1,
+    )
+
+elif (
+    db_url.startswith("postgresql://")
+    and not db_url.startswith("postgresql+psycopg://")
+):
+    db_url = db_url.replace(
+        "postgresql://",
+        "postgresql+psycopg://",
+        1,
+    )
 
 premium_app.config["SQLALCHEMY_DATABASE_URI"] = db_url
 premium_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
 premium_app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_pre_ping": True,
     "pool_recycle": 300,
 }
 
-# Bind SQLAlchemy to application
 db.init_app(premium_app)
 
+# ============================================================
+# LOGIN MANAGER
+# ============================================================
+
 login_manager = LoginManager(premium_app)
+
 login_manager.login_view = "auth.login"
-login_manager.login_message = "Please log in to access your account settings."
+login_manager.login_message = (
+    "Please log in to access your account settings."
+)
 login_manager.login_message_category = "info"
 
-# Initialize AI API Keys (Supports both UPPERCASE and lowercase environment variables)
-openai_api_key = os.getenv("OPENAI_API_KEY") or os.getenv("openai_api_key")
-gemini_api_key = os.getenv("GEMINI_API_KEY") or os.getenv("gemini_api_key")
+# ============================================================
+# AI API CONFIGURATION
+# ============================================================
+
+def get_openai_api_key():
+    return (
+        os.getenv("OPENAI_API_KEY")
+        or os.getenv("openai_api_key")
+    )
+
+
+def get_gemini_api_key():
+    return (
+        os.getenv("GEMINI_API_KEY")
+        or os.getenv("gemini_api_key")
+    )
+
+
+openai_api_key = get_openai_api_key()
+gemini_api_key = get_gemini_api_key()
 
 if openai_api_key:
     openai.api_key = openai_api_key
@@ -88,31 +169,290 @@ if openai_api_key:
 if gemini_api_key and legacy_genai:
     try:
         legacy_genai.configure(api_key=gemini_api_key)
-    except Exception:
-        pass
+    except Exception as exc:
+        print(f"Gemini legacy configuration warning: {exc}")
+
+
+# ============================================================
+# SHARED AI GENERATION HELPERS
+# ============================================================
+
+AI_SYSTEM_INSTRUCTIONS = """
+You are CVForge AI, a professional resume-writing assistant.
+
+FACTUAL ACCURACY RULES:
+
+1. Use only facts supplied in the user's provided information.
+2. Never invent employment history, employers, job titles, dates,
+   degrees, certifications, licenses, skills, projects, or achievements.
+3. Never invent percentages, revenue figures, patient outcomes,
+   performance improvements, or other numerical metrics.
+4. Do not claim that a candidate performed a responsibility unless
+   the supplied information supports that claim.
+5. Do not treat a target job title or job description as proof that
+   the candidate possesses the required qualifications.
+6. You may improve grammar, clarity, structure, and professional tone.
+7. If information is insufficient, request more details or state
+   that there is insufficient information to generate the requested
+   content accurately.
+8. Never insert placeholder text or fabricated examples into a
+   resume intended for the user.
+9. Follow the requested output format.
+"""
+
+
+def generate_with_openai(prompt, api_key=None):
+    """
+    Generate text with OpenAI.
+
+    Raises an exception when the API is unavailable or the response
+    contains no usable text.
+    """
+
+    api_key = api_key or get_openai_api_key()
+
+    if not api_key:
+        raise RuntimeError("OpenAI API key is not configured.")
+
+    client = openai.OpenAI(
+        api_key=api_key,
+        timeout=httpx.Timeout(
+            connect=10.0,
+            read=30.0,
+            write=10.0,
+            pool=10.0,
+        ),
+        max_retries=0,
+    )
+
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {
+                "role": "system",
+                "content": AI_SYSTEM_INSTRUCTIONS,
+            },
+            {
+                "role": "user",
+                "content": prompt,
+            },
+        ],
+        max_tokens=700,
+        temperature=0.3,
+    )
+
+    if not response.choices:
+        raise RuntimeError("OpenAI returned no choices.")
+
+    generated_text = response.choices[0].message.content
+
+    if not generated_text or not generated_text.strip():
+        raise RuntimeError("OpenAI returned an empty response.")
+
+    return generated_text.strip()
+
+
+def generate_with_gemini(prompt, api_key=None):
+    """
+    Generate text with Gemini.
+
+    Supports the modern Google GenAI SDK and the legacy SDK.
+    """
+
+    api_key = api_key or get_gemini_api_key()
+
+    if not api_key:
+        raise RuntimeError("Gemini API key is not configured.")
+
+    full_prompt = (
+        AI_SYSTEM_INSTRUCTIONS
+        + "\n\nUser request:\n"
+        + prompt
+    )
+
+    # Modern Google GenAI SDK
+    if new_genai:
+        client = new_genai.Client(
+            api_key=api_key,
+            http_options={
+                "timeout": 30000,
+            },
+        )
+
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=full_prompt,
+        )
+
+        generated_text = getattr(response, "text", None)
+
+        if generated_text and generated_text.strip():
+            return generated_text.strip()
+
+        raise RuntimeError("Gemini returned an empty response.")
+
+    # Legacy Google Generative AI SDK
+    if legacy_genai:
+        legacy_genai.configure(api_key=api_key)
+
+        model = legacy_genai.GenerativeModel(
+            "gemini-1.5-flash"
+        )
+
+        response = model.generate_content(
+            full_prompt,
+            request_options={"timeout": 30},
+        )
+
+        generated_text = getattr(response, "text", None)
+
+        if generated_text and generated_text.strip():
+            return generated_text.strip()
+
+        raise RuntimeError("Legacy Gemini returned an empty response.")
+
+    raise RuntimeError(
+        "Neither the modern nor the legacy Gemini SDK is installed."
+    )
+
+
+def generate_ai_text(prompt):
+    """
+    Try OpenAI first and Gemini second.
+
+    Returns generated text or raises an exception if both fail.
+    Does not create fabricated fallback resume content.
+    """
+
+    openai_key = get_openai_api_key()
+    gemini_key = get_gemini_api_key()
+
+    errors = []
+
+    if openai_key:
+        try:
+            result = generate_with_openai(
+                prompt,
+                openai_key,
+            )
+
+            print("SUCCESS: Generated using OpenAI.")
+            return result
+
+        except Exception as exc:
+            print(
+                f"OPENAI FAILED: {type(exc).__name__}: {exc}. "
+                "Trying Gemini."
+            )
+            errors.append(f"OpenAI: {type(exc).__name__}")
+
+    if gemini_key:
+        try:
+            result = generate_with_gemini(
+                prompt,
+                gemini_key,
+            )
+
+            print("SUCCESS: Generated using Gemini.")
+            return result
+
+        except Exception as exc:
+            print(
+                f"GEMINI FAILED: {type(exc).__name__}: {exc}"
+            )
+            errors.append(f"Gemini: {type(exc).__name__}")
+
+    if not openai_key and not gemini_key:
+        raise RuntimeError(
+            "No AI provider API keys are configured."
+        )
+
+    raise RuntimeError(
+        "All configured AI providers failed. "
+        + "; ".join(errors)
+    )
+
 
 # ============================================================
 # PADDLE CONFIGURATION
 # ============================================================
 
-PADDLE_API_KEY = os.getenv("PADDLE_API_KEY") or os.getenv("paddle_api_key")
-PADDLE_WEBHOOK_SECRET_KEY = os.getenv("PADDLE_WEBHOOK_SECRET_KEY") or os.getenv("paddle_webhook_secret_key")
-PADDLE_ENV = os.getenv("PADDLE_ENV", "sandbox")
-PADDLE_PREMIUM_PRICE_ID = os.getenv("PADDLE_PREMIUM_PRICE_ID", "pri_01hxxxxxxxxx")
+PADDLE_API_KEY = (
+    os.getenv("PADDLE_API_KEY")
+    or os.getenv("paddle_api_key")
+)
+
+PADDLE_WEBHOOK_SECRET_KEY = (
+    os.getenv("PADDLE_WEBHOOK_SECRET_KEY")
+    or os.getenv("paddle_webhook_secret_key")
+)
+
+PADDLE_ENV = os.getenv(
+    "PADDLE_ENV",
+    "sandbox",
+)
+
+PADDLE_PREMIUM_PRICE_ID = os.getenv(
+    "PADDLE_PREMIUM_PRICE_ID",
+    "pri_01hxxxxxxxxx",
+)
 
 # ============================================================
-# DOMAIN FALLBACK DICTIONARY FOR AI SUGGEST SKILLS
+# DOMAIN FALLBACK DICTIONARY
+#
+# Retained for compatibility with existing code.
+# These lists are NOT automatically inserted into CVs because
+# doing so could add skills the user does not actually possess.
 # ============================================================
 
 domain_fallbacks = {
-    "healthcare": "Pediatric Care, Neonatal Intensive Care (NICU), Clinical Pharmacology, WHO Growth Standards, Patient Diagnostics, Emergency Triage, Biostatistics, Medical Research, Patient Advocacy, Cross-Functional Leadership",
-    "tech": "Python, Flask, Next.js, React, TypeScript, PostgreSQL, REST APIs, Docker, Vercel Serverless, Tailwind CSS, System Architecture, Agile Methodologies",
-    "finance": "Financial Modeling, Risk Assessment, Quantitative Analysis, Portfolio Management, Budgeting & Forecasting, Regulatory Compliance, Financial Reporting, Valuation, Excel (VBA)",
-    "marketing": "Search Engine Optimization (SEO), Content Strategy, Digital Advertising (Meta/Google Ads), Marketing Automation, Brand Positioning, Social Media Analytics, Conversion Rate Optimization (CRO), Market Research",
-    "sales": "B2B Sales, CRM Management (Salesforce, HubSpot), Lead Generation, Account Management, Consultative Selling, Pipeline Management, Contract Negotiation, Revenue Forecasting",
-    "product": "Product Lifecycle Management, User Stories & Roadmapping, A/B Testing, Feature Prioritization, Customer Discovery, Agile/Scrum, Product Analytics (Mixpanel/Amplitude), Market Competitive Analysis",
-    "hr": "Talent Acquisition, Employee Relations, HR Information Systems (HRIS), Performance Management, Compensation & Benefits, Onboarding Strategy, Regulatory Labor Compliance, Organizational Development",
-    "general": "Strategic Planning, Process Optimization, Cross-Functional Project Management, Data Analysis, Stakeholder Engagement, Quality Assurance, Workflow Automation, Performance Metrics"
+    "healthcare": (
+        "Pediatric Care, Neonatal Intensive Care (NICU), "
+        "Clinical Pharmacology, WHO Growth Standards, "
+        "Patient Diagnostics, Emergency Triage, Biostatistics, "
+        "Medical Research, Patient Advocacy, "
+        "Cross-Functional Leadership"
+    ),
+    "tech": (
+        "Python, Flask, Next.js, React, TypeScript, "
+        "PostgreSQL, REST APIs, Docker, Vercel Serverless, "
+        "Tailwind CSS, System Architecture, Agile Methodologies"
+    ),
+    "finance": (
+        "Financial Modeling, Risk Assessment, Quantitative Analysis, "
+        "Portfolio Management, Budgeting & Forecasting, "
+        "Regulatory Compliance, Financial Reporting, Valuation, "
+        "Excel (VBA)"
+    ),
+    "marketing": (
+        "Search Engine Optimization (SEO), Content Strategy, "
+        "Digital Advertising (Meta/Google Ads), "
+        "Marketing Automation, Brand Positioning, "
+        "Social Media Analytics, Conversion Rate Optimization, "
+        "Market Research"
+    ),
+    "sales": (
+        "B2B Sales, CRM Management, Lead Generation, "
+        "Account Management, Consultative Selling, "
+        "Pipeline Management, Contract Negotiation, "
+        "Revenue Forecasting"
+    ),
+    "product": (
+        "Product Lifecycle Management, User Stories & Roadmapping, "
+        "A/B Testing, Feature Prioritization, Customer Discovery, "
+        "Agile/Scrum, Product Analytics, Competitive Analysis"
+    ),
+    "hr": (
+        "Talent Acquisition, Employee Relations, HRIS, "
+        "Performance Management, Compensation & Benefits, "
+        "Onboarding Strategy, Labor Compliance, "
+        "Organizational Development"
+    ),
+    "general": (
+        "Strategic Planning, Process Optimization, "
+        "Project Management, Data Analysis, Stakeholder Engagement, "
+        "Quality Assurance, Workflow Automation"
+    ),
 }
 
 # ============================================================
@@ -123,30 +463,58 @@ domain_fallbacks = {
 def load_user(user_id):
     if not user_id:
         return None
-    return db.session.get(User, user_id)
+
+    try:
+        return db.session.get(User, user_id)
+    except Exception as exc:
+        print(f"User loader error: {exc}")
+        return None
+
 
 # ============================================================
 # AUTHENTICATION ROUTES
 # ============================================================
 
-auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
+auth_bp = Blueprint(
+    "auth",
+    __name__,
+    url_prefix="/auth",
+)
+
 
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        email = request.form.get("email")
-        password = request.form.get("password")
+        email = (
+            request.form.get("email") or ""
+        ).strip().lower()
+
+        password = request.form.get("password") or ""
 
         if not email or not password:
-            flash("Email and password are required.", "error")
+            flash(
+                "Email and password are required.",
+                "error",
+            )
+            return redirect(url_for("auth.register"))
+
+        if len(password) < 8:
+            flash(
+                "Password must contain at least 8 characters.",
+                "error",
+            )
             return redirect(url_for("auth.register"))
 
         if User.query.filter_by(email=email).first():
-            flash("Email already registered. Please log in.", "error")
+            flash(
+                "Email already registered. Please log in.",
+                "error",
+            )
             return redirect(url_for("auth.register"))
 
         try:
             now = datetime.utcnow()
+
             user = User(
                 id=str(uuid.uuid4()),
                 email=email,
@@ -156,19 +524,27 @@ def register():
                 is_premium=False,
                 subscription_status="free",
                 monthly_cv_generations=0,
-                ai_credits_remaining=3
+                ai_credits_remaining=3,
             )
 
             db.session.add(user)
             db.session.commit()
 
             login_user(user)
+
             return redirect("/dashboard")
 
-        except Exception as e:
+        except Exception as exc:
             db.session.rollback()
-            print(f"Registration DB Error: {str(e)}")
-            flash("Registration failed due to a server error. Please try again.", "error")
+
+            print(f"Registration DB Error: {exc}")
+
+            flash(
+                "Registration failed due to a server error. "
+                "Please try again.",
+                "error",
+            )
+
             return redirect(url_for("auth.register"))
 
     return render_template("auth/register.html")
@@ -177,30 +553,57 @@ def register():
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        email = request.form.get("email")
-        password = request.form.get("password")
+        email = (
+            request.form.get("email") or ""
+        ).strip().lower()
+
+        password = request.form.get("password") or ""
 
         user = User.query.filter_by(email=email).first()
 
-        if user and check_password_hash(user.password_hash, password):
+        if (
+            user
+            and user.password_hash
+            and check_password_hash(
+                user.password_hash,
+                password,
+            )
+        ):
             login_user(user)
             return redirect("/dashboard")
 
-        flash("Invalid email or password.", "error")
+        flash(
+            "Invalid email or password.",
+            "error",
+        )
+
         return redirect(url_for("auth.login"))
 
     return render_template("auth/login.html")
 
 
-@auth_bp.route("/forgot-password", methods=["GET", "POST"])
+@auth_bp.route(
+    "/forgot-password",
+    methods=["GET", "POST"],
+)
 def forgot_password():
     if request.method == "POST":
         email = request.form.get("email")
-        if email:
-            flash("If an account exists for that email, password recovery instructions have been sent.", "info")
-            return redirect(url_for("auth.forgot_password"))
 
-    return render_template("auth/forgot_password.html")
+        if email:
+            flash(
+                "If an account exists for that email, "
+                "password recovery instructions have been sent.",
+                "info",
+            )
+
+            return redirect(
+                url_for("auth.forgot_password")
+            )
+
+    return render_template(
+        "auth/forgot_password.html"
+    )
 
 
 @auth_bp.route("/logout")
@@ -226,12 +629,23 @@ def landing():
 
 @premium_app.route("/settings")
 def public_settings():
-    if current_user and getattr(current_user, "is_authenticated", False):
+    if (
+        current_user
+        and getattr(current_user, "is_authenticated", False)
+    ):
         return redirect(url_for("dashboard.account"))
+
     try:
-        return render_template("settings.html", user=None)
+        return render_template(
+            "settings.html",
+            user=None,
+        )
     except Exception:
-        return render_template("dashboard/account.html", user=None)
+        return render_template(
+            "dashboard/account.html",
+            user=None,
+        )
+
 
 # ============================================================
 # EDITOR, PRICING & PREVIEW ROUTES
@@ -242,12 +656,25 @@ def public_settings():
 def editor():
     resume_id = request.args.get("id")
     resume = None
+
     if resume_id:
-        resume = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first()
+        resume = Resume.query.filter_by(
+            id=resume_id,
+            user_id=current_user.id,
+        ).first()
+
     try:
-        return render_template("editor.html", resume=resume, user=current_user)
+        return render_template(
+            "editor.html",
+            resume=resume,
+            user=current_user,
+        )
     except Exception:
-        return render_template("index.html", resume=resume, user=current_user)
+        return render_template(
+            "index.html",
+            resume=resume,
+            user=current_user,
+        )
 
 
 @premium_app.route("/builder")
@@ -258,26 +685,49 @@ def builder_redirect():
 @premium_app.route("/pricing")
 def pricing():
     try:
-        return render_template("pricing.html", user=current_user)
+        return render_template(
+            "pricing.html",
+            user=current_user,
+        )
     except Exception:
-        return render_template("landing.html", user=current_user)
+        return render_template(
+            "landing.html",
+            user=current_user,
+        )
 
 
 @premium_app.route("/preview")
 @login_required
 def preview():
     resume_id = request.args.get("id")
-    resume = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first() if resume_id else None
+
+    resume = (
+        Resume.query.filter_by(
+            id=resume_id,
+            user_id=current_user.id,
+        ).first()
+        if resume_id
+        else None
+    )
+
     try:
-        return render_template("preview.html", resume=resume, user=current_user)
+        return render_template(
+            "preview.html",
+            resume=resume,
+            user=current_user,
+        )
     except Exception:
         return redirect("/dashboard")
+
 
 # ============================================================
 # SAVE RESUME ENDPOINT
 # ============================================================
 
-@premium_app.route("/api/v1/resumes/save", methods=["POST"])
+@premium_app.route(
+    "/api/v1/resumes/save",
+    methods=["POST"],
+)
 @login_required
 def save_resume():
     if request.is_json:
@@ -285,7 +735,14 @@ def save_resume():
     else:
         data = request.form.to_dict()
 
-    title = data.get("title") or "My CV"
+    if not isinstance(data, dict):
+        return jsonify({
+            "error": "Invalid resume data.",
+        }), 400
+
+    title = (
+        data.get("title") or "My CV"
+    ).strip() or "My CV"
 
     content_data = {
         "target_role": data.get("target_role", ""),
@@ -300,27 +757,57 @@ def save_resume():
         "job_title": data.get("job_title", ""),
         "job_location": data.get("job_location", ""),
         "job_dates": data.get("job_dates", ""),
-        "experience_bullets": data.get("experience_bullets", ""),
-        "education_degree": data.get("education_degree", ""),
-        "education_school": data.get("education_school", ""),
-        "education_dates": data.get("education_dates", ""),
-        "education_honors": data.get("education_honors", ""),
+        "experience_bullets": data.get(
+            "experience_bullets",
+            "",
+        ),
+        "education_degree": data.get(
+            "education_degree",
+            "",
+        ),
+        "education_school": data.get(
+            "education_school",
+            "",
+        ),
+        "education_dates": data.get(
+            "education_dates",
+            "",
+        ),
+        "education_honors": data.get(
+            "education_honors",
+            "",
+        ),
         "skills_tech": data.get("skills_tech", ""),
         "skills_soft": data.get("skills_soft", ""),
-        "certifications": data.get("certifications", ""),
+        "certifications": data.get(
+            "certifications",
+            "",
+        ),
         "projects": data.get("projects", ""),
-        "languages": data.get("languages", "")
+        "languages": data.get("languages", ""),
     }
 
-    resume_id = request.args.get("id") or data.get("id") or str(uuid.uuid4())
+    resume_id = (
+        request.args.get("id")
+        or data.get("id")
+        or str(uuid.uuid4())
+    )
+
     resume = db.session.get(Resume, resume_id)
 
-    if resume and resume.user_id == current_user.id:
+    if resume and str(resume.user_id) == str(current_user.id):
         resume.title = title
         resume.content_json = content_data
         resume.template_used = "ats"
         resume.updated_at = datetime.utcnow()
+
     else:
+        # Do not overwrite a resume belonging to another user.
+        if resume:
+            return jsonify({
+                "error": "You do not have permission to update this resume.",
+            }), 403
+
         resume = Resume(
             id=resume_id,
             user_id=current_user.id,
@@ -331,286 +818,511 @@ def save_resume():
             template_used="ats",
             accent_color="#000000",
             sidebar_color="#000000",
-            updated_at=datetime.utcnow()
+            updated_at=datetime.utcnow(),
         )
+
         db.session.add(resume)
 
     try:
         db.session.commit()
-        
-        if request.is_json or request.headers.get("X-Requested-With") == "XMLHttpRequest":
-            return jsonify({"status": "success", "redirect_url": f"/preview?id={resume.id}"}), 200
 
-        flash("Resume saved successfully!", "success")
-        return redirect(f"/preview?id={resume.id}")
-    except Exception as e:
+        if (
+            request.is_json
+            or request.headers.get("X-Requested-With")
+            == "XMLHttpRequest"
+        ):
+            return jsonify({
+                "status": "success",
+                "redirect_url": f"/preview?id={resume.id}",
+                "resume_id": resume.id,
+            }), 200
+
+        flash(
+            "Resume saved successfully!",
+            "success",
+        )
+
+        return redirect(
+            f"/preview?id={resume.id}"
+        )
+
+    except Exception as exc:
         db.session.rollback()
-        print(f"Save Resume Error: {e}")
+
+        print(f"Save Resume Error: {exc}")
+
         if request.is_json:
-            return jsonify({"error": "Failed to save resume."}), 500
-        flash("Failed to save resume.", "error")
-        return redirect(f"/editor?id={resume_id}")
+            return jsonify({
+                "error": "Failed to save resume.",
+            }), 500
+
+        flash(
+            "Failed to save resume.",
+            "error",
+        )
+
+        return redirect(
+            f"/editor?id={resume_id}"
+        )
+
 
 # ============================================================
-# DUAL OPENAI & GEMINI AI GENERATION ENDPOINT
+# AI FIELD GENERATION ENDPOINT
 # ============================================================
 
-DEVELOPER_EMAILS = ["subhnllha@gmail.com"]
+DEVELOPER_EMAILS = [
+    "subhnllha@gmail.com",
+]
 
-@premium_app.route("/api/v1/ai/generate-field", methods=["POST"])
+
+@premium_app.route(
+    "/api/v1/ai/generate-field",
+    methods=["POST"],
+)
 @login_required
 def generate_ai_field():
-    # 1. DEVELOPER & PREMIUM CHECK
-    user_email = getattr(current_user, "email", "").lower().strip()
-    is_developer = user_email in DEVELOPER_EMAILS or user_email == "subhnllha@gmail.com"
-    
-    is_premium_user = getattr(current_user, "is_premium", False) or is_developer
-    credits_remaining = getattr(current_user, "ai_credits_remaining", 0)
+    # --------------------------------------------------------
+    # 1. ACCESS AND CREDIT CHECK
+    # --------------------------------------------------------
+
+    user_email = (
+        getattr(current_user, "email", "") or ""
+    ).lower().strip()
+
+    is_developer = user_email in DEVELOPER_EMAILS
+
+    is_premium_user = (
+        bool(getattr(current_user, "is_premium", False))
+        or is_developer
+    )
+
+    credits_remaining = int(
+        getattr(
+            current_user,
+            "ai_credits_remaining",
+            0,
+        ) or 0
+    )
 
     if not is_premium_user and credits_remaining <= 0:
-        return jsonify({"error": "No AI credits remaining. Please upgrade to Premium."}), 403
+        return jsonify({
+            "error": (
+                "No AI credits remaining. "
+                "Please upgrade to Premium."
+            ),
+        }), 403
 
-    # 2. EXTRACT FORM PAYLOAD
-    data = request.get_json(silent=True) or {}
-    field_type = data.get("field_type", "summary")
-    
-    target_role = data.get("target_role") or "Experienced Specialist"
-    job_title = data.get("job_title") or target_role
-    full_name = data.get("full_name") or "Candidate"
-    skills = data.get("skills") or ""
-    current_input = data.get("current_input") or ""
+    # --------------------------------------------------------
+    # 2. VALIDATE REQUEST
+    # --------------------------------------------------------
 
-    # 3. BUILD CONTEXT STRING
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return jsonify({
+            "error": "A valid JSON request is required.",
+        }), 400
+
+    field_type = (
+        data.get("field_type") or "summary"
+    ).strip().lower()
+
+    supported_fields = {
+        "summary",
+        "experience",
+        "project",
+        "skills",
+    }
+
+    if field_type not in supported_fields:
+        return jsonify({
+            "error": "Unsupported field type.",
+            "supported_fields": sorted(supported_fields),
+        }), 400
+
+    # No fabricated default names, roles, or experience.
+    target_role = (
+        data.get("target_role") or ""
+    ).strip()
+
+    job_title = (
+        data.get("job_title") or ""
+    ).strip()
+
+    full_name = (
+        data.get("full_name") or ""
+    ).strip()
+
+    skills = (
+        data.get("skills") or ""
+    ).strip()
+
+    current_input = (
+        data.get("current_input") or ""
+    ).strip()
+
+    # Optional source information can be passed by the frontend.
+    source_cv = (
+        data.get("source_cv") or ""
+    ).strip()
+
+    job_description = (
+        data.get("job_description") or ""
+    ).strip()
+
+    # Reject requests with no candidate-provided content.
+    has_candidate_content = any([
+        full_name,
+        skills,
+        current_input,
+        source_cv,
+    ])
+
+    if not has_candidate_content:
+        return jsonify({
+            "error": (
+                "Please provide your CV information, existing draft, "
+                "or skills before generating this field."
+            ),
+        }), 400
+
+    # --------------------------------------------------------
+    # 3. BUILD SOURCE CONTEXT
+    # --------------------------------------------------------
+
     context_details = []
-    if target_role: context_details.append(f"Target Role: {target_role}")
-    if job_title: context_details.append(f"Recent Job Title: {job_title}")
-    if full_name: context_details.append(f"Candidate Name: {full_name}")
-    if skills: context_details.append(f"Technical & Core Skills: {skills}")
-    if current_input: context_details.append(f"User Notes/Draft: {current_input}")
-    
-    context_str = "\n".join(context_details)
 
-    # 4. INDUSTRY CLASSIFICATION & DYNAMIC FALLBACK CONSTRUCTOR
-    role_lower = (target_role + " " + job_title).lower()
-    is_medical = any(word in role_lower for word in ["doctor", "physician", "pediatric", "clinical", "nurse", "medical", "health", "hospital"])
-    is_tech = any(word in role_lower for word in ["developer", "engineer", "software", "architect", "tech", "data", "full-stack", "backend", "frontend"])
+    if full_name:
+        context_details.append(
+            f"Candidate name supplied by user: {full_name}"
+        )
 
-    skills_part = f" specializing in {skills}" if skills else ""
-    job_part = f" with hands-on experience as a {job_title}" if job_title and job_title != target_role else ""
+    if target_role:
+        context_details.append(
+            f"Target role: {target_role}"
+        )
 
-    if is_medical:
-        impact_sentence = "Proven ability to deliver high-quality patient care, optimize triage workflows, and maintain strict clinical standards."
-        growth_sentence = "Dedicated to advancing patient health outcomes and fostering evidence-based healthcare excellence."
-    elif is_tech:
-        impact_sentence = "Proven ability to architect scalable system solutions, optimize backend performance, and build maintainable code bases."
-        growth_sentence = "Focused on leveraging modern technical frameworks to engineer high-efficiency web applications."
-    else:
-        impact_sentence = "Proven ability to execute key strategic initiatives, optimize operational workflows, and drive cross-functional productivity."
-        growth_sentence = "Committed to delivering measurable business impact and driving continuous operational growth."
+    if job_title:
+        context_details.append(
+            f"Job title supplied by user: {job_title}"
+        )
 
-    dynamic_fallback_summary = f"Dedicated {target_role}{job_part}{skills_part}. {impact_sentence} {growth_sentence}"
+    if skills:
+        context_details.append(
+            f"Skills explicitly supplied by user: {skills}"
+        )
 
-    # 5. CONSTRUCT AI PROMPTS
+    if current_input:
+        context_details.append(
+            f"Existing user draft or notes:\n{current_input}"
+        )
+
+    if source_cv:
+        context_details.append(
+            f"Extracted source CV content:\n{source_cv}"
+        )
+
+    if job_description:
+        context_details.append(
+            f"Target job description:\n{job_description}"
+        )
+
+    context_str = "\n\n".join(context_details)
+
+    # --------------------------------------------------------
+    # 4. BUILD FACTUALLY GROUNDED PROMPT
+    # --------------------------------------------------------
+
     if field_type == "summary":
         prompt = f"""
-        You are an elite ATS resume writer and executive career strategist.
-        Write a high-impact, 3-sentence executive summary for {full_name} using ALL provided details below.
+Write a concise, professional resume summary using only the
+candidate information supplied below.
 
-        Context:
-        {context_str}
+Candidate information:
+{context_str}
 
-        Instructions:
-        1. Sentence 1: Combine Target Role ({target_role}) and Recent Experience ({job_title}).
-        2. Sentence 2: Seamlessly integrate 2 to 4 of their listed skills ({skills}).
-        3. Sentence 3: End with a strong value statement on driving quality and impact.
-        4. Do NOT use generic filler sentences. Return ONLY the final paragraph.
-        """
+Requirements:
+- Use only facts supported by the supplied candidate information.
+- Do not assume the candidate has held the target role.
+- Do not invent years of experience, qualifications, or achievements.
+- Use the target job description only to understand relevance.
+- Do not claim the candidate has a skill unless the source supports it.
+- If the supplied information is insufficient for a reliable summary,
+  explain what additional information is needed.
+- Return only the summary text.
+"""
+
     elif field_type == "experience":
         prompt = f"""
-        Transform these details into 3 high-impact, ATS-optimized bullet points for a resume:
-        {context_str}
+Improve the candidate's existing employment experience for a resume.
 
-        Requirements:
-        - Start every bullet with a strong action verb (e.g., Engineered, Spearheaded, Optimized).
-        - Integrate listed skills: {skills}.
-        - Return ONLY bullet points starting with a hyphen (-).
-        """
+Candidate information:
+{context_str}
+
+Requirements:
+- Use only employment facts and responsibilities supported by the source.
+- Preserve supplied employers, roles, and dates.
+- Do not invent duties, results, metrics, promotions, or achievements.
+- Do not turn the target job description into past experience.
+- Improve wording and ATS readability without changing factual meaning.
+- If there are no employment details, request them instead of inventing
+  experience.
+- Return bullet points beginning with "-".
+"""
+
     elif field_type == "project":
         prompt = f"""
-        Write a concise 2-sentence project overview for {full_name} using these details:
-        {context_str}
+Improve the candidate's project description for a resume.
 
-        Instructions:
-        - Highlight project scope, technical implementation, and delivered impact.
-        - Return ONLY clean paragraph text with no quotes.
-        """
-    elif field_type == "skills":
+Candidate information:
+{context_str}
+
+Requirements:
+- Use only supplied project details.
+- Do not invent project names, technologies, team sizes, metrics, or results.
+- Do not claim implementation work that the source does not support.
+- If project details are missing, ask the user to provide them.
+- Return a concise paragraph or factual bullet points.
+"""
+
+    else:  # skills
         prompt = f"""
-        You are an expert career coach and ATS optimization specialist.
-        Provide a comprehensive, comma-separated list of 10 to 12 highly relevant core technical, clinical, and professional skills tailored precisely for a {target_role}.
+Organize and improve the candidate's explicitly supplied skills
+for a professional resume.
 
-        Context:
-        {context_str}
+Candidate information:
+{context_str}
 
-        Instructions:
-        - Include industry-specific hard skills, technical competencies, and essential professional capabilities.
-        - Return ONLY the comma-separated list of skills, with no extra formatting, bullets, or introductory text.
-        """
-    else:
-        prompt = f"Write an executive resume passage using:\n{context_str}"
+Requirements:
+- Include only skills explicitly supported by the supplied information.
+- Do not add skills merely because they are common for the target role.
+- Do not assume a job requirement is a candidate qualification.
+- Remove duplicates and improve naming where appropriate.
+- If no actual skills are provided, ask the user to provide them.
+- Return a comma-separated list without introductory text.
+"""
 
-    generated_text = None
+    # --------------------------------------------------------
+    # 5. CALL AI PROVIDERS
+    # --------------------------------------------------------
 
-    active_openai_key = os.getenv("OPENAI_API_KEY") or os.getenv("openai_api_key")
-    active_gemini_key = os.getenv("GEMINI_API_KEY") or os.getenv("gemini_api_key")
+    try:
+        generated_text = generate_ai_text(prompt)
 
-    # 6. STEP 1: OPENAI GENERATION (max_retries=0 TO PREVENT VERCEL RETRY DELAYS)
-    if active_openai_key:
-        try:
-            if hasattr(openai, "OpenAI"):
-                client = openai.OpenAI(api_key=active_openai_key, timeout=5.0, max_retries=0)
-                response = client.chat.completions.create(
-                    model="gpt-4o",
-                    messages=[{"role": "user", "content": prompt}],
-                    max_tokens=250,
-                    temperature=0.7
-                )
-                if response.choices and response.choices[0].message.content:
-                    generated_text = response.choices[0].message.content.strip()
-                    print("SUCCESS: Generated via OpenAI gpt-4o")
-        except Exception as e:
-            print(f"OPENAI SKIPPED/FAILED: {type(e).__name__} - {str(e)}. Switching to Gemini...")
+    except Exception as exc:
+        print(
+            f"AI generation unavailable: "
+            f"{type(exc).__name__}: {exc}"
+        )
 
-    # 7. STEP 2: IMMEDIATE GOOGLE GEMINI EXECUTION
-    if not generated_text and active_gemini_key:
-        try:
-            if new_genai:
-                client = new_genai.Client(api_key=active_gemini_key)
-                response = client.models.generate_content(
-                    model='gemini-2.5-flash',
-                    contents=prompt,
-                )
-                if response and response.text:
-                    generated_text = response.text.strip()
-                    print("SUCCESS: Generated via Google GenAI SDK (gemini-2.5-flash)")
-            elif legacy_genai:
-                model = legacy_genai.GenerativeModel('gemini-1.5-flash')
-                response = model.generate_content(prompt)
-                if response and response.text:
-                    generated_text = response.text.strip()
-                    print("SUCCESS: Generated via Legacy Gemini SDK")
-        except Exception as e:
-            print(f"GEMINI FAILED: {type(e).__name__} - {str(e)}")
+        # Crucially, no fabricated fallback and no credit deduction.
+        return jsonify({
+            "error": (
+                "AI generation is temporarily unavailable. "
+                "Your credit has not been deducted. Please try again."
+            ),
+            "code": "AI_PROVIDERS_UNAVAILABLE",
+        }), 503
 
-    # 8. STEP 3: DYNAMIC FALLBACK ENGINE
-    if not generated_text:
-        print("FALLBACK ENGAGED: Generating dynamic domain-specific content.")
-        if field_type == "experience":
-            if is_medical:
-                generated_text = (
-                    f"- Directed clinical diagnostic and patient care protocols as {job_title}, ensuring 100% adherence to national health regulations.\n"
-                    f"- Managed specialized treatments and patient evaluations utilizing {skills or 'evidence-based clinical practices'}.\n"
-                    f"- Streamlined emergency triage and admission procedures, cutting average patient processing time by 20%."
-                )
-            elif is_tech:
-                generated_text = (
-                    f"- Architected and deployed production software components as {job_title}, improving application throughput by 30%.\n"
-                    f"- Implemented automated workflows and resilient API endpoints using {skills or 'modern frameworks'}.\n"
-                    f"- Optimized database queries and system performance to maintain high availability across core infrastructure."
-                )
-            else:
-                generated_text = (
-                    f"- Spearheaded key operational projects as {job_title}, driving cross-functional efficiency across major deliverables.\n"
-                    f"- Leveraged domain expertise in {skills or 'strategic planning and leadership'} to optimize workflow output by 25%.\n"
-                    f"- Directed performance evaluations and stakeholder engagement aligned with top industry benchmarks."
-                )
-        elif field_type == "project":
-            if is_medical:
-                generated_text = f"Led high-impact clinical research project focused on {skills or target_role}. Delivered measurable diagnostic efficiency gains and optimized patient care tracking workflows."
-            elif is_tech:
-                generated_text = f"Architected and deployed high-performance web solution centered around {skills or target_role}. Optimized serverless API throughput and reduced system response latency by 35%."
-            else:
-                generated_text = f"Led high-impact strategic initiative focused on {skills or target_role}. Delivered measurable operational performance gains ahead of project deadlines."
-        elif field_type == "skills":
-            if any(w in role_lower for w in ["doctor", "physician", "pediatric", "clinical", "nurse", "medical", "health", "hospital"]):
-                generated_text = domain_fallbacks["healthcare"]
-            elif any(w in role_lower for w in ["developer", "engineer", "software", "architect", "tech", "data", "full-stack", "backend", "frontend"]):
-                generated_text = domain_fallbacks["tech"]
-            elif any(w in role_lower for w in ["finance", "financial", "accounting", "auditor", "analyst", "banking", "investment"]):
-                generated_text = domain_fallbacks["finance"]
-            elif any(w in role_lower for w in ["marketing", "seo", "content", "social media", "brand", "growth"]):
-                generated_text = domain_fallbacks["marketing"]
-            elif any(w in role_lower for w in ["sales", "account executive", "business development", "crm"]):
-                generated_text = domain_fallbacks["sales"]
-            elif any(w in role_lower for w in ["product manager", "product owner", "scrum", "ux"]):
-                generated_text = domain_fallbacks["product"]
-            elif any(w in role_lower for w in ["hr", "human resources", "recruiter", "talent", "people"]):
-                generated_text = domain_fallbacks["hr"]
-            else:
-                generated_text = domain_fallbacks["general"]
-        else:
-            generated_text = dynamic_fallback_summary
+    # --------------------------------------------------------
+    # 6. DEDUCT CREDIT ONLY AFTER SUCCESS
+    # --------------------------------------------------------
 
-    # 9. DEDUCT CREDITS ONLY FOR REGULAR NON-PREMIUM USERS
     if not is_premium_user:
-        current_user.ai_credits_remaining = max(0, current_user.ai_credits_remaining - 1)
-        db.session.commit()
+        try:
+            current_credits = int(
+                getattr(
+                    current_user,
+                    "ai_credits_remaining",
+                    0,
+                ) or 0
+            )
 
-    return jsonify({"result": generated_text})
+            if current_credits <= 0:
+                return jsonify({
+                    "error": (
+                        "No AI credits remaining. "
+                        "Please upgrade to Premium."
+                    ),
+                }), 403
+
+            current_user.ai_credits_remaining = (
+                current_credits - 1
+            )
+
+            db.session.commit()
+
+            credits_remaining = (
+                current_user.ai_credits_remaining
+            )
+
+        except Exception as exc:
+            db.session.rollback()
+
+            print(f"AI credit deduction error: {exc}")
+
+            return jsonify({
+                "error": (
+                    "The result was generated, but your credit "
+                    "could not be updated. Please refresh and check "
+                    "your account before retrying."
+                ),
+                "result": generated_text,
+            }), 500
+
+    else:
+        credits_remaining = int(
+            getattr(
+                current_user,
+                "ai_credits_remaining",
+                0,
+            ) or 0
+        )
+
+    return jsonify({
+        "result": generated_text,
+        "field_type": field_type,
+        "credits_remaining": credits_remaining,
+        "premium": is_premium_user,
+    }), 200
+
 
 # ============================================================
 # DASHBOARD ROUTES
 # ============================================================
 
-dashboard_bp = Blueprint("dashboard", __name__, url_prefix="/dashboard")
+dashboard_bp = Blueprint(
+    "dashboard",
+    __name__,
+    url_prefix="/dashboard",
+)
+
 
 @dashboard_bp.route("")
 @login_required
 def home():
     try:
-        user_resumes = Resume.query.filter_by(user_id=current_user.id).all() if current_user and hasattr(current_user, "id") else []
-        
+        user_resumes = Resume.query.filter_by(
+            user_id=current_user.id,
+        ).all()
+
         for resume in user_resumes:
             if isinstance(resume.content_json, str):
                 try:
-                    resume.content_json = json.loads(resume.content_json)
+                    resume.content_json = json.loads(
+                        resume.content_json
+                    )
                 except Exception:
                     resume.content_json = {}
+
             elif resume.content_json is None:
                 resume.content_json = {}
 
-        return render_template("dashboard/index.html", resumes=user_resumes, user=current_user)
-    except Exception as e:
-        print(f"Dashboard Route Error: {e}")
-        return render_template("dashboard/index.html", resumes=[], user=current_user)
+        return render_template(
+            "dashboard/index.html",
+            resumes=user_resumes,
+            user=current_user,
+        )
+
+    except Exception as exc:
+        print(f"Dashboard Route Error: {exc}")
+
+        return render_template(
+            "dashboard/index.html",
+            resumes=[],
+            user=current_user,
+        )
 
 
-@dashboard_bp.route("/account", methods=["GET", "POST"])
+@dashboard_bp.route(
+    "/account",
+    methods=["GET", "POST"],
+)
 @login_required
 def account():
     if request.method == "POST":
-        new_email = request.form.get("email")
-        new_password = request.form.get("password")
+        new_email = (
+            request.form.get("email") or ""
+        ).strip().lower()
 
-        if new_email and new_email != getattr(current_user, "email", None):
-            existing_user = User.query.filter_by(email=new_email).first()
+        new_password = (
+            request.form.get("password") or ""
+        )
+
+        if (
+            new_email
+            and new_email != getattr(
+                current_user,
+                "email",
+                None,
+            )
+        ):
+            existing_user = User.query.filter_by(
+                email=new_email,
+            ).first()
+
             if existing_user:
-                flash("This email is already in use.", "error")
+                flash(
+                    "This email is already in use.",
+                    "error",
+                )
+
             else:
                 current_user.email = new_email
-                flash("Email updated successfully.", "success")
+
+                flash(
+                    "Email updated successfully.",
+                    "success",
+                )
 
         if new_password:
-            current_user.password_hash = generate_password_hash(new_password)
-            flash("Password updated successfully.", "success")
+            if len(new_password) < 8:
+                flash(
+                    "Password must contain at least 8 characters.",
+                    "error",
+                )
 
-        db.session.commit()
-        return redirect(url_for("dashboard.account"))
+                return redirect(
+                    url_for("dashboard.account")
+                )
+
+            current_user.password_hash = (
+                generate_password_hash(new_password)
+            )
+
+            flash(
+                "Password updated successfully.",
+                "success",
+            )
+
+        try:
+            db.session.commit()
+
+        except Exception as exc:
+            db.session.rollback()
+
+            print(f"Account update error: {exc}")
+
+            flash(
+                "Account changes could not be saved.",
+                "error",
+            )
+
+        return redirect(
+            url_for("dashboard.account")
+        )
 
     try:
-        return render_template("settings.html", user=current_user)
+        return render_template(
+            "settings.html",
+            user=current_user,
+        )
+
     except Exception:
-        return render_template("dashboard/account.html", user=current_user)
+        return render_template(
+            "dashboard/account.html",
+            user=current_user,
+        )
 
 
 premium_app.register_blueprint(dashboard_bp)
@@ -619,78 +1331,159 @@ premium_app.register_blueprint(dashboard_bp)
 # PADDLE WEBHOOK VERIFICATION
 # ============================================================
 
-def verify_paddle_webhook(request_data, signature_header):
-    if not PADDLE_WEBHOOK_SECRET_KEY or not signature_header or not isinstance(signature_header, str):
+def verify_paddle_webhook(
+    request_data,
+    signature_header,
+):
+    if (
+        not PADDLE_WEBHOOK_SECRET_KEY
+        or not signature_header
+        or not isinstance(signature_header, str)
+    ):
         return False
 
     try:
         components = {}
-        items = signature_header.split(";")
-        for item in items:
+
+        for item in signature_header.split(";"):
             item = item.strip()
+
             if "=" in item:
                 parts = item.split("=", 1)
-                if len(parts) == 2:
-                    key = parts[0].strip()
-                    val = parts[1].strip()
-                    if key and val:
-                        components[key] = val
+                if len(parts) != 2:
+                    continue
 
-        ts = components.get("ts")
-        h1 = components.get("h1")
+                key, value = parts[0].strip(), parts[1].strip()
 
-        if not ts or not h1:
+                if key and value:
+                    components[key] = value
+
+        timestamp = components.get("ts")
+        received_signature = components.get("h1")
+
+        if not timestamp or not received_signature:
             return False
 
-        decoded_body = request_data.decode("utf-8") if isinstance(request_data, bytes) else str(request_data)
-        signed_payload = f"{ts}:{decoded_body}"
+        decoded_body = (
+            request_data.decode("utf-8")
+            if isinstance(request_data, bytes)
+            else str(request_data)
+        )
+
+        signed_payload = (
+            f"{timestamp}:{decoded_body}"
+        )
 
         digest = hmac.new(
             PADDLE_WEBHOOK_SECRET_KEY.encode("utf-8"),
             signed_payload.encode("utf-8"),
-            hashlib.sha256
+            hashlib.sha256,
         ).hexdigest()
 
-        return hmac.compare_digest(digest, h1)
+        return hmac.compare_digest(
+            digest,
+            received_signature,
+        )
 
-    except Exception as e:
-        print(f"Paddle HMAC Verification Error: {e}")
+    except Exception as exc:
+        print(
+            f"Paddle HMAC Verification Error: {exc}"
+        )
+
         return False
+
 
 # ============================================================
 # PREMIUM API BLUEPRINT
 # ============================================================
 
-premium_bp = Blueprint("premium_api", __name__, url_prefix="/api/v1/premium")
+premium_bp = Blueprint(
+    "premium_api",
+    __name__,
+    url_prefix="/api/v1/premium",
+)
 
-@premium_bp.route("/user-status", methods=["GET"])
+
+@premium_bp.route(
+    "/user-status",
+    methods=["GET"],
+)
 @login_required
 def get_user_status():
     return jsonify({
-        "user_id": getattr(current_user, "id", None),
-        "email": getattr(current_user, "email", None),
-        "is_premium": getattr(current_user, "is_premium", False),
-        "subscription_status": getattr(current_user, "subscription_status", "free"),
-        "paddle_price_id": PADDLE_PREMIUM_PRICE_ID
+        "user_id": getattr(
+            current_user,
+            "id",
+            None,
+        ),
+        "email": getattr(
+            current_user,
+            "email",
+            None,
+        ),
+        "is_premium": getattr(
+            current_user,
+            "is_premium",
+            False,
+        ),
+        "subscription_status": getattr(
+            current_user,
+            "subscription_status",
+            "free",
+        ),
+        "paddle_price_id": PADDLE_PREMIUM_PRICE_ID,
     })
 
 
-@premium_bp.route("/webhook/paddle", methods=["POST"])
+# ============================================================
+# PADDLE WEBHOOK
+# ============================================================
+
+@premium_bp.route(
+    "/webhook/paddle",
+    methods=["POST"],
+)
 def paddle_webhook():
-    signature = request.headers.get("Paddle-Signature")
+    signature = request.headers.get(
+        "Paddle-Signature"
+    )
+
     payload = request.get_data()
 
-    if not verify_paddle_webhook(payload, signature):
-        return jsonify({"error": "Invalid signature"}), 400
+    if not verify_paddle_webhook(
+        payload,
+        signature,
+    ):
+        return jsonify({
+            "error": "Invalid signature",
+        }), 400
 
     data = request.get_json(silent=True) or {}
+
+    if not isinstance(data, dict):
+        return jsonify({
+            "error": "Invalid webhook payload",
+        }), 400
+
     event_type = data.get("event_type")
     event_data = data.get("data", {})
+
     if not isinstance(event_data, dict):
         event_data = {}
 
-    if event_type in ["subscription.created", "subscription.activated"]:
-        custom_data = event_data.get("custom_data", {})
+    # --------------------------------------------------------
+    # SUBSCRIPTION ACTIVATED
+    # --------------------------------------------------------
+
+    if event_type in [
+        "subscription.created",
+        "subscription.activated",
+    ]:
+        custom_data = event_data.get(
+            "custom_data",
+            {},
+        )
+
         if not isinstance(custom_data, dict):
             custom_data = {}
 
@@ -698,77 +1491,226 @@ def paddle_webhook():
         user = None
 
         if user_id:
-            user = db.session.get(User, user_id)
+            user = db.session.get(
+                User,
+                user_id,
+            )
+
         else:
-            customer_id = event_data.get("customer_id")
+            customer_id = event_data.get(
+                "customer_id"
+            )
+
             if customer_id:
-                user = User.query.filter_by(paddle_customer_id=customer_id).first()
+                user = User.query.filter_by(
+                    paddle_customer_id=customer_id,
+                ).first()
 
         if user:
-            user.is_premium = True
-            user.subscription_status = event_data.get("status", "active")
-            user.paddle_customer_id = event_data.get("customer_id")
-            user.paddle_subscription_id = event_data.get("id")
-            db.session.commit()
+            try:
+                user.is_premium = True
 
-    elif event_type in ["subscription.canceled", "subscription.past_due"]:
-        sub_id = event_data.get("id")
-        if sub_id:
-            user = User.query.filter_by(paddle_subscription_id=sub_id).first()
-            if user:
-                user.is_premium = False
-                user.subscription_status = event_data.get("status", "canceled")
+                user.subscription_status = (
+                    event_data.get(
+                        "status",
+                        "active",
+                    )
+                )
+
+                user.paddle_customer_id = (
+                    event_data.get("customer_id")
+                )
+
+                user.paddle_subscription_id = (
+                    event_data.get("id")
+                )
+
                 db.session.commit()
 
-    return jsonify({"status": "success"}), 200
+            except Exception as exc:
+                db.session.rollback()
+
+                print(
+                    f"Paddle activation update error: {exc}"
+                )
+
+                return jsonify({
+                    "error": "Unable to update subscription",
+                }), 500
+
+    # --------------------------------------------------------
+    # SUBSCRIPTION CANCELED OR PAST DUE
+    # --------------------------------------------------------
+
+    elif event_type in [
+        "subscription.canceled",
+        "subscription.past_due",
+    ]:
+        subscription_id = event_data.get("id")
+
+        if subscription_id:
+            user = User.query.filter_by(
+                paddle_subscription_id=subscription_id,
+            ).first()
+
+            if user:
+                try:
+                    user.is_premium = False
+
+                    user.subscription_status = (
+                        event_data.get(
+                            "status",
+                            "canceled",
+                        )
+                    )
+
+                    db.session.commit()
+
+                except Exception as exc:
+                    db.session.rollback()
+
+                    print(
+                        f"Paddle cancellation update error: {exc}"
+                    )
+
+                    return jsonify({
+                        "error": "Unable to update subscription",
+                    }), 500
+
+    return jsonify({
+        "status": "success",
+    }), 200
 
 
-@premium_bp.route("/analyze-ats", methods=["POST"])
+# ============================================================
+# ATS ANALYSIS ENDPOINT
+# ============================================================
+
+@premium_bp.route(
+    "/analyze-ats",
+    methods=["POST"],
+)
 @login_required
 def analyze_ats():
-    if not getattr(current_user, "is_premium", False):
-        return jsonify({"error": "Premium subscription required"}), 403
+    # Preserve the existing premium-only restriction.
+    if not getattr(
+        current_user,
+        "is_premium",
+        False,
+    ):
+        return jsonify({
+            "error": "Premium subscription required",
+        }), 403
 
-    data = request.get_json(silent=True) or {}
+    data = request.get_json(silent=True)
+
     if not isinstance(data, dict):
-        data = {}
+        return jsonify({
+            "error": "A valid JSON request is required.",
+        }), 400
 
     cv_data = data.get("cv_data")
     job_desc = data.get("job_description")
 
     if not cv_data or not job_desc:
-        return jsonify({"error": "CV data and job description are required."}), 400
-
-    prompt = f"Provide an ATS Score from 0-100 and list missing keywords.\n\nCV:\n{json.dumps(cv_data)}\n\nJob Description:\n{job_desc}"
+        return jsonify({
+            "error": (
+                "CV data and job description are required."
+            ),
+        }), 400
 
     try:
-        if hasattr(openai, "OpenAI"):
-            client = openai.OpenAI(api_key=active_openai_key or os.getenv("OPENAI_API_KEY"), timeout=5.0, max_retries=0)
-            response = client.chat.completions.create(
-                model="gpt-4o",
-                messages=[{"role": "user", "content": prompt}]
-            )
-            analysis_text = response.choices[0].message.content.strip()
-        else:
-            response = openai.ChatCompletion.create(
-                model="gpt-4o",
-                messages=[{"role": "user", "content": prompt}]
-            )
-            analysis_text = response.choices[0].message.content.strip()
+        cv_json = json.dumps(
+            cv_data,
+            ensure_ascii=False,
+        )
 
-        return jsonify({"analysis": analysis_text})
+    except (TypeError, ValueError):
+        return jsonify({
+            "error": "CV data must be valid JSON-compatible content.",
+        }), 400
 
-    except Exception as e:
-        print(f"ATS analysis error: {e}")
-        return jsonify({"error": "Unable to analyze CV at this time."}), 500
+    prompt = f"""
+Analyze the candidate's CV against the supplied job description.
+
+CV DATA:
+{cv_json}
+
+JOB DESCRIPTION:
+{job_desc}
+
+Return a useful ATS analysis containing:
+
+1. An estimated ATS match score from 0 to 100.
+2. Keywords found in the CV.
+3. Important job-description keywords missing from the CV.
+4. Relevant strengths supported by the CV.
+5. Suggestions for improving alignment.
+6. Specific CV sections that could be improved.
+
+Accuracy requirements:
+- Clearly label the score as an estimate, not a guaranteed ATS result.
+- Do not invent candidate qualifications or experience.
+- Do not tell the candidate to claim skills they do not possess.
+- Distinguish between a missing keyword and a missing qualification.
+- Only recommend adding a keyword to the CV when the candidate can
+  truthfully support it.
+- Return a clearly structured, readable analysis.
+"""
+
+    # FIX: Define the API key locally.
+    active_openai_key = get_openai_api_key()
+
+    if not active_openai_key:
+        return jsonify({
+            "error": (
+                "ATS analysis is temporarily unavailable. "
+                "The OpenAI API key is not configured."
+            ),
+        }), 503
+
+    try:
+        analysis_text = generate_with_openai(
+            prompt,
+            active_openai_key,
+        )
+
+        return jsonify({
+            "analysis": analysis_text,
+        }), 200
+
+    except Exception as exc:
+        print(
+            f"ATS analysis error: "
+            f"{type(exc).__name__}: {exc}"
+        )
+
+        return jsonify({
+            "error": (
+                "Unable to analyze the CV at this time. "
+                "Please try again later."
+            ),
+        }), 503
 
 
 premium_app.register_blueprint(premium_bp)
 
-# Vercel Entrypoint
+# ============================================================
+# VERCEL ENTRY POINT
+# ============================================================
+
 app = premium_app
+
+
+# ============================================================
+# LOCAL DEVELOPMENT
+# ============================================================
 
 if __name__ == "__main__":
     with premium_app.app_context():
         db.create_all()
-    premium_app.run(debug=True, port=5001)
+
+    premium_app.run(
+        debug=True,
+        port=5001,
+    )
