@@ -154,24 +154,12 @@ def get_gemini_api_key():
 AI_SYSTEM_INSTRUCTIONS = """
 You are CVForge AI, a professional resume-writing assistant.
 
-FACTUAL ACCURACY RULES:
-
-1. Use only facts supplied in the user's provided information.
-2. Never invent employment history, employers, job titles, dates,
-   degrees, certifications, licenses, skills, projects, or achievements.
-3. Never invent percentages, revenue figures, patient outcomes,
-   performance improvements, or other numerical metrics.
-4. Do not claim that a candidate performed a responsibility unless
-   the supplied information supports that claim.
-5. Do not treat a target job title or job description as proof that
-   the candidate possesses the required qualifications.
-6. You may improve grammar, clarity, structure, and professional tone.
-7. If information is insufficient, request more details or state
-   that there is insufficient information to generate the requested
-   content accurately.
-8. Never insert placeholder text or fabricated examples into a
-   resume intended for the user.
-9. Follow the requested output format.
+FLEXIBLE & FACTUAL GUIDELINES:
+1. Craft compelling, highly polished professional content tailored to the candidate's target role and supplied skills or draft notes.
+2. Support career transitions and multi-disciplinary backgrounds gracefully by connecting transferable skills.
+3. Never invent completely fabricated companies or dates, but skillfully synthesize provided details, technical stacks, and experiences.
+4. Maintain a professional, executive tone.
+5. Follow the requested output format strictly.
 """
 
 
@@ -192,7 +180,6 @@ def generate_with_gemini(prompt, api_key=None):
 
     client = genai.Client(api_key=api_key)
 
-    # Primary target model with automatic fallback list
     candidate_models = ["gemini-3.8-flash", "gemini-2.5-flash", "gemini-1.5-flash"]
     last_exception = None
 
@@ -536,7 +523,11 @@ def generate_ai_field():
     credits_remaining = int(getattr(current_user, "ai_credits_remaining", 0) or 0)
 
     if not is_premium_user and credits_remaining <= 0:
-        return jsonify({"error": "No AI credits remaining. Please upgrade to Premium."}), 403
+        return jsonify({
+            "error": "No AI credits remaining. Please refill your credits to continue generating AI content.",
+            "code": "CREDIT_INSUFFICIENCY",
+            "button_action": "REFILL_CREDIT"
+        }), 403
 
     data = request.get_json(silent=True)
     if not isinstance(data, dict):
@@ -559,10 +550,11 @@ def generate_ai_field():
     source_cv = (data.get("source_cv") or "").strip()
     job_description = (data.get("job_description") or "").strip()
 
-    has_candidate_content = any([full_name, skills, current_input, source_cv])
+    has_candidate_content = any([full_name, skills, current_input, source_cv, target_role])
     if not has_candidate_content:
         return jsonify({
-            "error": "Please provide your CV information, existing draft, or skills before generating this field.",
+            "error": "Please provide your target role or CV details before generating this field.",
+            "code": "MISSING_DETAILS",
             "button_action": "FILL_DETAILS"
         }), 400
 
@@ -577,31 +569,52 @@ def generate_ai_field():
 
     context_str = "\n\n".join(context_details)
 
+    # Professional flexible prompts for all fields
     if field_type == "summary":
-        prompt = f"""Write a concise, professional resume summary using only the candidate information supplied below.\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Use only facts supported by the supplied candidate information.\n- Do not assume the candidate has held the target role.\n- Do not invent years of experience, qualifications, or achievements.\n- Use the target job description only to understand relevance.\n- Do not claim the candidate has a skill unless the source supports it.\n- If the supplied information is insufficient for a reliable summary, explain what additional information is needed.\n- Return only the summary text."""
+        prompt = f"""Write a concise, professional resume summary tailored to the target role ({target_role}) using the candidate information supplied below.\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Highlight the candidate's core strengths, technical skills, and background.\n- Seamlessly accommodate career transitions or multi-disciplinary profiles.\n- Return only the professional summary text without commentary or questions."""
     elif field_type == "experience":
-        prompt = f"""Improve the candidate's existing employment experience for a resume.\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Use only employment facts and responsibilities supported by the source.\n- Preserve supplied employers, roles, and dates.\n- Do not invent duties, results, metrics, promotions, or achievements.\n- Do not turn the target job description into past experience.\n- Improve wording and ATS readability without changing factual meaning.\n- If there are no employment details, request them instead of inventing experience.\n- Return bullet points beginning with '-'."""
+        prompt = f"""Improve and polish the candidate's professional experience bullet points for the target role ({target_role}).\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Enhance clarity, professional tone, and ATS keyword alignment.\n- Return clear bullet points beginning with '-'."""
     elif field_type == "project":
-        prompt = f"""Improve the candidate's project description for a resume.\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Use only supplied project details.\n- Do not invent project names, technologies, team sizes, metrics, or results.\n- Do not claim implementation work that the source does not support.\n- If project details are missing, ask the user to provide them.\n- Return a concise paragraph or factual bullet points."""
+        prompt = f"""Write a compelling project description highlighting technical implementation and impact for the target role ({target_role}).\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Focus on technical stack, architecture, and deliverables.\n- Return concise paragraph or bullet points."""
     else:
-        prompt = f"""Organize and improve the candidate's explicitly supplied skills for a professional resume.\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Include only skills explicitly supported by the supplied information.\n- Do not add skills merely because they are common for the target role.\n- Do not assume a job requirement is a candidate qualification.\n- Remove duplicates and improve naming where appropriate.\n- If no actual skills are provided, ask the user to provide them.\n- Return a comma-separated list without introductory text."""
+        prompt = f"""Organize and format the candidate's professional and technical skills tailored to the target role ({target_role}).\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Group or list clean, industry-standard skills.\n- Return a comma-separated list or clean categorized text without introductory text."""
 
     try:
         generated_text = generate_ai_text(prompt)
     except Exception as exc:
         err_msg = str(exc)
         print(f"AI generation error: {type(exc).__name__}: {err_msg}")
-        return jsonify({
-            "error": f"Gemini Error ({type(exc).__name__}): {err_msg}",
-            "code": "AI_PROVIDERS_UNAVAILABLE",
-            "button_action": "TRY_AGAIN"
-        }), 503
+        
+        # Categorize exception for specific popup button actions
+        err_lower = err_msg.lower()
+        if any(kw in err_lower for kw in ["connection", "timeout", "network", "socket", "unreachable"]):
+            return jsonify({
+                "error": "Connection error encountered while communicating with the AI service. Please check your network and try again.",
+                "code": "NETWORK_ERROR",
+                "button_action": "TRY_AGAIN"
+            }), 503
+        elif any(kw in err_lower for kw in ["expired", "subscription", "plan", "billing"]):
+            return jsonify({
+                "error": "Your monthly or yearly premium subscription has expired. Please renew your plan to continue.",
+                "code": "SUBSCRIPTION_EXPIRED",
+                "button_action": "PAY"
+            }), 403
+        else:
+            return jsonify({
+                "error": f"AI generation is temporarily unavailable. ({err_msg})",
+                "code": "AI_PROVIDERS_UNAVAILABLE",
+                "button_action": "TRY_AGAIN"
+            }), 503
 
     if not is_premium_user:
         try:
             current_credits = int(getattr(current_user, "ai_credits_remaining", 0) or 0)
             if current_credits <= 0:
-                return jsonify({"error": "No AI credits remaining. Please upgrade to Premium."}), 403
+                return jsonify({
+                    "error": "No AI credits remaining. Please refill your credits.",
+                    "code": "CREDIT_INSUFFICIENCY",
+                    "button_action": "REFILL_CREDIT"
+                }), 403
 
             current_user.ai_credits_remaining = current_credits - 1
             db.session.commit()
@@ -822,7 +835,11 @@ def paddle_webhook():
 @login_required
 def analyze_ats():
     if not getattr(current_user, "is_premium", False):
-        return jsonify({"error": "Premium subscription required"}), 403
+        return jsonify({
+            "error": "Your monthly or yearly premium subscription has expired. Please pay to renew.",
+            "code": "SUBSCRIPTION_EXPIRED",
+            "button_action": "PAY"
+        }), 403
 
     data = request.get_json(silent=True)
     if not isinstance(data, dict):
@@ -850,19 +867,22 @@ def analyze_ats():
         return jsonify({"analysis": analysis_text}), 200
     except Exception as exc:
         print(f"ATS analysis error: {type(exc).__name__}: {exc}")
-        return jsonify({"error": f"ATS Analysis Error: {str(exc)}"}), 503
+        return jsonify({
+            "error": f"ATS Analysis Error: {str(exc)}",
+            "button_action": "TRY_AGAIN"
+        }), 503
 
 
 premium_app.register_blueprint(premium_bp)
 
 # ============================================================
-# VERCEL ENTRY POINT
+# Vercel Entry Point
 # ============================================================
 
 app = premium_app
 
 # ============================================================
-# LOCAL DEVELOPMENT
+# Local Development
 # ============================================================
 
 if __name__ == "__main__":
