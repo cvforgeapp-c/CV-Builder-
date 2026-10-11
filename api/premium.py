@@ -180,26 +180,17 @@ def generate_with_gemini(prompt, api_key=None):
 
     client = genai.Client(api_key=api_key)
 
-    # Updated candidate models with gemini-3.8-flash active and fallback logic
-    candidate_models = ["gemini-3.8-flash", "gemini-2.5-flash", "gemini-1.5-flash"]
-    last_exception = None
+    # Updated model string to gemini-3.8-flash as specified by Google AI Studio
+    response = client.models.generate_content(
+        model="gemini-3.8-flash",
+        contents=full_prompt,
+    )
 
-    for model_name in candidate_models:
-        try:
-            response = client.models.generate_content(
-                model=model_name,
-                contents=full_prompt,
-            )
+    generated_text = getattr(response, "text", None)
+    if generated_text and generated_text.strip():
+        return generated_text.strip()
 
-            generated_text = getattr(response, "text", None)
-            if generated_text and generated_text.strip():
-                return generated_text.strip()
-        except Exception as exc:
-            last_exception = exc
-            print(f"Model {model_name} failed: {exc}. Trying next candidate...")
-
-    raise RuntimeError(f"All Gemini models failed. Last error: {last_exception}")
-
+    raise RuntimeError("Gemini returned an empty response.")
 
 def generate_ai_text(prompt):
     gemini_key = get_gemini_api_key()
