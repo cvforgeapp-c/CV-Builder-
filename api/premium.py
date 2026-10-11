@@ -180,6 +180,7 @@ def generate_with_gemini(prompt, api_key=None):
 
     client = genai.Client(api_key=api_key)
 
+    # Updated candidate models with gemini-3.8-flash active and fallback logic
     candidate_models = ["gemini-3.8-flash", "gemini-2.5-flash", "gemini-1.5-flash"]
     last_exception = None
 
