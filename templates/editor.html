@@ -420,7 +420,7 @@
         function handleModalAction() {
             if (currentModalAction === 'REFILL_CREDIT') {
                 window.location.href = '/pricing';
-            } else if (currentModalAction === 'PAY') {
+            } else if (currentModalAction === 'PAY' || currentModalAction === 'SUBSCRIPTION_EXPIRED') {
                 window.location.href = '/pricing';
             } else {
                 closeModal();
@@ -472,7 +472,12 @@
                 } else if (response.redirected) {
                     window.location.href = response.url;
                 } else {
-                    showModal("Save Error", result.error || "Failed to save CV. Please try again.", "Close", "CLOSE");
+                    const action = result.button_action || 'CLOSE';
+                    let btnText = "Close";
+                    if (action === 'REFILL_CREDIT') btnText = "Refill Credit";
+                    else if (action === 'PAY') btnText = "Upgrade Plan";
+
+                    showModal("Save Error", result.error || "Failed to save CV. Please try again.", btnText, action);
                 }
             } catch (err) {
                 console.error("Save CV Submission Error:", err);
@@ -544,8 +549,9 @@
                     
                     if (action === 'REFILL_CREDIT') btnText = "Refill credit";
                     else if (action === 'PAY') btnText = "Pay";
+                    else if (action === 'SUBSCRIPTION_EXPIRED') btnText = "Renew Subscription";
 
-                    showModal("AI Assist Error", data.error || "Unable to generate AI content at this time.", btnText, action);
+                    showModal("AI Assist Notice", data.error || "Unable to generate AI content at this time.", btnText, action);
                     if (targetArea) targetArea.value = previousValue;
                 }
             } catch (err) {
