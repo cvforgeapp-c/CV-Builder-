@@ -145,13 +145,14 @@
             height: 100%;
             background: linear-gradient(165deg, #02353C 0%, #05535E 60%, #011f24 100%);
             box-shadow: -8px 0 30px rgba(0, 0, 0, 0.3);
-            padding: 35px 28px;
+            padding: 30px 24px;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
             transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: 2001;
             border-left: 1px solid rgba(229, 169, 60, 0.25);
+            overflow-y: auto;
         }
 
         .mobile-menu.active {
@@ -162,8 +163,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
@@ -198,18 +199,18 @@
             list-style: none;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
         .menu-list a {
             text-decoration: none;
             color: #e2e8f0;
             font-weight: 600;
-            font-size: 15px;
+            font-size: 14px;
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding: 12px 16px;
+            gap: 12px;
+            padding: 10px 14px;
             border-radius: 10px;
             transition: all 0.25s ease;
             background: rgba(255, 255, 255, 0.03);
@@ -550,17 +551,33 @@
     <div class="menu-overlay" id="menuOverlay"></div>
     <aside class="mobile-menu" id="mobileMenu">
         <div class="menu-header">
-            <span class="menu-title">Menu</span>
-            <button class="close-btn" id="closeBtn">&times;</button>
+            <span class="menu-title">CVForge</span>
+            <button class="close-btn" id="closeBtn" aria-label="Close Menu">&times;</button>
         </div>
+
+        <!-- High-Priority Conversion Action Button -->
+        <div style="margin-bottom: 16px;">
+            <a href="/builder" class="btn-accent" style="display: block; text-align: center; text-decoration: none; padding: 12px 16px; font-size: 14px;">
+                🚀 Build ATS Resume Free
+            </a>
+        </div>
+
+        <!-- Optimized Ordered Navigation -->
         <ul class="menu-list">
-            <li><a href="#features" class="menu-link">✨ Features</a></li>
-            <li><a href="#pricing" class="menu-link">💳 Plans</a></li>
-            <li><a href="/auth/login" class="menu-link">🔑 Login</a></li>
-            <li><a href="/dashboard/account" class="menu-link">⚙️ Settings</a></li>
-            <li><a href="/about" class="menu-link">ℹ️ About</a></li>
-            <li><a href="/privacy" class="menu-link">🔒 Privacy</a></li>
+            <li><a href="/dashboard" class="menu-link">📊 My Dashboard</a></li>
+            <li><a href="/dashboard/settings" class="menu-link">⚙️ Account Settings</a></li>
+            <li><a href="#features" class="menu-link">⚡ AI Features & Tools</a></li>
+            <li><a href="#pricing" class="menu-link">💎 Pricing & Pro Plans</a></li>
+            <li><a href="/auth/login" class="menu-link">🔑 Sign Up / Login</a></li>
+            <li><a href="/auth/logout" class="menu-link" style="opacity: 0.85;">🚪 Sign Out</a></li>
         </ul>
+
+        <!-- Trust & Legal Footer Section -->
+        <div style="margin-top: auto; padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 8px;">
+            <a href="/about" style="color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">ℹ️ About Us</a>
+            <a href="/privacy" style="color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">🔒 Privacy Policy</a>
+            <a href="/terms" style="color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">📜 Terms of Service</a>
+        </div>
     </aside>
 
     <!-- HERO SECTION -->
