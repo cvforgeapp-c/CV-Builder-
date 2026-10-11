@@ -60,6 +60,16 @@
             text-shadow: 2px 2px 4px rgba(2, 53, 60, 0.8), 0 0 15px rgba(229, 169, 60, 0.4);
         }
 
+        /* Premium Hero Card Visual Styling */
+        .hero-card-glow {
+            background: linear-gradient(145deg, #02353C 0%, #034f5a 50%, #012227 100%);
+            box-shadow: 0 20px 50px -10px rgba(2, 53, 60, 0.6), 0 0 30px 0 rgba(229, 169, 60, 0.15);
+        }
+        
+        .hero-text-glow {
+            text-shadow: 0 0 20px rgba(229, 169, 60, 0.35);
+        }
+
         /* Modal Transitions */
         .modal-active {
             opacity: 1 !important;
@@ -120,18 +130,42 @@
     <!-- MAIN STUDIO CONTAINER -->
     <main class="max-w-3xl mx-auto w-full px-4 py-10 space-y-10">
 
-        <!-- BRAND HERO HOOK CARD -->
-        <div class="relative overflow-hidden bg-gradient-to-br from-[#02353C] via-[#034a54] to-[#012227] text-white rounded-3xl p-8 sm:p-10 shadow-2xl border border-white/10">
-            <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-amber-400/10 rounded-full blur-3xl pointer-events-none"></div>
+        <!-- HIGH-IMPACT BRAND HERO HOOK CARD -->
+        <div class="relative overflow-hidden hero-card-glow text-white rounded-3xl p-8 sm:p-10 border border-amber-400/30">
+            <!-- Background Ambient Glow Orbs -->
+            <div class="absolute -right-12 -top-12 w-64 h-64 bg-amber-400/15 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -left-12 -bottom-12 w-64 h-64 bg-[#02353C]/80 rounded-full blur-2xl pointer-events-none"></div>
             
-            <div class="relative z-10 space-y-3">
-                <div class="inline-flex items-center space-x-2 bg-amber-400/15 border border-amber-400/30 text-amber-300 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest backdrop-blur-md">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i> CVForge Career Engine
+            <div class="relative z-10 space-y-5">
+                <!-- Pill Badge -->
+                <div class="inline-flex items-center space-x-2 bg-gradient-to-r from-amber-400/20 to-[#02353C]/60 border border-amber-400/40 text-amber-300 text-xs font-bold px-3.5 py-1.5 rounded-full uppercase tracking-widest backdrop-blur-md shadow-inner">
+                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i> 
+                    <span>CVForge Career Engine</span>
                 </div>
-                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">Forge Your Career Advantage</h1>
-                <p class="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-2xl font-normal">
+
+                <!-- Main Hook Title -->
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
+                    Forge Your Career <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-[#E5A93C] hero-text-glow">Advantage</span>
+                </h1>
+
+                <!-- Body Copy -->
+                <p class="text-slate-200 text-xs sm:text-sm md:text-base leading-relaxed max-w-2xl font-normal">
                     Craft an executive, ATS-optimized resume designed to pass automated HR filters worldwide. Fill in your achievements or leverage AI Assist for real-time optimization.
                 </p>
+
+                <!-- Value Proposition Feature Tags -->
+                <div class="pt-2 flex flex-wrap gap-2.5">
+                    <div class="inline-flex items-center gap-1.5 text-[11px] font-semibold bg-white/10 border border-white/10 px-3 py-1 rounded-lg text-amber-300">
+                        <i class="fa-solid fa-circle-check text-amber-400 text-xs"></i> 100% ATS Compliant
+                    </div>
+                    <div class="inline-flex items-center gap-1.5 text-[11px] font-semibold bg-white/10 border border-white/10 px-3 py-1 rounded-lg text-amber-300">
+                        <i class="fa-solid fa-bolt text-amber-400 text-xs"></i> AI Optimization Engine
+                    </div>
+                    <div class="inline-flex items-center gap-1.5 text-[11px] font-semibold bg-white/10 border border-white/10 px-3 py-1 rounded-lg text-amber-300">
+                        <i class="fa-solid fa-shield-halved text-amber-400 text-xs"></i> Executive Formats
+                    </div>
+                </div>
             </div>
         </div>
 
