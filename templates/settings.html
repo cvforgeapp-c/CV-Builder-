@@ -481,11 +481,11 @@
                 </form>
             </section>
 
-            <!-- CARD 4: JOB TRACKER & REMINDERS -->
+            <!-- CARD 4: JOB TRACKER & REMINDERS (EXPANDED) -->
             <section class="card setting-card" id="tracker-settings">
                 <div class="card-header">
                     <h2 class="card-title">Job Application Tracker & Alerts</h2>
-                    <p class="card-subtitle">Configure currency display and follow-up email notifications</p>
+                    <p class="card-subtitle">Configure workflow views, notification channels, and weekly search goals</p>
                 </div>
                 <form class="form-grid" onsubmit="event.preventDefault();">
                     <div class="form-group">
@@ -498,11 +498,36 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label>Default Tracker Layout View</label>
+                        <select>
+                            <option selected>Kanban Drag & Drop Board</option>
+                            <option>Structured Data Table</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label>Application Follow-up Reminders</label>
                         <select>
                             <option selected>Remind me after 7 days</option>
                             <option>Remind me after 14 days</option>
                             <option>Disabled</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Notification Delivery Method</label>
+                        <select>
+                            <option selected>Email & Dashboard Alert</option>
+                            <option>Dashboard Banner Only</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Weekly Application Goal</label>
+                        <input type="number" value="5" min="1" max="50" placeholder="e.g. 5 applications / week">
+                    </div>
+                    <div class="form-group">
+                        <label>AI Assistant Automation</label>
+                        <select>
+                            <option selected>Auto-draft follow-up emails on alert date</option>
+                            <option>Disabled (Manual drafts only)</option>
                         </select>
                     </div>
                     <div class="form-group full-width" style="margin-top: 6px;">
