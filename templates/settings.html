@@ -68,15 +68,15 @@
 
         /* Settings Main Layout */
         .settings-container {
-            max-width: 1050px;
+            max-width: 1100px;
             margin: 35px auto;
             padding: 0 20px;
             display: grid;
-            grid-template-columns: 240px 1fr;
+            grid-template-columns: 260px 1fr;
             gap: 30px;
         }
 
-        /* Sticky Sidebar Tabs for Desktop */
+        /* Vertical Sidebar Navigation (Desktop & Mobile) */
         .settings-sidebar {
             background: #ffffff;
             border-radius: 12px;
@@ -103,7 +103,7 @@
             color: #64748b;
             font-weight: 600;
             font-size: 14px;
-            padding: 10px 14px;
+            padding: 12px 16px;
             border-radius: 8px;
             cursor: pointer;
             display: flex;
@@ -123,7 +123,7 @@
             font-weight: 700;
         }
 
-        /* Settings Cards Stack */
+        /* Content Area */
         .settings-content {
             display: flex;
             flex-direction: column;
@@ -134,25 +134,25 @@
         .card {
             background: #ffffff;
             border-radius: 14px;
-            padding: 28px;
+            padding: 30px;
             border: 1px solid #e2e8f0;
             box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
 
         .card-header {
-            margin-bottom: 20px;
+            margin-bottom: 22px;
             padding-bottom: 12px;
             border-bottom: 1px solid #f1f5f9;
         }
 
         .card-title {
-            font-size: 19px;
+            font-size: 20px;
             font-weight: 700;
             color: #02353C;
         }
 
         .card-subtitle {
-            font-size: 13px;
+            font-size: 14px;
             color: #64748b;
             margin-top: 2px;
         }
@@ -162,8 +162,8 @@
             display: flex;
             align-items: center;
             gap: 16px;
-            margin-bottom: 20px;
-            padding: 14px;
+            margin-bottom: 22px;
+            padding: 16px;
             background: #f8fafc;
             border-radius: 10px;
             border: 1px dashed #cbd5e1;
@@ -171,8 +171,8 @@
         }
 
         .avatar-preview {
-            width: 56px;
-            height: 56px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             background: #02353C;
             color: #ffffff;
@@ -184,40 +184,26 @@
             flex-shrink: 0;
         }
 
-        /* Integration OAuth Badges */
-        .oauth-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: #f1f5f9;
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #334155;
-            border: 1px solid #e2e8f0;
-        }
-
-        /* Form Inputs */
+        /* Clean Form Layout (2 Columns Desktop, 1 Column Mobile) */
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 18px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
         }
 
         .form-group.full-width { grid-column: 1 / -1; }
 
-        label { font-size: 13px; font-weight: 600; color: #334155; }
+        label { font-size: 14px; font-weight: 600; color: #334155; }
 
         input, select {
             width: 100%;
-            padding: 11px 14px;
+            padding: 12px 16px;
             border-radius: 8px;
             border: 1px solid #cbd5e1;
             font-size: 15px;
@@ -231,11 +217,11 @@
             box-shadow: 0 0 0 3px rgba(2, 53, 60, 0.1);
         }
 
-        /* Upgrade Banner */
+        /* Subscription Banner */
         .subscription-banner {
             background: linear-gradient(135deg, #02353C 0%, #05535E 100%);
             color: #ffffff;
-            padding: 24px;
+            padding: 26px;
             border-radius: 12px;
             display: flex;
             justify-content: space-between;
@@ -255,11 +241,24 @@
             margin-left: 8px;
         }
 
+        .oauth-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f1f5f9;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+            border: 1px solid #e2e8f0;
+        }
+
         /* Buttons */
         .btn-primary {
             background: linear-gradient(135deg, #02353C 0%, #05535E 100%);
             color: #ffffff;
-            padding: 12px 20px;
+            padding: 12px 24px;
             border-radius: 8px;
             font-size: 14px;
             font-weight: 600;
@@ -272,9 +271,9 @@
             background: transparent;
             color: #475569;
             border: 1px solid #cbd5e1;
-            padding: 9px 16px;
+            padding: 10px 18px;
             border-radius: 8px;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
         }
@@ -282,7 +281,7 @@
         .btn-accent {
             background: linear-gradient(135deg, #E5A93C 0%, #d99a2b 100%);
             color: #02353C !important;
-            padding: 12px 20px;
+            padding: 12px 22px;
             border-radius: 8px;
             font-weight: 700;
             text-decoration: none;
@@ -294,7 +293,7 @@
         .btn-danger {
             background: #ef4444;
             color: #ffffff;
-            padding: 10px 18px;
+            padding: 10px 20px;
             border-radius: 8px;
             font-size: 14px;
             font-weight: 600;
@@ -302,45 +301,33 @@
             cursor: pointer;
         }
 
-        /* RESPONSIVE BREAKPOINTS */
-        @media (max-width: 820px) {
+        /* MOBILE RESPONSIVE ADJUSTMENTS */
+        @media (max-width: 900px) {
             .settings-container {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr; /* Stacks sidebar and content vertically */
                 margin: 20px 12px;
                 padding: 0;
             }
 
             .settings-sidebar {
-                position: sticky;
-                top: 68px;
-                z-index: 99;
-                border-radius: 0 0 12px 12px;
-                padding: 10px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+                position: relative;
+                top: 0;
+                width: 100%;
             }
 
             .sidebar-menu {
-                flex-direction: row;
-                overflow-x: auto;
-                padding-bottom: 4px;
-                scrollbar-width: none;
-            }
-
-            .sidebar-menu::-webkit-scrollbar {
-                display: none;
+                flex-direction: column; /* Vertical navigation list preserved on mobile */
+                gap: 6px;
             }
 
             .tab-btn {
-                white-space: nowrap;
-                width: auto;
-                background: #f1f5f9;
-                padding: 8px 12px;
-                font-size: 13px;
+                width: 100%;
+                font-size: 14px;
+                padding: 12px 16px;
             }
 
-            .tab-btn.active {
-                background: #02353C;
-                color: #ffffff;
+            .form-grid {
+                grid-template-columns: 1fr; /* Full-width vertical inputs on mobile */
             }
 
             .subscription-banner {
@@ -353,14 +340,14 @@
             }
 
             .card {
-                padding: 20px 16px;
+                padding: 22px 18px;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- NAVBAR -->
+    <!-- FIXED NAVBAR -->
     <nav class="navbar">
         <div class="brand-container">
             <a href="/" class="brand">CVForge</a>
@@ -372,7 +359,7 @@
     <!-- MAIN SETTINGS LAYOUT -->
     <div class="settings-container">
         
-        <!-- SIDEBAR NAVIGATION TABS -->
+        <!-- VERTICAL SIDEBAR FOR BOTH DESKTOP AND MOBILE -->
         <aside class="settings-sidebar">
             <ul class="sidebar-menu">
                 <li><button class="tab-btn active" data-tab="home">🏠 Home</button></li>
@@ -398,8 +385,8 @@
                 <div class="avatar-section">
                     <div class="avatar-preview">JD</div>
                     <div>
-                        <h4 style="font-size: 14px; color: #02353C; font-weight: 700;">Profile Avatar</h4>
-                        <p style="font-size: 12px; color: #64748b; margin-bottom: 6px;">Upload a professional headshot</p>
+                        <h4 style="font-size: 15px; color: #02353C; font-weight: 700;">Profile Avatar</h4>
+                        <p style="font-size: 13px; color: #64748b; margin-bottom: 8px;">Upload a professional headshot for digital portfolio exports</p>
                         <button type="button" class="btn-secondary-outline">Upload Photo</button>
                     </div>
                 </div>
@@ -425,7 +412,7 @@
                         <label>LinkedIn Profile URL</label>
                         <input type="text" placeholder="https://linkedin.com/in/username">
                     </div>
-                    <div class="form-group full-width">
+                    <div class="form-group full-width" style="margin-top: 6px;">
                         <button type="submit" class="btn-primary">Save Profile</button>
                     </div>
                 </form>
@@ -452,7 +439,7 @@
             <section class="card setting-card" id="ai-preferences">
                 <div class="card-header">
                     <h2 class="card-title">AI & Template Preferences</h2>
-                    <p class="card-subtitle">Configure AI writing style, target language, and reportLab output defaults</p>
+                    <p class="card-subtitle">Configure AI writing style, target language, and reportLab layout defaults</p>
                 </div>
                 <form class="form-grid" onsubmit="event.preventDefault();">
                     <div class="form-group">
@@ -488,7 +475,7 @@
                             <option>High-Frequency Focus</option>
                         </select>
                     </div>
-                    <div class="form-group full-width">
+                    <div class="form-group full-width" style="margin-top: 6px;">
                         <button type="submit" class="btn-primary">Save Preferences</button>
                     </div>
                 </form>
@@ -518,7 +505,7 @@
                             <option>Disabled</option>
                         </select>
                     </div>
-                    <div class="form-group full-width">
+                    <div class="form-group full-width" style="margin-top: 6px;">
                         <button type="submit" class="btn-primary">Save Tracker Preferences</button>
                     </div>
                 </form>
@@ -531,7 +518,7 @@
                     <p class="card-subtitle">Manage account security, update password, and view login provider</p>
                 </div>
                 
-                <div style="margin-bottom: 20px;">
+                <div style="margin-bottom: 22px;">
                     <label style="display: block; margin-bottom: 8px;">Authentication Method</label>
                     <div class="oauth-badge">
                         <span>🔑 Email & Password Account</span>
@@ -548,7 +535,7 @@
                         <label>New Password</label>
                         <input type="password" placeholder="••••••••">
                     </div>
-                    <div class="form-group full-width">
+                    <div class="form-group full-width" style="margin-top: 6px;">
                         <button type="submit" class="btn-primary">Update Password</button>
                     </div>
                 </form>
