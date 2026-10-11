@@ -503,16 +503,40 @@ def save_resume():
 # AI FIELD GENERATION ENDPOINT
 # ============================================================
 
-DEVELOPER_EMAILS = ["subhnllha@gmail.com"]
+# ============================================================
+# DEVELOPER ACCESS
+# ============================================================
+
+DEVELOPER_EMAILS = {
+    "subhnllha@gmail.com",
+}
+
+
+def is_developer_user(user):
+    """Identify authorized developer accounts by authenticated email."""
+    email = (getattr(user, "email", "") or "").strip().lower()
+    return email in DEVELOPER_EMAILS
+
+
+def has_premium_access(user):
+    """Developers receive premium access without a paid subscription."""
+    return (
+        is_developer_user(user)
+        or bool(getattr(user, "is_premium", False))
+    )
 
 
 @premium_app.route("/api/v1/ai/generate-field", methods=["POST"])
 @login_required
 def generate_ai_field():
-    user_email = (getattr(current_user, "email", "") or "").lower().strip()
-    is_developer = user_email in DEVELOPER_EMAILS
-    is_premium_user = bool(getattr(current_user, "is_premium", False)) or is_developer
-    credits_remaining = int(getattr(current_user, "ai_credits_remaining", 0) or 0)
+    user_email = (getattr(current_user, "email", "") or "").strip().lower()
+
+is_developer = is_developer_user(current_user)
+is_premium_user = has_premium_access(current_user)
+
+credits_remaining = int(
+    getattr(current_user, "ai_credits_remaining", 0) or 0
+)
 
     if not is_premium_user and credits_remaining <= 0:
         return jsonify({
@@ -754,13 +778,21 @@ premium_bp = Blueprint("premium_api", __name__, url_prefix="/api/v1/premium")
 @premium_bp.route("/user-status", methods=["GET"])
 @login_required
 def get_user_status():
+    is_developer = is_developer_user(current_user)
+    premium_access = has_premium_access(current_user)
+
     return jsonify({
         "user_id": getattr(current_user, "id", None),
         "email": getattr(current_user, "email", None),
-        "is_premium": getattr(current_user, "is_premium", False),
-        "subscription_status": getattr(current_user, "subscription_status", "free"),
+        "is_premium": premium_access,
+        "is_developer": is_developer,
+        "subscription_status": (
+            "developer"
+            if is_developer
+            else getattr(current_user, "subscription_status", "free")
+        ),
         "paddle_price_id": PADDLE_PREMIUM_PRICE_ID,
-    })
+    }), 200
 
 
 @premium_bp.route("/webhook/paddle", methods=["POST"])
@@ -827,7 +859,7 @@ def paddle_webhook():
 @premium_bp.route("/analyze-ats", methods=["POST"])
 @login_required
 def analyze_ats():
-    if not getattr(current_user, "is_premium", False):
+    if not has_premium_access(current_user):
         return jsonify({
             "error": "Your monthly or yearly premium subscription has expired. Please pay to renew.",
             "code": "SUBSCRIPTION_EXPIRED",
@@ -856,14 +888,24 @@ def analyze_ats():
         return jsonify({"error": "ATS analysis is temporarily unavailable. The Gemini API key is not configured."}), 503
 
     try:
-        analysis_text = generate_with_gemini(prompt, gemini_key)
-        return jsonify({"analysis": analysis_text}), 200
-    except Exception as exc:
-        print(f"ATS analysis error: {type(exc).__name__}: {exc}")
-        return jsonify({
-            "error": "ATS analysis is temporarily unavailable. Please try again in a moment.",
-            "button_action": "TRY_AGAIN"
-        }), 503
+    analysis_text = generate_ai_text(prompt)
+    return jsonify({
+        "analysis": analysis_text,
+    }), 200
+
+except Exception as exc:
+    premium_app.logger.error(
+        "ATS analysis failed: %s",
+        type(exc).__name__,
+    )
+
+    return jsonify({
+        "error": (
+            "ATS analysis is temporarily unavailable. "
+            "Please try again in a moment."
+        ),
+        "button_action": "TRY_AGAIN",
+    }), 503
 
 
 premium_app.register_blueprint(premium_bp)
