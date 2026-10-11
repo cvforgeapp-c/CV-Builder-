@@ -76,7 +76,7 @@
             gap: 30px;
         }
 
-        /* Sidebar Tabs */
+        /* Sticky Sidebar Tabs for Desktop */
         .settings-sidebar {
             background: #ffffff;
             border-radius: 12px;
@@ -85,6 +85,7 @@
             height: fit-content;
             position: sticky;
             top: 88px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
 
         .sidebar-menu {
@@ -127,7 +128,7 @@
             display: flex;
             flex-direction: column;
             gap: 25px;
-            min-width: 0; /* Prevents flex items from overflowing grid bounds */
+            min-width: 0;
         }
 
         .card {
@@ -183,6 +184,20 @@
             flex-shrink: 0;
         }
 
+        /* Integration OAuth Badges */
+        .oauth-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f1f5f9;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            border: 1px solid #e2e8f0;
+        }
+
         /* Form Inputs */
         .form-grid {
             display: grid;
@@ -202,7 +217,7 @@
 
         input, select {
             width: 100%;
-            padding: 12px 14px;
+            padding: 11px 14px;
             border-radius: 8px;
             border: 1px solid #cbd5e1;
             font-size: 15px;
@@ -308,7 +323,7 @@
                 flex-direction: row;
                 overflow-x: auto;
                 padding-bottom: 4px;
-                scrollbar-width: none; /* Hide scrollbar for clean UI */
+                scrollbar-width: none;
             }
 
             .sidebar-menu::-webkit-scrollbar {
@@ -357,14 +372,15 @@
     <!-- MAIN SETTINGS LAYOUT -->
     <div class="settings-container">
         
-        <!-- SIDEBAR / MOBILE HORIZONTAL TAB BAR -->
+        <!-- SIDEBAR NAVIGATION TABS -->
         <aside class="settings-sidebar">
             <ul class="sidebar-menu">
                 <li><button class="tab-btn active" data-tab="home">🏠 Home</button></li>
                 <li><button class="tab-btn" data-tab="profile">👤 Profile</button></li>
                 <li><button class="tab-btn" data-tab="subscription">💳 Subscription</button></li>
                 <li><button class="tab-btn" data-tab="ai-preferences">🤖 AI Preferences</button></li>
-                <li><button class="tab-btn" data-tab="security">🔒 Security</button></li>
+                <li><button class="tab-btn" data-tab="tracker-settings">📊 Job Tracker & Reminders</button></li>
+                <li><button class="tab-btn" data-tab="security">🔒 Security & Integrations</button></li>
                 <li><button class="tab-btn" data-tab="danger">⚠️ Data & Privacy</button></li>
             </ul>
         </aside>
@@ -372,7 +388,7 @@
         <!-- CONTENT AREA -->
         <main class="settings-content">
             
-            <!-- CARD 1: PROFILE -->
+            <!-- CARD 1: PERSONAL PROFILE -->
             <section class="card setting-card" id="profile">
                 <div class="card-header">
                     <h2 class="card-title">Personal Profile</h2>
@@ -406,12 +422,16 @@
                         <input type="text" placeholder="+1 (555) 000-0000">
                     </div>
                     <div class="form-group full-width">
+                        <label>LinkedIn Profile URL</label>
+                        <input type="text" placeholder="https://linkedin.com/in/username">
+                    </div>
+                    <div class="form-group full-width">
                         <button type="submit" class="btn-primary">Save Profile</button>
                     </div>
                 </form>
             </section>
 
-            <!-- CARD 2: SUBSCRIPTION -->
+            <!-- CARD 2: PLAN & SUBSCRIPTION -->
             <section class="card setting-card" id="subscription">
                 <div class="card-header">
                     <h2 class="card-title">Plan & Subscription</h2>
@@ -428,11 +448,11 @@
                 </div>
             </section>
 
-            <!-- CARD 3: AI PREFERENCES -->
+            <!-- CARD 3: AI & TEMPLATE PREFERENCES -->
             <section class="card setting-card" id="ai-preferences">
                 <div class="card-header">
                     <h2 class="card-title">AI & Template Preferences</h2>
-                    <p class="card-subtitle">Configure AI writing style and reportLab layout defaults</p>
+                    <p class="card-subtitle">Configure AI writing style, target language, and reportLab output defaults</p>
                 </div>
                 <form class="form-grid" onsubmit="event.preventDefault();">
                     <div class="form-group">
@@ -444,10 +464,28 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label>Default Resume Output Language</label>
+                        <select>
+                            <option selected>English (US / UK)</option>
+                            <option>Spanish</option>
+                            <option>French</option>
+                            <option>German</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label>Default Resume Layout</label>
                         <select>
                             <option selected>Modern ATS Minimalist</option>
                             <option>Classic Corporate</option>
+                            <option>Compact Technical</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>ATS Keyword Sensitivity Rigor</label>
+                        <select>
+                            <option selected>Balanced Match (Recommended)</option>
+                            <option>Strict Keyword Matching</option>
+                            <option>High-Frequency Focus</option>
                         </select>
                     </div>
                     <div class="form-group full-width">
@@ -456,12 +494,51 @@
                 </form>
             </section>
 
-            <!-- CARD 4: SECURITY -->
+            <!-- CARD 4: JOB TRACKER & REMINDERS -->
+            <section class="card setting-card" id="tracker-settings">
+                <div class="card-header">
+                    <h2 class="card-title">Job Application Tracker & Alerts</h2>
+                    <p class="card-subtitle">Configure currency display and follow-up email notifications</p>
+                </div>
+                <form class="form-grid" onsubmit="event.preventDefault();">
+                    <div class="form-group">
+                        <label>Dashboard Preferred Currency</label>
+                        <select>
+                            <option selected>USD ($)</option>
+                            <option>EUR (€)</option>
+                            <option>GBP (£)</option>
+                            <option>CAD ($)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Application Follow-up Reminders</label>
+                        <select>
+                            <option selected>Remind me after 7 days</option>
+                            <option>Remind me after 14 days</option>
+                            <option>Disabled</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <button type="submit" class="btn-primary">Save Tracker Preferences</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- CARD 5: SECURITY & INTEGRATIONS -->
             <section class="card setting-card" id="security">
                 <div class="card-header">
-                    <h2 class="card-title">Security Settings</h2>
-                    <p class="card-subtitle">Manage account security and update your password</p>
+                    <h2 class="card-title">Security & Credentials</h2>
+                    <p class="card-subtitle">Manage account security, update password, and view login provider</p>
                 </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px;">Authentication Method</label>
+                    <div class="oauth-badge">
+                        <span>🔑 Email & Password Account</span>
+                        <span style="color: #16a34a; font-weight: bold;">(Verified)</span>
+                    </div>
+                </div>
+
                 <form class="form-grid" onsubmit="event.preventDefault();">
                     <div class="form-group">
                         <label>Current Password</label>
@@ -477,7 +554,7 @@
                 </form>
             </section>
 
-            <!-- CARD 5: DATA & PRIVACY -->
+            <!-- CARD 6: DATA & PRIVACY -->
             <section class="card setting-card" id="danger" style="border-color: #fee2e2;">
                 <div class="card-header">
                     <h2 class="card-title" style="color: #dc2626;">Data & Privacy</h2>
@@ -501,7 +578,7 @@
             btn.addEventListener('click', () => {
                 const targetTab = btn.getAttribute('data-tab');
 
-                // Update active button state
+                // Update active tab button styles
                 tabBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
 
