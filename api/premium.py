@@ -503,8 +503,7 @@ def save_resume():
 # AI FIELD GENERATION ENDPOINT
 # ============================================================
 
-DEVELOPER_EMAILS = ["subhnllha@gmail.com"]
-
+DEVELOPER_EMAILS = ["subhnllha@gmail.com", "your-actual-email@gmail.com"]
 
 @premium_app.route("/api/v1/ai/generate-field", methods=["POST"])
 @login_required
