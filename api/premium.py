@@ -531,12 +531,12 @@ def has_premium_access(user):
 def generate_ai_field():
     user_email = (getattr(current_user, "email", "") or "").strip().lower()
 
-is_developer = is_developer_user(current_user)
-is_premium_user = has_premium_access(current_user)
+    is_developer = is_developer_user(current_user)
+    is_premium_user = has_premium_access(current_user)
 
-credits_remaining = int(
-    getattr(current_user, "ai_credits_remaining", 0) or 0
-)
+    credits_remaining = int(
+        getattr(current_user, "ai_credits_remaining", 0) or 0
+    )
 
     if not is_premium_user and credits_remaining <= 0:
         return jsonify({
@@ -888,24 +888,24 @@ def analyze_ats():
         return jsonify({"error": "ATS analysis is temporarily unavailable. The Gemini API key is not configured."}), 503
 
     try:
-    analysis_text = generate_ai_text(prompt)
-    return jsonify({
-        "analysis": analysis_text,
-    }), 200
+        analysis_text = generate_ai_text(prompt)
+        return jsonify({
+            "analysis": analysis_text,
+        }), 200
 
-except Exception as exc:
-    premium_app.logger.error(
-        "ATS analysis failed: %s",
-        type(exc).__name__,
-    )
+    except Exception as exc:
+        premium_app.logger.error(
+            "ATS analysis failed: %s",
+            type(exc).__name__,
+        )
 
-    return jsonify({
-        "error": (
-            "ATS analysis is temporarily unavailable. "
-            "Please try again in a moment."
-        ),
-        "button_action": "TRY_AGAIN",
-    }), 503
+        return jsonify({
+            "error": (
+                "ATS analysis is temporarily unavailable. "
+                "Please try again in a moment."
+            ),
+            "button_action": "TRY_AGAIN",
+        }), 503
 
 
 premium_app.register_blueprint(premium_bp)
