@@ -583,9 +583,10 @@ def generate_ai_field():
         generated_text = generate_ai_text(prompt)
     except Exception as exc:
         err_msg = str(exc)
-        print(f"AI generation error: {type(exc).__name__}: {err_msg}")
+        # Log full internal error trace to console for developers
+        print(f"CRITICAL AI ERROR LOG: {type(exc).__name__}: {err_msg}")
         
-        # Categorize exception for specific popup button actions
+        # Categorize exception for clean client-facing messages and specific popup actions
         err_lower = err_msg.lower()
         if any(kw in err_lower for kw in ["connection", "timeout", "network", "socket", "unreachable"]):
             return jsonify({
@@ -601,8 +602,8 @@ def generate_ai_field():
             }), 403
         else:
             return jsonify({
-                "error": f"AI generation is temporarily unavailable. ({err_msg})",
-                "code": "AI_PROVIDERS_UNAVAILABLE",
+                "error": "AI Assist is temporarily unavailable due to a service update. Please try again in a moment.",
+                "code": "AI_SERVICE_UNAVAILABLE",
                 "button_action": "TRY_AGAIN"
             }), 503
 
@@ -623,7 +624,7 @@ def generate_ai_field():
             db.session.rollback()
             print(f"AI credit deduction error: {exc}")
             return jsonify({
-                "error": f"Credit update error: {str(exc)}",
+                "error": "Credit update error encountered. Please check your account.",
                 "result": generated_text,
             }), 500
     else:
@@ -868,7 +869,7 @@ def analyze_ats():
     except Exception as exc:
         print(f"ATS analysis error: {type(exc).__name__}: {exc}")
         return jsonify({
-            "error": f"ATS Analysis Error: {str(exc)}",
+            "error": "ATS analysis is temporarily unavailable. Please try again in a moment.",
             "button_action": "TRY_AGAIN"
         }), 503
 
