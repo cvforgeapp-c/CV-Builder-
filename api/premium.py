@@ -598,62 +598,49 @@ def generate_ai_field():
     try:
         generated_text = generate_ai_text(prompt)
     except Exception as exc:
-        err_msg = str(exc)
-        # Log full internal error trace to console for developers
+        err_msg = str(exc).lower()
         print(f"CRITICAL AI ERROR LOG: {type(exc).__name__}: {err_msg}")
-        
-        # Categorize exception for clean client-facing messages and specific popup actions
-        except Exception as exc:
-    err_msg = str(exc).lower()
 
-    premium_app.logger.error(
-        "AI generation failed. Exception type: %s",
-        type(exc).__name__,
-    )
+        if any(keyword in err_msg for keyword in [
+            "resource_exhausted",
+            "quota exceeded",
+            "rate limit",
+            "429",
+            "insufficient_quota",
+        ]):
+            return jsonify({
+                "error": (
+                    "The AI service has reached its current usage limit. "
+                    "Please try again later."
+                ),
+                "code": "AI_PROVIDER_QUOTA_EXCEEDED",
+                "button_action": "TRY_AGAIN",
+            }), 503
 
-    # AI provider quota or rate limit exhausted
-    if any(keyword in err_msg for keyword in [
-        "resource_exhausted",
-        "quota exceeded",
-        "rate limit",
-        "429",
-        "insufficient_quota",
-    ]):
+        if any(keyword in err_msg for keyword in [
+            "connection",
+            "timeout",
+            "network",
+            "socket",
+            "unreachable",
+        ]):
+            return jsonify({
+                "error": (
+                    "The AI service could not be reached. "
+                    "Please try again shortly."
+                ),
+                "code": "NETWORK_ERROR",
+                "button_action": "TRY_AGAIN",
+            }), 503
+
         return jsonify({
             "error": (
-                "The AI service has reached its current usage limit. "
-                "Please try again later."
+                "AI Assist is temporarily unavailable. "
+                "Please try again in a moment."
             ),
-            "code": "AI_PROVIDER_QUOTA_EXCEEDED",
+            "code": "AI_SERVICE_UNAVAILABLE",
             "button_action": "TRY_AGAIN",
         }), 503
-
-    # Connection errors
-    if any(keyword in err_msg for keyword in [
-        "connection",
-        "timeout",
-        "network",
-        "socket",
-        "unreachable",
-    ]):
-        return jsonify({
-            "error": (
-                "The AI service could not be reached. "
-                "Please try again shortly."
-            ),
-            "code": "NETWORK_ERROR",
-            "button_action": "TRY_AGAIN",
-        }), 503
-
-    # Other AI service errors
-    return jsonify({
-        "error": (
-            "AI Assist is temporarily unavailable. "
-            "Please try again in a moment."
-        ),
-        "code": "AI_SERVICE_UNAVAILABLE",
-        "button_action": "TRY_AGAIN",
-    }), 503
 
     if not is_premium_user:
         try:
