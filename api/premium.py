@@ -2,6 +2,7 @@ import os
 import sys
 import uuid
 import json
+import io
 import hmac
 import hashlib
 import httpx
@@ -10,7 +11,7 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 
 # ============================================================
-# MODERN GOOGLE GENAI SDK (SUPPORTS NEW AQ. KEYS)
+# MODERN GOOGLE GENAI SDK
 # ============================================================
 
 try:
@@ -33,6 +34,7 @@ from flask import (
     render_template,
     Blueprint,
     flash,
+    send_file,
 )
 
 from flask_login import (
@@ -180,7 +182,6 @@ def generate_with_gemini(prompt, api_key=None):
 
     client = genai.Client(api_key=api_key)
 
-    # Updated model string to gemini-3.8-flash as specified by Google AI Studio
     response = client.models.generate_content(
         model="gemini-3.8-flash",
         contents=full_prompt,
@@ -288,6 +289,7 @@ def register():
                 subscription_status="free",
                 monthly_cv_generations=0,
                 ai_credits_remaining=3,
+                preferences_json={}
             )
 
             db.session.add(user)
@@ -500,11 +502,7 @@ def save_resume():
 
 
 # ============================================================
-# AI FIELD GENERATION ENDPOINT
-# ============================================================
-
-# ============================================================
-# DEVELOPER ACCESS
+# DEVELOPER ACCESS & AI GENERATION ENDPOINTS
 # ============================================================
 
 DEVELOPER_EMAILS = {
@@ -513,13 +511,11 @@ DEVELOPER_EMAILS = {
 
 
 def is_developer_user(user):
-    """Identify authorized developer accounts by authenticated email."""
     email = (getattr(user, "email", "") or "").strip().lower()
     return email in DEVELOPER_EMAILS
 
 
 def has_premium_access(user):
-    """Developers receive premium access without a paid subscription."""
     return (
         is_developer_user(user)
         or bool(getattr(user, "is_premium", False))
@@ -585,7 +581,6 @@ def generate_ai_field():
 
     context_str = "\n\n".join(context_details)
 
-    # Professional flexible prompts for all fields
     if field_type == "summary":
         prompt = f"""Write a concise, professional resume summary tailored to the target role ({target_role}) using the candidate information supplied below.\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Highlight the candidate's core strengths, technical skills, and background.\n- Seamlessly accommodate career transitions or multi-disciplinary profiles.\n- Return only the professional summary text without commentary or questions."""
     elif field_type == "experience":
@@ -609,10 +604,7 @@ def generate_ai_field():
             "insufficient_quota",
         ]):
             return jsonify({
-                "error": (
-                    "The AI service has reached its current usage limit. "
-                    "Please try again later."
-                ),
+                "error": "The AI service has reached its current usage limit. Please try again later.",
                 "code": "AI_PROVIDER_QUOTA_EXCEEDED",
                 "button_action": "TRY_AGAIN",
             }), 503
@@ -625,19 +617,13 @@ def generate_ai_field():
             "unreachable",
         ]):
             return jsonify({
-                "error": (
-                    "The AI service could not be reached. "
-                    "Please try again shortly."
-                ),
+                "error": "The AI service could not be reached. Please try again shortly.",
                 "code": "NETWORK_ERROR",
                 "button_action": "TRY_AGAIN",
             }), 503
 
         return jsonify({
-            "error": (
-                "AI Assist is temporarily unavailable. "
-                "Please try again in a moment."
-            ),
+            "error": "AI Assist is temporarily unavailable. Please try again in a moment.",
             "code": "AI_SERVICE_UNAVAILABLE",
             "button_action": "TRY_AGAIN",
         }), 503
@@ -739,6 +725,168 @@ def account():
 
 
 premium_app.register_blueprint(dashboard_bp)
+
+# ============================================================
+# SETTINGS API BLUEPRINT
+# ============================================================
+
+settings_api_bp = Blueprint("settings_api", __name__, url_prefix="/api/v1/settings")
+
+
+@settings_api_bp.route("", methods=["GET"])
+@login_required
+def get_settings():
+    prefs = current_user.preferences_json or {}
+    profile_prefs = prefs.get("profile", {})
+
+    return jsonify({
+        "profile": {
+            "fullName": getattr(current_user, "full_name", "") or profile_prefs.get("fullName", ""),
+            "email": current_user.email,
+            "targetTitle": profile_prefs.get("targetTitle", ""),
+            "phone": profile_prefs.get("phone", ""),
+            "linkedin": profile_prefs.get("linkedin", ""),
+            "avatarUrl": getattr(current_user, "avatar_url", "") or ""
+        },
+        "aiPreferences": prefs.get("aiPreferences", {
+            "aiTone": "Executive & Leadership",
+            "aiLanguage": "English (US / UK)",
+            "aiLayout": "Modern ATS Minimalist",
+            "atsRigor": "Balanced Match (Recommended)"
+        }),
+        "trackerSettings": prefs.get("trackerSettings", {
+            "currency": "USD ($)",
+            "trackerLayout": "Kanban Drag & Drop Board",
+            "followupReminders": "Remind me after 7 days",
+            "notifyMethod": "Email & Dashboard Alert",
+            "weeklyGoal": 5,
+            "aiAutomation": "Auto-draft follow-up emails on alert date"
+        }),
+        "subscription": {
+            "tier": "Pro" if has_premium_access(current_user) else "Free"
+        }
+    }), 200
+
+
+@settings_api_bp.route("/<section>", methods=["PUT"])
+@login_required
+def update_settings_section(section):
+    data = request.get_json(silent=True) or {}
+    
+    if not isinstance(current_user.preferences_json, dict):
+        current_user.preferences_json = {}
+
+    prefs = dict(current_user.preferences_json)
+
+    if section == "profile":
+        if "fullName" in data:
+            current_user.full_name = data["fullName"]
+        prefs["profile"] = data
+    elif section == "ai":
+        prefs["aiPreferences"] = data
+    elif section == "tracker":
+        prefs["trackerSettings"] = data
+    else:
+        return jsonify({"error": "Invalid settings section"}), 400
+
+    current_user.preferences_json = prefs
+
+    try:
+        db.session.commit()
+        return jsonify({"success": True, "message": f"{section.capitalize()} updated successfully!"}), 200
+    except Exception as exc:
+        db.session.rollback()
+        print(f"Update settings error: {exc}")
+        return jsonify({"error": "Failed to save settings."}), 500
+
+
+@settings_api_bp.route("/avatar", methods=["POST"])
+@login_required
+def upload_avatar():
+    if 'avatar' not in request.files:
+        return jsonify({"error": "No image file provided"}), 400
+    
+    file = request.files['avatar']
+    if not file.filename:
+        return jsonify({"error": "No selected file"}), 400
+
+    upload_folder = os.path.join(PROJECT_ROOT, "static", "uploads")
+    os.makedirs(upload_folder, exist_ok=True)
+
+    filename = f"{uuid.uuid4()}_{file.filename}"
+    filepath = os.path.join(upload_folder, filename)
+    file.save(filepath)
+
+    avatar_url = f"/static/uploads/{filename}"
+    current_user.avatar_url = avatar_url
+    
+    try:
+        db.session.commit()
+        return jsonify({"success": True, "avatarUrl": avatar_url}), 200
+    except Exception as exc:
+        db.session.rollback()
+        print(f"Avatar upload save error: {exc}")
+        return jsonify({"error": "Failed to save avatar"}), 500
+
+
+@settings_api_bp.route("/password", methods=["PUT"])
+@login_required
+def update_user_password():
+    data = request.get_json(silent=True) or {}
+    curr_pass = data.get("currPassword", "")
+    new_pass = data.get("newPassword", "")
+
+    if not check_password_hash(current_user.password_hash, curr_pass):
+        return jsonify({"error": "Current password is incorrect."}), 400
+
+    if len(new_pass) < 8:
+        return jsonify({"error": "New password must contain at least 8 characters."}), 400
+
+    current_user.password_hash = generate_password_hash(new_pass)
+    try:
+        db.session.commit()
+        return jsonify({"success": True, "message": "Password updated successfully!"}), 200
+    except Exception as exc:
+        db.session.rollback()
+        return jsonify({"error": "Failed to update password."}), 500
+
+
+@settings_api_bp.route("/export", methods=["GET"])
+@login_required
+def export_user_data():
+    user_resumes = Resume.query.filter_by(user_id=current_user.id).all()
+    user_data = {
+        "email": current_user.email,
+        "full_name": getattr(current_user, "full_name", ""),
+        "preferences": current_user.preferences_json or {},
+        "resumes": [r.content_json for r in user_resumes]
+    }
+    buffer = io.BytesIO(json.dumps(user_data, indent=2).encode('utf-8'))
+    return send_file(
+        buffer,
+        mimetype='application/json',
+        as_attachment=True,
+        download_name='CVForge_Data_Export.json'
+    )
+
+
+@settings_api_bp.route("/account", methods=["DELETE"])
+@login_required
+def delete_user_account():
+    try:
+        JobApplication.query.filter_by(user_id=current_user.id).delete()
+        Resume.query.filter_by(user_id=current_user.id).delete()
+        db.session.delete(current_user)
+        db.session.commit()
+        logout_user()
+        return jsonify({"success": True, "message": "Account deleted successfully."}), 200
+    except Exception as exc:
+        db.session.rollback()
+        print(f"Delete account error: {exc}")
+        return jsonify({"error": "Failed to delete account."}), 500
+
+
+premium_app.register_blueprint(settings_api_bp)
 
 # ============================================================
 # PADDLE WEBHOOK VERIFICATION
