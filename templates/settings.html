@@ -557,7 +557,7 @@
             <section class="card setting-card" id="ai-preferences">
                 <div class="card-header">
                     <h2 class="card-title">AI & Template Preferences</h2>
-                    <p class="card-subtitle">Configure AI writing style, target language, and reportLab layout defaults</p>
+                    <p class="card-subtitle">Configure AI writing style, target language, and layout defaults</p>
                 </div>
                 <form class="form-grid" id="aiForm">
                     <div class="form-group">
@@ -728,6 +728,17 @@
                 setTimeout(() => toast.classList.remove('show'), 3000);
             }
 
+            // --- Safe JSON Response Parser Helper ---
+            async function parseJsonResponse(response) {
+                const contentType = response.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    const text = await response.text();
+                    console.error("Non-JSON Response received:", text);
+                    throw new Error("Server error or routing mismatch (returned HTML instead of JSON).");
+                }
+                return await response.json();
+            }
+
             // --- 1. Tab Filtering & Navigation ---
             const tabBtns = document.querySelectorAll('.tab-btn');
             const cards = document.querySelectorAll('.setting-card');
@@ -750,14 +761,13 @@
                     const response = await fetch('/api/v1/settings');
                     if (!response.ok) throw new Error("Failed to load settings");
 
-                    const settings = await response.json();
+                    const settings = await parseJsonResponse(response);
 
                     populateForm('profileForm', settings.profile);
                     populateForm('aiForm', settings.aiPreferences);
                     populateForm('trackerForm', settings.trackerSettings);
 
                     const avatarPreview = document.getElementById('avatarPreview');
-                    const fullNameInput = document.getElementById('fullName');
 
                     if (settings.profile?.avatarUrl) {
                         avatarPreview.style.backgroundImage = `url('${settings.profile.avatarUrl}')`;
@@ -797,7 +807,7 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(formDataObj)
                     });
-                    const res = await response.json();
+                    const res = await parseJsonResponse(response);
                     if (!response.ok) throw new Error(res.error || "Failed to save settings");
                     showToast(res.message || "Settings updated successfully");
                 } catch (err) {
@@ -827,7 +837,7 @@
                 saveFormToAPI('/api/v1/settings/tracker', getFormObject('trackerForm'));
             });
 
-            // --- 4. Avatar Upload to Server ---
+            // --- 4. Avatar Upload to Server (Multipart Form Data) ---
             const avatarInput = document.getElementById('avatarInput');
             const btnUploadPhoto = document.getElementById('btnUploadPhoto');
             const avatarPreview = document.getElementById('avatarPreview');
@@ -844,9 +854,9 @@
                 try {
                     const response = await fetch('/api/v1/settings/avatar', {
                         method: 'POST',
-                        body: formData
+                        body: formData // Note: Do NOT manually set Content-Type header here; browser sets multipart boundaries automatically.
                     });
-                    const res = await response.json();
+                    const res = await parseJsonResponse(response);
                     if (!response.ok) throw new Error(res.error || "Upload failed");
 
                     avatarPreview.style.backgroundImage = `url('${res.avatarUrl}')`;
@@ -873,7 +883,7 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(body)
                     });
-                    const res = await response.json();
+                    const res = await parseJsonResponse(response);
                     if (!response.ok) throw new Error(res.error || "Password update failed");
 
                     showToast("Password updated successfully!");
