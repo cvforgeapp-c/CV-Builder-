@@ -33,7 +33,6 @@
 
                 <!-- RIGHT GROUP: Account Settings Gear & Logout Actions -->
                 <div class="flex items-center space-x-2 sm:space-x-3">
-                    <!-- Properly Positioned Gear Settings Icon -->
                     <a href="/dashboard/account" class="p-2 text-slate-300 hover:text-white rounded-lg hover:bg-white/10 transition-colors flex items-center gap-1.5 text-xs font-medium" title="Account Settings">
                         <i class="fa-solid fa-gear text-amber-400 text-base"></i>
                         <span class="hidden sm:inline">Settings</span>
@@ -51,25 +50,48 @@
     <!-- MAIN DASHBOARD CONTENT -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-        <!-- USER BANNER & UPGRADE CARD -->
+        <!-- USER BANNER & UPGRADE CARD (DYNAMICALLY REFLECTS SETTINGS PROFILE UPDATES) -->
         <div class="bg-white rounded-2xl p-4 sm:p-6 border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="space-y-1">
-                <div class="flex items-center space-x-2.5 flex-wrap gap-y-1">
-                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Welcome back!</h1>
-                    {% if user and user.is_premium %}
-                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
-                            <i class="fa-solid fa-crown text-amber-600"></i> PRO
-                        </span>
+            <div class="flex items-center gap-4">
+                <!-- User Avatar Image or First Initial -->
+                <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#02353C] text-amber-400 font-bold text-xl flex items-center justify-center overflow-hidden border-2 border-amber-400/30 shrink-0 shadow-sm">
+                    {% if user and user.avatar_url %}
+                        <img src="{{ user.avatar_url }}" alt="Profile Avatar" class="w-full h-full object-cover">
                     {% else %}
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
-                            FREE TIER
-                        </span>
+                        <span id="userInitial">{{ (user.full_name[0] if user and user.full_name else (user.email[0].upper() if user and user.email else 'U')) }}</span>
                     {% endif %}
                 </div>
-                <p class="text-slate-500 text-xs sm:text-sm flex items-center gap-1.5 truncate">
-                    <i class="fa-regular fa-envelope text-slate-400"></i>
-                    {{ user.email if user and user.email else 'user@example.com' }}
-                </p>
+
+                <div class="space-y-0.5">
+                    <div class="flex items-center space-x-2.5 flex-wrap gap-y-1">
+                        <!-- Updated Full Name Greeting -->
+                        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight" id="dispWelcomeHeading">
+                            Welcome back, {{ user.full_name if user and user.full_name else 'Job Seeker' }}!
+                        </h1>
+                        
+                        {% if user and user.is_premium %}
+                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                                <i class="fa-solid fa-crown text-amber-600"></i> PRO
+                            </span>
+                        {% else %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+                                FREE TIER
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Target Job Title & Email -->
+                    <p class="text-slate-600 text-xs font-semibold flex items-center gap-1.5" id="dispTargetTitleContainer">
+                        <i class="fa-solid fa-briefcase text-slate-400"></i>
+                        <span id="dispTargetTitle">
+                            {{ user.preferences_json.get('profile', {}).get('targetTitle', 'General Professional') if user and user.preferences_json else 'General Professional' }}
+                        </span>
+                    </p>
+                    <p class="text-slate-400 text-xs flex items-center gap-1.5 truncate">
+                        <i class="fa-regular fa-envelope"></i>
+                        {{ user.email if user and user.email else 'user@example.com' }}
+                    </p>
+                </div>
             </div>
 
             {% if not user or not user.is_premium %}
@@ -83,6 +105,34 @@
                     </a>
                 </div>
             {% endif %}
+        </div>
+
+        <!-- READ-ONLY CHOSEN PREFERENCES DISPLAY -->
+        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-amber-500 text-sm"></i>
+                    <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider">Active Generation Preferences</h3>
+                </div>
+                <a href="/dashboard/account" class="text-[11px] font-semibold text-[#02353C] hover:underline flex items-center gap-1">
+                    Edit Preferences <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100 space-y-0.5">
+                    <span class="text-slate-400 font-medium text-[10px] uppercase">AI Tone</span>
+                    <p class="font-bold text-slate-800" id="dispAiTone">Executive & Leadership</p>
+                </div>
+                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100 space-y-0.5">
+                    <span class="text-slate-400 font-medium text-[10px] uppercase">ATS Rigor</span>
+                    <p class="font-bold text-slate-800" id="dispAtsRigor">Balanced Match (Recommended)</p>
+                </div>
+                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100 space-y-0.5">
+                    <span class="text-slate-400 font-medium text-[10px] uppercase">Currency</span>
+                    <p class="font-bold text-slate-800" id="dispCurrency">USD ($)</p>
+                </div>
+            </div>
         </div>
 
         <!-- COMPACT STATS GRID -->
@@ -219,8 +269,43 @@
         </div>
     </footer>
 
-    <!-- INTERACTIVE DELETION SCRIPT -->
+    <!-- DYNAMIC SETTINGS & RESUME DELETION SCRIPT -->
     <script>
+        // Synchronize Settings Preferences and Profile Updates into the Dashboard UI
+        async function syncSettingsData() {
+            try {
+                const response = await fetch('/api/v1/settings');
+                if (!response.ok) return;
+                
+                const data = await response.json();
+
+                // Profile Updates Sync
+                if (data.profile) {
+                    if (data.profile.fullName) {
+                        document.getElementById('dispWelcomeHeading').textContent = `Welcome back, ${data.profile.fullName}!`;
+                    }
+                    if (data.profile.targetTitle) {
+                        document.getElementById('dispTargetTitle').textContent = data.profile.targetTitle;
+                    }
+                }
+
+                // AI Preferences Sync
+                if (data.aiPreferences) {
+                    if (data.aiPreferences.aiTone) document.getElementById('dispAiTone').textContent = data.aiPreferences.aiTone;
+                    if (data.aiPreferences.atsRigor) document.getElementById('dispAtsRigor').textContent = data.aiPreferences.atsRigor;
+                }
+
+                // Application Tracker Settings Sync
+                if (data.trackerSettings && data.trackerSettings.currency) {
+                    document.getElementById('dispCurrency').textContent = data.trackerSettings.currency;
+                }
+            } catch (e) {
+                console.log("Could not sync settings data:", e);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', syncSettingsData);
+
         let targetResumeId = null;
 
         function confirmDeleteResume(resumeId, title) {
