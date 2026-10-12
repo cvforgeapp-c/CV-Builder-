@@ -2,10 +2,6 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/index.py",
-      "use": "@vercel/python"
-    },
-    {
       "src": "api/premium.py",
       "use": "@vercel/python"
     }
@@ -81,7 +77,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "api/index.py"
+      "dest": "api/premium.py"
     }
   ]
 }
