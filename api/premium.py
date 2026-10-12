@@ -412,7 +412,7 @@ def preview():
 
 
 # ============================================================
-# SAVE RESUME ENDPOINT
+# SAVE & DELETE RESUME ENDPOINTS
 # ============================================================
 
 @premium_app.route("/api/v1/resumes/save", methods=["POST"])
@@ -499,6 +499,23 @@ def save_resume():
 
         flash("Failed to save resume.", "error")
         return redirect(f"/editor?id={resume_id}")
+
+
+@premium_app.route("/api/v1/resumes/delete/<resume_id>", methods=["DELETE"])
+@login_required
+def delete_resume(resume_id):
+    resume = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first()
+    if not resume:
+        return jsonify({"error": "Resume not found or unauthorized access."}), 404
+
+    try:
+        db.session.delete(resume)
+        db.session.commit()
+        return jsonify({"success": True, "message": "Resume deleted successfully."}), 200
+    except Exception as exc:
+        db.session.rollback()
+        print(f"Error deleting resume: {exc}")
+        return jsonify({"error": "Failed to delete resume."}), 500
 
 
 # ============================================================
