@@ -65,13 +65,18 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 # ============================================================
-# DATABASE MODELS
+# DATABASE MODELS & TRANSLATIONS
 # ============================================================
 
 try:
     from models import db, User, Resume, JobApplication
 except ImportError:
     from ..models import db, User, Resume, JobApplication
+
+try:
+    from translations import t, SUPPORTED_LANGUAGES
+except ImportError:
+    from ..translations import t, SUPPORTED_LANGUAGES
 
 # ============================================================
 # APPLICATION CONFIGURATION
@@ -138,6 +143,23 @@ login_manager.login_message = (
     "Please log in to access your account settings."
 )
 login_manager.login_message_category = "info"
+
+# ============================================================
+# GLOBAL TRANSLATION CONTEXT PROCESSOR
+# ============================================================
+
+@premium_app.context_processor
+def inject_global_translations():
+    user_lang = "English (US / UK)"
+    if current_user and getattr(current_user, "is_authenticated", False):
+        prefs = getattr(current_user, "preferences_json", {}) or {}
+        user_lang = prefs.get("language") or prefs.get("aiPreferences", {}).get("aiLanguage", "English (US / UK)")
+
+    return {
+        "current_language": user_lang,
+        "supported_languages": SUPPORTED_LANGUAGES,
+        "t": lambda key: t(key, user_lang),
+    }
 
 # ============================================================
 # AI API CONFIGURATION
