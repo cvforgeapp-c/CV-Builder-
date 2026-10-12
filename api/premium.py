@@ -345,7 +345,7 @@ def logout():
 premium_app.register_blueprint(auth_bp)
 
 # ============================================================
-# PUBLIC ROOT & SETTINGS ROUTES
+# PUBLIC ROOT & SETTINGS ROUTES (WITH FALLBACKS)
 # ============================================================
 
 @premium_app.route("/")
@@ -360,11 +360,13 @@ def landing():
 def public_settings():
     if current_user and getattr(current_user, "is_authenticated", False):
         return redirect(url_for("dashboard.account"))
+    return redirect(url_for("auth.login"))
 
-    try:
-        return render_template("settings.html", user=None)
-    except Exception:
-        return render_template("dashboard/account.html", user=None)
+
+@premium_app.route("/dashboard/settings")
+@login_required
+def dashboard_settings_redirect():
+    return redirect(url_for("dashboard.account"))
 
 
 # ============================================================
