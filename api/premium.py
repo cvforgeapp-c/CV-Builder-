@@ -590,6 +590,11 @@ def generate_ai_field():
             "button_action": "FILL_DETAILS"
         }), 400
 
+    # Retrieve user's preferred language from preferences_json
+    prefs = current_user.preferences_json or {}
+    ai_prefs = prefs.get("aiPreferences", {})
+    preferred_language = ai_prefs.get("aiLanguage", "English (US / UK)")
+
     context_details = []
     if full_name: context_details.append(f"Candidate name supplied by user: {full_name}")
     if target_role: context_details.append(f"Target role: {target_role}")
@@ -602,13 +607,13 @@ def generate_ai_field():
     context_str = "\n\n".join(context_details)
 
     if field_type == "summary":
-        prompt = f"""Write a concise, professional resume summary tailored to the target role ({target_role}) using the candidate information supplied below.\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Highlight the candidate's core strengths, technical skills, and background.\n- Seamlessly accommodate career transitions or multi-disciplinary profiles.\n- Return only the professional summary text without commentary or questions."""
+        prompt = f"""Write a concise, professional resume summary tailored to the target role ({target_role}) using the candidate information supplied below.\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Highlight the candidate's core strengths, technical skills, and background.\n- Write the entire output in {preferred_language}.\n- Seamlessly accommodate career transitions or multi-disciplinary profiles.\n- Return only the professional summary text without commentary or questions."""
     elif field_type == "experience":
-        prompt = f"""Improve and polish the candidate's professional experience bullet points for the target role ({target_role}).\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Enhance clarity, professional tone, and ATS keyword alignment.\n- Return clear bullet points beginning with '-'."""
+        prompt = f"""Improve and polish the candidate's professional experience bullet points for the target role ({target_role}).\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Enhance clarity, professional tone, and ATS keyword alignment.\n- Write the entire output in {preferred_language}.\n- Return clear bullet points beginning with '-'."""
     elif field_type == "project":
-        prompt = f"""Write a compelling project description highlighting technical implementation and impact for the target role ({target_role}).\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Focus on technical stack, architecture, and deliverables.\n- Return concise paragraph or bullet points."""
+        prompt = f"""Write a compelling project description highlighting technical implementation and impact for the target role ({target_role}).\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Focus on technical stack, architecture, and deliverables.\n- Write the entire output in {preferred_language}.\n- Return concise paragraph or bullet points."""
     else:
-        prompt = f"""Organize and format the candidate's professional and technical skills tailored to the target role ({target_role}).\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Group or list clean, industry-standard skills.\n- Return a comma-separated list or clean categorized text without introductory text."""
+        prompt = f"""Organize and format the candidate's professional and technical skills tailored to the target role ({target_role}).\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Group or list clean, industry-standard skills in {preferred_language}.\n- Return a comma-separated list or clean categorized text without introductory text."""
 
     try:
         generated_text = generate_ai_text(prompt)
