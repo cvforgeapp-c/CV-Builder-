@@ -5,6 +5,7 @@ import json
 import io
 import hmac
 import hashlib
+import base64
 import httpx
 
 from datetime import datetime
@@ -829,23 +830,23 @@ def upload_avatar():
     if not file.filename:
         return jsonify({"error": "No selected file"}), 400
 
-    upload_folder = os.path.join(PROJECT_ROOT, "static", "uploads")
-    os.makedirs(upload_folder, exist_ok=True)
-
-    filename = f"{uuid.uuid4()}_{file.filename}"
-    filepath = os.path.join(upload_folder, filename)
-    file.save(filepath)
-
-    avatar_url = f"/static/uploads/{filename}"
-    current_user.avatar_url = avatar_url
-    
     try:
+        # Read file bytes into memory and convert to base64 data URL
+        # Fully compatible with Vercel's read-only serverless filesystem
+        file_bytes = file.read()
+        mimetype = file.content_type or "image/jpeg"
+        encoded_string = base64.b64encode(file_bytes).decode("utf-8")
+        avatar_url = f"data:{mimetype};base64,{encoded_string}"
+
+        current_user.avatar_url = avatar_url
         db.session.commit()
+        
         return jsonify({"success": True, "avatarUrl": avatar_url}), 200
+        
     except Exception as exc:
         db.session.rollback()
-        print(f"Avatar upload save error: {exc}")
-        return jsonify({"error": "Failed to save avatar"}), 500
+        print(f"Avatar upload error: {exc}")
+        return jsonify({"error": "Failed to process avatar upload"}), 500
 
 
 @settings_api_bp.route("/password", methods=["PUT"])
