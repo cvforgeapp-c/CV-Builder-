@@ -174,35 +174,22 @@
             <!-- CONTINUOUS DOCUMENT CANVAS CONTAINER -->
             <div class="bg-white rounded-3xl border border-slate-200/80 shadow-2xl shadow-slate-900/10 overflow-hidden divide-y divide-slate-100">
 
-                <!-- SECTION 1: CONTACT INFORMATION & DOCUMENT LANGUAGE -->
+                <!-- SECTION 1: CONTACT INFORMATION -->
                 <div class="p-6 sm:p-10 space-y-6">
                     <div class="flex items-center gap-3 pb-2">
                         <div class="w-10 h-10 rounded-xl bg-[#02353C]/10 text-[#02353C] flex items-center justify-center font-bold">
                             <i class="fa-solid fa-id-card text-amber-500 text-lg"></i>
                         </div>
                         <div>
-                            <h2 class="text-lg font-bold text-slate-900">Contact Information & Language</h2>
-                            <p class="text-slate-500 text-xs">Essential header details and document language settings for international recruitment.</p>
+                            <h2 class="text-lg font-bold text-slate-900">Contact Information</h2>
+                            <p class="text-slate-500 text-xs">Essential header details for international recruitment.</p>
                         </div>
                     </div>
 
                     <div class="space-y-4">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Document Title (Internal Reference)</label>
-                                <input type="text" name="title" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. Executive Marketing Resume 2026" value="{{ resume.title if resume else '' }}" required class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Resume Output Language</label>
-                                <select name="language" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm font-semibold">
-                                    <option value="English (US / UK)" {% if not resume or not resume.content_json or resume.content_json.get('language') == 'English (US / UK)' %}selected{% endif %}>English (US / UK)</option>
-                                    <option value="Spanish" {% if resume and resume.content_json and resume.content_json.get('language') == 'Spanish' %}selected{% endif %}>Spanish (Español)</option>
-                                    <option value="French" {% if resume and resume.content_json and resume.content_json.get('language') == 'French' %}selected{% endif %}>French (Français)</option>
-                                    <option value="German" {% if resume and resume.content_json and resume.content_json.get('language') == 'German' %}selected{% endif %}>German (Deutsch)</option>
-                                    <option value="Amharic" {% if resume and resume.content_json and resume.content_json.get('language') == 'Amharic' %}selected{% endif %}>Amharic (አማርኛ)</option>
-                                    <option value="Afaan Oromoo" {% if resume and resume.content_json and resume.content_json.get('language') == 'Afaan Oromoo' %}selected{% endif %}>Afaan Oromoo</option>
-                                </select>
-                            </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Document Title (Internal Reference)</label>
+                            <input type="text" name="title" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. Executive Marketing Resume 2026" value="{{ resume.title if resume else '' }}" required class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
