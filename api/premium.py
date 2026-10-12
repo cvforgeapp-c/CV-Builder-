@@ -856,7 +856,6 @@ def update_user_password():
 def export_user_data():
     user_resumes = Resume.query.filter_by(user_id=current_user.id).all()
     
-    # Clean preferences dictionary (exclude any accidental base64 keys if present)
     clean_prefs = dict(current_user.preferences_json or {})
     if "profile" in clean_prefs and isinstance(clean_prefs["profile"], dict):
         clean_prefs["profile"].pop("avatarImage", None)
@@ -903,6 +902,16 @@ def delete_user_account():
 
 
 premium_app.register_blueprint(settings_api_bp)
+
+# ============================================================
+# DIRECT APP-LEVEL EXPORT ROUTE FALLBACK (PREVENTS 404s)
+# ============================================================
+
+@premium_app.route("/api/v1/settings/export", methods=["GET"])
+@login_required
+def export_user_data_direct():
+    return export_user_data()
+
 
 # ============================================================
 # PADDLE WEBHOOK VERIFICATION
