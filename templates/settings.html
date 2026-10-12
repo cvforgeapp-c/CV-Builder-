@@ -66,6 +66,37 @@
 
         .btn-nav-back:hover { background: #e2e8f0; }
 
+        /* Toast Alert Notification */
+        .toast-notification {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #02353C;
+            color: #ffffff;
+            padding: 14px 22px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 2000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+        }
+
+        .toast-notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast-notification.error {
+            background: #dc2626;
+        }
+
         /* Settings Main Layout */
         .settings-container {
             max-width: 1100px;
@@ -76,7 +107,7 @@
             gap: 30px;
         }
 
-        /* Vertical Sidebar Navigation (Desktop & Mobile) */
+        /* Vertical Sidebar Navigation */
         .settings-sidebar {
             background: #ffffff;
             border-radius: 12px;
@@ -88,7 +119,6 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
 
-        /* SIDEBAR HEADER */
         .sidebar-header {
             font-size: 12px;
             font-weight: 800;
@@ -197,6 +227,9 @@
             font-size: 20px;
             font-weight: 700;
             flex-shrink: 0;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
         }
 
         /* Clean Form Layout */
@@ -232,7 +265,7 @@
             box-shadow: 0 0 0 3px rgba(2, 53, 60, 0.1);
         }
 
-        /* BRANDED ATTRACTIVE CHOOSE / SELECT BUTTONS FOR DESKTOP & MOBILE */
+        /* Custom Branded Dropdowns */
         select {
             appearance: none;
             -webkit-appearance: none;
@@ -245,7 +278,6 @@
             font-weight: 600;
             color: #02353C;
             background-color: #ffffff;
-            /* Custom Brand SVG Arrow Icon */
             background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%02353C' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
             background-repeat: no-repeat;
             background-position: right 14px center;
@@ -265,12 +297,6 @@
             border-color: #02353C;
             box-shadow: 0 0 0 3px rgba(2, 53, 60, 0.15);
             background-color: #ffffff;
-        }
-
-        select option {
-            font-weight: 500;
-            color: #1e293b;
-            padding: 10px;
         }
 
         /* Subscription Banner */
@@ -321,7 +347,10 @@
             border: none;
             cursor: pointer;
             width: fit-content;
+            transition: opacity 0.2s;
         }
+
+        .btn-primary:hover { opacity: 0.95; }
 
         .btn-secondary-outline {
             background: transparent;
@@ -332,6 +361,12 @@
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary-outline:hover {
+            background: #f1f5f9;
+            color: #02353C;
         }
 
         .btn-accent {
@@ -344,6 +379,8 @@
             display: inline-block;
             white-space: nowrap;
             text-align: center;
+            border: none;
+            cursor: pointer;
         }
 
         .btn-danger {
@@ -355,9 +392,41 @@
             font-weight: 600;
             border: none;
             cursor: pointer;
+            transition: background 0.2s;
         }
 
-        /* MOBILE RESPONSIVE ADJUSTMENTS */
+        .btn-danger:hover { background: #dc2626; }
+
+        /* Deletion Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 28px;
+            max-width: 440px;
+            width: 90%;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Mobile Responsive */
         @media (max-width: 900px) {
             .settings-container {
                 grid-template-columns: 1fr;
@@ -371,33 +440,16 @@
                 width: 100%;
             }
 
-            .sidebar-menu {
-                flex-direction: column;
-                gap: 6px;
-            }
-
-            .tab-btn {
-                width: 100%;
-                font-size: 14px;
-                padding: 12px 16px;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
+            .form-grid { grid-template-columns: 1fr; }
 
             .subscription-banner {
                 flex-direction: column;
                 align-items: flex-start;
             }
 
-            .btn-accent {
-                width: 100%;
-            }
+            .btn-accent { width: 100%; }
 
-            .card {
-                padding: 22px 18px;
-            }
+            .card { padding: 22px 18px; }
         }
     </style>
 </head>
@@ -412,10 +464,16 @@
         <a href="/dashboard" class="btn-nav-back">← Back to Dashboard</a>
     </nav>
 
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="toast-notification">
+        <span id="toast-icon">✓</span>
+        <span id="toast-message">Settings saved successfully</span>
+    </div>
+
     <!-- MAIN SETTINGS LAYOUT -->
     <div class="settings-container">
         
-        <!-- VERTICAL SIDEBAR WITH SETTINGS HEADER -->
+        <!-- VERTICAL SIDEBAR -->
         <aside class="settings-sidebar">
             <div class="sidebar-header">
                 ⚙️ Settings
@@ -442,34 +500,35 @@
                 </div>
 
                 <div class="avatar-section">
-                    <div class="avatar-preview">JD</div>
+                    <div class="avatar-preview" id="avatarPreview">JD</div>
                     <div>
                         <h4 style="font-size: 15px; color: #02353C; font-weight: 700;">Profile Avatar</h4>
                         <p style="font-size: 13px; color: #64748b; margin-bottom: 8px;">Upload a professional headshot for digital portfolio exports</p>
-                        <button type="button" class="btn-secondary-outline">Upload Photo</button>
+                        <input type="file" id="avatarInput" accept="image/*" style="display: none;">
+                        <button type="button" class="btn-secondary-outline" id="btnUploadPhoto">Upload Photo</button>
                     </div>
                 </div>
 
-                <form class="form-grid" onsubmit="event.preventDefault();">
+                <form class="form-grid" id="profileForm">
                     <div class="form-group">
-                        <label>Full Name</label>
-                        <input type="text" value="John Doe">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" name="fullName" value="John Doe" required>
                     </div>
                     <div class="form-group">
-                        <label>Email Address</label>
-                        <input type="email" value="user@example.com">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" value="user@example.com" required>
                     </div>
                     <div class="form-group">
-                        <label>Target Job Title</label>
-                        <input type="text" placeholder="e.g. Senior Software Engineer">
+                        <label for="targetTitle">Target Job Title</label>
+                        <input type="text" id="targetTitle" name="targetTitle" placeholder="e.g. Senior Software Engineer">
                     </div>
                     <div class="form-group">
-                        <label>Phone Number</label>
-                        <input type="text" placeholder="+1 (555) 000-0000">
+                        <label for="phone">Phone Number</label>
+                        <input type="text" id="phone" name="phone" placeholder="+1 (555) 000-0000">
                     </div>
                     <div class="form-group full-width">
-                        <label>LinkedIn Profile URL</label>
-                        <input type="text" placeholder="https://linkedin.com/in/username">
+                        <label for="linkedin">LinkedIn Profile URL</label>
+                        <input type="text" id="linkedin" name="linkedin" placeholder="https://linkedin.com/in/username">
                     </div>
                     <div class="form-group full-width" style="margin-top: 6px;">
                         <button type="submit" class="btn-primary">Save Profile</button>
@@ -485,12 +544,12 @@
                 </div>
                 <div class="subscription-banner">
                     <div>
-                        <h3 style="font-size: 18px; font-weight: 700;">Current Plan: Free Tier <span class="plan-badge">Free</span></h3>
+                        <h3 style="font-size: 18px; font-weight: 700;">Current Plan: <span id="currentPlanText">Free Tier</span> <span class="plan-badge" id="planBadge">Free</span></h3>
                         <p style="font-size: 13px; opacity: 0.9; margin-top: 6px;">
                             Upgrade to CVForge Premium for unlimited AI ATS optimizations, job tracking, and cover letters.
                         </p>
                     </div>
-                    <a href="/#pricing" class="btn-accent">Upgrade to Pro ($9.99/mo)</a>
+                    <button type="button" class="btn-accent" id="btnUpgrade">Upgrade to Pro ($9.99/mo)</button>
                 </div>
             </section>
 
@@ -500,38 +559,38 @@
                     <h2 class="card-title">AI & Template Preferences</h2>
                     <p class="card-subtitle">Configure AI writing style, target language, and reportLab layout defaults</p>
                 </div>
-                <form class="form-grid" onsubmit="event.preventDefault();">
+                <form class="form-grid" id="aiForm">
                     <div class="form-group">
-                        <label>Default Writing Tone</label>
-                        <select>
-                            <option selected>Executive & Leadership</option>
-                            <option>Action-Oriented & Metrics-Driven</option>
-                            <option>Technical & Precision-Focused</option>
+                        <label for="aiTone">Default Writing Tone</label>
+                        <select id="aiTone" name="aiTone">
+                            <option value="Executive & Leadership" selected>Executive & Leadership</option>
+                            <option value="Action-Oriented & Metrics-Driven">Action-Oriented & Metrics-Driven</option>
+                            <option value="Technical & Precision-Focused">Technical & Precision-Focused</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Default Resume Output Language</label>
-                        <select>
-                            <option selected>English (US / UK)</option>
-                            <option>Spanish</option>
-                            <option>French</option>
-                            <option>German</option>
+                        <label for="aiLanguage">Default Resume Output Language</label>
+                        <select id="aiLanguage" name="aiLanguage">
+                            <option value="English (US / UK)" selected>English (US / UK)</option>
+                            <option value="Spanish">Spanish</option>
+                            <option value="French">French</option>
+                            <option value="German">German</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Default Resume Layout</label>
-                        <select>
-                            <option selected>Modern ATS Minimalist</option>
-                            <option>Classic Corporate</option>
-                            <option>Compact Technical</option>
+                        <label for="aiLayout">Default Resume Layout</label>
+                        <select id="aiLayout" name="aiLayout">
+                            <option value="Modern ATS Minimalist" selected>Modern ATS Minimalist</option>
+                            <option value="Classic Corporate">Classic Corporate</option>
+                            <option value="Compact Technical">Compact Technical</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>ATS Keyword Sensitivity Rigor</label>
-                        <select>
-                            <option selected>Balanced Match (Recommended)</option>
-                            <option>Strict Keyword Matching</option>
-                            <option>High-Frequency Focus</option>
+                        <label for="atsRigor">ATS Keyword Sensitivity Rigor</label>
+                        <select id="atsRigor" name="atsRigor">
+                            <option value="Balanced Match (Recommended)" selected>Balanced Match (Recommended)</option>
+                            <option value="Strict Keyword Matching">Strict Keyword Matching</option>
+                            <option value="High-Frequency Focus">High-Frequency Focus</option>
                         </select>
                     </div>
                     <div class="form-group full-width" style="margin-top: 6px;">
@@ -546,47 +605,47 @@
                     <h2 class="card-title">Job Application Tracker & Alerts</h2>
                     <p class="card-subtitle">Configure workflow views, notification channels, and weekly search goals</p>
                 </div>
-                <form class="form-grid" onsubmit="event.preventDefault();">
+                <form class="form-grid" id="trackerForm">
                     <div class="form-group">
-                        <label>Dashboard Preferred Currency</label>
-                        <select>
-                            <option selected>USD ($)</option>
-                            <option>EUR (€)</option>
-                            <option>GBP (£)</option>
-                            <option>CAD ($)</option>
+                        <label for="currency">Dashboard Preferred Currency</label>
+                        <select id="currency" name="currency">
+                            <option value="USD ($)" selected>USD ($)</option>
+                            <option value="EUR (€)">EUR (€)</option>
+                            <option value="GBP (£)">GBP (£)</option>
+                            <option value="CAD ($)">CAD ($)</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Default Tracker Layout View</label>
-                        <select>
-                            <option selected>Kanban Drag & Drop Board</option>
-                            <option>Structured Data Table</option>
+                        <label for="trackerLayout">Default Tracker Layout View</label>
+                        <select id="trackerLayout" name="trackerLayout">
+                            <option value="Kanban Drag & Drop Board" selected>Kanban Drag & Drop Board</option>
+                            <option value="Structured Data Table">Structured Data Table</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Application Follow-up Reminders</label>
-                        <select>
-                            <option selected>Remind me after 7 days</option>
-                            <option>Remind me after 14 days</option>
-                            <option>Disabled</option>
+                        <label for="followupReminders">Application Follow-up Reminders</label>
+                        <select id="followupReminders" name="followupReminders">
+                            <option value="Remind me after 7 days" selected>Remind me after 7 days</option>
+                            <option value="Remind me after 14 days">Remind me after 14 days</option>
+                            <option value="Disabled">Disabled</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Notification Delivery Method</label>
-                        <select>
-                            <option selected>Email & Dashboard Alert</option>
-                            <option>Dashboard Banner Only</option>
+                        <label for="notifyMethod">Notification Delivery Method</label>
+                        <select id="notifyMethod" name="notifyMethod">
+                            <option value="Email & Dashboard Alert" selected>Email & Dashboard Alert</option>
+                            <option value="Dashboard Banner Only">Dashboard Banner Only</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Weekly Application Goal</label>
-                        <input type="number" value="5" min="1" max="50" placeholder="e.g. 5 applications / week">
+                        <label for="weeklyGoal">Weekly Application Goal</label>
+                        <input type="number" id="weeklyGoal" name="weeklyGoal" value="5" min="1" max="50">
                     </div>
                     <div class="form-group">
-                        <label>AI Assistant Automation</label>
-                        <select>
-                            <option selected>Auto-draft follow-up emails on alert date</option>
-                            <option>Disabled (Manual drafts only)</option>
+                        <label for="aiAutomation">AI Assistant Automation</label>
+                        <select id="aiAutomation" name="aiAutomation">
+                            <option value="Auto-draft follow-up emails on alert date" selected>Auto-draft follow-up emails on alert date</option>
+                            <option value="Disabled (Manual drafts only)">Disabled (Manual drafts only)</option>
                         </select>
                     </div>
                     <div class="form-group full-width" style="margin-top: 6px;">
@@ -610,14 +669,14 @@
                     </div>
                 </div>
 
-                <form class="form-grid" onsubmit="event.preventDefault();">
+                <form class="form-grid" id="securityForm">
                     <div class="form-group">
-                        <label>Current Password</label>
-                        <input type="password" placeholder="••••••••">
+                        <label for="currPassword">Current Password</label>
+                        <input type="password" id="currPassword" name="currPassword" placeholder="••••••••" required>
                     </div>
                     <div class="form-group">
-                        <label>New Password</label>
-                        <input type="password" placeholder="••••••••">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" id="newPassword" name="newPassword" placeholder="••••••••" required>
                     </div>
                     <div class="form-group full-width" style="margin-top: 6px;">
                         <button type="submit" class="btn-primary">Update Password</button>
@@ -632,40 +691,225 @@
                     <p class="card-subtitle">Download your saved resume data or permanently close account</p>
                 </div>
                 <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                    <button class="btn-secondary-outline" type="button">Export All CV Data (JSON)</button>
-                    <button class="btn-danger" type="button">Delete Account</button>
+                    <button class="btn-secondary-outline" type="button" id="btnExportData">Export All CV Data (JSON)</button>
+                    <button class="btn-danger" type="button" id="btnDeleteAccount">Delete Account</button>
                 </div>
             </section>
 
         </main>
     </div>
 
-    <!-- TOGGLE & FILTER LOGIC SCRIPT -->
+    <!-- ACCOUNT DELETION MODAL -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal-card">
+            <h3 style="font-size: 18px; color: #dc2626; margin-bottom: 8px;">Delete Account?</h3>
+            <p style="font-size: 14px; color: #64748b; margin-bottom: 20px;">This action is permanent and will remove all saved resumes, optimizations, and application tracking history.</p>
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                <button type="button" class="btn-secondary-outline" id="btnCancelDelete">Cancel</button>
+                <button type="button" class="btn-danger" id="btnConfirmDelete">Permanently Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FUNCTIONAL INTERACTIVE SCRIPT -->
     <script>
-        const tabBtns = document.querySelectorAll('.tab-btn');
-        const cards = document.querySelectorAll('.setting-card');
+        document.addEventListener('DOMContentLoaded', () => {
+            const STORAGE_KEY = 'cvforge_user_settings';
 
-        tabBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const targetTab = btn.getAttribute('data-tab');
+            // --- Toast Notification Helper ---
+            function showToast(message, isError = false) {
+                const toast = document.getElementById('toast');
+                const toastMsg = document.getElementById('toast-message');
+                const toastIcon = document.getElementById('toast-icon');
 
-                // Update active tab button styles
-                tabBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-
-                // Toggle visibility
-                if (targetTab === 'home') {
-                    cards.forEach(card => card.style.display = 'block');
+                toastMsg.textContent = message;
+                toastIcon.textContent = isError ? '✕' : '✓';
+                
+                if (isError) {
+                    toast.classList.add('error');
                 } else {
-                    cards.forEach(card => {
-                        if (card.id === targetTab) {
-                            card.style.display = 'block';
-                        } else {
-                            card.style.display = 'none';
-                        }
-                    });
+                    toast.classList.remove('error');
+                }
+
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+
+            // --- 1. Tab Filtering & Navigation ---
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const cards = document.querySelectorAll('.setting-card');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetTab = btn.getAttribute('data-tab');
+
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    if (targetTab === 'home') {
+                        cards.forEach(card => card.style.display = 'block');
+                    } else {
+                        cards.forEach(card => {
+                            card.style.display = (card.id === targetTab) ? 'block' : 'none';
+                        });
+                    }
+                });
+            });
+
+            // --- 2. Avatar Upload & Real-time Update ---
+            const avatarInput = document.getElementById('avatarInput');
+            const btnUploadPhoto = document.getElementById('btnUploadPhoto');
+            const avatarPreview = document.getElementById('avatarPreview');
+
+            btnUploadPhoto.addEventListener('click', () => avatarInput.click());
+
+            avatarInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        avatarPreview.style.backgroundImage = `url('${event.target.result}')`;
+                        avatarPreview.textContent = ''; // Hide initials
+                        
+                        // Persist image data string
+                        saveToLocalStorage('avatarImage', event.target.result);
+                        showToast('Profile photo updated!');
+                    };
+                    reader.readAsDataURL(file);
                 }
             });
+
+            // Update initials dynamically when full name changes
+            const fullNameInput = document.getElementById('fullName');
+            fullNameInput.addEventListener('input', (e) => {
+                if (!avatarPreview.style.backgroundImage) {
+                    const names = e.target.value.trim().split(' ');
+                    const initials = names.map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                    avatarPreview.textContent = initials || 'JD';
+                }
+            });
+
+            // --- 3. Form Submissions & Data Persistence ---
+            function getFormValues(formId) {
+                const form = document.getElementById(formId);
+                const formData = new FormData(form);
+                const data = {};
+                formData.forEach((value, key) => { data[key] = value; });
+                return data;
+            }
+
+            function saveToLocalStorage(key, data) {
+                const currentData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+                currentData[key] = data;
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData));
+            }
+
+            function loadSettings() {
+                const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+                
+                // Populate forms
+                Object.keys(saved).forEach(key => {
+                    const value = saved[key];
+                    if (key === 'avatarImage' && value) {
+                        avatarPreview.style.backgroundImage = `url('${value}')`;
+                        avatarPreview.textContent = '';
+                    } else if (typeof value === 'object') {
+                        Object.keys(value).forEach(field => {
+                            const el = document.querySelector(`[name="${field}"]`);
+                            if (el) el.value = value[field];
+                        });
+                    }
+                });
+
+                // Update initials if no image
+                if (!saved.avatarImage && fullNameInput.value) {
+                    const names = fullNameInput.value.trim().split(' ');
+                    const initials = names.map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                    avatarPreview.textContent = initials;
+                }
+            }
+
+            // Bind Submit Handlers
+            document.getElementById('profileForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                saveToLocalStorage('profile', getFormValues('profileForm'));
+                showToast('Personal Profile updated successfully');
+            });
+
+            document.getElementById('aiForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                saveToLocalStorage('aiPreferences', getFormValues('aiForm'));
+                showToast('AI Preferences saved');
+            });
+
+            document.getElementById('trackerForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                saveToLocalStorage('trackerSettings', getFormValues('trackerForm'));
+                showToast('Tracker settings saved');
+            });
+
+            document.getElementById('securityForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const currPass = document.getElementById('currPassword').value;
+                const newPass = document.getElementById('newPassword').value;
+
+                if (newPass.length < 6) {
+                    showToast('New password must be at least 6 characters', true);
+                    return;
+                }
+
+                showToast('Password updated successfully!');
+                document.getElementById('securityForm').reset();
+            });
+
+            // --- 4. Upgrade Plan Trigger ---
+            const btnUpgrade = document.getElementById('btnUpgrade');
+            btnUpgrade.addEventListener('click', () => {
+                const currentPlanText = document.getElementById('currentPlanText');
+                const planBadge = document.getElementById('planBadge');
+
+                currentPlanText.textContent = 'Pro Tier';
+                planBadge.textContent = 'PRO';
+                planBadge.style.background = '#16a34a';
+                planBadge.style.color = '#ffffff';
+
+                saveToLocalStorage('subscription', { tier: 'Pro' });
+                showToast('Upgraded to Pro Tier ($9.99/mo)');
+            });
+
+            // --- 5. Data Export (JSON) ---
+            document.getElementById('btnExportData').addEventListener('click', () => {
+                const settingsData = localStorage.getItem(STORAGE_KEY) || '{}';
+                const blob = new Blob([settingsData], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'CVForge_Settings_Export.json';
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('Settings data exported');
+            });
+
+            // --- 6. Modal Delete Confirmation ---
+            const deleteModal = document.getElementById('deleteModal');
+            const btnDeleteAccount = document.getElementById('btnDeleteAccount');
+            const btnCancelDelete = document.getElementById('btnCancelDelete');
+            const btnConfirmDelete = document.getElementById('btnConfirmDelete');
+
+            btnDeleteAccount.addEventListener('click', () => deleteModal.classList.add('active'));
+            btnCancelDelete.addEventListener('click', () => deleteModal.classList.remove('active'));
+
+            btnConfirmDelete.addEventListener('click', () => {
+                localStorage.removeItem(STORAGE_KEY);
+                deleteModal.classList.remove('active');
+                showToast('Account data deleted', true);
+                setTimeout(() => location.reload(), 1500);
+            });
+
+            // Initialize Page State
+            loadSettings();
         });
     </script>
 
