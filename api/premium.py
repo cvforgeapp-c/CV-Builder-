@@ -855,11 +855,27 @@ def update_user_password():
 @login_required
 def export_user_data():
     user_resumes = Resume.query.filter_by(user_id=current_user.id).all()
+    
+    # Clean preferences dictionary (exclude any accidental base64 keys if present)
+    clean_prefs = dict(current_user.preferences_json or {})
+    if "profile" in clean_prefs and isinstance(clean_prefs["profile"], dict):
+        clean_prefs["profile"].pop("avatarImage", None)
+
     user_data = {
         "email": current_user.email,
         "full_name": getattr(current_user, "full_name", ""),
-        "preferences": current_user.preferences_json or {},
-        "resumes": [r.content_json for r in user_resumes]
+        "avatar_url": getattr(current_user, "avatar_url", ""),
+        "preferences": clean_prefs,
+        "resumes": [
+            {
+                "id": r.id,
+                "title": r.title,
+                "template_used": r.template_used,
+                "updated_at": r.updated_at.isoformat() if r.updated_at else None,
+                "content": r.content_json or {}
+            }
+            for r in user_resumes
+        ]
     }
     buffer = io.BytesIO(json.dumps(user_data, indent=2).encode('utf-8'))
     return send_file(
