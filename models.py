@@ -13,6 +13,11 @@ class User(UserMixin, db.Model):
     created_at = db.Column("createdAt", db.DateTime, default=datetime.utcnow)
     updated_at = db.Column("updatedAt", db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
+    # User Profile & Settings Extensions
+    full_name = db.Column("fullName", db.String(255), nullable=True)
+    avatar_url = db.Column("avatarUrl", db.String(500), nullable=True)
+    preferences_json = db.Column("preferencesJson", db.JSON, nullable=True, default=dict)
+
     # Entitlement / Subscription
     is_premium = db.Column(db.Boolean, default=False)
     paddle_customer_id = db.Column(db.String(255), nullable=True)
