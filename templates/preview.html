@@ -67,6 +67,9 @@
     <main class="flex-grow py-8 px-4 sm:px-6">
         
         {% if resume %}
+        {% set global_prefs = current_user.preferences_json if current_user and current_user.preferences_json else {} %}
+        {% set lang = (resume.content_json.get('language') if resume.content_json else None) or global_prefs.get('language') or 'English (US / UK)' %}
+        
         <div class="a4-page p-12 sm:p-16 text-slate-900 border border-slate-200">
             
             <!-- HEADER SECTION: Standard Linear Flow -->
@@ -105,7 +108,18 @@
             {% if resume.content_json and resume.content_json.summary %}
             <div class="mb-5">
                 <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 border-slate-900 pb-1 mb-2">
-                    Professional Summary
+                    {% if 'Spanish' in lang %}Resumen Profesional
+                    {% elif 'French' in lang %}Résumé Professionnel
+                    {% elif 'German' in lang %}Berufliches Profil
+                    {% elif 'Mandarin' in lang %}职业概述
+                    {% elif 'Hindi' in lang %}पेशੇਵਰ सारांश
+                    {% elif 'Arabic' in lang %}الملخص المهني
+                    {% elif 'Portuguese' in lang %}Resumo Profissional
+                    {% elif 'Japanese' in lang %}要約
+                    {% elif 'Russian' in lang %}Профессиональное резюме
+                    {% elif 'Amharic' in lang %} የሙያ ማጠቃለያ
+                    {% elif 'Afaan Oromoo' in lang %}Guduunfaa Ogummaa
+                    {% else %}Professional Summary{% endif %}
                 </h2>
                 <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
                     {{ resume.content_json.summary }}
@@ -117,7 +131,18 @@
             {% if resume.content_json and (resume.content_json.company or resume.content_json.experience_bullets) %}
             <div class="mb-5">
                 <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 border-slate-900 pb-1 mb-3">
-                    Professional Experience
+                    {% if 'Spanish' in lang %}Experiencia Profesional
+                    {% elif 'French' in lang %}Expérience Professionnelle
+                    {% elif 'German' in lang %}Berufserfahrung
+                    {% elif 'Mandarin' in lang %}工作经历
+                    {% elif 'Hindi' in lang %}कार्य अनुभव
+                    {% elif 'Arabic' in lang %}الخبرة المهنية
+                    {% elif 'Portuguese' in lang %}Experiência Profissional
+                    {% elif 'Japanese' in lang %}職歴
+                    {% elif 'Russian' in lang %}Опыт работы
+                    {% elif 'Amharic' in lang %} የሥራ ልምድ
+                    {% elif 'Afaan Oromoo' in lang %}Muuxannoo Hojii
+                    {% else %}Professional Experience{% endif %}
                 </h2>
 
                 <div class="space-y-4">
@@ -152,7 +177,18 @@
             {% if resume.content_json and (resume.content_json.education_degree or resume.content_json.education_school) %}
             <div class="mb-5">
                 <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 border-slate-900 pb-1 mb-3">
-                    Education
+                    {% if 'Spanish' in lang %}Educación
+                    {% elif 'French' in lang %}Formation
+                    {% elif 'German' in lang %}Ausbildung
+                    {% elif 'Mandarin' in lang %}教育背景
+                    {% elif 'Hindi' in lang %}शिक्षा
+                    {% elif 'Arabic' in lang %}التعليم
+                    {% elif 'Portuguese' in lang %}Formação Acadêmica
+                    {% elif 'Japanese' in lang %}学歴
+                    {% elif 'Russian' in lang %}Образование
+                    {% elif 'Amharic' in lang %} ትምህርት
+                    {% elif 'Afaan Oromoo' in lang %}Barnoota
+                    {% else %}Education{% endif %}
                 </h2>
 
                 <div>
@@ -178,20 +214,70 @@
             {% if resume.content_json and (resume.content_json.skills_tech or resume.content_json.certifications) %}
             <div class="mb-5">
                 <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 border-slate-900 pb-1 mb-3">
-                    Skills & Certifications
+                    {% if 'Spanish' in lang %}Habilidades y Certificaciones
+                    {% elif 'French' in lang %}Compétences et Certifications
+                    {% elif 'German' in lang %}Fähigkeiten und Zertifizierungen
+                    {% elif 'Mandarin' in lang %}技能与证书
+                    {% elif 'Hindi' in lang %}कौशल और प्रमाण पत्र
+                    {% elif 'Arabic' in lang %}المهارات والشهادات
+                    {% elif 'Portuguese' in lang %}Habilidades e Certificações
+                    {% elif 'Japanese' in lang %}スキルと資格
+                    {% elif 'Russian' in lang %}Навыки и сертификаты
+                    {% elif 'Amharic' in lang %} ችሎታዎች እና ማረጋገጫዎች
+                    {% elif 'Afaan Oromoo' in lang %}Dandeettii fi Ragaalee
+                    {% else %}Skills & Certifications{% endif %}
                 </h2>
 
                 <div class="space-y-1 text-xs text-slate-700">
                     {% if resume.content_json.skills_tech %}
-                        <p><strong class="text-slate-900">Technical Skills:</strong> {{ resume.content_json.skills_tech }}</p>
+                        <p><strong class="text-slate-900">
+                            {% if 'Spanish' in lang %}Habilidades Técnicas:
+                            {% elif 'French' in lang %}Compétences Techniques:
+                            {% elif 'German' in lang %}Technische Fähigkeiten:
+                            {% elif 'Mandarin' in lang %}技术技能:
+                            {% elif 'Hindi' in lang %}तकनीकी कौशल:
+                            {% elif 'Arabic' in lang %}المهارات التقنية:
+                            {% elif 'Portuguese' in lang %}Habilidades Técnicas:
+                            {% elif 'Japanese' in lang %}テクニカルスキル:
+                            {% elif 'Russian' in lang %}Технические навыки:
+                            {% elif 'Amharic' in lang %} የቴክኒክ ችሎታዎች:
+                            {% elif 'Afaan Oromoo' in lang %}Dandeettii Teeknikaa:
+                            {% else %}Technical Skills:{% endif %}
+                        </strong> {{ resume.content_json.skills_tech }}</p>
                     {% endif %}
 
                     {% if resume.content_json.skills_soft %}
-                        <p><strong class="text-slate-900">Core Competencies:</strong> {{ resume.content_json.skills_soft }}</p>
+                        <p><strong class="text-slate-900">
+                            {% if 'Spanish' in lang %}Habilidades Blandas:
+                            {% elif 'French' in lang %}Compétences Comportementales:
+                            {% elif 'German' in lang %}Soziale Kompetenzen:
+                            {% elif 'Mandarin' in lang %}核心能力:
+                            {% elif 'Hindi' in lang %}मुख्य योग्यताएं:
+                            {% elif 'Arabic' in lang %}الكفاءات الأساسية:
+                            {% elif 'Portuguese' in lang %}Competências Principais:
+                            {% elif 'Japanese' in lang %}コアコンピテンシー:
+                            {% elif 'Russian' in lang %}Ключевые компетенции:
+                            {% elif 'Amharic' in lang %} ዋና ዋና ብቃቶች:
+                            {% elif 'Afaan Oromoo' in lang %}Dandeettii Ijoo:
+                            {% else %}Core Competencies:{% endif %}
+                        </strong> {{ resume.content_json.skills_soft }}</p>
                     {% endif %}
 
                     {% if resume.content_json.certifications %}
-                        <p><strong class="text-slate-900">Certifications & Licenses:</strong> {{ resume.content_json.certifications }}</p>
+                        <p><strong class="text-slate-900">
+                            {% if 'Spanish' in lang %}Certificaciones:
+                            {% elif 'French' in lang %}Certifications:
+                            {% elif 'German' in lang %}Zertifizierungen:
+                            {% elif 'Mandarin' in lang %}证书与执照:
+                            {% elif 'Hindi' in lang %}प्रमाण पत्र:
+                            {% elif 'Arabic' in lang %}الشهادات والتراخيص:
+                            {% elif 'Portuguese' in lang %}Certificações:
+                            {% elif 'Japanese' in lang %}資格・免許:
+                            {% elif 'Russian' in lang %}Сертификаты и лицензии:
+                            {% elif 'Amharic' in lang %} የምስክር ወረቀቶች:
+                            {% elif 'Afaan Oromoo' in lang %}Ragaalee Hojii:
+                            {% else %}Certifications & Licenses:{% endif %}
+                        </strong> {{ resume.content_json.certifications }}</p>
                     {% endif %}
                 </div>
             </div>
@@ -201,20 +287,57 @@
             {% if resume.content_json and (resume.content_json.projects or resume.content_json.languages) %}
             <div>
                 <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 border-slate-900 pb-1 mb-3">
-                    Additional Information
+                    {% if 'Spanish' in lang %}Información Adicional
+                    {% elif 'French' in lang %}Informations Complémentaires
+                    {% elif 'German' in lang %}Zusätzliche Informationen
+                    {% elif 'Mandarin' in lang %}附加信息
+                    {% elif 'Hindi' in lang %}अतिरिक्त जानकारी
+                    {% elif 'Arabic' in lang %}معلومات إضافية
+                    {% elif 'Portuguese' in lang %}Informações Adicionais
+                    {% elif 'Japanese' in lang %}追加情報
+                    {% elif 'Russian' in lang %}Дополнительная информация
+                    {% elif 'Amharic' in lang %} ተጨማሪ መረጃ
+                    {% elif 'Afaan Oromoo' in lang %}Odeeffannoo Dabalataa
+                    {% else %}Additional Information{% endif %}
                 </h2>
 
                 <div class="space-y-2 text-xs text-slate-700">
                     {% if resume.content_json.projects %}
                     <div>
-                        <strong class="text-slate-900">Key Projects / Research:</strong>
+                        <strong class="text-slate-900">
+                            {% if 'Spanish' in lang %}Proyectos Clave:
+                            {% elif 'French' in lang %}Projets Clés:
+                            {% elif 'German' in lang %}Wichtige Projekte:
+                            {% elif 'Mandarin' in lang %}重点项目 / 研究:
+                            {% elif 'Hindi' in lang %}मुख्य परियोजनाएं:
+                            {% elif 'Arabic' in lang %}المشاريع الرئيسية:
+                            {% elif 'Portuguese' in lang %}Projetos Principais:
+                            {% elif 'Japanese' in lang %}主要プロジェクト:
+                            {% elif 'Russian' in lang %}Ключевые проекты:
+                            {% elif 'Amharic' in lang %} ቁልፍ ፕሮጀክቶች:
+                            {% elif 'Afaan Oromoo' in lang %}Piroojektiiwwan Ijoo:
+                            {% else %}Key Projects / Research:{% endif %}
+                        </strong>
                         <p class="mt-0.5 leading-relaxed">{{ resume.content_json.projects }}</p>
                     </div>
                     {% endif %}
 
                     {% if resume.content_json.languages %}
                     <div>
-                        <strong class="text-slate-900">Languages:</strong>
+                        <strong class="text-slate-900">
+                            {% if 'Spanish' in lang %}Idiomas:
+                            {% elif 'French' in lang %}Langues:
+                            {% elif 'German' in lang %}Sprachen:
+                            {% elif 'Mandarin' in lang %}语言能力:
+                            {% elif 'Hindi' in lang %}भाषाएँ:
+                            {% elif 'Arabic' in lang %}اللغات:
+                            {% elif 'Portuguese' in lang %}Idiomas:
+                            {% elif 'Japanese' in lang %}言語:
+                            {% elif 'Russian' in lang %}Языки:
+                            {% elif 'Amharic' in lang %} ቋንቋዎች:
+                            {% elif 'Afaan Oromoo' in lang %}Afaanota:
+                            {% else %}Languages:{% endif %}
+                        </strong>
                         <span class="ml-1">{{ resume.content_json.languages }}</span>
                     </div>
                     {% endif %}
