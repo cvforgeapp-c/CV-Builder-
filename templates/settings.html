@@ -481,6 +481,7 @@
             <ul class="sidebar-menu">
                 <li><button class="tab-btn active" data-tab="home">🏠 Home</button></li>
                 <li><button class="tab-btn" data-tab="profile">👤 Profile</button></li>
+                <li><button class="tab-btn" data-tab="language-settings">🌐 Platform Language</button></li>
                 <li><button class="tab-btn" data-tab="subscription">💳 Subscription</button></li>
                 <li><button class="tab-btn" data-tab="ai-preferences">🤖 AI Preferences</button></li>
                 <li><button class="tab-btn" data-tab="tracker-settings">📊 Job Tracker & Reminders</button></li>
@@ -536,7 +537,46 @@
                 </form>
             </section>
 
-            <!-- CARD 2: PLAN & SUBSCRIPTION -->
+            <!-- CARD 2: PLATFORM & DOCUMENT LANGUAGE (OUTSIDE AI PREFERENCES) -->
+            <section class="card setting-card" id="language-settings">
+                <div class="card-header">
+                    <h2 class="card-title">Platform & Document Language</h2>
+                    <p class="card-subtitle">Set your global preferred language for AI generation and resume layouts</p>
+                </div>
+                <form class="form-grid" id="languageForm">
+                    <div class="form-group full-width">
+                        <label for="globalLanguage">Default Global Language</label>
+                        <select id="globalLanguage" name="language">
+                            <option value="English (US / UK)" selected>English (US / UK)</option>
+                            <option value="Spanish">Spanish (Español)</option>
+                            <option value="French">French (Français)</option>
+                            <option value="German">German (Deutsch)</option>
+                            <option value="Mandarin Chinese">Mandarin Chinese (中文)</option>
+                            <option value="Hindi">Hindi (हिन्दी)</option>
+                            <option value="Arabic">Arabic (العربية)</option>
+                            <option value="Portuguese">Portuguese (Português)</option>
+                            <option value="Japanese">Japanese (日本語)</option>
+                            <option value="Russian">Russian (Русский)</option>
+                            <option value="Bengali">Bengali (বাংলা)</option>
+                            <option value="Urdu">Urdu (اردو)</option>
+                            <option value="Indonesian">Indonesian (Bahasa Indonesia)</option>
+                            <option value="Italian">Italian (Italiano)</option>
+                            <option value="Korean">Korean (한국어)</option>
+                            <option value="Turkish">Turkish (Türkçe)</option>
+                            <option value="Vietnamese">Vietnamese (Tiếng Việt)</option>
+                            <option value="Amharic">Amharic (አማርኛ)</option>
+                            <option value="Afaan Oromoo">Afaan Oromoo</option>
+                            <option value="Swahili">Swahili (Kiswahili)</option>
+                            <option value="Dutch">Dutch (Nederlands)</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width" style="margin-top: 6px;">
+                        <button type="submit" class="btn-primary">Save Language Preference</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- CARD 3: PLAN & SUBSCRIPTION -->
             <section class="card setting-card" id="subscription">
                 <div class="card-header">
                     <h2 class="card-title">Plan & Subscription</h2>
@@ -553,11 +593,11 @@
                 </div>
             </section>
 
-            <!-- CARD 3: AI & TEMPLATE PREFERENCES -->
+            <!-- CARD 4: AI & TEMPLATE PREFERENCES (LANGUAGE REMOVED FROM HERE) -->
             <section class="card setting-card" id="ai-preferences">
                 <div class="card-header">
                     <h2 class="card-title">AI & Template Preferences</h2>
-                    <p class="card-subtitle">Configure AI writing style, target language, and layout defaults</p>
+                    <p class="card-subtitle">Configure AI writing style and layout defaults</p>
                 </div>
                 <form class="form-grid" id="aiForm">
                     <div class="form-group">
@@ -569,15 +609,6 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="aiLanguage">Default Resume Output Language</label>
-                        <select id="aiLanguage" name="aiLanguage">
-                            <option value="English (US / UK)" selected>English (US / UK)</option>
-                            <option value="Spanish">Spanish</option>
-                            <option value="French">French</option>
-                            <option value="German">German</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
                         <label for="aiLayout">Default Resume Layout</label>
                         <select id="aiLayout" name="aiLayout">
                             <option value="Modern ATS Minimalist" selected>Modern ATS Minimalist</option>
@@ -585,7 +616,7 @@
                             <option value="Compact Technical">Compact Technical</option>
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group full-width">
                         <label for="atsRigor">ATS Keyword Sensitivity Rigor</label>
                         <select id="atsRigor" name="atsRigor">
                             <option value="Balanced Match (Recommended)" selected>Balanced Match (Recommended)</option>
@@ -599,7 +630,7 @@
                 </form>
             </section>
 
-            <!-- CARD 4: JOB TRACKER & REMINDERS -->
+            <!-- CARD 5: JOB TRACKER & REMINDERS -->
             <section class="card setting-card" id="tracker-settings">
                 <div class="card-header">
                     <h2 class="card-title">Job Application Tracker & Alerts</h2>
@@ -654,7 +685,7 @@
                 </form>
             </section>
 
-            <!-- CARD 5: SECURITY & INTEGRATIONS -->
+            <!-- CARD 6: SECURITY & INTEGRATIONS -->
             <section class="card setting-card" id="security">
                 <div class="card-header">
                     <h2 class="card-title">Security & Credentials</h2>
@@ -684,7 +715,7 @@
                 </form>
             </section>
 
-            <!-- CARD 6: DATA & PRIVACY -->
+            <!-- CARD 7: DATA & PRIVACY -->
             <section class="card setting-card" id="danger" style="border-color: #fee2e2;">
                 <div class="card-header">
                     <h2 class="card-title" style="color: #dc2626;">Data & Privacy</h2>
@@ -764,6 +795,7 @@
                     const settings = await parseJsonResponse(response);
 
                     populateForm('profileForm', settings.profile);
+                    populateForm('languageForm', { language: settings.globalLanguage || settings.aiPreferences?.aiLanguage });
                     populateForm('aiForm', settings.aiPreferences);
                     populateForm('trackerForm', settings.trackerSettings);
 
@@ -827,6 +859,11 @@
                 saveFormToAPI('/api/v1/settings/profile', getFormObject('profileForm'));
             });
 
+            document.getElementById('languageForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                saveFormToAPI('/api/v1/settings/language', getFormObject('languageForm'));
+            });
+
             document.getElementById('aiForm').addEventListener('submit', (e) => {
                 e.preventDefault();
                 saveFormToAPI('/api/v1/settings/ai', getFormObject('aiForm'));
@@ -837,7 +874,7 @@
                 saveFormToAPI('/api/v1/settings/tracker', getFormObject('trackerForm'));
             });
 
-            // --- 4. Avatar Upload with Client-Side Compression (Fits VARCHAR(500)) ---
+            // --- 4. Avatar Upload with Client-Side Compression ---
             const avatarInput = document.getElementById('avatarInput');
             const btnUploadPhoto = document.getElementById('btnUploadPhoto');
             const avatarPreview = document.getElementById('avatarPreview');
@@ -877,7 +914,6 @@
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
 
-                        // Compress to JPEG with 0.6 quality to ensure it fits safely inside 500 characters
                         const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
 
                         const fetchResponse = await fetch(compressedBase64);
