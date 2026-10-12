@@ -20,6 +20,14 @@
       "dest": "api/premium.py"
     },
     {
+      "src": "/api/v1/settings",
+      "dest": "api/premium.py"
+    },
+    {
+      "src": "/api/v1/settings/(.*)",
+      "dest": "api/premium.py"
+    },
+    {
       "src": "/api/v1/premium/(.*)",
       "dest": "api/premium.py"
     },
