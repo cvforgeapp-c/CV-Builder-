@@ -590,10 +590,9 @@ def generate_ai_field():
             "button_action": "FILL_DETAILS"
         }), 400
 
-    # Retrieve user's preferred language from preferences_json
+    # Retrieve user's global preferred language from root account preferences
     prefs = current_user.preferences_json or {}
-    ai_prefs = prefs.get("aiPreferences", {})
-    preferred_language = ai_prefs.get("aiLanguage", "English (US / UK)")
+    preferred_language = prefs.get("language") or prefs.get("aiPreferences", {}).get("aiLanguage", "English (US / UK)")
 
     context_details = []
     if full_name: context_details.append(f"Candidate name supplied by user: {full_name}")
@@ -773,9 +772,9 @@ def get_settings():
             "linkedin": profile_prefs.get("linkedin", ""),
             "avatarUrl": getattr(current_user, "avatar_url", "") or ""
         },
+        "globalLanguage": prefs.get("language", prefs.get("aiPreferences", {}).get("aiLanguage", "English (US / UK)")),
         "aiPreferences": prefs.get("aiPreferences", {
             "aiTone": "Executive & Leadership",
-            "aiLanguage": "English (US / UK)",
             "aiLayout": "Modern ATS Minimalist",
             "atsRigor": "Balanced Match (Recommended)"
         }),
@@ -807,6 +806,13 @@ def update_settings_section(section):
         if "fullName" in data:
             current_user.full_name = data["fullName"]
         prefs["profile"] = data
+    elif section == "language":
+        if "language" in data:
+            prefs["language"] = data["language"]
+        elif isinstance(data, str):
+            prefs["language"] = data
+        else:
+            prefs.update(data)
     elif section == "ai":
         prefs["aiPreferences"] = data
     elif section == "tracker":
