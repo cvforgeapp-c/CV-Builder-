@@ -627,14 +627,17 @@ def generate_ai_field():
 
     context_str = "\n\n".join(context_details)
 
+    # STRICT LANGUAGE DIRECTIVE FOR ALL AI FIELD GENERATIONS
+    lang_directive = f"CRITICAL REQUIREMENT: Write ALL generated text, phrases, and descriptions strictly and exclusively in {preferred_language}."
+
     if field_type == "summary":
-        prompt = f"""Write a concise, professional resume summary tailored to the target role ({target_role}) using the candidate information supplied below.\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Highlight the candidate's core strengths, technical skills, and background.\n- Write the entire output in {preferred_language}.\n- Seamlessly accommodate career transitions or multi-disciplinary profiles.\n- Return only the professional summary text without commentary or questions."""
+        prompt = f"""Write a concise, professional resume summary tailored to the target role ({target_role}) using the candidate information supplied below.\n\n{lang_directive}\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Highlight core strengths, technical skills, and background.\n- Write the entire output in {preferred_language}.\n- Seamlessly accommodate career transitions or multi-disciplinary profiles.\n- Return only the professional summary text without commentary or questions."""
     elif field_type == "experience":
-        prompt = f"""Improve and polish the candidate's professional experience bullet points for the target role ({target_role}).\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Enhance clarity, professional tone, and ATS keyword alignment.\n- Write the entire output in {preferred_language}.\n- Return clear bullet points beginning with '-'."""
+        prompt = f"""Improve and polish the candidate's professional experience bullet points for the target role ({target_role}).\n\n{lang_directive}\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Enhance clarity, professional tone, and ATS keyword alignment.\n- Write the entire output in {preferred_language}.\n- Return clear bullet points beginning with '-'."""
     elif field_type == "project":
-        prompt = f"""Write a compelling project description highlighting technical implementation and impact for the target role ({target_role}).\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Focus on technical stack, architecture, and deliverables.\n- Write the entire output in {preferred_language}.\n- Return concise paragraph or bullet points."""
+        prompt = f"""Write a compelling project description highlighting technical implementation and impact for the target role ({target_role}).\n\n{lang_directive}\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Focus on technical stack, architecture, and deliverables.\n- Write the entire output in {preferred_language}.\n- Return concise paragraph or bullet points."""
     else:
-        prompt = f"""Organize and format the candidate's professional and technical skills tailored to the target role ({target_role}).\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Group or list clean, industry-standard skills in {preferred_language}.\n- Return a comma-separated list or clean categorized text without introductory text."""
+        prompt = f"""Organize and format the candidate's professional and technical skills tailored to the target role ({target_role}).\n\n{lang_directive}\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Group or list clean, industry-standard skills in {preferred_language}.\n- Return a comma-separated list or clean categorized text without introductory text."""
 
     try:
         generated_text = generate_ai_text(prompt)
@@ -1126,7 +1129,11 @@ def analyze_ats():
     except (TypeError, ValueError):
         return jsonify({"error": "CV data must be valid JSON-compatible content."}), 400
 
-    prompt = f"Analyze the candidate's CV against the supplied job description.\n\nCV DATA:\n{cv_json}\n\nJOB DESCRIPTION:\n{job_desc}\n\nReturn a useful ATS analysis containing:\n1. An estimated ATS match score from 0 to 100.\n2. Keywords found in the CV.\n3. Important job-description keywords missing from the CV.\n4. Relevant strengths supported by the CV.\n5. Suggestions for improving alignment.\n6. Specific CV sections that could be improved."
+    # Retrieve user's global preferred language from root account preferences
+    prefs = current_user.preferences_json or {}
+    preferred_language = prefs.get("language") or prefs.get("aiPreferences", {}).get("aiLanguage", "English (US / UK)")
+
+    prompt = f"Analyze the candidate's CV against the supplied job description.\nCRITICAL INSTRUCTION: Write the entire analysis report and feedback strictly in {preferred_language}.\n\nCV DATA:\n{cv_json}\n\nJOB DESCRIPTION:\n{job_desc}\n\nReturn a detailed ATS analysis in {preferred_language} containing:\n1. An estimated ATS match score from 0 to 100.\n2. Keywords found in the CV.\n3. Important job-description keywords missing from the CV.\n4. Relevant strengths supported by the CV.\n5. Suggestions for improving alignment."
 
     gemini_key = get_gemini_api_key()
     if not gemini_key:
