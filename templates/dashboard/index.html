@@ -14,31 +14,31 @@
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
 
     <!-- TOP NAVIGATION BAR -->
-    <nav class="bg-[#02353C] text-white sticky top-0 z-40 shadow-md">
+    <nav class="bg-[#02353C] text-white sticky top-0 z-40 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
+            <div class="flex items-center justify-between h-14">
                 
                 <!-- BRAND LOGO -->
-                <a href="/" class="flex items-center space-x-2.5 group">
-                    <div class="w-9 h-9 rounded-xl bg-amber-400 text-[#02353C] flex items-center justify-center font-extrabold text-lg shadow-md group-hover:scale-105 transition-transform">
+                <a href="/" class="flex items-center space-x-2 group">
+                    <div class="w-8 h-8 rounded-lg bg-amber-400 text-[#02353C] flex items-center justify-center font-extrabold text-base shadow-sm group-hover:scale-105 transition-transform">
                         <i class="fa-solid fa-file-invoice"></i>
                     </div>
-                    <span class="font-extrabold text-xl tracking-tight text-white">
+                    <span class="font-extrabold text-lg tracking-tight text-white">
                         CVForge
                     </span>
                 </a>
 
                 <!-- HEADER ACTIONS -->
-                <div class="flex items-center space-x-2 sm:space-x-3">
+                <div class="flex items-center space-x-2">
                     <!-- Settings Gear Icon -->
-                    <a href="/dashboard/account" class="p-2.5 px-3 rounded-xl bg-white/10 hover:bg-white/20 transition-all border border-white/10 text-xs font-semibold text-white flex items-center gap-1.5" title="Account Settings">
-                        <i class="fa-solid fa-gear text-amber-400 text-sm"></i>
+                    <a href="/dashboard/account" class="p-1.5 px-2.5 rounded-lg bg-white/10 hover:bg-white/20 transition-all border border-white/10 text-xs font-semibold text-white flex items-center gap-1.5" title="Account Settings">
+                        <i class="fa-solid fa-gear text-amber-400 text-xs"></i>
                         <span class="hidden sm:inline">Settings</span>
                     </a>
 
-                    <!-- Logout Power Icon -->
-                    <a href="/auth/logout" class="p-2.5 text-rose-300 hover:text-rose-100 hover:bg-white/10 rounded-xl transition-all" title="Sign Out">
-                        <i class="fa-solid fa-power-off text-base"></i>
+                    <!-- Logout Icon -->
+                    <a href="/auth/logout" class="p-1.5 px-2 text-rose-300 hover:text-rose-100 hover:bg-white/10 rounded-lg transition-all" title="Sign Out">
+                        <i class="fa-solid fa-power-off text-sm"></i>
                     </a>
                 </div>
 
@@ -47,40 +47,40 @@
     </nav>
 
     <!-- MAIN DASHBOARD CONTENT -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-5">
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-3.5">
 
-        <!-- 1. CLEAN PROFILE BOX (Cleaned & Free of Language/Currency Badges) -->
-        <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/90 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-5 relative">
-            <div class="flex items-start sm:items-center gap-4">
+        <!-- 1. COMPACT USER PROFILE BANNER -->
+        <div class="bg-white rounded-xl p-3.5 sm:p-4 border border-slate-200/90 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3 relative">
+            <div class="flex items-center gap-3">
                 <!-- User Avatar / First Initial -->
-                <div class="w-14 h-14 rounded-2xl bg-[#02353C] text-amber-400 font-extrabold text-xl flex items-center justify-center border-2 border-amber-400/30 shadow-xs shrink-0 uppercase" id="dispAvatar">
+                <div class="w-11 h-11 rounded-xl bg-[#02353C] text-amber-400 font-extrabold text-base flex items-center justify-center border border-amber-400/30 shadow-2xs shrink-0 uppercase" id="dispAvatar">
                     {{ (user.full_name[0] if user and user.full_name else (user.email[0].upper() if user and user.email else 'U')) }}
                 </div>
 
-                <div class="space-y-1">
-                    <div class="flex items-center space-x-2.5 flex-wrap gap-y-1">
-                        <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight" id="dispWelcomeName">
+                <div class="space-y-0.5">
+                    <div class="flex items-center space-x-2 flex-wrap gap-y-0.5">
+                        <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight" id="dispWelcomeName">
                             Welcome back, {{ user.full_name if user and user.full_name else 'Job Seeker' }}!
                         </h1>
                         {% if user and user.is_premium %}
-                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-400 text-[#02353C] shadow-2xs">
-                                <i class="fa-solid fa-crown text-[10px]"></i> PRO
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-[#02353C] shadow-2xs">
+                                <i class="fa-solid fa-crown text-[9px]"></i> PRO
                             </span>
                         {% else %}
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
                                 FREE TIER
                             </span>
                         {% endif %}
                     </div>
 
                     <!-- Target Role & Email Info -->
-                    <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs text-slate-500 font-medium">
-                        <span class="flex items-center gap-1.5 text-slate-700 font-bold" id="dispTargetRole">
-                            <i class="fa-solid fa-briefcase text-amber-500"></i>
+                    <div class="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-slate-500 font-medium">
+                        <span class="flex items-center gap-1 text-slate-700 font-semibold" id="dispTargetRole">
+                            <i class="fa-solid fa-briefcase text-amber-500 text-[11px]"></i>
                             <span>{{ user.preferences_json.get('profile', {}).get('targetTitle', 'General Professional') if user and user.preferences_json else 'General Professional' }}</span>
                         </span>
-                        <span class="flex items-center gap-1.5 text-slate-400 truncate">
-                            <i class="fa-regular fa-envelope"></i>
+                        <span class="flex items-center gap-1 text-slate-400 truncate">
+                            <i class="fa-regular fa-envelope text-[11px]"></i>
                             {{ user.email if user and user.email else 'user@example.com' }}
                         </span>
                     </div>
@@ -88,129 +88,124 @@
             </div>
 
             {% if not user or not user.is_premium %}
-                <div class="bg-gradient-to-r from-[#02353C] to-[#05535E] text-white rounded-xl p-3.5 sm:p-4 shadow-sm flex items-center justify-between gap-4 md:max-w-sm w-full shrink-0 border border-white/10">
+                <div class="bg-gradient-to-r from-[#02353C] to-[#05535E] text-white rounded-lg p-2.5 px-3 shadow-2xs flex items-center justify-between gap-3 md:max-w-xs w-full shrink-0 border border-white/10">
                     <div class="space-y-0.5">
-                        <p class="font-bold text-xs uppercase tracking-wider text-amber-400">Upgrade to Pro</p>
-                        <p class="text-[11px] text-slate-200 leading-tight">Unlock unlimited CV downloads & ATS optimizations.</p>
+                        <p class="font-bold text-[11px] uppercase tracking-wider text-amber-400">Upgrade to Pro</p>
+                        <p class="text-[10px] text-slate-200 leading-tight">Unlimited downloads & ATS tailoring.</p>
                     </div>
-                    <a href="/pricing" class="bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold text-xs px-3.5 py-2 rounded-lg transition-all shrink-0 shadow-xs flex items-center gap-1.5">
-                        <i class="fa-solid fa-bolt"></i> Upgrade
+                    <a href="/pricing" class="bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold text-[11px] px-3 py-1.5 rounded-md transition-all shrink-0 flex items-center gap-1">
+                        <i class="fa-solid fa-bolt text-[10px]"></i> Upgrade
                     </a>
                 </div>
             {% endif %}
         </div>
 
-        <!-- 2. SEPARATE PREFERENCES BAR (PROPERLY PLACED OUTSIDE PROFILE BOX) -->
-        <div class="bg-white rounded-xl p-3 px-4 border border-slate-200/80 shadow-2xs flex flex-wrap items-center justify-between gap-3 text-xs">
-            <div class="flex items-center gap-2 text-slate-500 font-semibold">
-                <i class="fa-solid fa-sliders text-amber-500 text-sm"></i>
-                <span class="uppercase text-[10px] tracking-wider text-slate-400 font-bold">Preferences</span>
+        <!-- 2. STREAMLINED PREFERENCES BAR (NO EDIT BUTTON) -->
+        <div class="bg-white rounded-xl p-2.5 px-3.5 border border-slate-200/80 shadow-2xs flex items-center justify-between gap-2 text-xs">
+            <div class="flex items-center gap-1.5 text-slate-500 font-semibold">
+                <i class="fa-solid fa-sliders text-amber-500 text-xs"></i>
+                <span class="uppercase text-[9px] tracking-wider text-slate-400 font-bold">Preferences</span>
             </div>
 
-            <div class="flex items-center gap-2 sm:gap-4 flex-wrap">
+            <div class="flex items-center gap-2 sm:gap-3">
                 <!-- Language Badge -->
-                <div class="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200/80 text-slate-700">
-                    <i class="fa-solid fa-globe text-slate-400 text-xs"></i>
-                    <span class="text-slate-400 font-medium">Language:</span>
+                <div class="flex items-center gap-1 bg-slate-50 px-2.5 py-1 rounded-md border border-slate-200/80 text-[11px] text-slate-700">
+                    <i class="fa-solid fa-globe text-slate-400 text-[10px]"></i>
+                    <span class="text-slate-400 font-medium hidden sm:inline">Language:</span>
                     <strong id="dispLanguage" class="text-slate-800 font-bold">English (US)</strong>
                 </div>
 
                 <!-- Currency Badge -->
-                <div class="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200/80 text-slate-700">
-                    <i class="fa-solid fa-coins text-amber-500 text-xs"></i>
-                    <span class="text-slate-400 font-medium">Currency:</span>
+                <div class="flex items-center gap-1 bg-slate-50 px-2.5 py-1 rounded-md border border-slate-200/80 text-[11px] text-slate-700">
+                    <i class="fa-solid fa-coins text-amber-500 text-[10px]"></i>
+                    <span class="text-slate-400 font-medium hidden sm:inline">Currency:</span>
                     <strong id="dispCurrency" class="text-slate-800 font-bold">USD ($)</strong>
                 </div>
-
-                <!-- Direct Edit Settings Link -->
-                <a href="/dashboard/account" class="text-[11px] font-bold text-[#02353C] hover:text-amber-600 transition-colors flex items-center gap-1 ml-1">
-                    Edit <i class="fa-solid fa-chevron-right text-[9px]"></i>
-                </a>
             </div>
         </div>
 
         <!-- 3. COMPACT METRICS GRID -->
-        <div class="grid grid-cols-3 gap-3 sm:gap-5">
+        <div class="grid grid-cols-3 gap-2.5 sm:gap-4">
             <!-- Resumes Metric -->
-            <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-center text-center sm:text-left gap-2 sm:gap-4">
-                <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-emerald-50 text-[#02353C] flex items-center justify-center text-base sm:text-lg shrink-0">
+            <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-center text-center sm:text-left gap-2 sm:gap-3">
+                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-emerald-50 text-[#02353C] flex items-center justify-center text-sm sm:text-base shrink-0">
                     <i class="fa-solid fa-file-lines"></i>
                 </div>
                 <div>
-                    <p class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider">Resumes</p>
-                    <p class="text-lg sm:text-2xl font-extrabold text-slate-900" id="resumeCount">{{ resumes|length if resumes else 0 }}</p>
+                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider">Resumes</p>
+                    <p class="text-base sm:text-xl font-extrabold text-slate-900" id="resumeCount">{{ resumes|length if resumes else 0 }}</p>
                 </div>
             </div>
 
             <!-- Credits Metric -->
-            <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-center text-center sm:text-left gap-2 sm:gap-4">
-                <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-base sm:text-lg shrink-0">
+            <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-center text-center sm:text-left gap-2 sm:gap-3">
+                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-sm sm:text-base shrink-0">
                     <i class="fa-solid fa-wand-magic-sparkles"></i>
                 </div>
                 <div>
-                    <p class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider">Credits</p>
-                    <p class="text-lg sm:text-2xl font-extrabold text-slate-900">{{ user.ai_credits_remaining if (user and user.ai_credits_remaining is defined and user.ai_credits_remaining is not none) else 3 }}</p>
+                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider">Credits</p>
+                    <p class="text-base sm:text-xl font-extrabold text-slate-900">{{ user.ai_credits_remaining if (user and user.ai_credits_remaining is defined and user.ai_credits_remaining is not none) else 3 }}</p>
                 </div>
             </div>
 
             <!-- Applications Metric -->
-            <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-center text-center sm:text-left gap-2 sm:gap-4">
-                <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-base sm:text-lg shrink-0">
+            <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-center text-center sm:text-left gap-2 sm:gap-3">
+                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-sm sm:text-base shrink-0">
                     <i class="fa-solid fa-briefcase"></i>
                 </div>
                 <div>
-                    <p class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider">Applications</p>
-                    <p class="text-lg sm:text-2xl font-extrabold text-slate-900">0 Active</p>
+                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider">Applications</p>
+                    <p class="text-base sm:text-xl font-extrabold text-slate-900">0 Active</p>
                 </div>
             </div>
         </div>
 
         <!-- 4. SAVED RESUMES SECTION -->
-        <div class="space-y-4">
-            <div class="flex items-center justify-between gap-3">
+        <div class="space-y-3 pt-1">
+            <div class="flex items-center justify-between gap-2">
                 <div>
-                    <h2 class="text-lg sm:text-xl font-bold text-slate-900">My Saved Resumes</h2>
-                    <p class="text-slate-500 text-xs hidden sm:block">Manage, edit, preview, or delete your generated documents.</p>
+                    <h2 class="text-base sm:text-lg font-bold text-slate-900">My Saved Resumes</h2>
+                    <p class="text-slate-500 text-[11px] hidden sm:block">Manage, edit, preview, or delete your documents.</p>
                 </div>
-                <a href="/editor" class="inline-flex items-center gap-1.5 bg-[#02353C] hover:bg-[#034a54] text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-sm transition-all whitespace-nowrap">
-                    <i class="fa-solid fa-plus text-xs text-amber-400"></i>
+                <a href="/editor" class="inline-flex items-center gap-1.5 bg-[#02353C] hover:bg-[#034a54] text-white font-bold text-xs px-3.5 py-2 rounded-lg shadow-2xs transition-all whitespace-nowrap">
+                    <i class="fa-solid fa-plus text-[10px] text-amber-400"></i>
                     <span>Create CV</span>
                 </a>
             </div>
 
             {% if resumes and resumes|length > 0 %}
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="resumesGrid">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5" id="resumesGrid">
                     {% for resume in resumes %}
-                        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-2xs hover:shadow-md transition-all duration-200 flex flex-col overflow-hidden group" id="resume-card-{{ resume.id }}">
-                            <div class="h-1.5 w-full" style="background-color: {{ resume.accent_color if resume.accent_color else '#E5A93C' }};"></div>
+                        <div class="bg-white rounded-xl border border-slate-200/80 shadow-2xs hover:shadow-sm transition-all duration-200 flex flex-col overflow-hidden group" id="resume-card-{{ resume.id }}">
+                            <div class="h-1 w-full" style="background-color: {{ resume.accent_color if resume.accent_color else '#E5A93C' }};"></div>
                             
-                            <div class="p-5 flex-grow space-y-3">
+                            <div class="p-3.5 flex-grow space-y-2">
                                 <div class="flex items-start justify-between gap-2">
-                                    <h3 class="font-bold text-slate-800 text-base line-clamp-1 group-hover:text-[#02353C] transition-colors">
+                                    <h3 class="font-bold text-slate-800 text-sm line-clamp-1 group-hover:text-[#02353C] transition-colors">
                                         {{ resume.title if resume.title else 'Untitled Resume' }}
                                     </h3>
-                                    <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 border border-slate-200 shrink-0">
+                                    <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200 shrink-0">
                                         {{ resume.content_json.target_role if (resume.content_json is mapping and resume.content_json.get('target_role')) else (resume.template_used if resume.template_used else 'Modern') }}
                                     </span>
                                 </div>
 
-                                <p class="text-xs text-slate-400 flex items-center gap-1.5">
-                                    <i class="fa-regular fa-clock"></i>
+                                <p class="text-[11px] text-slate-400 flex items-center gap-1">
+                                    <i class="fa-regular fa-clock text-[10px]"></i>
                                     Updated {{ resume.updated_at.strftime('%b %d, %Y') if resume.updated_at else 'Recently' }}
                                 </p>
                             </div>
 
-                            <div class="px-5 py-3 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between text-xs font-semibold">
+                            <div class="px-3.5 py-2 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between text-xs font-semibold">
                                 <div class="flex items-center gap-3">
-                                    <a href="/editor?id={{ resume.id }}" class="text-[#02353C] hover:text-emerald-700 flex items-center gap-1.5">
-                                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                                    <a href="/editor?id={{ resume.id }}" class="text-[#02353C] hover:text-emerald-700 flex items-center gap-1">
+                                        <i class="fa-solid fa-pen-to-square text-[11px]"></i> Edit
                                     </a>
-                                    <a href="/preview?id={{ resume.id }}" class="text-slate-500 hover:text-slate-900 flex items-center gap-1.5" title="View / Print PDF">
-                                        <i class="fa-solid fa-eye"></i> View / PDF
+                                    <a href="/preview?id={{ resume.id }}" class="text-slate-500 hover:text-slate-900 flex items-center gap-1" title="View / Print PDF">
+                                        <i class="fa-solid fa-eye text-[11px]"></i> View / PDF
                                     </a>
                                 </div>
                                 <button type="button" onclick="confirmDeleteResume('{{ resume.id }}', '{{ resume.title|e }}')" class="text-rose-500 hover:text-rose-700 flex items-center gap-1 transition-colors">
-                                    <i class="fa-solid fa-trash-can"></i> Delete
+                                    <i class="fa-solid fa-trash-can text-[11px]"></i> Delete
                                 </button>
                             </div>
                         </div>
@@ -218,16 +213,16 @@
                 </div>
 
             {% else %}
-                <div class="bg-white rounded-2xl border-2 border-dashed border-slate-200 p-8 sm:p-12 text-center space-y-4" id="emptyState">
-                    <div class="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto text-slate-400 text-2xl">
+                <div class="bg-white rounded-xl border-2 border-dashed border-slate-200 p-6 sm:p-8 text-center space-y-3" id="emptyState">
+                    <div class="w-11 h-11 bg-slate-100 rounded-xl flex items-center justify-center mx-auto text-slate-400 text-lg">
                         <i class="fa-solid fa-file-circle-plus"></i>
                     </div>
                     <div class="max-w-sm mx-auto space-y-1">
-                        <h3 class="text-lg font-bold text-slate-800">No resumes saved yet</h3>
+                        <h3 class="text-sm font-bold text-slate-800">No resumes saved yet</h3>
                         <p class="text-slate-500 text-xs">Create your first ATS-optimized CV using standard templates.</p>
                     </div>
-                    <a href="/editor" class="inline-flex items-center gap-2 bg-[#02353C] hover:bg-[#034a54] text-white font-bold text-xs px-5 py-3 rounded-xl shadow-sm transition-all">
-                        <i class="fa-solid fa-plus text-amber-400"></i>
+                    <a href="/editor" class="inline-flex items-center gap-1.5 bg-[#02353C] hover:bg-[#034a54] text-white font-bold text-xs px-4 py-2.5 rounded-lg shadow-2xs transition-all">
+                        <i class="fa-solid fa-plus text-amber-400 text-[10px]"></i>
                         Build Your First CV
                     </a>
                 </div>
@@ -237,22 +232,22 @@
     </main>
 
     <!-- RESUME DELETION MODAL -->
-    <div id="deleteResumeModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200 p-4">
-        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-100 space-y-4">
+    <div id="deleteResumeModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200 p-4">
+        <div class="bg-white rounded-xl p-5 max-w-sm w-full shadow-xl border border-slate-100 space-y-3">
             <div class="flex items-center gap-3 text-rose-600">
-                <div class="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center shrink-0">
-                    <i class="fa-solid fa-trash-can text-lg"></i>
+                <div class="w-9 h-9 rounded-full bg-rose-50 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-trash-can text-base"></i>
                 </div>
                 <div>
-                    <h3 class="font-bold text-slate-900 text-base">Delete Resume?</h3>
+                    <h3 class="font-bold text-slate-900 text-sm">Delete Resume?</h3>
                     <p class="text-xs text-slate-500" id="deleteModalResumeTitle">This document will be permanently deleted.</p>
                 </div>
             </div>
-            <div class="flex items-center justify-end gap-2.5 pt-2">
-                <button type="button" onclick="closeDeleteModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all">
+            <div class="flex items-center justify-end gap-2 pt-1">
+                <button type="button" onclick="closeDeleteModal()" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-lg transition-all">
                     Cancel
                 </button>
-                <button type="button" id="confirmDeleteBtn" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl transition-all shadow-sm">
+                <button type="button" id="confirmDeleteBtn" class="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-lg transition-all shadow-2xs">
                     Delete Document
                 </button>
             </div>
@@ -260,15 +255,15 @@
     </div>
 
     <!-- FOOTER -->
-    <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-400">
+    <footer class="bg-white border-t border-slate-200 py-3 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-[11px] text-slate-400">
             &copy; 2026 CVForge. All rights reserved.
         </div>
     </footer>
 
-    <!-- SETTINGS READ-ONLY SYNC & DELETION SCRIPTS -->
+    <!-- READ-ONLY SYNC & DELETION SCRIPTS -->
     <script>
-        // Load active stored preferences into the external Preferences Bar
+        // Load active stored preferences into the Dashboard UI
         async function loadStoredSettings() {
             try {
                 const response = await fetch('/api/v1/settings');
