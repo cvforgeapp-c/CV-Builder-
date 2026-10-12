@@ -537,37 +537,36 @@
                 </form>
             </section>
 
-            <!-- CARD 2: PLATFORM & DOCUMENT LANGUAGE (OUTSIDE AI PREFERENCES) -->
+            <!-- CARD 2: PLATFORM & DOCUMENT LANGUAGE -->
             <section class="card setting-card" id="language-settings">
                 <div class="card-header">
                     <h2 class="card-title">Platform & Document Language</h2>
-                    <p class="card-subtitle">Set your global preferred language for AI generation and resume layouts</p>
+                    <p class="card-subtitle">Set your global preferred language for AI generation and platform layouts</p>
                 </div>
                 <form class="form-grid" id="languageForm">
                     <div class="form-group full-width">
                         <label for="globalLanguage">Default Global Language</label>
                         <select id="globalLanguage" name="language">
                             <option value="English (US / UK)" selected>English (US / UK)</option>
-                            <option value="Spanish">Spanish (Español)</option>
-                            <option value="French">French (Français)</option>
-                            <option value="German">German (Deutsch)</option>
                             <option value="Mandarin Chinese">Mandarin Chinese (中文)</option>
+                            <option value="Spanish">Spanish (Español)</option>
                             <option value="Hindi">Hindi (हिन्दी)</option>
                             <option value="Arabic">Arabic (العربية)</option>
+                            <option value="French">French (Français)</option>
                             <option value="Portuguese">Portuguese (Português)</option>
-                            <option value="Japanese">Japanese (日本語)</option>
                             <option value="Russian">Russian (Русский)</option>
-                            <option value="Bengali">Bengali (বাংলা)</option>
-                            <option value="Urdu">Urdu (اردو)</option>
-                            <option value="Indonesian">Indonesian (Bahasa Indonesia)</option>
-                            <option value="Italian">Italian (Italiano)</option>
+                            <option value="German">German (Deutsch)</option>
+                            <option value="Japanese">Japanese (日本語)</option>
                             <option value="Korean">Korean (한국어)</option>
+                            <option value="Italian">Italian (Italiano)</option>
                             <option value="Turkish">Turkish (Türkçe)</option>
-                            <option value="Vietnamese">Vietnamese (Tiếng Việt)</option>
+                            <option value="Dutch">Dutch (Nederlands)</option>
+                            <option value="Polish">Polish (Polski)</option>
+                            <option value="Swedish">Swedish (Svenska)</option>
+                            <option value="Swahili">Swahili (Kiswahili)</option>
                             <option value="Amharic">Amharic (አማርኛ)</option>
                             <option value="Afaan Oromoo">Afaan Oromoo</option>
-                            <option value="Swahili">Swahili (Kiswahili)</option>
-                            <option value="Dutch">Dutch (Nederlands)</option>
+                            <option value="Tigrinya">Tigrinya (ትግርኛ)</option>
                         </select>
                     </div>
                     <div class="form-group full-width" style="margin-top: 6px;">
@@ -593,7 +592,7 @@
                 </div>
             </section>
 
-            <!-- CARD 4: AI & TEMPLATE PREFERENCES (LANGUAGE REMOVED FROM HERE) -->
+            <!-- CARD 4: AI & TEMPLATE PREFERENCES -->
             <section class="card setting-card" id="ai-preferences">
                 <div class="card-header">
                     <h2 class="card-title">AI & Template Preferences</h2>
@@ -832,7 +831,7 @@
             }
 
             // --- 3. Save Settings to Backend API ---
-            async function saveFormToAPI(endpoint, formDataObj) {
+            async function saveFormToAPI(endpoint, formDataObj, shouldReload = false) {
                 try {
                     const response = await fetch(endpoint, {
                         method: 'PUT',
@@ -841,7 +840,12 @@
                     });
                     const res = await parseJsonResponse(response);
                     if (!response.ok) throw new Error(res.error || "Failed to save settings");
+                    
                     showToast(res.message || "Settings updated successfully");
+                    
+                    if (shouldReload) {
+                        setTimeout(() => { window.location.reload(); }, 600);
+                    }
                 } catch (err) {
                     showToast(err.message, true);
                 }
@@ -861,7 +865,8 @@
 
             document.getElementById('languageForm').addEventListener('submit', (e) => {
                 e.preventDefault();
-                saveFormToAPI('/api/v1/settings/language', getFormObject('languageForm'));
+                // Pass true to reload so language templates render immediately in the newly chosen language
+                saveFormToAPI('/api/v1/settings/language', getFormObject('languageForm'), true);
             });
 
             document.getElementById('aiForm').addEventListener('submit', (e) => {
