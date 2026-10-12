@@ -685,16 +685,19 @@
             </section>
 
             <!-- CARD 6: DATA & PRIVACY -->
-<section class="card setting-card" id="danger" style="border-color: #fee2e2;">
-    <div class="card-header">
-        <h2 class="card-title" style="color: #dc2626;">Data & Privacy</h2>
-        <p class="card-subtitle">Download your saved resume data or permanently close account</p>
+            <section class="card setting-card" id="danger" style="border-color: #fee2e2;">
+                <div class="card-header">
+                    <h2 class="card-title" style="color: #dc2626;">Data & Privacy</h2>
+                    <p class="card-subtitle">Download your saved resume data or permanently close account</p>
+                </div>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <button class="btn-secondary-outline" type="button" id="btnExportData">Export All CV Data</button>
+                    <button class="btn-danger" type="button" id="btnDeleteAccount">Delete Account</button>
+                </div>
+            </section>
+
+        </main>
     </div>
-    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-        <button class="btn-secondary-outline" type="button" id="btnExportData">Export All CV Data</button>
-        <button class="btn-danger" type="button" id="btnDeleteAccount">Delete Account</button>
-    </div>
-</section>
 
     <!-- ACCOUNT DELETION MODAL -->
     <div class="modal-overlay" id="deleteModal">
@@ -708,10 +711,9 @@
         </div>
     </div>
 
-    <!-- FUNCTIONAL INTERACTIVE SCRIPT -->
+    <!-- FUNCTIONAL BACKEND-CONNECTED SCRIPT -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const STORAGE_KEY = 'cvforge_user_settings';
 
             // --- Toast Notification Helper ---
             function showToast(message, isError = false) {
@@ -721,17 +723,9 @@
 
                 toastMsg.textContent = message;
                 toastIcon.textContent = isError ? '✕' : '✓';
-                
-                if (isError) {
-                    toast.classList.add('error');
-                } else {
-                    toast.classList.remove('error');
-                }
-
+                toast.classList.toggle('error', isError);
                 toast.classList.add('show');
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 3000);
+                setTimeout(() => toast.classList.remove('show'), 3000);
             }
 
             // --- 1. Tab Filtering & Navigation ---
@@ -741,155 +735,160 @@
             tabBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     const targetTab = btn.getAttribute('data-tab');
-
                     tabBtns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
 
-                    if (targetTab === 'home') {
-                        cards.forEach(card => card.style.display = 'block');
-                    } else {
-                        cards.forEach(card => {
-                            card.style.display = (card.id === targetTab) ? 'block' : 'none';
-                        });
-                    }
+                    cards.forEach(card => {
+                        card.style.display = (targetTab === 'home' || card.id === targetTab) ? 'block' : 'none';
+                    });
                 });
             });
 
-            // --- 2. Avatar Upload & Real-time Update ---
+            // --- 2. Load Settings from Backend API ---
+            async function loadUserSettings() {
+                try {
+                    const response = await fetch('/api/v1/settings');
+                    if (!response.ok) throw new Error("Failed to load settings");
+
+                    const settings = await response.json();
+
+                    populateForm('profileForm', settings.profile);
+                    populateForm('aiForm', settings.aiPreferences);
+                    populateForm('trackerForm', settings.trackerSettings);
+
+                    const avatarPreview = document.getElementById('avatarPreview');
+                    const fullNameInput = document.getElementById('fullName');
+
+                    if (settings.profile?.avatarUrl) {
+                        avatarPreview.style.backgroundImage = `url('${settings.profile.avatarUrl}')`;
+                        avatarPreview.textContent = '';
+                    } else if (settings.profile?.fullName) {
+                        const initials = settings.profile.fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                        avatarPreview.textContent = initials;
+                    }
+
+                    if (settings.subscription?.tier === 'Pro') {
+                        document.getElementById('currentPlanText').textContent = 'Pro Tier';
+                        const badge = document.getElementById('planBadge');
+                        badge.textContent = 'PRO';
+                        badge.style.background = '#16a34a';
+                        badge.style.color = '#ffffff';
+                    }
+
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+
+            function populateForm(formId, data = {}) {
+                const form = document.getElementById(formId);
+                if (!form) return;
+                Object.keys(data).forEach(key => {
+                    const field = form.querySelector(`[name="${key}"]`);
+                    if (field) field.value = data[key];
+                });
+            }
+
+            // --- 3. Save Settings to Backend API ---
+            async function saveFormToAPI(endpoint, formDataObj) {
+                try {
+                    const response = await fetch(endpoint, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formDataObj)
+                    });
+                    const res = await response.json();
+                    if (!response.ok) throw new Error(res.error || "Failed to save settings");
+                    showToast(res.message || "Settings updated successfully");
+                } catch (err) {
+                    showToast(err.message, true);
+                }
+            }
+
+            function getFormObject(formId) {
+                const formData = new FormData(document.getElementById(formId));
+                const obj = {};
+                formData.forEach((value, key) => obj[key] = value);
+                return obj;
+            }
+
+            document.getElementById('profileForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                saveFormToAPI('/api/v1/settings/profile', getFormObject('profileForm'));
+            });
+
+            document.getElementById('aiForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                saveFormToAPI('/api/v1/settings/ai', getFormObject('aiForm'));
+            });
+
+            document.getElementById('trackerForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                saveFormToAPI('/api/v1/settings/tracker', getFormObject('trackerForm'));
+            });
+
+            // --- 4. Avatar Upload to Server ---
             const avatarInput = document.getElementById('avatarInput');
             const btnUploadPhoto = document.getElementById('btnUploadPhoto');
             const avatarPreview = document.getElementById('avatarPreview');
 
             btnUploadPhoto.addEventListener('click', () => avatarInput.click());
 
-            avatarInput.addEventListener('change', (e) => {
+            avatarInput.addEventListener('change', async (e) => {
                 const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        avatarPreview.style.backgroundImage = `url('${event.target.result}')`;
-                        avatarPreview.textContent = ''; // Hide initials
-                        
-                        // Persist image data string
-                        saveToLocalStorage('avatarImage', event.target.result);
-                        showToast('Profile photo updated!');
-                    };
-                    reader.readAsDataURL(file);
+                if (!file) return;
+
+                const formData = new FormData();
+                formData.append('avatar', file);
+
+                try {
+                    const response = await fetch('/api/v1/settings/avatar', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const res = await response.json();
+                    if (!response.ok) throw new Error(res.error || "Upload failed");
+
+                    avatarPreview.style.backgroundImage = `url('${res.avatarUrl}')`;
+                    avatarPreview.textContent = '';
+                    showToast("Profile avatar uploaded!");
+                } catch (err) {
+                    showToast(err.message, true);
                 }
             });
 
-            // Update initials dynamically when full name changes
-            const fullNameInput = document.getElementById('fullName');
-            fullNameInput.addEventListener('input', (e) => {
-                if (!avatarPreview.style.backgroundImage) {
-                    const names = e.target.value.trim().split(' ');
-                    const initials = names.map(n => n[0]).join('').substring(0, 2).toUpperCase();
-                    avatarPreview.textContent = initials || 'JD';
-                }
-            });
-
-            // --- 3. Form Submissions & Data Persistence ---
-            function getFormValues(formId) {
-                const form = document.getElementById(formId);
-                const formData = new FormData(form);
-                const data = {};
-                formData.forEach((value, key) => { data[key] = value; });
-                return data;
-            }
-
-            function saveToLocalStorage(key, data) {
-                const currentData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-                currentData[key] = data;
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData));
-            }
-
-            function loadSettings() {
-                const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-                
-                // Populate forms
-                Object.keys(saved).forEach(key => {
-                    const value = saved[key];
-                    if (key === 'avatarImage' && value) {
-                        avatarPreview.style.backgroundImage = `url('${value}')`;
-                        avatarPreview.textContent = '';
-                    } else if (typeof value === 'object') {
-                        Object.keys(value).forEach(field => {
-                            const el = document.querySelector(`[name="${field}"]`);
-                            if (el) el.value = value[field];
-                        });
-                    }
-                });
-
-                // Update initials if no image
-                if (!saved.avatarImage && fullNameInput.value) {
-                    const names = fullNameInput.value.trim().split(' ');
-                    const initials = names.map(n => n[0]).join('').substring(0, 2).toUpperCase();
-                    avatarPreview.textContent = initials;
-                }
-            }
-
-            // Bind Submit Handlers
-            document.getElementById('profileForm').addEventListener('submit', (e) => {
+            // --- 5. Password Update ---
+            document.getElementById('securityForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
-                saveToLocalStorage('profile', getFormValues('profileForm'));
-                showToast('Personal Profile updated successfully');
-            });
+                const body = getFormObject('securityForm');
 
-            document.getElementById('aiForm').addEventListener('submit', (e) => {
-                e.preventDefault();
-                saveToLocalStorage('aiPreferences', getFormValues('aiForm'));
-                showToast('AI Preferences saved');
-            });
-
-            document.getElementById('trackerForm').addEventListener('submit', (e) => {
-                e.preventDefault();
-                saveToLocalStorage('trackerSettings', getFormValues('trackerForm'));
-                showToast('Tracker settings saved');
-            });
-
-            document.getElementById('securityForm').addEventListener('submit', (e) => {
-                e.preventDefault();
-                const currPass = document.getElementById('currPassword').value;
-                const newPass = document.getElementById('newPassword').value;
-
-                if (newPass.length < 6) {
-                    showToast('New password must be at least 6 characters', true);
+                if (body.newPassword.length < 8) {
+                    showToast("New password must contain at least 8 characters", true);
                     return;
                 }
 
-                showToast('Password updated successfully!');
-                document.getElementById('securityForm').reset();
+                try {
+                    const response = await fetch('/api/v1/settings/password', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body)
+                    });
+                    const res = await response.json();
+                    if (!response.ok) throw new Error(res.error || "Password update failed");
+
+                    showToast("Password updated successfully!");
+                    document.getElementById('securityForm').reset();
+                } catch (err) {
+                    showToast(err.message, true);
+                }
             });
 
-            // --- 4. Upgrade Plan Trigger ---
-            const btnUpgrade = document.getElementById('btnUpgrade');
-            btnUpgrade.addEventListener('click', () => {
-                const currentPlanText = document.getElementById('currentPlanText');
-                const planBadge = document.getElementById('planBadge');
-
-                currentPlanText.textContent = 'Pro Tier';
-                planBadge.textContent = 'PRO';
-                planBadge.style.background = '#16a34a';
-                planBadge.style.color = '#ffffff';
-
-                saveToLocalStorage('subscription', { tier: 'Pro' });
-                showToast('Upgraded to Pro Tier ($9.99/mo)');
-            });
-
-            // --- 5. Data Export (JSON) ---
+            // --- 6. Direct Backend JSON Export ---
             document.getElementById('btnExportData').addEventListener('click', () => {
-                const settingsData = localStorage.getItem(STORAGE_KEY) || '{}';
-                const blob = new Blob([settingsData], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'CVForge_Settings_Export.json';
-                a.click();
-                URL.revokeObjectURL(url);
-                showToast('Settings data exported');
+                window.location.href = '/api/v1/settings/export';
             });
 
-            // --- 6. Modal Delete Confirmation ---
+            // --- 7. Account Deletion Modal ---
             const deleteModal = document.getElementById('deleteModal');
             const btnDeleteAccount = document.getElementById('btnDeleteAccount');
             const btnCancelDelete = document.getElementById('btnCancelDelete');
@@ -898,15 +897,21 @@
             btnDeleteAccount.addEventListener('click', () => deleteModal.classList.add('active'));
             btnCancelDelete.addEventListener('click', () => deleteModal.classList.remove('active'));
 
-            btnConfirmDelete.addEventListener('click', () => {
-                localStorage.removeItem(STORAGE_KEY);
-                deleteModal.classList.remove('active');
-                showToast('Account data deleted', true);
-                setTimeout(() => location.reload(), 1500);
+            btnConfirmDelete.addEventListener('click', async () => {
+                try {
+                    const response = await fetch('/api/v1/settings/account', { method: 'DELETE' });
+                    if (!response.ok) throw new Error("Account deletion failed");
+
+                    deleteModal.classList.remove('active');
+                    showToast("Account deleted successfully", true);
+                    setTimeout(() => { window.location.href = '/'; }, 1500);
+                } catch (err) {
+                    showToast(err.message, true);
+                }
             });
 
-            // Initialize Page State
-            loadSettings();
+            // Initialize Settings on Load
+            loadUserSettings();
         });
     </script>
 
