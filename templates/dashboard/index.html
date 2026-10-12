@@ -52,9 +52,11 @@
         <!-- 1. COMPACT USER PROFILE BANNER -->
         <div class="bg-white rounded-xl p-3.5 sm:p-4 border border-slate-200/90 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3 relative">
             <div class="flex items-center gap-3">
-                <!-- User Avatar / First Initial -->
-                <div class="w-11 h-11 rounded-xl bg-[#02353C] text-amber-400 font-extrabold text-base flex items-center justify-center border border-amber-400/30 shadow-2xs shrink-0 uppercase" id="dispAvatar">
-                    {{ (user.full_name[0] if user and user.full_name else (user.email[0].upper() if user and user.email else 'U')) }}
+                <!-- User Avatar / First Initial / Uploaded Image -->
+                <div class="w-11 h-11 rounded-xl bg-[#02353C] text-amber-400 font-extrabold text-base flex items-center justify-center border border-amber-400/30 shadow-2xs shrink-0 uppercase overflow-hidden bg-cover bg-center" id="dispAvatar" {% if user and user.avatar_url %}style="background-image: url('{{ user.avatar_url }}');"{% endif %}>
+                    {% if not user or not user.avatar_url %}
+                        {{ (user.full_name[0] if user and user.full_name else (user.email[0].upper() if user and user.email else 'U')) }}
+                    {% endif %}
                 </div>
 
                 <div class="space-y-0.5">
@@ -263,7 +265,7 @@
 
     <!-- READ-ONLY SYNC & DELETION SCRIPTS -->
     <script>
-        // Load active stored preferences into the Dashboard UI
+        // Load active stored preferences and avatar into the Dashboard UI
         async function loadStoredSettings() {
             try {
                 const response = await fetch('/api/v1/settings');
@@ -274,7 +276,14 @@
                 if (data.profile) {
                     if (data.profile.fullName) {
                         document.getElementById('dispWelcomeName').textContent = `Welcome back, ${data.profile.fullName}!`;
-                        document.getElementById('dispAvatar').textContent = data.profile.fullName[0].toUpperCase();
+                        if (!data.profile.avatarUrl) {
+                            document.getElementById('dispAvatar').textContent = data.profile.fullName[0].toUpperCase();
+                        }
+                    }
+                    if (data.profile.avatarUrl) {
+                        const avatarBox = document.getElementById('dispAvatar');
+                        avatarBox.style.backgroundImage = `url('${data.profile.avatarUrl}')`;
+                        avatarBox.textContent = '';
                     }
                     if (data.profile.targetTitle) {
                         document.getElementById('dispTargetRole').querySelector('span').textContent = data.profile.targetTitle;
