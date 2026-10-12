@@ -10,6 +10,7 @@ import httpx
 
 from datetime import datetime
 from bs4 import BeautifulSoup
+from sqlalchemy.orm.attributes import flag_modified
 
 # ============================================================
 # MODERN GOOGLE GENAI SDK
@@ -822,34 +823,39 @@ def get_settings():
 def update_settings_section(section):
     data = request.get_json(silent=True) or {}
     
-    if not isinstance(current_user.preferences_json, dict):
-        current_user.preferences_json = {}
-
-    prefs = dict(current_user.preferences_json)
+    # Always create a fresh dict copy to ensure SQLAlchemy detects mutation
+    existing_prefs = current_user.preferences_json or {}
+    prefs = json.loads(json.dumps(existing_prefs))
 
     if section == "profile":
         if "fullName" in data:
             current_user.full_name = data["fullName"]
         prefs["profile"] = data
     elif section == "language":
-        if "language" in data:
-            prefs["language"] = data["language"]
-        elif isinstance(data, str):
-            prefs["language"] = data
+        selected_lang = data.get("language") or data.get("aiLanguage") or (data if isinstance(data, str) else None)
+        if selected_lang:
+            prefs["language"] = selected_lang
+            if "aiPreferences" not in prefs:
+                prefs["aiPreferences"] = {}
+            prefs["aiPreferences"]["aiLanguage"] = selected_lang
         else:
             prefs.update(data)
     elif section == "ai":
         prefs["aiPreferences"] = data
+        if "aiLanguage" in data:
+            prefs["language"] = data["aiLanguage"]
     elif section == "tracker":
         prefs["trackerSettings"] = data
     else:
         return jsonify({"error": "Invalid settings section"}), 400
 
+    # Explicitly re-assign dictionary and mark as modified for SQLAlchemy
     current_user.preferences_json = prefs
+    flag_modified(current_user, "preferences_json")
 
     try:
         db.session.commit()
-        return jsonify({"success": True, "message": f"{section.capitalize()} updated successfully!"}), 200
+        return jsonify({"success": True, "message": f"{section.capitalize()} updated successfully!", "language": prefs.get("language")}), 200
     except Exception as exc:
         db.session.rollback()
         print(f"Update settings error: {exc}")
