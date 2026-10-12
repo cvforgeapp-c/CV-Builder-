@@ -80,12 +80,27 @@
         .settings-sidebar {
             background: #ffffff;
             border-radius: 12px;
-            padding: 16px 12px;
+            padding: 18px 14px;
             border: 1px solid #e2e8f0;
             height: fit-content;
             position: sticky;
             top: 88px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        /* SIDEBAR HEADER */
+        .sidebar-header {
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #02353C;
+            padding: 0 8px 12px 8px;
+            border-bottom: 2px solid #f1f5f9;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .sidebar-menu {
@@ -184,7 +199,7 @@
             flex-shrink: 0;
         }
 
-        /* Clean Form Layout (2 Columns Desktop, 1 Column Mobile) */
+        /* Clean Form Layout */
         .form-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -201,7 +216,7 @@
 
         label { font-size: 14px; font-weight: 600; color: #334155; }
 
-        input, select {
+        input {
             width: 100%;
             padding: 12px 16px;
             border-radius: 8px;
@@ -209,12 +224,53 @@
             font-size: 15px;
             outline: none;
             background: #ffffff;
-            transition: border-color 0.2s;
+            transition: all 0.2s ease;
         }
 
-        input:focus, select:focus {
+        input:focus {
             border-color: #02353C;
             box-shadow: 0 0 0 3px rgba(2, 53, 60, 0.1);
+        }
+
+        /* BRANDED ATTRACTIVE CHOOSE / SELECT BUTTONS FOR DESKTOP & MOBILE */
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            width: 100%;
+            padding: 12px 40px 12px 16px;
+            border-radius: 8px;
+            border: 1.5px solid #cbd5e1;
+            font-size: 14px;
+            font-weight: 600;
+            color: #02353C;
+            background-color: #ffffff;
+            /* Custom Brand SVG Arrow Icon */
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%02353C' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+
+        select:hover {
+            border-color: #02353C;
+            background-color: #f8fafc;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #02353C;
+            box-shadow: 0 0 0 3px rgba(2, 53, 60, 0.15);
+            background-color: #ffffff;
+        }
+
+        select option {
+            font-weight: 500;
+            color: #1e293b;
+            padding: 10px;
         }
 
         /* Subscription Banner */
@@ -304,7 +360,7 @@
         /* MOBILE RESPONSIVE ADJUSTMENTS */
         @media (max-width: 900px) {
             .settings-container {
-                grid-template-columns: 1fr; /* Stacks sidebar and content vertically */
+                grid-template-columns: 1fr;
                 margin: 20px 12px;
                 padding: 0;
             }
@@ -316,7 +372,7 @@
             }
 
             .sidebar-menu {
-                flex-direction: column; /* Vertical navigation list preserved on mobile */
+                flex-direction: column;
                 gap: 6px;
             }
 
@@ -327,7 +383,7 @@
             }
 
             .form-grid {
-                grid-template-columns: 1fr; /* Full-width vertical inputs on mobile */
+                grid-template-columns: 1fr;
             }
 
             .subscription-banner {
@@ -359,8 +415,11 @@
     <!-- MAIN SETTINGS LAYOUT -->
     <div class="settings-container">
         
-        <!-- VERTICAL SIDEBAR FOR BOTH DESKTOP AND MOBILE -->
+        <!-- VERTICAL SIDEBAR WITH SETTINGS HEADER -->
         <aside class="settings-sidebar">
+            <div class="sidebar-header">
+                ⚙️ Settings
+            </div>
             <ul class="sidebar-menu">
                 <li><button class="tab-btn active" data-tab="home">🏠 Home</button></li>
                 <li><button class="tab-btn" data-tab="profile">👤 Profile</button></li>
@@ -481,7 +540,7 @@
                 </form>
             </section>
 
-            <!-- CARD 4: JOB TRACKER & REMINDERS (EXPANDED) -->
+            <!-- CARD 4: JOB TRACKER & REMINDERS -->
             <section class="card setting-card" id="tracker-settings">
                 <div class="card-header">
                     <h2 class="card-title">Job Application Tracker & Alerts</h2>
