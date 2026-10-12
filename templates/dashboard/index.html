@@ -102,7 +102,7 @@
             {% endif %}
         </div>
 
-        <!-- 2. STREAMLINED PREFERENCES BAR (NO EDIT BUTTON) -->
+        <!-- 2. STREAMLINED PREFERENCES BAR (UPDATED FOR GLOBAL LANGUAGE) -->
         <div class="bg-white rounded-xl p-2.5 px-3.5 border border-slate-200/80 shadow-2xs flex items-center justify-between gap-2 text-xs">
             <div class="flex items-center gap-1.5 text-slate-500 font-semibold">
                 <i class="fa-solid fa-sliders text-amber-500 text-xs"></i>
@@ -111,17 +111,19 @@
 
             <div class="flex items-center gap-2 sm:gap-3">
                 <!-- Language Badge -->
+                {% set prefs = user.preferences_json if user and user.preferences_json else {} %}
+                {% set global_lang = prefs.get('language') or prefs.get('aiPreferences', {}).get('aiLanguage') or 'English (US / UK)' %}
                 <div class="flex items-center gap-1 bg-slate-50 px-2.5 py-1 rounded-md border border-slate-200/80 text-[11px] text-slate-700">
                     <i class="fa-solid fa-globe text-slate-400 text-[10px]"></i>
                     <span class="text-slate-400 font-medium hidden sm:inline">Language:</span>
-                    <strong id="dispLanguage" class="text-slate-800 font-bold">English (US)</strong>
+                    <strong id="dispLanguage" class="text-slate-800 font-bold">{{ global_lang }}</strong>
                 </div>
 
                 <!-- Currency Badge -->
                 <div class="flex items-center gap-1 bg-slate-50 px-2.5 py-1 rounded-md border border-slate-200/80 text-[11px] text-slate-700">
                     <i class="fa-solid fa-coins text-amber-500 text-[10px]"></i>
                     <span class="text-slate-400 font-medium hidden sm:inline">Currency:</span>
-                    <strong id="dispCurrency" class="text-slate-800 font-bold">USD ($)</strong>
+                    <strong id="dispCurrency" class="text-slate-800 font-bold">{{ prefs.get('trackerSettings', {}).get('currency', 'USD ($)') }}</strong>
                 </div>
             </div>
         </div>
@@ -290,9 +292,9 @@
                     }
                 }
 
-                if (data.aiPreferences && data.aiPreferences.aiLanguage) {
-                    document.getElementById('dispLanguage').textContent = data.aiPreferences.aiLanguage;
-                }
+                // Check top-level globalLanguage first, with fallbacks to nested properties
+                const activeLanguage = data.globalLanguage || (data.aiPreferences && data.aiPreferences.aiLanguage) || 'English (US / UK)';
+                document.getElementById('dispLanguage').textContent = activeLanguage;
 
                 if (data.trackerSettings && data.trackerSettings.currency) {
                     document.getElementById('dispCurrency').textContent = data.trackerSettings.currency;
