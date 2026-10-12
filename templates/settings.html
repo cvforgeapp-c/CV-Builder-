@@ -883,9 +883,26 @@
                 }
             });
 
-            // --- 6. Direct Backend JSON Export ---
-            document.getElementById('btnExportData').addEventListener('click', () => {
-                window.location.href = '/api/v1/settings/export';
+            // --- 6. Reliable Asynchronous JSON Export ---
+            document.getElementById('btnExportData').addEventListener('click', async () => {
+                try {
+                    const response = await fetch('/api/v1/settings/export');
+                    if (!response.ok) throw new Error("Export failed");
+
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'CVForge_Data_Export.json';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+
+                    showToast('CV data exported successfully!');
+                } catch (err) {
+                    showToast('Export failed. Please try again.', true);
+                }
             });
 
             // --- 7. Account Deletion Modal ---
