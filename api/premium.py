@@ -654,9 +654,8 @@ def generate_ai_field():
             "button_action": "FILL_DETAILS"
         }), 400
 
-    # Retrieve user's global preferred language from root account preferences
-    prefs = current_user.preferences_json or {}
-    preferred_language = prefs.get("language") or prefs.get("aiPreferences", {}).get("aiLanguage", "English (US / UK)")
+        # Retrieve the user's validated global language preference
+    preferred_language = get_user_preferred_language(current_user)
 
     context_details = []
     if full_name: context_details.append(f"Candidate name supplied by user: {full_name}")
