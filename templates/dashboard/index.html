@@ -1,19 +1,17 @@
-<!DOCTYPE html>
-<html lang="{{ html_lang_code | default('en') }}"
-      dir="{{ 'rtl' if current_language == 'Arabic' else 'ltr' }}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard — CVForge</title>
+{% extends "base.html" %}
+
+{% block title %}Dashboard — CVForge{% endblock %}
+
+{% block extra_css %}
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; }
     </style>
-</head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+{% endblock %}
 
+{% block content %}
     <!-- TOP NAVIGATION BAR -->
     <nav class="bg-[#02353C] text-white sticky top-0 z-40 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -265,7 +263,9 @@
             &copy; 2026 CVForge. All rights reserved.
         </div>
     </footer>
+{% endblock %}
 
+{% block extra_js %}
     <!-- READ-ONLY SYNC & DELETION SCRIPTS -->
     <script>
         // Load active stored preferences and avatar into the Dashboard UI
@@ -361,6 +361,4 @@
             }
         });
     </script>
-
-</body>
-</html>
+{% endblock %}
