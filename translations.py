@@ -1,6 +1,7 @@
 # translations.py
+"""CVForge multilingual interface translations."""
 
-# Languages ordered worldwide by global economic, employment, and usage volume
+# Supported languages
 SUPPORTED_LANGUAGES = [
     "English (US / UK)",
     "Mandarin Chinese",
@@ -19,9 +20,6 @@ SUPPORTED_LANGUAGES = [
     "Polish",
     "Swedish",
     "Swahili",
-    "Amharic",
-    "Afaan Oromoo",
-    "Tigrinya",
 ]
 
 TRANSLATIONS = {
@@ -59,6 +57,7 @@ TRANSLATIONS = {
         "skills_certs": "Skills & Certifications",
         "additional_info": "Additional Information",
     },
+
     "Mandarin Chinese": {
         "nav_dashboard": "控制面板",
         "nav_settings": "设置",
@@ -73,7 +72,7 @@ TRANSLATIONS = {
         "language": "语言",
         "currency": "货币",
         "resumes": "简历",
-        "credits": " AI 额度",
+        "credits": "AI 额度",
         "applications": "求职申请",
         "active": "活跃",
         "my_saved_resumes": "我的已存简历",
@@ -86,18 +85,19 @@ TRANSLATIONS = {
         "no_resumes_sub": "立即创建您的第一份符合 ATS 标准的高级简历。",
         "build_first_cv": "创建第一份简历",
         "landing_hero_title": "打造您的职业竞争优势",
-        "landing_hero_sub": "创建能够轻松通过全球 HR 自动化筛选系统的高级求职简历。",
+        "landing_hero_sub": "创建能够通过全球 HR 自动筛选系统的专业求职简历。",
         "prof_summary": "职业概述",
         "prof_experience": "工作经历",
         "education": "教育背景",
         "skills_certs": "技能与证书",
         "additional_info": "附加信息",
     },
+
     "Spanish": {
-        "nav_dashboard": "Panel de Control",
+        "nav_dashboard": "Panel de control",
         "nav_settings": "Configuración",
-        "nav_logout": "Cerrar Sesión",
-        "welcome_back": "¡Bienvenido de nuevo",
+        "nav_logout": "Cerrar sesión",
+        "welcome_back": "¡Bienvenido de nuevo!",
         "pro": "PRO",
         "free_tier": "PLAN GRATUITO",
         "upgrade_pro": "Actualizar a Pro",
@@ -106,11 +106,11 @@ TRANSLATIONS = {
         "preferences": "Preferencias",
         "language": "Idioma",
         "currency": "Moneda",
-        "resumes": "Curriculum Vitae",
+        "resumes": "Currículums",
         "credits": "Créditos",
         "applications": "Solicitudes",
         "active": "Activo",
-        "my_saved_resumes": "Mis CV Guardados",
+        "my_saved_resumes": "Mis CV guardados",
         "manage_docs_sub": "Administre, edite, previsualice o elimine sus documentos.",
         "create_cv": "Crear CV",
         "edit": "Editar",
@@ -119,14 +119,15 @@ TRANSLATIONS = {
         "no_resumes_yet": "Aún no hay CV guardados",
         "no_resumes_sub": "Cree su primer CV optimizado para ATS.",
         "build_first_cv": "Cree su primer CV",
-        "landing_hero_title": "Impulse su Ventaja Profesional",
-        "landing_hero_sub": "Cree un currículum ejecutivo optimizado para pasar los filtros ATS mundiales.",
-        "prof_summary": "Resumen Profesional",
-        "prof_experience": "Experiencia Profesional",
+        "landing_hero_title": "Impulse su ventaja profesional",
+        "landing_hero_sub": "Cree un currículum profesional optimizado para superar los filtros ATS.",
+        "prof_summary": "Resumen profesional",
+        "prof_experience": "Experiencia profesional",
         "education": "Educación",
-        "skills_certs": "Habilidades y Certificaciones",
-        "additional_info": "Información Adicional",
+        "skills_certs": "Habilidades y certificaciones",
+        "additional_info": "Información adicional",
     },
+
     "Hindi": {
         "nav_dashboard": "डैशबोर्ड",
         "nav_settings": "सेटिंग्स",
@@ -161,6 +162,7 @@ TRANSLATIONS = {
         "skills_certs": "कौशल और प्रमाण पत्र",
         "additional_info": "अतिरिक्त जानकारी",
     },
+
     "Arabic": {
         "nav_dashboard": "لوحة التحكم",
         "nav_settings": "الإعدادات",
@@ -178,8 +180,8 @@ TRANSLATIONS = {
         "credits": "الرصيد",
         "applications": "طلبات التوظيف",
         "active": "نشط",
-        "my_saved_resumes": "سيري الذاتية المحفوظة",
-        "manage_docs_sub": "إدارة، تعديل، معاينة أو حذف مستنداتك.",
+        "my_saved_resumes": "سيرتي الذاتية المحفوظة",
+        "manage_docs_sub": "إدارة مستنداتك وتعديلها ومعاينتها أو حذفها.",
         "create_cv": "إنشاء سيرة ذاتية",
         "edit": "تعديل",
         "view_pdf": "معاينة / PDF",
@@ -188,13 +190,14 @@ TRANSLATIONS = {
         "no_resumes_sub": "أنشئ سيرتك الذاتية الأولى المحسّنة لأنظمة ATS.",
         "build_first_cv": "أنشئ سيرتك الذاتية الأولى",
         "landing_hero_title": "اصنع ميزتك المهنية",
-        "landing_hero_sub": "أنشئ سيرة ذاتية احترافية مصممة لاجتياز الفرز الآلي للتوظيف عالمياً.",
+        "landing_hero_sub": "أنشئ سيرة ذاتية احترافية مصممة لاجتياز أنظمة الفرز الآلي للتوظيف.",
         "prof_summary": "الملخص المهني",
         "prof_experience": "الخبرة المهنية",
         "education": "التعليم",
         "skills_certs": "المهارات والشهادات",
         "additional_info": "معلومات إضافية",
     },
+
     "French": {
         "nav_dashboard": "Tableau de bord",
         "nav_settings": "Paramètres",
@@ -208,11 +211,11 @@ TRANSLATIONS = {
         "preferences": "Préférences",
         "language": "Langue",
         "currency": "Devise",
-        "resumes": "CVs",
+        "resumes": "CV",
         "credits": "Crédits",
         "applications": "Candidatures",
         "active": "Actif",
-        "my_saved_resumes": "Mes CV Enregistrés",
+        "my_saved_resumes": "Mes CV enregistrés",
         "manage_docs_sub": "Gérez, modifiez, prévisualisez ou supprimez vos documents.",
         "create_cv": "Créer un CV",
         "edit": "Modifier",
@@ -221,14 +224,15 @@ TRANSLATIONS = {
         "no_resumes_yet": "Aucun CV enregistré",
         "no_resumes_sub": "Créez votre premier CV optimisé pour les ATS.",
         "build_first_cv": "Créer votre premier CV",
-        "landing_hero_title": "Forgeez votre Avantage Professionnel",
-        "landing_hero_sub": "Créez un CV exécutif optimisé pour réussir les filtres ATS du monde entier.",
-        "prof_summary": "Résumé Professionnel",
-        "prof_experience": "Expérience Professionnelle",
+        "landing_hero_title": "Forgez votre avantage professionnel",
+        "landing_hero_sub": "Créez un CV professionnel optimisé pour les systèmes de recrutement ATS.",
+        "prof_summary": "Résumé professionnel",
+        "prof_experience": "Expérience professionnelle",
         "education": "Formation",
-        "skills_certs": "Compétences et Certifications",
-        "additional_info": "Informations Complémentaires",
+        "skills_certs": "Compétences et certifications",
+        "additional_info": "Informations complémentaires",
     },
+
     "Portuguese": {
         "nav_dashboard": "Painel",
         "nav_settings": "Configurações",
@@ -246,23 +250,24 @@ TRANSLATIONS = {
         "credits": "Créditos",
         "applications": "Candidaturas",
         "active": "Ativo",
-        "my_saved_resumes": "Meus Currículos Salvos",
+        "my_saved_resumes": "Meus currículos salvos",
         "manage_docs_sub": "Gerencie, edite, visualize ou exclua seus documentos.",
-        "create_cv": "Criar Currículo",
+        "create_cv": "Criar currículo",
         "edit": "Editar",
         "view_pdf": "Ver / PDF",
         "delete": "Excluir",
         "no_resumes_yet": "Nenhum currículo salvo ainda",
         "no_resumes_sub": "Crie seu primeiro currículo otimizado para ATS.",
-        "build_first_cv": "Criar Seu Primeiro Currículo",
-        "landing_hero_title": "Forje Sua Vantagem Profissional",
-        "landing_hero_sub": "Crie um currículo executivo projetado para passar em filtros ATS mundiais.",
-        "prof_summary": "Resumo Profissional",
-        "prof_experience": "Experiência Profissional",
-        "education": "Formação Acadêmica",
-        "skills_certs": "Habilidades e Certificações",
-        "additional_info": "Informações Adicionais",
+        "build_first_cv": "Criar seu primeiro currículo",
+        "landing_hero_title": "Forje sua vantagem profissional",
+        "landing_hero_sub": "Crie um currículo profissional preparado para sistemas de seleção ATS.",
+        "prof_summary": "Resumo profissional",
+        "prof_experience": "Experiência profissional",
+        "education": "Formação acadêmica",
+        "skills_certs": "Habilidades e certificações",
+        "additional_info": "Informações adicionais",
     },
+
     "Russian": {
         "nav_dashboard": "Панель управления",
         "nav_settings": "Настройки",
@@ -280,23 +285,24 @@ TRANSLATIONS = {
         "credits": "Кредиты",
         "applications": "Отклики",
         "active": "Активно",
-        "my_saved_resumes": "Мои сохраненные резюме",
-        "manage_docs_sub": "Управляйте, редактируйте или удаляйте ваши документы.",
+        "my_saved_resumes": "Мои сохранённые резюме",
+        "manage_docs_sub": "Управляйте, редактируйте, просматривайте или удаляйте документы.",
         "create_cv": "Создать резюме",
         "edit": "Редактировать",
         "view_pdf": "Просмотр / PDF",
         "delete": "Удалить",
-        "no_resumes_yet": "Резюме еще не сохранены",
-        "no_resumes_sub": "Создайте свое первое резюме, оптимизированное для ATS.",
+        "no_resumes_yet": "Резюме ещё не сохранены",
+        "no_resumes_sub": "Создайте своё первое резюме, оптимизированное для ATS.",
         "build_first_cv": "Создать первое резюме",
-        "landing_hero_title": "Создайте свое карьерное преимущество",
-        "landing_hero_sub": "Создайте профессиональное резюме для прохождения систем отбора кадров.",
+        "landing_hero_title": "Создайте своё карьерное преимущество",
+        "landing_hero_sub": "Создайте профессиональное резюме для прохождения автоматических систем отбора.",
         "prof_summary": "Профессиональное резюме",
         "prof_experience": "Опыт работы",
         "education": "Образование",
         "skills_certs": "Навыки и сертификаты",
         "additional_info": "Дополнительная информация",
     },
+
     "German": {
         "nav_dashboard": "Dashboard",
         "nav_settings": "Einstellungen",
@@ -304,9 +310,9 @@ TRANSLATIONS = {
         "welcome_back": "Willkommen zurück",
         "pro": "PRO",
         "free_tier": "KOSTENLOS",
-        "upgrade_pro": "Auf Pro aufrüsten",
+        "upgrade_pro": "Auf Pro upgraden",
         "upgrade_sub": "Unbegrenzte Downloads und ATS-Anpassung.",
-        "upgrade_btn": "Aufrüsten",
+        "upgrade_btn": "Upgraden",
         "preferences": "Einstellungen",
         "language": "Sprache",
         "currency": "Währung",
@@ -315,7 +321,7 @@ TRANSLATIONS = {
         "applications": "Bewerbungen",
         "active": "Aktiv",
         "my_saved_resumes": "Meine gespeicherten Lebensläufe",
-        "manage_docs_sub": "Verwalten, bearbeiten oder löschen Sie Ihre Dokumente.",
+        "manage_docs_sub": "Verwalten, bearbeiten, anzeigen oder löschen Sie Ihre Dokumente.",
         "create_cv": "CV erstellen",
         "edit": "Bearbeiten",
         "view_pdf": "Ansehen / PDF",
@@ -324,13 +330,14 @@ TRANSLATIONS = {
         "no_resumes_sub": "Erstellen Sie Ihren ersten ATS-optimierten Lebenslauf.",
         "build_first_cv": "Ersten CV erstellen",
         "landing_hero_title": "Schaffen Sie Ihren Karrierevorteil",
-        "landing_hero_sub": "Erstellen Sie einen ATS-optimierten Lebenslauf für weltweite Jobchancen.",
+        "landing_hero_sub": "Erstellen Sie einen professionellen Lebenslauf für internationale Jobchancen.",
         "prof_summary": "Berufliches Profil",
         "prof_experience": "Berufserfahrung",
         "education": "Ausbildung",
         "skills_certs": "Fähigkeiten und Zertifizierungen",
         "additional_info": "Zusätzliche Informationen",
     },
+
     "Japanese": {
         "nav_dashboard": "ダッシュボード",
         "nav_settings": "設定",
@@ -358,13 +365,14 @@ TRANSLATIONS = {
         "no_resumes_sub": "最初のATS最適化履歴書を作成しましょう。",
         "build_first_cv": "最初の履歴書を作成",
         "landing_hero_title": "キャリアの優位性を築く",
-        "landing_hero_sub": "世界中のHRの自動スクリーニングを通過する職務経歴書を作成。",
-        "prof_summary": "要約",
+        "landing_hero_sub": "採用選考システムに対応した職務経歴書を作成しましょう。",
+        "prof_summary": "職務要約",
         "prof_experience": "職歴",
         "education": "学歴",
         "skills_certs": "スキルと資格",
         "additional_info": "追加情報",
     },
+
     "Korean": {
         "nav_dashboard": "대시보드",
         "nav_settings": "설정",
@@ -392,13 +400,14 @@ TRANSLATIONS = {
         "no_resumes_sub": "첫 번째 ATS 최적화 이력서를 작성해보세요.",
         "build_first_cv": "첫 이력서 만들기",
         "landing_hero_title": "커리어 경쟁력을 높이세요",
-        "landing_hero_sub": "글로벌 채용 서류 검토 시스템(ATS)을 통과하도록 설계된 이력서를 작성하세요.",
+        "landing_hero_sub": "채용 서류 검토 시스템(ATS)에 최적화된 이력서를 작성하세요.",
         "prof_summary": "전문가 요약",
         "prof_experience": "경력 사항",
         "education": "학력 사항",
         "skills_certs": "기술 및 자격증",
         "additional_info": "추가 정보",
     },
+
     "Italian": {
         "nav_dashboard": "Dashboard",
         "nav_settings": "Impostazioni",
@@ -425,48 +434,50 @@ TRANSLATIONS = {
         "no_resumes_yet": "Nessun CV salvato",
         "no_resumes_sub": "Crea il tuo primo CV ottimizzato per ATS.",
         "build_first_cv": "Crea il tuo primo CV",
-        "landing_hero_title": "Costruisci il tuo Vantaggio Professionale",
+        "landing_hero_title": "Costruisci il tuo vantaggio professionale",
         "landing_hero_sub": "Crea un CV professionale progettato per superare i filtri ATS.",
-        "prof_summary": "Riepilogo Professionale",
-        "prof_experience": "Esperienza Professionale",
+        "prof_summary": "Riepilogo professionale",
+        "prof_experience": "Esperienza professionale",
         "education": "Istruzione",
-        "skills_certs": "Competenze e Certificazioni",
-        "additional_info": "Informazioni Aggiuntive",
+        "skills_certs": "Competenze e certificazioni",
+        "additional_info": "Informazioni aggiuntive",
     },
+
     "Turkish": {
-        "nav_dashboard": "Kontrol Paneli",
+        "nav_dashboard": "Kontrol paneli",
         "nav_settings": "Ayarlar",
-        "nav_logout": "Çıkış Yap",
-        "welcome_back": "Tekrar Hoş Geldiniz",
+        "nav_logout": "Çıkış yap",
+        "welcome_back": "Tekrar hoş geldiniz",
         "pro": "PRO",
         "free_tier": "ÜCRETSİZ PLAN",
-        "upgrade_pro": "Pro'ya Yükselt",
+        "upgrade_pro": "Pro'ya yükselt",
         "upgrade_sub": "Sınırsız indirme ve ATS uyumluluğu.",
         "upgrade_btn": "Yükselt",
         "preferences": "Tercihler",
         "language": "Dil",
-        "currency": "Para Birimi",
+        "currency": "Para birimi",
         "resumes": "Özgeçmişler",
         "credits": "Krediler",
         "applications": "Başvurular",
         "active": "Aktif",
-        "my_saved_resumes": "Kaydedilen Özgeçmişlerim",
+        "my_saved_resumes": "Kaydedilen özgeçmişlerim",
         "manage_docs_sub": "Belgelerinizi yönetin, düzenleyin veya silin.",
-        "create_cv": "CV Oluştur",
+        "create_cv": "CV oluştur",
         "edit": "Düzenle",
         "view_pdf": "Görüntüle / PDF",
         "delete": "Sil",
         "no_resumes_yet": "Henüz kaydedilmiş özgeçmiş yok",
         "no_resumes_sub": "İlk ATS uyumlu özgeçmişinizi oluşturun.",
-        "build_first_cv": "İlk CV'nizi Oluşturun",
-        "landing_hero_title": "Kariyer Avantajınızı Oluşturun",
-        "landing_hero_sub": "Dünya çapındaki İK filtrelerini geçmek için tasarlanmış profesyonel CV hazırlayın.",
-        "prof_summary": "Profesyonel Özet",
-        "prof_experience": "İş Deneyimi",
+        "build_first_cv": "İlk CV'nizi oluşturun",
+        "landing_hero_title": "Kariyer avantajınızı oluşturun",
+        "landing_hero_sub": "ATS filtrelerini geçmek üzere tasarlanmış profesyonel bir CV hazırlayın.",
+        "prof_summary": "Profesyonel özet",
+        "prof_experience": "İş deneyimi",
         "education": "Eğitim",
-        "skills_certs": "Yetenekler ve Sertifikalar",
-        "additional_info": "Ek Bilgiler",
+        "skills_certs": "Beceriler ve sertifikalar",
+        "additional_info": "Ek bilgiler",
     },
+
     "Dutch": {
         "nav_dashboard": "Dashboard",
         "nav_settings": "Instellingen",
@@ -474,7 +485,7 @@ TRANSLATIONS = {
         "welcome_back": "Welkom terug",
         "pro": "PRO",
         "free_tier": "GRATIS PLAN",
-        "upgrade_pro": "Upgrade naar Pro",
+        "upgrade_pro": "Upgraden naar Pro",
         "upgrade_sub": "Onbeperkt downloaden en ATS-optimalisatie.",
         "upgrade_btn": "Upgraden",
         "preferences": "Voorkeuren",
@@ -484,23 +495,24 @@ TRANSLATIONS = {
         "credits": "Credits",
         "applications": "Sollicitaties",
         "active": "Actief",
-        "my_saved_resumes": "Mijn Opgeslagen CV's",
-        "manage_docs_sub": "Beheer, bewerk of verwijder uw documenten.",
-        "create_cv": "CV Maken",
+        "my_saved_resumes": "Mijn opgeslagen CV's",
+        "manage_docs_sub": "Beheer, bewerk, bekijk of verwijder uw documenten.",
+        "create_cv": "CV maken",
         "edit": "Bewerken",
         "view_pdf": "Bekijken / PDF",
         "delete": "Verwijderen",
         "no_resumes_yet": "Nog geen CV's opgeslagen",
         "no_resumes_sub": "Maak uw eerste ATS-geoptimaliseerde CV.",
-        "build_first_cv": "Maak Uw Eerste CV",
-        "landing_hero_title": "Bouw Uw Carrièrevoordeel",
-        "landing_hero_sub": "Maak een executive CV dat is ontworpen om ATS-filters te doorstaan.",
-        "prof_summary": "Professionele Samenvatting",
+        "build_first_cv": "Maak uw eerste CV",
+        "landing_hero_title": "Bouw uw carrièrevoordeel",
+        "landing_hero_sub": "Maak een professioneel CV dat is ontworpen om ATS-filters te doorstaan.",
+        "prof_summary": "Professionele samenvatting",
         "prof_experience": "Werkervaring",
         "education": "Opleiding",
-        "skills_certs": "Vaardigheden & Certificaten",
-        "additional_info": "Aanvullende Informatie",
+        "skills_certs": "Vaardigheden en certificaten",
+        "additional_info": "Aanvullende informatie",
     },
+
     "Polish": {
         "nav_dashboard": "Pulpit",
         "nav_settings": "Ustawienia",
@@ -508,7 +520,7 @@ TRANSLATIONS = {
         "welcome_back": "Witamy ponownie",
         "pro": "PRO",
         "free_tier": "DARMOWY PLAN",
-        "upgrade_pro": "Ulepsz do Pro",
+        "upgrade_pro": "Przejdź na Pro",
         "upgrade_sub": "Nielimitowane pobieranie i optymalizacja ATS.",
         "upgrade_btn": "Ulepsz",
         "preferences": "Preferencje",
@@ -518,7 +530,7 @@ TRANSLATIONS = {
         "credits": "Kredyty",
         "applications": "Aplikacje",
         "active": "Aktywne",
-        "my_saved_resumes": "Moje Zapisane CV",
+        "my_saved_resumes": "Moje zapisane CV",
         "manage_docs_sub": "Zarządzaj, edytuj, przeglądaj lub usuwaj swoje dokumenty.",
         "create_cv": "Stwórz CV",
         "edit": "Edytuj",
@@ -526,15 +538,16 @@ TRANSLATIONS = {
         "delete": "Usuń",
         "no_resumes_yet": "Brak zapisanych CV",
         "no_resumes_sub": "Stwórz swoje pierwsze CV zoptymalizowane pod kątem ATS.",
-        "build_first_cv": "Zbuduj Swoje Pierwsze CV",
-        "landing_hero_title": "Zbuduj Swoją Przewagę Kariery",
-        "landing_hero_sub": "Stwórz profesjonalne CV zaprojektowane z myślą o przejściu filtrów ATS.",
-        "prof_summary": "Podsumowanie Zawodowe",
-        "prof_experience": "Doświadczenie Zawodowe",
+        "build_first_cv": "Stwórz swoje pierwsze CV",
+        "landing_hero_title": "Zbuduj swoją przewagę zawodową",
+        "landing_hero_sub": "Stwórz profesjonalne CV przygotowane do przejścia przez filtry ATS.",
+        "prof_summary": "Podsumowanie zawodowe",
+        "prof_experience": "Doświadczenie zawodowe",
         "education": "Wykształcenie",
-        "skills_certs": "Umiejętności i Certyfikaty",
-        "additional_info": "Informacje Dodatkowe",
+        "skills_certs": "Umiejętności i certyfikaty",
+        "additional_info": "Informacje dodatkowe",
     },
+
     "Swedish": {
         "nav_dashboard": "Instrumentpanel",
         "nav_settings": "Inställningar",
@@ -552,7 +565,7 @@ TRANSLATIONS = {
         "credits": "Krediter",
         "applications": "Ansökningar",
         "active": "Aktiv",
-        "my_saved_resumes": "Mina Sparade CV:n",
+        "my_saved_resumes": "Mina sparade CV:n",
         "manage_docs_sub": "Hantera, redigera, granska eller ta bort dina dokument.",
         "create_cv": "Skapa CV",
         "edit": "Redigera",
@@ -560,15 +573,16 @@ TRANSLATIONS = {
         "delete": "Ta bort",
         "no_resumes_yet": "Inga sparade CV:n ännu",
         "no_resumes_sub": "Skapa ditt första ATS-optimerade CV.",
-        "build_first_cv": "Skapa Ditt Första CV",
-        "landing_hero_title": "Bygg Din Karriärfördel",
-        "landing_hero_sub": "Skapa ett professionellt CV designat för att klara ATS-filter.",
-        "prof_summary": "Professionell Sammanfattning",
+        "build_first_cv": "Skapa ditt första CV",
+        "landing_hero_title": "Bygg din karriärfördel",
+        "landing_hero_sub": "Skapa ett professionellt CV utformat för att klara ATS-filter.",
+        "prof_summary": "Professionell sammanfattning",
         "prof_experience": "Arbetslivserfarenhet",
         "education": "Utbildning",
-        "skills_certs": "Färdigheter & Certifikat",
-        "additional_info": "Ytterligare Information",
+        "skills_certs": "Färdigheter och certifikat",
+        "additional_info": "Ytterligare information",
     },
+
     "Swahili": {
         "nav_dashboard": "Dashibodi",
         "nav_settings": "Mipangilio",
@@ -581,12 +595,12 @@ TRANSLATIONS = {
         "upgrade_btn": "Boresha",
         "preferences": "Mapendeleo",
         "language": "Lugha",
-        "currency": "Matawi",
+        "currency": "Sarafu",
         "resumes": "Wasifu (CV)",
-        "credits": "Mikopo",
-        "applications": "Maombi ya Kazi",
-        "active": "Hai",
-        "my_saved_resumes": "CV Zangu Zilizohifadhiwa",
+        "credits": "Salio",
+        "applications": "Maombi ya kazi",
+        "active": "Inatumika",
+        "my_saved_resumes": "CV zangu zilizohifadhiwa",
         "manage_docs_sub": "Dhibiti, hariri, hakiki au futa nyaraka zako.",
         "create_cv": "Tengeneza CV",
         "edit": "Hariri",
@@ -594,120 +608,77 @@ TRANSLATIONS = {
         "delete": "Futa",
         "no_resumes_yet": "Bado hakuna CV zilizohifadhiwa",
         "no_resumes_sub": "Tengeneza CV yako ya kwanza iliyoboreshwa kwa ATS.",
-        "build_first_cv": "Jenga CV Yako ya Kwanza",
-        "landing_hero_title": "Jenga Manufaa Yako ya Kazi",
-        "landing_hero_sub": "Tengeneza CV iliyoboreshwa kupita vichujio vya kiotomatiki vya HR duniani.",
-        "prof_summary": "Muhtasari wa Kitaaluma",
-        "prof_experience": "Uzoefu wa Kazi",
+        "build_first_cv": "Tengeneza CV yako ya kwanza",
+        "landing_hero_title": "Jenga manufaa yako ya kazi",
+        "landing_hero_sub": "Tengeneza CV iliyoboreshwa ili kupita vichujio vya kiotomatiki vya ajira.",
+        "prof_summary": "Muhtasari wa kitaaluma",
+        "prof_experience": "Uzoefu wa kazi",
         "education": "Elimu",
-        "skills_certs": "Ujuzi na Vyeti",
-        "additional_info": "Taarifa Zaidi",
-    },
-    "Amharic": {
-        "nav_dashboard": "ዳሽቦርድ",
-        "nav_settings": "ቅንብሮች",
-        "nav_logout": "ውጣ",
-        "welcome_back": "እንኳን ደህና መጡ",
-        "pro": "ፕሮ",
-        "free_tier": "ነጻ እቅድ",
-        "upgrade_pro": "ወደ ፕሮ ማሻሻያ ያድርጉ",
-        "upgrade_sub": "ውርዶች እና የATS ማስተካከያ በቁጥር ገደብ የሌለው።",
-        "upgrade_btn": "አሻሽል",
-        "preferences": "ምርጫዎች",
-        "language": "ቋንቋ",
-        "currency": "ምንዛሬ",
-        "resumes": "ሲቪዎች",
-        "credits": "ክሬዲቶች",
-        "applications": "የስራ ማመልከቻዎች",
-        "active": "ንቁ",
-        "my_saved_resumes": "ያስቀመጧቸው ሲቪዎች",
-        "manage_docs_sub": "ሰነዶችዎን ያስተዳድሩ፣ ያርሙ፣ ይመልከቱ ወይም ይሰርዙ።",
-        "create_cv": "ሲቪ ፍጠር",
-        "edit": "አስተካክል",
-        "view_pdf": "እይ / ፒዲኤፍ",
-        "delete": "ሰርዝ",
-        "no_resumes_yet": "እስካሁን የተቀመጠ ሲቪ የለም",
-        "no_resumes_sub": "የመጀመሪያዎን በATS የተረጋገጠ ሲቪ ይፍጠሩ።",
-        "build_first_cv": "የመጀመሪያዎን ሲቪ ይገንቡ",
-        "landing_hero_title": "የስራ እድልዎን ያሳድጉ",
-        "landing_hero_sub": "ለአለም አቀፍ እድሎች የተዘጋጁ በATS የተረጋገጡ ፕሮፌሽናል ሲቪዎችን ይፍጠሩ።",
-        "prof_summary": "የሙያ ማጠቃለያ",
-        "prof_experience": "የሥራ ልምድ",
-        "education": "ትምህርት",
-        "skills_certs": "ችሎታዎች እና ማረጋገጫዎች",
-        "additional_info": "ተጨማሪ መረጃ",
-    },
-    "Afaan Oromoo": {
-        "nav_dashboard": "Daashboordii",
-        "nav_settings": "Sajjoo",
-        "nav_logout": "Ba'i",
-        "welcome_back": "Baga nagaan deebitan",
-        "pro": "PRO",
-        "free_tier": "Kaffaltii Malee",
-        "upgrade_pro": "Gara Pro-tti Ol Guddisaa",
-        "upgrade_sub": "Buufanni fi qopheessuun ATS daangaa hin qabu.",
-        "upgrade_btn": "Ol Guddisi",
-        "preferences": "Filannoowwan",
-        "language": "Afaan",
-        "currency": "Maallaqa",
-        "resumes": "CV-wwan",
-        "credits": "Kireditii",
-        "applications": "Iyyannoo Hojii",
-        "active": "Hojjataa",
-        "my_saved_resumes": "CV-wwan Koo Olkaa'aman",
-        "manage_docs_sub": "Galmee keessan bulchaa, gulaalaa ykn haquu dandeessu.",
-        "create_cv": "CV Uumi",
-        "edit": "Gulaali",
-        "view_pdf": "Ilaali / PDF",
-        "delete": "Haqi",
-        "no_resumes_yet": "CV-n olkaafame hin jiru",
-        "no_resumes_sub": "CV kee jalqabaa sadarkaa ATS guute uumi.",
-        "build_first_cv": "CV Kee Jalqabaa Uumi",
-        "landing_hero_title": "Gara Dandeettii Ogummaa Keetti Ce'i",
-        "landing_hero_sub": "CV sadarkaa saayinsawaa ATS guute uumuun carraa hojii dorgomi.",
-        "prof_summary": "Guduunfaa Ogummaa",
-        "prof_experience": "Muuxannoo Hojii",
-        "education": "Barnoota",
-        "skills_certs": "Dandeettii fi Ragaalee",
-        "additional_info": "Odeeffannoo Dabalataa",
-    },
-    "Tigrinya": {
-        "nav_dashboard": "ዳሽቦርድ",
-        "nav_settings": "ምድላዋት",
-        "nav_logout": "ውጻእ",
-        "welcome_back": "እንቋዕ ብደሓን መጻእካ",
-        "pro": "PRO",
-        "free_tier": "ነጻ እቅድ",
-        "upgrade_pro": "ናብ Pro ኣዕብይ",
-        "upgrade_sub": "ብዘይወሰን ምውራድን ናይ ATS ምትዕርራይን።",
-        "upgrade_btn": "ኣዕብይ",
-        "preferences": "ምርጫታት",
-        "language": "ቋንቋ",
-        "currency": "ምጣኔ ገንዘብ",
-        "resumes": "ሲቪታት",
-        "credits": "ክሬዲት",
-        "applications": "ናይ ስራሕ መመልከቲ",
-        "active": "ንጡፍ",
-        "my_saved_resumes": "እተዓቀቡ ሲቪታትካ",
-        "manage_docs_sub": "ሰነዳትካ ኣመሓድር፣ ኣረም፣ ርአ ወይ ሰርዝ።",
-        "create_cv": "ሲቪ ፍጠር",
-        "edit": "ኣረም",
-        "view_pdf": "ርአ / ፒዲኤፍ",
-        "delete": "ሰርዝ",
-        "no_resumes_yet": "ዛጊት እተዓቀበ ሲቪ የለን",
-        "no_resumes_sub": "ብATS እተረጋገጸ መጀመርታ ሲቪኻ ፍጠር።",
-        "build_first_cv": "መጀመርታ ሲቪኻ ህነጽ",
-        "landing_hero_title": "ናይ ሞያ ዕድልካ ኣዕብይ",
-        "landing_hero_sub": "ንዓለምለኻዊ ዕድላት እተዳለወ ብATS እተረጋገጸ ፕሮፌሽናል ሲቪ ፍጠር።",
-        "prof_summary": "ናይ ሞያ ሕጽር ዝበለ መግለጺ",
-        "prof_experience": "ናይ ስራሕ ተመክሮ",
-        "education": "ትምህርቲ",
-        "skills_certs": "ክእለታትን ምስክር ወረቐታትን",
-        "additional_info": "ተወሳኺ ሓበሬታ",
+        "skills_certs": "Ujuzi na vyeti",
+        "additional_info": "Taarifa zaidi",
     },
 }
 
+
 def t(key, lang="English (US / UK)"):
-    """Global translation helper with fallback to English."""
-    lang_dict = TRANSLATIONS.get(lang, TRANSLATIONS["English (US / UK)"])
-    return lang_dict.get(key, TRANSLATIONS["English (US / UK)"].get(key, key))
+    """
+    Return a translated string, falling back to English.
+
+    If the selected language or key is unavailable, use the English
+    translation. If the key does not exist in English either, return
+    the key itself. This keeps missing translations from crashing the UI.
+    """
+    english = TRANSLATIONS["English (US / UK)"]
+    language_dict = TRANSLATIONS.get(lang, english)
+
+    return language_dict.get(key, english.get(key, key))
+
+
+def get_supported_languages():
+    """Return a copy of the supported language list."""
+    return SUPPORTED_LANGUAGES.copy()
+
+
+def validate_translations():
+    """
+    Check that every supported language has the same keys as English.
+
+    Returns a dictionary containing missing and extra keys for each
+    language. An empty dictionary means all languages are complete.
+    """
+    english_keys = set(TRANSLATIONS["English (US / UK)"])
+    issues = {}
+
+    for language in SUPPORTED_LANGUAGES:
+        language_keys = set(TRANSLATIONS.get(language, {}))
+        missing = sorted(english_keys - language_keys)
+        extra = sorted(language_keys - english_keys)
+
+        if missing or extra:
+            issues[language] = {
+                "missing": missing,
+                "extra": extra,
+            }
+
+    return issues
+
+
+if __name__ == "__main__":
+    print(f"Supported languages: {len(SUPPORTED_LANGUAGES)}")
+
+    issues = validate_translations()
+
+    if issues:
+        print("Translation key validation found issues:")
+        for language, details in issues.items():
+            print(f"\n{language}:")
+            if details["missing"]:
+                print("  Missing keys:", ", ".join(details["missing"]))
+            if details["extra"]:
+                print("  Extra keys:", ", ".join(details["extra"]))
+    else:
+        print("All supported languages have matching translation keys.")
+
+    print("\nFallback test:")
+    print("Unknown language:", t("nav_dashboard", "Unknown Language"))
+    print("Unknown key:", t("unknown_key"))
