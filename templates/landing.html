@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CVForge — AI-Powered ATS Resume Builder & Career Platform</title>
+    <title>CVForge — {{ t('landing_hero_title') }}</title>
     <style>
         * { 
             box-sizing: border-box; 
@@ -532,11 +532,11 @@
             <div class="desktop-nav">
                 <a href="#features">Features</a>
                 <a href="#pricing">Plans</a>
-                <a href="/auth/login">Login</a>
+                <a href="/auth/login">{{ t('nav_logout') | replace('Sign Out', 'Login') }}</a>
             </div>
 
             <!-- Create CV Button -->
-            <a href="/editor" class="btn-primary">Create CV Free</a>
+            <a href="/editor" class="btn-primary">{{ t('create_cv') }}</a>
 
             <!-- Hamburger Button -->
             <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle Menu">
@@ -558,18 +558,18 @@
         <!-- High-Priority Conversion Action Button -->
         <div style="margin-bottom: 16px;">
             <a href="/editor" class="btn-accent" style="display: block; text-align: center; text-decoration: none; padding: 12px 16px; font-size: 14px;">
-                🚀 Build ATS Resume Free
+                🚀 {{ t('build_first_cv') }}
             </a>
         </div>
 
         <!-- Navigation Links -->
         <ul class="menu-list">
-            <li><a href="/dashboard" class="menu-link">📊 My Dashboard</a></li>
-            <li><a href="/dashboard/account" class="menu-link">⚙️ Account Settings</a></li>
+            <li><a href="/dashboard" class="menu-link">📊 {{ t('nav_dashboard') }}</a></li>
+            <li><a href="/dashboard/account" class="menu-link">⚙️ {{ t('nav_settings') }}</a></li>
             <li><a href="#features" class="menu-link">⚡ AI Features & Tools</a></li>
-            <li><a href="#pricing" class="menu-link">💎 Pricing & Pro Plans</a></li>
-            <li><a href="/auth/login" class="menu-link">🔑 Sign Up / Login</a></li>
-            <li><a href="/auth/logout" class="menu-link" style="opacity: 0.85;">🚪 Sign Out</a></li>
+            <li><a href="#pricing" class="menu-link">💎 {{ t('upgrade_pro') }}</a></li>
+            <li><a href="/auth/login" class="menu-link">🔑 Login / Register</a></li>
+            <li><a href="/auth/logout" class="menu-link" style="opacity: 0.85;">🚪 {{ t('nav_logout') }}</a></li>
         </ul>
 
         <!-- Footer Links -->
@@ -582,11 +582,11 @@
 
     <!-- HERO SECTION -->
     <header class="hero">
-        <h1 class="hero-title">Craft ATS-Optimized Resumes & Land Your Dream Role</h1>
-        <p class="hero-subtitle">Generate tailored CVs, match job descriptions with AI precision, and track your applications—all in one place.</p>
+        <h1 class="hero-title">{{ t('landing_hero_title') }}</h1>
+        <p class="hero-subtitle">{{ t('landing_hero_sub') }}</p>
         <div class="hero-actions">
-            <a href="/editor" class="btn-accent" style="width: auto;">Build Resume Now (Free)</a>
-            <a href="#pricing" class="btn-secondary">Explore Premium Features</a>
+            <a href="/editor" class="btn-accent" style="width: auto;">{{ t('build_first_cv') }}</a>
+            <a href="#pricing" class="btn-secondary">{{ t('upgrade_pro') }}</a>
         </div>
     </header>
 
@@ -628,7 +628,7 @@
             <div class="pricing-card">
                 <div>
                     <div class="card-header">
-                        <div class="plan-title">Free Plan</div>
+                        <div class="plan-title">{{ t('free_tier') }}</div>
                         <div class="plan-price">$0</div>
                         <div class="plan-period">Forever free</div>
                     </div>
@@ -665,7 +665,7 @@
                         <li><span class="check-icon">✓</span> Priority Customer Support</li>
                     </ul>
                 </div>
-                <a href="/auth/register" class="btn-accent">Get Premium Access</a>
+                <a href="/auth/register" class="btn-accent">{{ t('upgrade_pro') }}</a>
             </div>
         </div>
     </section>
