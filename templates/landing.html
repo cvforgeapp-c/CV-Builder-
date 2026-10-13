@@ -20,10 +20,9 @@
             background: #f8fafc; 
             color: #1e293b; 
             line-height: 1.6; 
-            padding-top: 75px; /* Safe global offset for fixed navbar */
         }
 
-        /* Fixed Navigation Bar (Stays on screen when scrolling) */
+        /* Fixed Navigation Bar */
         .navbar {
             display: flex;
             justify-content: space-between;
@@ -283,7 +282,7 @@
 
         /* Hero Section */
         .hero {
-            padding: 60px 8% 40px;
+            padding: 40px 8% 40px;
             text-align: center;
             max-width: 900px;
             margin: 0 auto;
@@ -483,16 +482,8 @@
 
         /* RESPONSIVE BREAKPOINTS */
         @media (max-width: 900px) {
-            body {
-                padding-top: 85px; /* Ensures mobile browsers clear the fixed navbar smoothly */
-            }
-
             .desktop-nav {
                 display: none;
-            }
-
-            .hero {
-                padding: 30px 5% 25px;
             }
 
             .hero-title { 
@@ -523,6 +514,9 @@
 {% endblock %}
 
 {% block content %}
+    <!-- SAFETY SPACER: Physically pushes content below the fixed navbar -->
+    <div style="height: 75px; width: 100%;"></div>
+
     <!-- FIXED NAVBAR -->
     <nav class="navbar">
         <div class="brand-container">
