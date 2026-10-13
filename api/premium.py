@@ -83,27 +83,65 @@ except ImportError:
 # USER LANGUAGE PREFERENCE HELPER
 # ============================================================
 
+DEFAULT_LANGUAGE = "English (US / UK)"
+
+LANGUAGE_CODES = {
+    "English (US / UK)": "en",
+    "Mandarin Chinese": "zh-CN",
+    "Spanish": "es",
+    "Hindi": "hi",
+    "Arabic": "ar",
+    "French": "fr",
+    "Portuguese": "pt",
+    "Russian": "ru",
+    "German": "de",
+    "Japanese": "ja",
+    "Korean": "ko",
+    "Italian": "it",
+    "Turkish": "tr",
+    "Dutch": "nl",
+    "Polish": "pl",
+    "Swedish": "sv",
+    "Swahili": "sw",
+}
+
+
 def get_user_preferred_language(user):
-    default_language = "English (US / UK)"
+    """
+    Return the user's saved application language.
 
-    prefs = getattr(user, "preferences_json", {}) or {}
+    Preference priority:
+    1. preferences_json["language"]
+    2. preferences_json["aiPreferences"]["aiLanguage"]
+    3. English fallback
+    """
 
-    if not isinstance(prefs, dict):
-        return default_language
+    if not user:
+        return DEFAULT_LANGUAGE
 
-    ai_preferences = prefs.get("aiPreferences", {})
+    preferences = getattr(user, "preferences_json", None) or {}
+
+    if not isinstance(preferences, dict):
+        return DEFAULT_LANGUAGE
+
+    ai_preferences = preferences.get("aiPreferences", {})
 
     if not isinstance(ai_preferences, dict):
         ai_preferences = {}
 
     language = (
-        prefs.get("language")
+        preferences.get("language")
         or ai_preferences.get("aiLanguage")
-        or default_language
+        or DEFAULT_LANGUAGE
     )
 
+    if not isinstance(language, str):
+        return DEFAULT_LANGUAGE
+
+    language = language.strip()
+
     if language not in SUPPORTED_LANGUAGES:
-        return default_language
+        return DEFAULT_LANGUAGE
 
     return language
 
@@ -179,56 +217,66 @@ login_manager.login_message_category = "info"
 
 @premium_app.context_processor
 def inject_global_translations():
-    default_language = "English (US / UK)"
-    user_lang = default_language
+    """
+    Make translation variables available to every Jinja template.
 
-    if current_user and getattr(current_user, "is_authenticated", False):
-        prefs = getattr(current_user, "preferences_json", {}) or {}
+    Available variables:
+        current_language
+        html_lang_code
+        supported_languages
+        t
+        cvforge_translations
+    """
 
-        if not isinstance(prefs, dict):
-            prefs = {}
+    user_language = get_user_preferred_language(
+        current_user if current_user.is_authenticated else None
+    )
 
-        ai_preferences = prefs.get("aiPreferences", {})
+    language_code = LANGUAGE_CODES.get(user_language, "en")
 
-        if not isinstance(ai_preferences, dict):
-            ai_preferences = {}
+    def translate(key):
+        """
+        Translate a key into the selected language.
 
-        saved_language = (
-            prefs.get("language")
-            or ai_preferences.get("aiLanguage")
-            or default_language
+        The translations.py t() function handles English fallbacks.
+        """
+        try:
+            return t(key, user_language)
+        except Exception as exc:
+            premium_app.logger.warning(
+                "Translation failed for key %r: %s",
+                key,
+                type(exc).__name__,
+            )
+
+            return str(key)
+
+    # Expose translations for JavaScript.
+    #
+    # Only include English dictionary keys that exist in the
+    # translation module. The t() function supplies each value.
+    try:
+        from translations import TRANSLATIONS
+
+        english_dictionary = TRANSLATIONS.get(
+            DEFAULT_LANGUAGE,
+            {},
         )
 
-        if saved_language in SUPPORTED_LANGUAGES:
-            user_lang = saved_language
+        javascript_translations = {
+            key: translate(key)
+            for key in english_dictionary
+        }
 
-    lang_codes_map = {
-        "English (US / UK)": "en",
-        "Spanish": "es",
-        "French": "fr",
-        "Mandarin Chinese": "zh-CN",
-        "German": "de",
-        "Swahili": "sw",
-        "Arabic": "ar",
-        "Hindi": "hi",
-        "Russian": "ru",
-        "Portuguese": "pt",
-        "Japanese": "ja",
-        "Korean": "ko",
-        "Italian": "it",
-        "Turkish": "tr",
-        "Dutch": "nl",
-        "Polish": "pl",
-        "Swedish": "sv",
-    }
-
-    html_code = lang_codes_map.get(user_lang, "en")
+    except (ImportError, AttributeError, TypeError):
+        javascript_translations = {}
 
     return {
-        "current_language": user_lang,
-        "html_lang_code": html_code,
+        "current_language": user_language,
+        "html_lang_code": language_code,
         "supported_languages": SUPPORTED_LANGUAGES,
-        "t": lambda key: t(key, user_lang),
+        "t": translate,
+        "cvforge_translations": javascript_translations,
     }
 
 # ============================================================
@@ -887,72 +935,154 @@ def get_settings():
 @settings_api_bp.route("/<section>", methods=["PUT"])
 @login_required
 def update_settings_section(section):
-    data = request.get_json(silent=True) or {}
-    
-    existing_prefs = current_user.preferences_json or {}
-    prefs = json.loads(json.dumps(existing_prefs))
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        if section == "language" and isinstance(data, str):
+            data = {"language": data}
+        else:
+            return jsonify({
+                "error": "A valid JSON object is required."
+            }), 400
+
+    existing_preferences = (
+        getattr(current_user, "preferences_json", None) or {}
+    )
+
+    if not isinstance(existing_preferences, dict):
+        existing_preferences = {}
+
+    # Copy the preferences so unrelated settings remain unchanged.
+    prefs = json.loads(
+        json.dumps(existing_preferences)
+    )
 
     if section == "profile":
+        profile_data = prefs.get("profile", {})
+
+        if not isinstance(profile_data, dict):
+            profile_data = {}
+
+        profile_data.update(data)
+        prefs["profile"] = profile_data
+
         if "fullName" in data:
             current_user.full_name = data["fullName"]
-        prefs["profile"] = data
+
     elif section == "language":
-        if isinstance(data, str):
-            selected_lang = data.strip()
-        elif isinstance(data, dict):
-            selected_lang = (
-                data.get("language")
-                or data.get("aiLanguage")
-                or ""
-            )
+        selected_language = (
+            data.get("language")
+            or data.get("aiLanguage")
+            or ""
+        )
 
-            if not isinstance(selected_lang, str):
-                selected_lang = ""
+        if not isinstance(selected_language, str):
+            return jsonify({
+                "error": "The selected language must be a string.",
+                "supported_languages": SUPPORTED_LANGUAGES,
+            }), 400
 
-            selected_lang = selected_lang.strip()
-        else:
-            selected_lang = ""
+        selected_language = selected_language.strip()
 
-        if not selected_lang:
+        if not selected_language:
             return jsonify({
                 "error": "Please select a language.",
                 "supported_languages": SUPPORTED_LANGUAGES,
             }), 400
 
-        if selected_lang not in SUPPORTED_LANGUAGES:
+        if selected_language not in SUPPORTED_LANGUAGES:
             return jsonify({
                 "error": "This language is not supported.",
                 "supported_languages": SUPPORTED_LANGUAGES,
             }), 400
 
-        prefs["language"] = selected_lang
+        # Save the application-wide language.
+        prefs["language"] = selected_language
 
+        # Keep the AI language preference synchronized.
         ai_preferences = prefs.get("aiPreferences", {})
 
         if not isinstance(ai_preferences, dict):
             ai_preferences = {}
 
-        ai_preferences["aiLanguage"] = selected_lang
-        prefs["aiPreferences"] = ai_preferences 
+        ai_preferences["aiLanguage"] = selected_language
+        prefs["aiPreferences"] = ai_preferences
+
     elif section == "ai":
-        prefs["aiPreferences"] = data
+        ai_preferences = prefs.get("aiPreferences", {})
+
+        if not isinstance(ai_preferences, dict):
+            ai_preferences = {}
+
+        ai_preferences.update(data)
+
+        # Validate the language if the AI settings update includes it.
         if "aiLanguage" in data:
-            prefs["language"] = data["aiLanguage"]
+            selected_language = data["aiLanguage"]
+
+            if (
+                not isinstance(selected_language, str)
+                or selected_language not in SUPPORTED_LANGUAGES
+            ):
+                return jsonify({
+                    "error": "This language is not supported.",
+                    "supported_languages": SUPPORTED_LANGUAGES,
+                }), 400
+
+            prefs["language"] = selected_language
+
+        prefs["aiPreferences"] = ai_preferences
+
     elif section == "tracker":
-        prefs["trackerSettings"] = data
+        tracker_settings = prefs.get("trackerSettings", {})
+
+        if not isinstance(tracker_settings, dict):
+            tracker_settings = {}
+
+        tracker_settings.update(data)
+        prefs["trackerSettings"] = tracker_settings
+
     else:
-        return jsonify({"error": "Invalid settings section"}), 400
+        return jsonify({
+            "error": "Invalid settings section."
+        }), 400
 
     current_user.preferences_json = prefs
-    flag_modified(current_user, "preferences_json")
+
+    flag_modified(
+        current_user,
+        "preferences_json",
+    )
 
     try:
         db.session.commit()
-        return jsonify({"success": True, "message": f"{section.capitalize()} updated successfully!", "language": prefs.get("language")}), 200
+
+        saved_language = get_user_preferred_language(
+            current_user
+        )
+
+        return jsonify({
+            "success": True,
+            "message": f"{section.capitalize()} updated successfully!",
+            "language": saved_language,
+            "language_code": LANGUAGE_CODES.get(
+                saved_language,
+                "en",
+            ),
+        }), 200
+
     except Exception as exc:
         db.session.rollback()
-        print(f"Update settings error: {exc}")
-        return jsonify({"error": "Failed to save settings."}), 500
+
+        premium_app.logger.error(
+            "Settings update failed for section %s: %s",
+            section,
+            type(exc).__name__,
+        )
+
+        return jsonify({
+            "error": "Failed to save settings."
+        }), 500
 
 
 @settings_api_bp.route("/avatar", methods=["POST"])
