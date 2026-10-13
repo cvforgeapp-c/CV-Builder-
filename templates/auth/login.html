@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - CVForge AI Resume Builder</title>
+{% extends "base.html" %}
+
+{% block title %}Login - CVForge AI Resume Builder{% endblock %}
+
+{% block extra_css %}
     <style>
         * { 
             box-sizing: border-box; 
@@ -238,9 +237,9 @@
             }
         }
     </style>
-</head>
-<body>
+{% endblock %}
 
+{% block content %}
     <a href="/" class="back-nav">← Back to CVForge</a>
 
     <div class="auth-container">
@@ -292,6 +291,4 @@
             Don't have an account? <a href="{{ url_for('auth.register') }}">Sign up free</a>
         </div>
     </div>
-
-</body>
-</html>
+{% endblock %}
