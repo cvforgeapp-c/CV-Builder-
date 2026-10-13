@@ -20,7 +20,7 @@
             background: #f8fafc; 
             color: #1e293b; 
             line-height: 1.6; 
-            padding-top: 68px; /* Prevents hero section from hiding under fixed navbar */
+            padding-top: 75px; /* Safe global offset for fixed navbar */
         }
 
         /* Fixed Navigation Bar (Stays on screen when scrolling) */
@@ -483,12 +483,16 @@
 
         /* RESPONSIVE BREAKPOINTS */
         @media (max-width: 900px) {
+            body {
+                padding-top: 85px; /* Ensures mobile browsers clear the fixed navbar smoothly */
+            }
+
             .desktop-nav {
                 display: none;
             }
 
             .hero {
-                padding: 40px 5% 25px;
+                padding: 30px 5% 25px;
             }
 
             .hero-title { 
