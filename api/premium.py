@@ -156,8 +156,19 @@ def inject_global_translations():
         prefs = getattr(current_user, "preferences_json", {}) or {}
         user_lang = prefs.get("language") or prefs.get("aiPreferences", {}).get("aiLanguage", "English (US / UK)")
 
+    lang_codes_map = {
+        "Spanish": "es", "French": "fr", "Mandarin Chinese": "zh-CN", "German": "de",
+        "Amharic": "am", "Afaan Oromoo": "om", "Swahili": "sw", "Arabic": "ar",
+        "Hindi": "hi", "Russian": "ru", "Portuguese": "pt", "Japanese": "ja",
+        "Korean": "ko", "Italian": "it", "Turkish": "tr", "Dutch": "nl",
+        "Polish": "pl", "Swedish": "sv", "Tigrinya": "ti", "English (US / UK)": "en"
+    }
+    
+    html_code = lang_codes_map.get(user_lang, "en")
+
     return {
         "current_language": user_lang,
+        "html_lang_code": html_code,
         "supported_languages": SUPPORTED_LANGUAGES,
         "t": lambda key: t(key, user_lang),
     }
@@ -873,8 +884,6 @@ def upload_avatar():
         return jsonify({"error": "No selected file"}), 400
 
     try:
-        # Read file bytes into memory and convert to base64 data URL
-        # Fully compatible with Vercel's read-only serverless filesystem
         file_bytes = file.read()
         mimetype = file.content_type or "image/jpeg"
         encoded_string = base64.b64encode(file_bytes).decode("utf-8")
