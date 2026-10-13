@@ -80,6 +80,34 @@ except ImportError:
     from ..translations import t, SUPPORTED_LANGUAGES
 
 # ============================================================
+# USER LANGUAGE PREFERENCE HELPER
+# ============================================================
+
+def get_user_preferred_language(user):
+    default_language = "English (US / UK)"
+
+    prefs = getattr(user, "preferences_json", {}) or {}
+
+    if not isinstance(prefs, dict):
+        return default_language
+
+    ai_preferences = prefs.get("aiPreferences", {})
+
+    if not isinstance(ai_preferences, dict):
+        ai_preferences = {}
+
+    language = (
+        prefs.get("language")
+        or ai_preferences.get("aiLanguage")
+        or default_language
+    )
+
+    if language not in SUPPORTED_LANGUAGES:
+        return default_language
+
+    return language
+
+# ============================================================
 # APPLICATION CONFIGURATION
 # ============================================================
 
@@ -1173,9 +1201,8 @@ def analyze_ats():
     except (TypeError, ValueError):
         return jsonify({"error": "CV data must be valid JSON-compatible content."}), 400
 
-    # Retrieve user's global preferred language from root account preferences
-    prefs = current_user.preferences_json or {}
-    preferred_language = prefs.get("language") or prefs.get("aiPreferences", {}).get("aiLanguage", "English (US / UK)")
+        # Retrieve the user's validated global language preference
+    preferred_language = get_user_preferred_language(current_user)
 
     prompt = f"Analyze the candidate's CV against the supplied job description.\nCRITICAL INSTRUCTION: Write the entire analysis report and feedback strictly in {preferred_language}.\n\nCV DATA:\n{cv_json}\n\nJOB DESCRIPTION:\n{job_desc}\n\nReturn a detailed ATS analysis in {preferred_language} containing:\n1. An estimated ATS match score from 0 to 100.\n2. Keywords found in the CV.\n3. Important job-description keywords missing from the CV.\n4. Relevant strengths supported by the CV.\n5. Suggestions for improving alignment."
 
