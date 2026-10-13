@@ -682,7 +682,6 @@ def generate_ai_field():
             "button_action": "FILL_DETAILS"
         }), 400
 
-        # Retrieve the user's validated global language preference
     preferred_language = get_user_preferred_language(current_user)
 
     context_details = []
@@ -696,7 +695,6 @@ def generate_ai_field():
 
     context_str = "\n\n".join(context_details)
 
-    # STRICT LANGUAGE DIRECTIVE FOR ALL AI FIELD GENERATIONS
     lang_directive = f"CRITICAL REQUIREMENT: Write ALL generated text, phrases, and descriptions strictly and exclusively in {preferred_language}."
 
     if field_type == "summary":
@@ -891,7 +889,6 @@ def get_settings():
 def update_settings_section(section):
     data = request.get_json(silent=True) or {}
     
-    # Always create a fresh dict copy to ensure SQLAlchemy detects mutation
     existing_prefs = current_user.preferences_json or {}
     prefs = json.loads(json.dumps(existing_prefs))
 
@@ -899,10 +896,9 @@ def update_settings_section(section):
         if "fullName" in data:
             current_user.full_name = data["fullName"]
         prefs["profile"] = data
-       elif section == "language":
+    elif section == "language":
         if isinstance(data, str):
             selected_lang = data.strip()
-
         elif isinstance(data, dict):
             selected_lang = (
                 data.get("language")
@@ -914,7 +910,6 @@ def update_settings_section(section):
                 selected_lang = ""
 
             selected_lang = selected_lang.strip()
-
         else:
             selected_lang = ""
 
@@ -948,7 +943,6 @@ def update_settings_section(section):
     else:
         return jsonify({"error": "Invalid settings section"}), 400
 
-    # Explicitly re-assign dictionary and mark as modified for SQLAlchemy
     current_user.preferences_json = prefs
     flag_modified(current_user, "preferences_json")
 
@@ -1232,7 +1226,6 @@ def analyze_ats():
     except (TypeError, ValueError):
         return jsonify({"error": "CV data must be valid JSON-compatible content."}), 400
 
-        # Retrieve the user's validated global language preference
     preferred_language = get_user_preferred_language(current_user)
 
     prompt = f"Analyze the candidate's CV against the supplied job description.\nCRITICAL INSTRUCTION: Write the entire analysis report and feedback strictly in {preferred_language}.\n\nCV DATA:\n{cv_json}\n\nJOB DESCRIPTION:\n{job_desc}\n\nReturn a detailed ATS analysis in {preferred_language} containing:\n1. An estimated ATS match score from 0 to 100.\n2. Keywords found in the CV.\n3. Important job-description keywords missing from the CV.\n4. Relevant strengths supported by the CV.\n5. Suggestions for improving alignment."
