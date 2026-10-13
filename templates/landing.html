@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}CVForge — AI-Powered ATS Resume Builder & Career Platform{% endblock %}
+{% block title %}CVForge — {{ t('ai_resume_platform') if t else 'AI-Powered ATS Resume Builder & Career Platform' }}{% endblock %}
 
 {% block extra_css %}
     <style>
@@ -521,19 +521,19 @@
     <nav class="navbar">
         <div class="brand-container">
             <a href="/" class="brand">CVForge</a>
-            <span class="brand-subtitle">AI Resume Platform</span>
+            <span class="brand-subtitle">{{ t('ai_resume_platform') if t else 'AI Resume Platform' }}</span>
         </div>
         
         <div class="nav-right">
             <!-- Desktop Only Navigation -->
             <div class="desktop-nav">
-                <a href="#features">Features</a>
-                <a href="#pricing">Plans</a>
-                <a href="/auth/login">Login</a>
+                <a href="#features">{{ t('nav_features') if t else 'Features' }}</a>
+                <a href="#pricing">{{ t('nav_plans') if t else 'Plans' }}</a>
+                <a href="/auth/login">{{ t('nav_login') if t else 'Login' }}</a>
             </div>
 
             <!-- Create CV Button -->
-            <a href="/editor" class="btn-primary">Create CV Free</a>
+            <a href="/editor" class="btn-primary">{{ t('create_cv_free') if t else 'Create CV Free' }}</a>
 
             <!-- Hamburger Button -->
             <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle Menu">
@@ -555,149 +555,101 @@
         <!-- High-Priority Conversion Action Button -->
         <div style="margin-bottom: 16px;">
             <a href="/editor" class="btn-accent" style="display: block; text-align: center; text-decoration: none; padding: 12px 16px; font-size: 14px;">
-                🚀 Build ATS Resume Free
+                🚀 {{ t('build_ats_resume_free') if t else 'Build ATS Resume Free' }}
             </a>
         </div>
 
         <!-- Navigation Links -->
         <ul class="menu-list">
-            <li><a href="/dashboard" class="menu-link">📊 My Dashboard</a></li>
-            <li><a href="/dashboard/account" class="menu-link">⚙️ Account Settings</a></li>
-            <li><a href="#features" class="menu-link">⚡ AI Features & Tools</a></li>
-            <li><a href="#pricing" class="menu-link">💎 Pricing & Pro Plans</a></li>
-            <li><a href="/auth/login" class="menu-link">🔑 Sign Up / Login</a></li>
-            <li><a href="/auth/logout" class="menu-link" style="opacity: 0.85;">🚪 Sign Out</a></li>
+            <li><a href="/dashboard" class="menu-link">📊 {{ t('my_dashboard') if t else 'My Dashboard' }}</a></li>
+            <li><a href="/dashboard/account" class="menu-link">⚙️ {{ t('nav_settings') if t else 'Account Settings' }}</a></li>
+            <li><a href="#features" class="menu-link">⚡ {{ t('ai_features_tools') if t else 'AI Features & Tools' }}</a></li>
+            <li><a href="#pricing" class="menu-link">💎 {{ t('pricing_pro_plans') if t else 'Pricing & Pro Plans' }}</a></li>
+            <li><a href="/auth/login" class="menu-link">🔑 {{ t('signup_login') if t else 'Sign Up / Login' }}</a></li>
+            <li><a href="/auth/logout" class="menu-link" style="opacity: 0.85;">🚪 {{ t('sign_out') if t else 'Sign Out' }}</a></li>
         </ul>
 
         <!-- Footer Links -->
         <div style="margin-top: auto; padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 8px;">
-            <a href="#about" style="color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">ℹ️ About Us</a>
-            <a href="#privacy" style="color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">🔒 Privacy Policy</a>
-            <a href="#terms" style="color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">📜 Terms of Service</a>
+            <a href="#about" style="color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">ℹ️ {{ t('about_us') if t else 'About Us' }}</a>
+            <a href="#privacy" style="color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">🔒 {{ t('privacy_policy') if t else 'Privacy Policy' }}</a>
+            <a href="#terms" style="color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">📜 {{ t('terms_of_service') if t else 'Terms of Service' }}</a>
         </div>
     </aside>
 
     <!-- HERO SECTION -->
     <header class="hero">
-        <h1 class="hero-title">Craft ATS-Optimized Resumes & Land Your Dream Role</h1>
-        <p class="hero-subtitle">Generate tailored CVs, match job descriptions with AI precision, and track your applications—all in one place.</p>
+        <h1 class="hero-title">{{ t('hero_title') if t else 'Craft ATS-Optimized Resumes & Land Your Dream Role' }}</h1>
+        <p class="hero-subtitle">{{ t('hero_sub') if t else 'Generate tailored CVs, match job descriptions with AI precision, and track your applications—all in one place.' }}</p>
         <div class="hero-actions">
-            <a href="/editor" class="btn-accent" style="width: auto;">Build Resume Now (Free)</a>
-            <a href="#pricing" class="btn-secondary">Explore Premium Features</a>
+            <a href="/editor" class="btn-accent" style="width: auto;">{{ t('build_resume_now_free') if t else 'Build Resume Now (Free)' }}</a>
+            <a href="#pricing" class="btn-secondary">{{ t('explore_premium_features') if t else 'Explore Premium Features' }}</a>
         </div>
     </header>
 
     <!-- FEATURES OVERVIEW -->
     <section class="features" id="features">
-        <h2 class="section-title">Built for Modern Job Seekers</h2>
-        <p class="section-subtitle">Everything you need to showcase your experience cleanly and efficiently</p>
+        <h2 class="section-title">{{ t('built_for_modern_job_seekers') if t else 'Built for Modern Job Seekers' }}</h2>
+        <p class="section-subtitle">{{ t('features_sub') if t else 'Everything you need to showcase your experience cleanly and efficiently' }}</p>
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon">📄</div>
-                <h3>Instant PDF Generation</h3>
-                <p>Choose from professional templates and download pixel-perfect PDF resumes built with ReportLab rendering.</p>
+                <h3>{{ t('instant_pdf_generation') if t else 'Instant PDF Generation' }}</h3>
+                <p>{{ t('instant_pdf_desc') if t else 'Choose from professional templates and download pixel-perfect PDF resumes built with ReportLab rendering.' }}</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🎯</div>
-                <h3>AI ATS Match & Tailoring</h3>
-                <p>Analyze target job descriptions, receive keyword match scores, and automatically tailor your bullet points.</p>
+                <h3>{{ t('ai_ats_match_tailoring') if t else 'AI ATS Match & Tailoring' }}</h3>
+                <p>{{ t('ai_ats_match_desc') if t else 'Analyze target job descriptions, receive keyword match scores, and automatically tailor your bullet points.' }}</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">📊</div>
-                <h3>Job Application Tracker</h3>
-                <p>Organize your job search with a dedicated status dashboard. Monitor applications from saved to interview stages.</p>
+                <h3>{{ t('job_application_tracker') if t else 'Job Application Tracker' }}</h3>
+                <p>{{ t('job_application_tracker_desc') if t else 'Organize your job search with a dedicated status dashboard. Monitor applications from saved to interview stages.' }}</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">💼</div>
-                <h3>LinkedIn & Interview Prep</h3>
-                <p>Generate targeted cover letters, optimize your LinkedIn profile, and practice tailored interview questions.</p>
+                <h3>{{ t('linkedin_interview_prep') if t else 'LinkedIn & Interview Prep' }}</h3>
+                <p>{{ t('linkedin_interview_prep_desc') if t else 'Generate targeted cover letters, optimize your LinkedIn profile, and practice tailored interview questions.' }}</p>
             </div>
         </div>
     </section>
 
     <!-- SIDE-BY-SIDE PRICING CARDS -->
     <section class="pricing-section" id="pricing">
-        <h2 class="section-title">Simple, Transparent Pricing</h2>
-        <p class="section-subtitle">Choose the plan that fits your job search goals</p>
+        <h2 class="section-title">{{ t('simple_transparent_pricing') if t else 'Simple, Transparent Pricing' }}</h2>
+        <p class="section-subtitle">{{ t('pricing_sub') if t else 'Choose the plan that fits your job search goals' }}</p>
 
         <div class="pricing-grid">
             <!-- FREE CARD -->
             <div class="pricing-card">
                 <div>
                     <div class="card-header">
-                        <div class="plan-title">Free Plan</div>
+                        <div class="plan-title">{{ t('free_plan') if t else 'Free Plan' }}</div>
                         <div class="plan-price">$0</div>
-                        <div class="plan-period">Forever free</div>
+                        <div class="plan-period">{{ t('forever_free') if t else 'Forever free' }}</div>
                     </div>
                     <ul class="feature-list">
-                        <li><span class="check-icon">✓</span> Create & edit CVs</li>
-                        <li><span class="check-icon">✓</span> Standard templates</li>
-                        <li><span class="check-icon">✓</span> PDF download</li>
-                        <li class="disabled"><span class="cross-icon">✕</span> Job Application Tracker</li>
-                        <li class="disabled"><span class="cross-icon">✕</span> AI ATS Keyword Matching</li>
-                        <li class="disabled"><span class="cross-icon">✕</span> Cover letter generator</li>
-                        <li class="disabled"><span class="cross-icon">✕</span> LinkedIn profile optimization</li>
+                        <li><span class="check-icon">✓</span> {{ t('create_edit_cvs') if t else 'Create & edit CVs' }}</li>
+                        <li><span class="check-icon">✓</span> {{ t('standard_templates') if t else 'Standard templates' }}</li>
+                        <li><span class="check-icon">✓</span> {{ t('pdf_download') if t else 'PDF download' }}</li>
+                        <li class="disabled"><span class="cross-icon">✕</span> {{ t('job_application_tracker') if t else 'Job Application Tracker' }}</li>
+                        <li class="disabled"><span class="cross-icon">✕</span> {{ t('ai_ats_keyword_matching') if t else 'AI ATS Keyword Matching' }}</li>
+                        <li class="disabled"><span class="cross-icon">✕</span> {{ t('cover_letter_generator') if t else 'Cover letter generator' }}</li>
+                        <li class="disabled"><span class="cross-icon">✕</span> {{ t('linkedin_profile_optimization') if t else 'LinkedIn profile optimization' }}</li>
                     </ul>
                 </div>
-                <a href="/editor" class="btn-secondary" style="display: block; width: 100%;">Start Free</a>
+                <a href="/editor" class="btn-secondary" style="display: block; width: 100%;">{{ t('start_free') if t else 'Start Free' }}</a>
             </div>
 
             <!-- PREMIUM CARD -->
             <div class="pricing-card popular">
-                <div class="popular-badge">★ POPULAR</div>
+                <div class="popular-badge">★ {{ t('popular') if t else 'POPULAR' }}</div>
                 <div>
                     <div class="card-header">
-                        <div class="plan-title">CVForge Premium</div>
-                        <div class="plan-price">$9.99 <span style="font-size: 16px; font-weight: 500;">/month</span></div>
-                        <div class="yearly-subtext">Or $79.00 /year (Save 34%)</div>
+                        <div class="plan-title">{{ t('cvforge_premium') if t else 'CVForge Premium' }}</div>
+                        <div class="plan-price">$9.99 <span style="font-size: 16px; font-weight: 500;">/{{ t('month') if t else 'month' }}</span></div>
+                        <div class="yearly-subtext">{{ t('yearly_subtext') if t else 'Or $79.00 /year (Save 34%)' }}</div>
                     </div>
                     <ul class="feature-list">
-                        <li><span class="check-icon">✓</span> <strong>Job Application Tracker</strong> Dashboard</li>
-                        <li><span class="check-icon">✓</span> <strong>Unlimited</strong> AI ATS Optimizations</li>
-                        <li><span class="check-icon">✓</span> Job Description Keyword Matcher</li>
-                        <li><span class="check-icon">✓</span> Premium PDF Template Designs</li>
-                        <li><span class="check-icon">✓</span> Targeted Cover Letter Generator</li>
-                        <li><span class="check-icon">✓</span> LinkedIn Profile Optimizer</li>
-                        <li><span class="check-icon">✓</span> Interview Question Practice</li>
-                        <li><span class="check-icon">✓</span> Priority Customer Support</li>
-                    </ul>
-                </div>
-                <a href="/auth/register" class="btn-accent">Get Premium Access</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer>
-        <p>&copy; 2026 CVForge Platform. All rights reserved.</p>
-    </footer>
-{% endblock %}
-
-{% block extra_js %}
-    <!-- HAMBURGER JS -->
-    <script>
-        const hamburgerBtn = document.getElementById('hamburgerBtn');
-        const closeBtn = document.getElementById('closeBtn');
-        const mobileMenu = document.getElementById('mobileMenu');
-        const menuOverlay = document.getElementById('menuOverlay');
-        const menuLinks = document.querySelectorAll('.menu-link');
-
-        function openMenu() {
-            mobileMenu.classList.add('active');
-            menuOverlay.classList.add('active');
-        }
-
-        function closeMenu() {
-            mobileMenu.classList.remove('active');
-            menuOverlay.classList.remove('active');
-        }
-
-        hamburgerBtn.addEventListener('click', openMenu);
-        closeBtn.addEventListener('click', closeMenu);
-        menuOverlay.addEventListener('click', closeMenu);
-
-        menuLinks.forEach(link => {
-            link.addEventListener('click', closeMenu);
-        });
-    </script>
-{% endblock %}
+                        <li><span class="check-
