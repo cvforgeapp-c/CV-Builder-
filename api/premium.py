@@ -864,7 +864,7 @@ def get_settings():
             "linkedin": profile_prefs.get("linkedin", ""),
             "avatarUrl": getattr(current_user, "avatar_url", "") or ""
         },
-        "globalLanguage": prefs.get("language", prefs.get("aiPreferences", {}).get("aiLanguage", "English (US / UK)")),
+        "globalLanguage": (prefs.get("language") or (prefs.get("aiPreferences", {}).get("aiLanguage") if isinstance(prefs.get("aiPreferences"), dict) else None   )  or "English (US / UK)"),
         "aiPreferences": prefs.get("aiPreferences", {
             "aiTone": "Executive & Leadership",
             "aiLayout": "Modern ATS Minimalist",
