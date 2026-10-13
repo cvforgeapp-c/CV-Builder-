@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CV Generator - Input Form</title>
+{% extends "base.html" %}
+
+{% block title %}CV Generator - Input Form{% endblock %}
+
+{% block extra_css %}
     <style>
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
@@ -111,8 +110,9 @@
             .row { flex-direction: column; gap: 0; } 
         }
     </style>
-</head>
-<body>
+{% endblock %}
+
+{% block content %}
     <div class="container">
         <h1>CV Builder</h1>
         <div class="subtitle">Build a tailored, high-impact CV in minutes</div>
@@ -212,5 +212,4 @@
             <button type="submit" class="btn-submit">Generate PDF CV</button>
         </form>
     </div>
-</body>
-</html>
+{% endblock %}
