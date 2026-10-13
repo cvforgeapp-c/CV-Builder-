@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ html_lang_code | default('en') }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,9 +14,11 @@
         html, body { width: 100%; min-height: 100vh; }
         body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f8fafc; color: #1e293b; line-height: 1.6; }
         
-        /* --- HARD-KILL GOOGLE TRANSLATE BANNER & PUSH-DOWN --- */
+        /* --- HARD-KILL ALL TRANSLATION FRAMES, POPUPS & BANNER OVERLAYS --- */
         .goog-te-banner-frame, 
         .goog-te-banner-frame.skiptranslate, 
+        iframe.skiptranslate,
+        body > .skiptranslate,
         iframe[src*="translate.google.com"],
         #goog-gt-tt, 
         .goog-te-balloon-frame {
@@ -31,7 +33,7 @@
             left: -9999px !important;
         }
         
-        /* Prevent Google from pushing the body down */
+        /* Force body to stay flush at the top of the viewport */
         body {
             top: 0px !important;
             position: static !important;
@@ -48,7 +50,7 @@
         }
     </style>
 </head>
-<body>
+<body class="notranslate">
 
     <!-- Main Content Block rendered by child templates -->
     {% block content %}{% endblock %}
@@ -107,10 +109,9 @@
 
         // AGGRESSIVE DOM MUTATION OBSERVER TO INSTANTLY REMOVE GOOGLE BANNER IFRAMES
         const observer = new MutationObserver(function(mutations, obs) {
-            const banner = document.querySelector('.goog-te-banner-frame') || document.querySelector('iframe[src*="translate.google.com"]');
-            if (banner) {
-                banner.remove();
-            }
+            const elementsToRemove = document.querySelectorAll('.goog-te-banner-frame, iframe.skiptranslate, body > .skiptranslate, iframe[src*="translate.google.com"]');
+            elementsToRemove.forEach(el => el.remove());
+
             if (document.body.style.top && document.body.style.top !== '0px') {
                 document.body.style.top = '0px';
             }
@@ -120,7 +121,7 @@
             childList: true,
             subtree: true,
             attributes: true,
-            attributeFilter: ['style']
+            attributeFilter: ['style', 'class']
         });
       });
     </script>
