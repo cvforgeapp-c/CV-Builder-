@@ -14,11 +14,30 @@
         html, body { width: 100%; min-height: 100vh; }
         body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f8fafc; color: #1e293b; line-height: 1.6; }
         
-        /* Hide Google Translate top banner bar */
-        .goog-te-banner-frame { display: none !important; }
-        body { top: 0px !important; }
+        /* --- COMPLETELY HIDE GOOGLE TRANSLATE BANNER & PUSH-DOWN --- */
+        .goog-te-banner-frame, .goog-te-banner-frame.skiptranslate {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            width: 0 !important;
+            position: absolute !important;
+            top: -9999px !important;
+        }
+        
+        /* Prevent Google from pushing the body down */
+        body {
+            top: 0px !important;
+            position: static !important;
+        }
+
+        /* Hide Google Translate tooltips and highlight boxes */
         .goog-tooltip, .goog-tooltip:hover { display: none !important; }
         .goog-text-highlight { background-color: transparent !important; box-shadow: none !important; }
+        
+        /* Hide the google translate gadget dropdown widget */
+        #google_translate_element {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
