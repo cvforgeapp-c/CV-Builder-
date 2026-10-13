@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}CVForge — {{ t('ai_resume_platform', 'AI-Powered ATS Resume Builder & Career Platform') }}{% endblock %}
+{% block title %}CVForge — AI-Powered ATS Resume Builder & Career Platform{% endblock %}
 
 {% block extra_css %}
     <style>
@@ -20,6 +20,206 @@
             background: #f8fafc; 
             color: #1e293b; 
             line-height: 1.6; 
+        }
+
+        /* Fixed Navigation Bar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 5%;
+            background: #ffffff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            width: 100%;
+            min-height: 64px;
+        }
+
+        .brand-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .brand {
+            font-size: 20px;
+            font-weight: 800;
+            color: #02353C;
+            text-decoration: none;
+            line-height: 1.1;
+        }
+
+        .brand-subtitle {
+            font-size: 10px;
+            color: #64748b;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            margin-top: 2px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .desktop-nav {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .desktop-nav a {
+            text-decoration: none;
+            color: #475569;
+            font-weight: 600;
+            font-size: 14px;
+            transition: color 0.2s;
+            white-space: nowrap;
+        }
+
+        .desktop-nav a:hover { color: #02353C; }
+
+        /* Hamburger Icon Button */
+        .hamburger-btn {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 3.5px;
+            height: 36px;
+            width: 36px;
+            align-items: center;
+            z-index: 1001;
+        }
+
+        .hamburger-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .hamburger-bar {
+            width: 18px;
+            height: 2px;
+            background-color: #02353C;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        /* ATTRACTIVE GRADIENT HAMBURGER MENU */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(2, 53, 60, 0.5);
+            backdrop-filter: blur(6px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 2000;
+        }
+
+        .menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width: 280px;
+            height: 100%;
+            background: linear-gradient(165deg, #02353C 0%, #05535E 60%, #011f24 100%);
+            box-shadow: -8px 0 30px rgba(0, 0, 0, 0.3);
+            padding: 30px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 2001;
+            border-left: 1px solid rgba(229, 169, 60, 0.25);
+            overflow-y: auto;
+        }
+
+        .mobile-menu.active {
+            right: 0;
+        }
+
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            font-size: 20px;
+            color: #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .close-btn:hover {
+            background: #E5A93C;
+            color: #02353C;
+        }
+
+        .menu-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .menu-list a {
+            text-decoration: none;
+            color: #e2e8f0;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            transition: all 0.25s ease;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .menu-list a:hover {
+            color: #02353C;
+            background: #E5A93C;
+            transform: translateX(4px);
+            box-shadow: 0 4px 15px rgba(229, 169, 60, 0.3);
         }
 
         /* Buttons */
@@ -282,6 +482,10 @@
 
         /* RESPONSIVE BREAKPOINTS */
         @media (max-width: 900px) {
+            .desktop-nav {
+                display: none;
+            }
+
             .hero-title { 
                 font-size: 26px; 
             }
@@ -310,98 +514,190 @@
 {% endblock %}
 
 {% block content %}
+    <!-- SAFETY SPACER: Physically pushes content below the fixed navbar -->
+    <div style="height: 75px; width: 100%;"></div>
+
+    <!-- FIXED NAVBAR -->
+    <nav class="navbar">
+        <div class="brand-container">
+            <a href="/" class="brand">CVForge</a>
+            <span class="brand-subtitle">AI Resume Platform</span>
+        </div>
+        
+        <div class="nav-right">
+            <!-- Desktop Only Navigation -->
+            <div class="desktop-nav">
+                <a href="#features">Features</a>
+                <a href="#pricing">Plans</a>
+                <a href="/auth/login">Login</a>
+            </div>
+
+            <!-- Create CV Button -->
+            <a href="/editor" class="btn-primary">Create CV Free</a>
+
+            <!-- Hamburger Button -->
+            <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle Menu">
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- MOBILE / SLIDE-OVER MENU -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+    <aside class="mobile-menu" id="mobileMenu">
+        <div class="menu-header">
+            <span class="menu-title">CVForge</span>
+            <button class="close-btn" id="closeBtn" aria-label="Close Menu">&times;</button>
+        </div>
+
+        <!-- High-Priority Conversion Action Button -->
+        <div style="margin-bottom: 16px;">
+            <a href="/editor" class="btn-accent" style="display: block; text-align: center; text-decoration: none; padding: 12px 16px; font-size: 14px;">
+                🚀 Build ATS Resume Free
+            </a>
+        </div>
+
+        <!-- Navigation Links -->
+        <ul class="menu-list">
+            <li><a href="/dashboard" class="menu-link">📊 My Dashboard</a></li>
+            <li><a href="/dashboard/account" class="menu-link">⚙️ Account Settings</a></li>
+            <li><a href="#features" class="menu-link">⚡ AI Features & Tools</a></li>
+            <li><a href="#pricing" class="menu-link">💎 Pricing & Pro Plans</a></li>
+            <li><a href="/auth/login" class="menu-link">🔑 Sign Up / Login</a></li>
+            <li><a href="/auth/logout" class="menu-link" style="opacity: 0.85;">🚪 Sign Out</a></li>
+        </ul>
+
+        <!-- Footer Links -->
+        <div style="margin-top: auto; padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 8px;">
+            <a href="#about" style="color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">ℹ️ About Us</a>
+            <a href="#privacy" style="color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">🔒 Privacy Policy</a>
+            <a href="#terms" style="color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">📜 Terms of Service</a>
+        </div>
+    </aside>
+
     <!-- HERO SECTION -->
     <header class="hero">
-        <h1 class="hero-title">{{ t('hero_title', 'Craft ATS-Optimized Resumes & Land Your Dream Role') if t else 'Craft ATS-Optimized Resumes & Land Your Dream Role' }}</h1>
-        <p class="hero-subtitle">{{ t('hero_sub', 'Generate tailored CVs, match job descriptions with AI precision, and track your applications—all in one place.') if t else 'Generate tailored CVs, match job descriptions with AI precision, and track your applications—all in one place.' }}</p>
+        <h1 class="hero-title">Craft ATS-Optimized Resumes & Land Your Dream Role</h1>
+        <p class="hero-subtitle">Generate tailored CVs, match job descriptions with AI precision, and track your applications—all in one place.</p>
         <div class="hero-actions">
-            <a href="/editor" class="btn-accent" style="width: auto;">{{ t('build_resume_now_free', 'Build Resume Now (Free)') if t else 'Build Resume Now (Free)' }}</a>
-            <a href="#pricing" class="btn-secondary">{{ t('explore_premium_features', 'Explore Premium Features') if t else 'Explore Premium Features' }}</a>
+            <a href="/editor" class="btn-accent" style="width: auto;">Build Resume Now (Free)</a>
+            <a href="#pricing" class="btn-secondary">Explore Premium Features</a>
         </div>
     </header>
 
     <!-- FEATURES OVERVIEW -->
     <section class="features" id="features">
-        <h2 class="section-title">{{ t('built_for_modern_job_seekers', 'Built for Modern Job Seekers') if t else 'Built for Modern Job Seekers' }}</h2>
-        <p class="section-subtitle">{{ t('features_sub', 'Everything you need to showcase your experience cleanly and efficiently') if t else 'Everything you need to showcase your experience cleanly and efficiently' }}</p>
+        <h2 class="section-title">Built for Modern Job Seekers</h2>
+        <p class="section-subtitle">Everything you need to showcase your experience cleanly and efficiently</p>
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon">📄</div>
-                <h3>{{ t('instant_pdf_generation', 'Instant PDF Generation') if t else 'Instant PDF Generation' }}</h3>
-                <p>{{ t('instant_pdf_desc', 'Choose from professional templates and download pixel-perfect PDF resumes built with ReportLab rendering.') if t else 'Choose from professional templates and download pixel-perfect PDF resumes built with ReportLab rendering.' }}</p>
+                <h3>Instant PDF Generation</h3>
+                <p>Choose from professional templates and download pixel-perfect PDF resumes built with ReportLab rendering.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🎯</div>
-                <h3>{{ t('ai_ats_match_tailoring', 'AI ATS Match & Tailoring') if t else 'AI ATS Match & Tailoring' }}</h3>
-                <p>{{ t('ai_ats_match_desc', 'Analyze target job descriptions, receive keyword match scores, and automatically tailor your bullet points.') if t else 'Analyze target job descriptions, receive keyword match scores, and automatically tailor your bullet points.' }}</p>
+                <h3>AI ATS Match & Tailoring</h3>
+                <p>Analyze target job descriptions, receive keyword match scores, and automatically tailor your bullet points.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">📊</div>
-                <h3>{{ t('job_application_tracker', 'Job Application Tracker') if t else 'Job Application Tracker' }}</h3>
-                <p>{{ t('job_application_tracker_desc', 'Organize your job search with a dedicated status dashboard. Monitor applications from saved to interview stages.') if t else 'Organize your job search with a dedicated status dashboard. Monitor applications from saved to interview stages.' }}</p>
+                <h3>Job Application Tracker</h3>
+                <p>Organize your job search with a dedicated status dashboard. Monitor applications from saved to interview stages.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">💼</div>
-                <h3>{{ t('linkedin_interview_prep', 'LinkedIn & Interview Prep') if t else 'LinkedIn & Interview Prep' }}</h3>
-                <p>{{ t('linkedin_interview_prep_desc', 'Generate targeted cover letters, optimize your LinkedIn profile, and practice tailored interview questions.') if t else 'Generate targeted cover letters, optimize your LinkedIn profile, and practice tailored interview questions.' }}</p>
+                <h3>LinkedIn & Interview Prep</h3>
+                <p>Generate targeted cover letters, optimize your LinkedIn profile, and practice tailored interview questions.</p>
             </div>
         </div>
     </section>
 
     <!-- SIDE-BY-SIDE PRICING CARDS -->
     <section class="pricing-section" id="pricing">
-        <h2 class="section-title">{{ t('simple_transparent_pricing', 'Simple, Transparent Pricing') if t else 'Simple, Transparent Pricing' }}</h2>
-        <p class="section-subtitle">{{ t('pricing_sub', 'Choose the plan that fits your job search goals') if t else 'Choose the plan that fits your job search goals' }}</p>
+        <h2 class="section-title">Simple, Transparent Pricing</h2>
+        <p class="section-subtitle">Choose the plan that fits your job search goals</p>
 
         <div class="pricing-grid">
             <!-- FREE CARD -->
             <div class="pricing-card">
                 <div>
                     <div class="card-header">
-                        <div class="plan-title">{{ t('free_plan', 'Free Plan') if t else 'Free Plan' }}</div>
+                        <div class="plan-title">Free Plan</div>
                         <div class="plan-price">$0</div>
-                        <div class="plan-period">{{ t('forever_free', 'Forever free') if t else 'Forever free' }}</div>
+                        <div class="plan-period">Forever free</div>
                     </div>
                     <ul class="feature-list">
-                        <li><span class="check-icon">✓</span> {{ t('create_edit_cvs', 'Create & edit CVs') if t else 'Create & edit CVs' }}</li>
-                        <li><span class="check-icon">✓</span> {{ t('standard_templates', 'Standard templates') if t else 'Standard templates' }}</li>
-                        <li><span class="check-icon">✓</span> {{ t('pdf_download', 'PDF download') if t else 'PDF download' }}</li>
-                        <li class="disabled"><span class="cross-icon">✕</span> {{ t('job_application_tracker', 'Job Application Tracker') if t else 'Job Application Tracker' }}</li>
-                        <li class="disabled"><span class="cross-icon">✕</span> {{ t('ai_ats_keyword_matching', 'AI ATS Keyword Matching') if t else 'AI ATS Keyword Matching' }}</li>
-                        <li class="disabled"><span class="cross-icon">✕</span> {{ t('cover_letter_generator', 'Cover letter generator') if t else 'Cover letter generator' }}</li>
-                        <li class="disabled"><span class="cross-icon">✕</span> {{ t('linkedin_profile_optimization', 'LinkedIn profile optimization') if t else 'LinkedIn profile optimization' }}</li>
+                        <li><span class="check-icon">✓</span> Create & edit CVs</li>
+                        <li><span class="check-icon">✓</span> Standard templates</li>
+                        <li><span class="check-icon">✓</span> PDF download</li>
+                        <li class="disabled"><span class="cross-icon">✕</span> Job Application Tracker</li>
+                        <li class="disabled"><span class="cross-icon">✕</span> AI ATS Keyword Matching</li>
+                        <li class="disabled"><span class="cross-icon">✕</span> Cover letter generator</li>
+                        <li class="disabled"><span class="cross-icon">✕</span> LinkedIn profile optimization</li>
                     </ul>
                 </div>
-                <a href="/editor" class="btn-secondary" style="display: block; width: 100%;">{{ t('start_free', 'Start Free') if t else 'Start Free' }}</a>
+                <a href="/editor" class="btn-secondary" style="display: block; width: 100%;">Start Free</a>
             </div>
 
             <!-- PREMIUM CARD -->
             <div class="pricing-card popular">
-                <div class="popular-badge">★ {{ t('popular', 'POPULAR') if t else 'POPULAR' }}</div>
+                <div class="popular-badge">★ POPULAR</div>
                 <div>
                     <div class="card-header">
-                        <div class="plan-title">{{ t('cvforge_premium', 'CVForge Premium') if t else 'CVForge Premium' }}</div>
-                        <div class="plan-price">$9.99 <span style="font-size: 16px; font-weight: 500;">/{{ t('month', 'month') if t else 'month' }}</span></div>
-                        <div class="yearly-subtext">{{ t('yearly_subtext', 'Or $79.00 /year (Save 34%)') if t else 'Or $79.00 /year (Save 34%)' }}</div>
+                        <div class="plan-title">CVForge Premium</div>
+                        <div class="plan-price">$9.99 <span style="font-size: 16px; font-weight: 500;">/month</span></div>
+                        <div class="yearly-subtext">Or $79.00 /year (Save 34%)</div>
                     </div>
                     <ul class="feature-list">
-                        <li><span class="check-icon">✓</span> <strong>{{ t('job_application_tracker', 'Job Application Tracker') if t else 'Job Application Tracker' }}</strong> {{ t('dashboard', 'Dashboard') if t else 'Dashboard' }}</li>
-                        <li><span class="check-icon">✓</span> <strong>{{ t('unlimited', 'Unlimited') if t else 'Unlimited' }}</strong> {{ t('ai_ats_optimizations', 'AI ATS Optimizations') if t else 'AI ATS Optimizations' }}</li>
-                        <li><span class="check-icon">✓</span> {{ t('job_description_keyword_matcher', 'Job Description Keyword Matcher') if t else 'Job Description Keyword Matcher' }}</li>
-                        <li><span class="check-icon">✓</span> {{ t('premium_pdf_template_designs', 'Premium PDF Template Designs') if t else 'Premium PDF Template Designs' }}</li>
-                        <li><span class="check-icon">✓</span> {{ t('targeted_cover_letter_generator', 'Targeted Cover Letter Generator') if t else 'Targeted Cover Letter Generator' }}</li>
-                        <li><span class="check-icon">✓</span> {{ t('linkedin_profile_optimizer', 'LinkedIn Profile Optimizer') if t else 'LinkedIn Profile Optimizer' }}</li>
-                        <li><span class="check-icon">✓</span> {{ t('interview_question_practice', 'Interview Question Practice') if t else 'Interview Question Practice' }}</li>
-                        <li><span class="check-icon">✓</span> {{ t('priority_customer_support', 'Priority Customer Support') if t else 'Priority Customer Support' }}</li>
+                        <li><span class="check-icon">✓</span> <strong>Job Application Tracker</strong> Dashboard</li>
+                        <li><span class="check-icon">✓</span> <strong>Unlimited</strong> AI ATS Optimizations</li>
+                        <li><span class="check-icon">✓</span> Job Description Keyword Matcher</li>
+                        <li><span class="check-icon">✓</span> Premium PDF Template Designs</li>
+                        <li><span class="check-icon">✓</span> Targeted Cover Letter Generator</li>
+                        <li><span class="check-icon">✓</span> LinkedIn Profile Optimizer</li>
+                        <li><span class="check-icon">✓</span> Interview Question Practice</li>
+                        <li><span class="check-icon">✓</span> Priority Customer Support</li>
                     </ul>
                 </div>
-                <a href="/auth/register" class="btn-accent">{{ t('get_premium_access', 'Get Premium Access') if t else 'Get Premium Access' }}</a>
+                <a href="/auth/register" class="btn-accent">Get Premium Access</a>
             </div>
         </div>
     </section>
 
     <!-- FOOTER -->
     <footer>
-        <p>&copy; 2026 CVForge Platform. {{ t('all_rights_reserved', 'All rights reserved.') if t else 'All rights reserved.' }}</p>
+        <p>&copy; 2026 CVForge Platform. All rights reserved.</p>
     </footer>
+{% endblock %}
+
+{% block extra_js %}
+    <!-- HAMBURGER JS -->
+    <script>
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const closeBtn = document.getElementById('closeBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const menuOverlay = document.getElementById('menuOverlay');
+        const menuLinks = document.querySelectorAll('.menu-link');
+
+        function openMenu() {
+            mobileMenu.classList.add('active');
+            menuOverlay.classList.add('active');
+        }
+
+        function closeMenu() {
+            mobileMenu.classList.remove('active');
+            menuOverlay.classList.remove('active');
+        }
+
+        hamburgerBtn.addEventListener('click', openMenu);
+        closeBtn.addEventListener('click', closeMenu);
+        menuOverlay.addEventListener('click', closeMenu);
+
+        menuLinks.forEach(link => {
+            link.addEventListener('click', closeMenu);
+        });
+    </script>
 {% endblock %}
