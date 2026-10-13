@@ -34,7 +34,7 @@
                     <!-- Settings Gear Icon -->
                     <a href="/dashboard/account" class="p-1.5 px-2.5 rounded-lg bg-white/10 hover:bg-white/20 transition-all border border-white/10 text-xs font-semibold text-white flex items-center gap-1.5" title="Account Settings">
                         <i class="fa-solid fa-gear text-amber-400 text-xs"></i>
-                        <span class="hidden sm:inline">Settings</span>
+                        <span class="hidden sm:inline">{{ t('nav_settings') }}</span>
                     </a>
 
                     <!-- Logout Icon -->
@@ -63,15 +63,15 @@
                 <div class="space-y-0.5">
                     <div class="flex items-center space-x-2 flex-wrap gap-y-0.5">
                         <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight" id="dispWelcomeName">
-                            Welcome back, {{ user.full_name if user and user.full_name else 'Job Seeker' }}!
+                            {{ t('welcome_back') }}, {{ user.full_name if user and user.full_name else 'Job Seeker' }}!
                         </h1>
                         {% if user and user.is_premium %}
                             <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-[#02353C] shadow-2xs">
-                                <i class="fa-solid fa-crown text-[9px]"></i> PRO
+                                  <i class="fa-solid fa-crown text-[9px]"></i> {{ t('pro') }}   
                             </span>
                         {% else %}
                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
-                                FREE TIER
+                                {{ t('free_tier') }}
                             </span>
                         {% endif %}
                     </div>
@@ -93,11 +93,11 @@
             {% if not user or not user.is_premium %}
                 <div class="bg-gradient-to-r from-[#02353C] to-[#05535E] text-white rounded-lg p-2.5 px-3 shadow-2xs flex items-center justify-between gap-3 md:max-w-xs w-full shrink-0 border border-white/10">
                     <div class="space-y-0.5">
-                        <p class="font-bold text-[11px] uppercase tracking-wider text-amber-400">Upgrade to Pro</p>
-                        <p class="text-[10px] text-slate-200 leading-tight">Unlimited downloads & ATS tailoring.</p>
+                          <p class="font-bold text-[11px] uppercase tracking-wider text-amber-400">{{ t('upgrade_pro') }}</p>
+                          <p class="text-[10px] text-slate-200 leading-tight">{{ t('upgrade_sub') }}</p>
                     </div>
                     <a href="/pricing" class="bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold text-[11px] px-3 py-1.5 rounded-md transition-all shrink-0 flex items-center gap-1">
-                        <i class="fa-solid fa-bolt text-[10px]"></i> Upgrade
+                        <i class="fa-solid fa-bolt text-[10px]"></i> {{ t('upgrade_btn') }}
                     </a>
                 </div>
             {% endif %}
@@ -107,7 +107,7 @@
         <div class="bg-white rounded-xl p-2.5 px-3.5 border border-slate-200/80 shadow-2xs flex items-center justify-between gap-2 text-xs">
             <div class="flex items-center gap-1.5 text-slate-500 font-semibold">
                 <i class="fa-solid fa-sliders text-amber-500 text-xs"></i>
-                <span class="uppercase text-[9px] tracking-wider text-slate-400 font-bold">Preferences</span>
+                <span class="uppercase text-[9px] tracking-wider text-slate-400 font-bold">{{ t('preferences') }}</span>
             </div>
 
             <div class="flex items-center gap-2 sm:gap-3">
@@ -116,14 +116,14 @@
                 {% set global_lang = prefs.get('language') or prefs.get('aiPreferences', {}).get('aiLanguage') or 'English (US / UK)' %}
                 <div class="flex items-center gap-1 bg-slate-50 px-2.5 py-1 rounded-md border border-slate-200/80 text-[11px] text-slate-700">
                     <i class="fa-solid fa-globe text-slate-400 text-[10px]"></i>
-                    <span class="text-slate-400 font-medium hidden sm:inline">Language:</span>
+                    <span class="text-slate-400 font-medium hidden sm:inline">{{ t('language') }}:</span>
                     <strong id="dispLanguage" class="text-slate-800 font-bold">{{ global_lang }}</strong>
                 </div>
 
                 <!-- Currency Badge -->
                 <div class="flex items-center gap-1 bg-slate-50 px-2.5 py-1 rounded-md border border-slate-200/80 text-[11px] text-slate-700">
                     <i class="fa-solid fa-coins text-amber-500 text-[10px]"></i>
-                    <span class="text-slate-400 font-medium hidden sm:inline">Currency:</span>
+                    <span class="text-slate-400 font-medium hidden sm:inline">{{ t('currency') }}:</span>
                     <strong id="dispCurrency" class="text-slate-800 font-bold">{{ prefs.get('trackerSettings', {}).get('currency', 'USD ($)') }}</strong>
                 </div>
             </div>
@@ -137,7 +137,7 @@
                     <i class="fa-solid fa-file-lines"></i>
                 </div>
                 <div>
-                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider">Resumes</p>
+                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ t('resumes') }}</p>
                     <p class="text-base sm:text-xl font-extrabold text-slate-900" id="resumeCount">{{ resumes|length if resumes else 0 }}</p>
                 </div>
             </div>
@@ -148,7 +148,7 @@
                     <i class="fa-solid fa-wand-magic-sparkles"></i>
                 </div>
                 <div>
-                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider">Credits</p>
+                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ t('credits') }}</p>
                     <p class="text-base sm:text-xl font-extrabold text-slate-900">{{ user.ai_credits_remaining if (user and user.ai_credits_remaining is defined and user.ai_credits_remaining is not none) else 3 }}</p>
                 </div>
             </div>
@@ -159,8 +159,8 @@
                     <i class="fa-solid fa-briefcase"></i>
                 </div>
                 <div>
-                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider">Applications</p>
-                    <p class="text-base sm:text-xl font-extrabold text-slate-900">0 Active</p>
+                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ t('applications') }}</p>
+                    <p class="text-base sm:text-xl font-extrabold text-slate-900">0 {{ t('active') }}</p>
                 </div>
             </div>
         </div>
@@ -169,12 +169,12 @@
         <div class="space-y-3 pt-1">
             <div class="flex items-center justify-between gap-2">
                 <div>
-                    <h2 class="text-base sm:text-lg font-bold text-slate-900">My Saved Resumes</h2>
-                    <p class="text-slate-500 text-[11px] hidden sm:block">Manage, edit, preview, or delete your documents.</p>
+                    <h2 class="text-base sm:text-lg font-bold text-slate-900">{{ t('my_saved_resumes') }}</h2>
+                    <p class="text-slate-500 text-[11px] hidden sm:block">{{ t('manage_docs_sub') }}</p>
                 </div>
                 <a href="/editor" class="inline-flex items-center gap-1.5 bg-[#02353C] hover:bg-[#034a54] text-white font-bold text-xs px-3.5 py-2 rounded-lg shadow-2xs transition-all whitespace-nowrap">
                     <i class="fa-solid fa-plus text-[10px] text-amber-400"></i>
-                    <span>Create CV</span>
+                    <span>{{ t('create_cv') }}</span>
                 </a>
             </div>
 
@@ -203,14 +203,14 @@
                             <div class="px-3.5 py-2 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between text-xs font-semibold">
                                 <div class="flex items-center gap-3">
                                     <a href="/editor?id={{ resume.id }}" class="text-[#02353C] hover:text-emerald-700 flex items-center gap-1">
-                                        <i class="fa-solid fa-pen-to-square text-[11px]"></i> Edit
+                                        <i class="fa-solid fa-pen-to-square text-[11px]"></i> {{ t('edit') }}
                                     </a>
                                     <a href="/preview?id={{ resume.id }}" class="text-slate-500 hover:text-slate-900 flex items-center gap-1" title="View / Print PDF">
-                                        <i class="fa-solid fa-eye text-[11px]"></i> View / PDF
+                                        <i class="fa-solid fa-eye text-[11px]"></i> {{ t('view_pdf') }}
                                     </a>
                                 </div>
                                 <button type="button" onclick="confirmDeleteResume('{{ resume.id }}', '{{ resume.title|e }}')" class="text-rose-500 hover:text-rose-700 flex items-center gap-1 transition-colors">
-                                    <i class="fa-solid fa-trash-can text-[11px]"></i> Delete
+                                    <i class="fa-solid fa-trash-can text-[11px]"></i> {{ t('delete') }}
                                 </button>
                             </div>
                         </div>
@@ -223,12 +223,12 @@
                         <i class="fa-solid fa-file-circle-plus"></i>
                     </div>
                     <div class="max-w-sm mx-auto space-y-1">
-                        <h3 class="text-sm font-bold text-slate-800">No resumes saved yet</h3>
-                        <p class="text-slate-500 text-xs">Create your first ATS-optimized CV using standard templates.</p>
+                          <h3 class="text-sm font-bold text-slate-800">{{ t('no_resumes_yet') }}</h3>
+                          <p class="text-slate-500 text-xs">{{ t('no_resumes_sub') }}</p>
                     </div>
                     <a href="/editor" class="inline-flex items-center gap-1.5 bg-[#02353C] hover:bg-[#034a54] text-white font-bold text-xs px-4 py-2.5 rounded-lg shadow-2xs transition-all">
                         <i class="fa-solid fa-plus text-amber-400 text-[10px]"></i>
-                        Build Your First CV
+                        {{ t('build_first_cv') }}
                     </a>
                 </div>
             {% endif %}
@@ -244,16 +244,16 @@
                     <i class="fa-solid fa-trash-can text-base"></i>
                 </div>
                 <div>
-                    <h3 class="font-bold text-slate-900 text-sm">Delete Resume?</h3>
-                    <p class="text-xs text-slate-500" id="deleteModalResumeTitle">This document will be permanently deleted.</p>
+                      <h3 class="font-bold text-slate-900 text-sm">{{ t('confirm_delete') }}</h3>
+                      <p class="text-xs text-slate-500" id="deleteModalResumeTitle">{{ t('delete_confirm_message') }}</p>
                 </div>
             </div>
             <div class="flex items-center justify-end gap-2 pt-1">
                 <button type="button" onclick="closeDeleteModal()" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-lg transition-all">
-                    Cancel
+                    {{ t('cancel') }}
                 </button>
                 <button type="button" id="confirmDeleteBtn" class="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-lg transition-all shadow-2xs">
-                    Delete Document
+                    {{ t('delete_document') }}
                 </button>
             </div>
         </div>
