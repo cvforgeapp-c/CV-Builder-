@@ -1,8 +1,11 @@
-{% extends "base.html" %}
 
-{% block title %}CVForge — AI-Powered ATS Resume Builder & Career Platform{% endblock %}
 
-{% block extra_css %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CVForge — AI-Powered ATS Resume Builder & Career Platform</title>
     <style>
         * { 
             box-sizing: border-box; 
@@ -516,9 +519,9 @@
             }
         }
     </style>
-{% endblock %}
+</head>
+<body>
 
-{% block content %}
     <!-- FIXED NAVBAR -->
     <nav class="navbar">
         <div class="brand-container">
@@ -673,9 +676,7 @@
     <footer>
         <p>&copy; 2026 CVForge Platform. All rights reserved.</p>
     </footer>
-{% endblock %}
 
-{% block extra_js %}
     <!-- HAMBURGER JS -->
     <script>
         const hamburgerBtn = document.getElementById('hamburgerBtn');
@@ -702,4 +703,6 @@
             link.addEventListener('click', closeMenu);
         });
     </script>
-{% endblock %}
+
+</body>
+</html>
