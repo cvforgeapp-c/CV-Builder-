@@ -14,20 +14,28 @@
         html, body { width: 100%; min-height: 100vh; }
         body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f8fafc; color: #1e293b; line-height: 1.6; }
         
-        /* --- COMPLETELY HIDE GOOGLE TRANSLATE BANNER & PUSH-DOWN --- */
-        .goog-te-banner-frame, .goog-te-banner-frame.skiptranslate {
+        /* --- HARD-KILL GOOGLE TRANSLATE BANNER & PUSH-DOWN --- */
+        .goog-te-banner-frame, 
+        .goog-te-banner-frame.skiptranslate, 
+        iframe[src*="translate.google.com"],
+        #goog-gt-tt, 
+        .goog-te-balloon-frame {
             display: none !important;
             visibility: hidden !important;
+            opacity: 0 !important;
             height: 0 !important;
             width: 0 !important;
+            pointer-events: none !important;
             position: absolute !important;
             top: -9999px !important;
+            left: -9999px !important;
         }
         
         /* Prevent Google from pushing the body down */
         body {
             top: 0px !important;
             position: static !important;
+            min-height: 100vh !important;
         }
 
         /* Hide Google Translate tooltips and highlight boxes */
@@ -59,7 +67,7 @@
     </script>
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
-    <!-- Platform-Wide Language Synchronization Script -->
+    <!-- Platform-Wide Language Synchronization & DOM Banner Cleaner Script -->
     <script>
       document.addEventListener("DOMContentLoaded", function() {
         // Active language preference injected from Flask context processor
@@ -96,6 +104,24 @@
           // Reset cookie if English is selected
           document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
         }
+
+        // AGGRESSIVE DOM MUTATION OBSERVER TO INSTANTLY REMOVE GOOGLE BANNER IFRAMES
+        const observer = new MutationObserver(function(mutations, obs) {
+            const banner = document.querySelector('.goog-te-banner-frame') || document.querySelector('iframe[src*="translate.google.com"]');
+            if (banner) {
+                banner.remove();
+            }
+            if (document.body.style.top && document.body.style.top !== '0px') {
+                document.body.style.top = '0px';
+            }
+        });
+
+        observer.observe(document.documentElement, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['style']
+        });
       });
     </script>
 
