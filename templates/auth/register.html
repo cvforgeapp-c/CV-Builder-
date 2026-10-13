@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends "base.html" %}
 
-    <title>Sign Up - CVForge AI Resume Builder</title>
+{% block title %}Sign Up - CVForge AI Resume Builder{% endblock %}
 
+{% block extra_css %}
     <style>
         * {
             box-sizing: border-box;
@@ -270,10 +267,9 @@
             }
         }
     </style>
-</head>
+{% endblock %}
 
-<body>
-
+{% block content %}
     <a href="/" class="back-nav">
         ← Back to CVForge
     </a>
@@ -384,6 +380,4 @@
         </div>
 
     </div>
-
-</body>
-</html>
+{% endblock %}
