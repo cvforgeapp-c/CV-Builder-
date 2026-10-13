@@ -9,18 +9,15 @@
     {% block extra_css %}{% endblock %}
 
     <style>
-        /* Global CSS reset to ensure clean layout across pages */
+        /* Global CSS reset */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { width: 100%; min-height: 100vh; }
         body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f8fafc; color: #1e293b; line-height: 1.6; }
         
-        /* --- HARD-KILL ALL TRANSLATION FRAMES, POPUPS & BANNER OVERLAYS --- */
-        .goog-te-banner-frame, 
-        .goog-te-banner-frame.skiptranslate, 
-        iframe.skiptranslate,
-        body > .skiptranslate,
-        iframe[src*="translate.google.com"],
-        #goog-gt-tt, 
+        /* --- HIDE ONLY THE TOP BANNER FRAME & TOOLTIPS --- */
+        .goog-te-banner-frame,
+        .goog-te-banner-frame.skiptranslate,
+        #goog-gt-tt,
         .goog-te-balloon-frame {
             display: none !important;
             visibility: hidden !important;
@@ -30,35 +27,29 @@
             pointer-events: none !important;
             position: absolute !important;
             top: -9999px !important;
-            left: -9999px !important;
         }
         
-        /* Force body to stay flush at the top of the viewport */
+        /* Force body to stay at top zero offset */
         body {
             top: 0px !important;
             position: static !important;
             min-height: 100vh !important;
         }
 
-        /* Hide Google Translate tooltips and highlight boxes */
         .goog-tooltip, .goog-tooltip:hover { display: none !important; }
         .goog-text-highlight { background-color: transparent !important; box-shadow: none !important; }
-        
-        /* Hide the google translate gadget dropdown widget */
-        #google_translate_element {
-            display: none !important;
-        }
+        #google_translate_element { display: none !important; }
     </style>
 </head>
-<body class="notranslate">
+<body>
 
     <!-- Main Content Block rendered by child templates -->
     {% block content %}{% endblock %}
 
-    <!-- Hidden Google Translate Element -->
+    <!-- Hidden Google Translate Container -->
     <div id="google_translate_element" style="display:none;"></div>
 
-    <!-- Google Translate Script -->
+    <!-- Google Translate Engine Script -->
     <script type="text/javascript">
     function googleTranslateElementInit() {
       new google.translate.TranslateElement({
@@ -69,10 +60,9 @@
     </script>
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
-    <!-- Platform-Wide Language Synchronization & DOM Banner Cleaner Script -->
+    <!-- Language Sync & Layout Correction Script -->
     <script>
       document.addEventListener("DOMContentLoaded", function() {
-        // Active language preference injected from Flask context processor
         const userLang = "{{ current_language }}"; 
         
         const langCodes = {
@@ -99,29 +89,24 @@
 
         const code = langCodes[userLang];
         if (code && code !== 'en') {
-          // Set translate cookie across the domain so all routes automatically render translated text
+          // Set translate cookies for seamless auto-translation
           document.cookie = `googtrans=/en/${code}; path=/; domain=${window.location.hostname}`;
           document.cookie = `googtrans=/en/${code}; path=/;`;
         } else {
-          // Reset cookie if English is selected
+          document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname}`;
           document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
         }
 
-        // AGGRESSIVE DOM MUTATION OBSERVER TO INSTANTLY REMOVE GOOGLE BANNER IFRAMES
-        const observer = new MutationObserver(function(mutations, obs) {
-            const elementsToRemove = document.querySelectorAll('.goog-te-banner-frame, iframe.skiptranslate, body > .skiptranslate, iframe[src*="translate.google.com"]');
-            elementsToRemove.forEach(el => el.remove());
-
+        // Clean layout shifts without deleting core script elements
+        const observer = new MutationObserver(function() {
             if (document.body.style.top && document.body.style.top !== '0px') {
                 document.body.style.top = '0px';
             }
         });
 
-        observer.observe(document.documentElement, {
-            childList: true,
-            subtree: true,
+        observer.observe(document.body, {
             attributes: true,
-            attributeFilter: ['style', 'class']
+            attributeFilter: ['style']
         });
       });
     </script>
