@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account Settings — CVForge</title>
+{% extends "base.html" %}
+
+{% block title %}Account Settings — CVForge{% endblock %}
+
+{% block extra_css %}
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -452,8 +451,9 @@
             .card { padding: 22px 18px; }
         }
     </style>
-</head>
-<body>
+{% endblock %}
+
+{% block content %}
 
     <!-- FIXED NAVBAR -->
     <nav class="navbar">
@@ -738,7 +738,9 @@
         </div>
     </div>
 
-    <!-- FUNCTIONAL BACKEND-CONNECTED SCRIPT -->
+{% endblock %}
+
+{% block extra_js %}
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
@@ -1016,6 +1018,4 @@
             loadUserSettings();
         });
     </script>
-
-</body>
-</html>
+{% endblock %}
