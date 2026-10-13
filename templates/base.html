@@ -1,114 +1,130 @@
 <!DOCTYPE html>
-<html lang="{{ html_lang_code | default('en') }}">
+<html lang="{{ html_lang_code | default('en') }}"
+      dir="{{ 'rtl' if current_language == 'Arabic' else 'ltr' }}">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>{% block title %}CVForge — AI-Powered ATS Resume Builder{% endblock %}</title>
-    
+
     <!-- Custom CSS Block for individual page styles -->
     {% block extra_css %}{% endblock %}
 
     <style>
         /* Global CSS reset */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { width: 100%; min-height: 100vh; }
-        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f8fafc; color: #1e293b; line-height: 1.6; }
-        
-        /* --- HIDE ONLY THE TOP BANNER FRAME & TOOLTIPS --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+            position: static !important;
+            top: 0 !important;
+            min-height: 100vh !important;
+        }
+
+        /* Prevent unwanted Google Translate UI if an old
+           translation script is loaded elsewhere. */
         .goog-te-banner-frame,
         .goog-te-banner-frame.skiptranslate,
         #goog-gt-tt,
-        .goog-te-balloon-frame {
+        .goog-te-balloon-frame,
+        .goog-tooltip,
+        .goog-tooltip:hover {
             display: none !important;
             visibility: hidden !important;
             opacity: 0 !important;
             height: 0 !important;
-            width: 0 !important;
             pointer-events: none !important;
-            position: absolute !important;
-            top: -9999px !important;
-        }
-        
-        /* Force body to stay at top zero offset */
-        body {
-            top: 0px !important;
-            position: static !important;
-            min-height: 100vh !important;
         }
 
-        .goog-tooltip, .goog-tooltip:hover { display: none !important; }
-        .goog-text-highlight { background-color: transparent !important; box-shadow: none !important; }
-        #google_translate_element { display: none !important; }
+        .goog-text-highlight {
+            background-color: transparent !important;
+            box-shadow: none !important;
+        }
+
+        /* Arabic right-to-left support */
+        html[dir="rtl"] body {
+            direction: rtl;
+            text-align: right;
+        }
     </style>
 </head>
+
 <body>
 
     <!-- Main Content Block rendered by child templates -->
     {% block content %}{% endblock %}
 
-    <!-- Hidden Google Translate Container -->
-    <div id="google_translate_element" style="display:none;"></div>
-
-    <!-- Google Translate Engine Script -->
-    <script type="text/javascript">
-    function googleTranslateElementInit() {
-      new google.translate.TranslateElement({
-        pageLanguage: 'en',
-        autoDisplay: false
-      }, 'google_translate_element');
-    }
-    </script>
-    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
-    <!-- Language Sync & Layout Correction Script -->
+    <!-- Language configuration.
+         The application should provide translated content
+         through its own translation system. -->
     <script>
-      document.addEventListener("DOMContentLoaded", function() {
-        const userLang = "{{ current_language }}"; 
-        
-        const langCodes = {
-          "Spanish": "es",
-          "French": "fr",
-          "Mandarin Chinese": "zh-CN",
-          "German": "de",
-          "Amharic": "am",
-          "Afaan Oromoo": "om",
-          "Swahili": "sw",
-          "Arabic": "ar",
-          "Hindi": "hi",
-          "Russian": "ru",
-          "Portuguese": "pt",
-          "Japanese": "ja",
-          "Korean": "ko",
-          "Italian": "it",
-          "Turkish": "tr",
-          "Dutch": "nl",
-          "Polish": "pl",
-          "Swedish": "sv",
-          "Tigrinya": "ti"
-        };
+        document.addEventListener("DOMContentLoaded", function () {
+            const userLang = {{ (current_language | default('English')) | tojson }};
 
-        const code = langCodes[userLang];
-        if (code && code !== 'en') {
-          // Set translate cookies for seamless auto-translation
-          document.cookie = `googtrans=/en/${code}; path=/; domain=${window.location.hostname}`;
-          document.cookie = `googtrans=/en/${code}; path=/;`;
-        } else {
-          document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname}`;
-          document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-        }
+            const langCodes = {
+                "English": "en",
+                "Spanish": "es",
+                "French": "fr",
+                "Mandarin Chinese": "zh-CN",
+                "German": "de",
+                "Amharic": "am",
+                "Afaan Oromoo": "om",
+                "Swahili": "sw",
+                "Arabic": "ar",
+                "Hindi": "hi",
+                "Russian": "ru",
+                "Portuguese": "pt",
+                "Japanese": "ja",
+                "Korean": "ko",
+                "Italian": "it",
+                "Turkish": "tr",
+                "Dutch": "nl",
+                "Polish": "pl",
+                "Swedish": "sv",
+                "Tigrinya": "ti"
+            };
 
-        // Clean layout shifts without deleting core script elements
-        const observer = new MutationObserver(function() {
-            if (document.body.style.top && document.body.style.top !== '0px') {
-                document.body.style.top = '0px';
+            const code = langCodes[userLang] || "en";
+
+            document.documentElement.lang = code;
+            document.documentElement.dir =
+                code === "ar" ? "rtl" : "ltr";
+
+            /*
+             * Remove legacy Google Translate cookies.
+             * These cookies may otherwise cause old translation
+             * settings to persist in the browser.
+             */
+            const hostname = window.location.hostname;
+            const parts = hostname.split(".");
+
+            document.cookie =
+                "googtrans=; Max-Age=0; path=/;";
+
+            document.cookie =
+                "googtrans=; Max-Age=0; path=/; domain=" +
+                hostname + ";";
+
+            if (parts.length > 1) {
+                document.cookie =
+                    "googtrans=; Max-Age=0; path=/; domain=." +
+                    hostname + ";";
             }
         });
-
-        observer.observe(document.body, {
-            attributes: true,
-            attributeFilter: ['style']
-        });
-      });
     </script>
 
     <!-- Extra JS Block for individual pages -->
