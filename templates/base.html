@@ -8,6 +8,10 @@
 
     <title>{% block title %}CVForge — AI-Powered ATS Resume Builder{% endblock %}</title>
 
+    <!-- Expose the selected language to page-level scripts -->
+    <meta name="cvforge-language"
+          content="{{ current_language | default('English (US / UK)') }}">
+
     <!-- Custom CSS Block for individual page styles -->
     {% block extra_css %}{% endblock %}
 
@@ -35,8 +39,7 @@
             min-height: 100vh !important;
         }
 
-        /* Prevent unwanted Google Translate UI if an old
-           translation script is loaded elsewhere. */
+        /* Prevent unwanted Google Translate UI */
         .goog-te-banner-frame,
         .goog-te-banner-frame.skiptranslate,
         #goog-gt-tt,
@@ -68,31 +71,32 @@
     <!-- Main Content Block rendered by child templates -->
     {% block content %}{% endblock %}
 
-    <!-- Language configuration.
-         The application should provide translated content
-         through its own translation system. -->
+    <!-- CVForge language configuration -->
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const userLang = {{ (current_language | default('English')) | tojson }};
+        (function () {
+            "use strict";
+
+            const userLang =
+                {{ (current_language | default('English (US / UK)')) | tojson }};
 
             const langCodes = {
-                "English": "en",
-                "Spanish": "es",
-                "French": "fr",
+                "English (US / UK)": "en",
                 "Mandarin Chinese": "zh-CN",
-                "German": "de",
-                "Swahili": "sw",
-                "Arabic": "ar",
+                "Spanish": "es",
                 "Hindi": "hi",
-                "Russian": "ru",
+                "Arabic": "ar",
+                "French": "fr",
                 "Portuguese": "pt",
+                "Russian": "ru",
+                "German": "de",
                 "Japanese": "ja",
                 "Korean": "ko",
                 "Italian": "it",
                 "Turkish": "tr",
                 "Dutch": "nl",
                 "Polish": "pl",
-                "Swedish": "sv"
+                "Swedish": "sv",
+                "Swahili": "sw"
             };
 
             const code = langCodes[userLang] || "en";
@@ -102,9 +106,16 @@
                 code === "ar" ? "rtl" : "ltr";
 
             /*
+             * Make the selected language available to page-level
+             * JavaScript without overriding the user's saved setting.
+             */
+            window.CVForgeLanguage = {
+                name: userLang,
+                code: code
+            };
+
+            /*
              * Remove legacy Google Translate cookies.
-             * These cookies may otherwise cause old translation
-             * settings to persist in the browser.
              */
             const hostname = window.location.hostname;
             const parts = hostname.split(".");
@@ -121,7 +132,7 @@
                     "googtrans=; Max-Age=0; path=/; domain=." +
                     hostname + ";";
             }
-        });
+        })();
     </script>
 
     <!-- Extra JS Block for individual pages -->
