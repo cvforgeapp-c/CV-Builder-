@@ -899,15 +899,46 @@ def update_settings_section(section):
         if "fullName" in data:
             current_user.full_name = data["fullName"]
         prefs["profile"] = data
-    elif section == "language":
-        selected_lang = data.get("language") or data.get("aiLanguage") or (data if isinstance(data, str) else None)
-        if selected_lang:
-            prefs["language"] = selected_lang
-            if "aiPreferences" not in prefs:
-                prefs["aiPreferences"] = {}
-            prefs["aiPreferences"]["aiLanguage"] = selected_lang
+       elif section == "language":
+        if isinstance(data, str):
+            selected_lang = data.strip()
+
+        elif isinstance(data, dict):
+            selected_lang = (
+                data.get("language")
+                or data.get("aiLanguage")
+                or ""
+            )
+
+            if not isinstance(selected_lang, str):
+                selected_lang = ""
+
+            selected_lang = selected_lang.strip()
+
         else:
-            prefs.update(data)
+            selected_lang = ""
+
+        if not selected_lang:
+            return jsonify({
+                "error": "Please select a language.",
+                "supported_languages": SUPPORTED_LANGUAGES,
+            }), 400
+
+        if selected_lang not in SUPPORTED_LANGUAGES:
+            return jsonify({
+                "error": "This language is not supported.",
+                "supported_languages": SUPPORTED_LANGUAGES,
+            }), 400
+
+        prefs["language"] = selected_lang
+
+        ai_preferences = prefs.get("aiPreferences", {})
+
+        if not isinstance(ai_preferences, dict):
+            ai_preferences = {}
+
+        ai_preferences["aiLanguage"] = selected_lang
+        prefs["aiPreferences"] = ai_preferences 
     elif section == "ai":
         prefs["aiPreferences"] = data
         if "aiLanguage" in data:
