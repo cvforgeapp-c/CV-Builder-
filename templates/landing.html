@@ -1,78 +1,521 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CVForge — {{ t('landing_hero_title') }}</title>
+    <title>CVForge — AI-Powered ATS Resume Builder & Career Platform</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { width: 100%; overflow-x: hidden; }
-        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f8fafc; color: #1e293b; line-height: 1.6; padding-top: 68px; }
-        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 10px 5%; background: #ffffff; box-shadow: 0 2px 10px rgba(0,0,0,0.06); position: fixed; top: 0; left: 0; right: 0; z-index: 1000; width: 100%; min-height: 64px; }
-        .brand-container { display: flex; flex-direction: column; justify-content: center; flex-shrink: 0; }
-        .brand { font-size: 20px; font-weight: 800; color: #02353C; text-decoration: none; line-height: 1.1; }
-        .brand-subtitle { font-size: 10px; color: #64748b; font-weight: 600; letter-spacing: 0.3px; margin-top: 2px; }
-        .nav-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-        .desktop-nav { display: flex; gap: 20px; align-items: center; }
-        .desktop-nav a { text-decoration: none; color: #475569; font-weight: 600; font-size: 14px; transition: color 0.2s; white-space: nowrap; }
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+        
+        html, body {
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        body { 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+            background: #f8fafc; 
+            color: #1e293b; 
+            line-height: 1.6; 
+            padding-top: 68px; /* Prevents hero section from hiding under fixed navbar */
+        }
+
+        /* Fixed Navigation Bar (Stays on screen when scrolling) */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 5%;
+            background: #ffffff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            width: 100%;
+            min-height: 64px;
+        }
+
+        .brand-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .brand {
+            font-size: 20px;
+            font-weight: 800;
+            color: #02353C;
+            text-decoration: none;
+            line-height: 1.1;
+        }
+
+        .brand-subtitle {
+            font-size: 10px;
+            color: #64748b;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            margin-top: 2px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .desktop-nav {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .desktop-nav a {
+            text-decoration: none;
+            color: #475569;
+            font-weight: 600;
+            font-size: 14px;
+            transition: color 0.2s;
+            white-space: nowrap;
+        }
+
         .desktop-nav a:hover { color: #02353C; }
-        .hamburger-btn { background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; padding: 8px; display: flex; flex-direction: column; justify-content: center; gap: 3.5px; height: 36px; width: 36px; align-items: center; z-index: 1001; }
-        .hamburger-btn:hover { background: #e2e8f0; }
-        .hamburger-bar { width: 18px; height: 2px; background-color: #02353C; border-radius: 2px; transition: all 0.3s ease; }
-        .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 53, 60, 0.5); backdrop-filter: blur(6px); opacity: 0; visibility: hidden; transition: all 0.3s ease; z-index: 2000; }
-        .menu-overlay.active { opacity: 1; visibility: visible; }
-        .mobile-menu { position: fixed; top: 0; right: -320px; width: 280px; height: 100%; background: linear-gradient(165deg, #02353C 0%, #05535E 60%, #011f24 100%); box-shadow: -8px 0 30px rgba(0, 0, 0, 0.3); padding: 30px 24px; display: flex; flex-direction: column; justify-content: flex-start; transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1); z-index: 2001; border-left: 1px solid rgba(229, 169, 60, 0.25); overflow-y: auto; }
-        .mobile-menu.active { right: 0; }
-        .menu-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
-        .menu-title { font-size: 20px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px; }
-        .close-btn { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 50%; width: 32px; height: 32px; font-size: 20px; color: #ffffff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
-        .close-btn:hover { background: #E5A93C; color: #02353C; }
-        .menu-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-        .menu-list a { text-decoration: none; color: #e2e8f0; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px; transition: all 0.25s ease; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .menu-list a:hover { color: #02353C; background: #E5A93C; transform: translateX(4px); box-shadow: 0 4px 15px rgba(229, 169, 60, 0.3); }
-        .btn-primary { background: linear-gradient(135deg, #02353C 0%, #05535E 100%); color: #ffffff !important; padding: 8px 12px; border-radius: 6px; font-weight: 600; font-size: 13px; text-decoration: none; display: inline-block; box-shadow: 0 2px 8px rgba(2, 53, 60, 0.2); transition: all 0.25s ease; text-align: center; border: none; cursor: pointer; white-space: nowrap; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(2, 53, 60, 0.3); }
-        .btn-secondary { background: #e2e8f0; color: #1e293b; padding: 12px 24px; border-radius: 8px; font-weight: 600; text-decoration: none; display: inline-block; transition: background 0.2s; text-align: center; }
+
+        /* Hamburger Icon Button */
+        .hamburger-btn {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 3.5px;
+            height: 36px;
+            width: 36px;
+            align-items: center;
+            z-index: 1001;
+        }
+
+        .hamburger-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .hamburger-bar {
+            width: 18px;
+            height: 2px;
+            background-color: #02353C;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        /* ATTRACTIVE GRADIENT HAMBURGER MENU */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(2, 53, 60, 0.5);
+            backdrop-filter: blur(6px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 2000;
+        }
+
+        .menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width: 280px;
+            height: 100%;
+            background: linear-gradient(165deg, #02353C 0%, #05535E 60%, #011f24 100%);
+            box-shadow: -8px 0 30px rgba(0, 0, 0, 0.3);
+            padding: 30px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 2001;
+            border-left: 1px solid rgba(229, 169, 60, 0.25);
+            overflow-y: auto;
+        }
+
+        .mobile-menu.active {
+            right: 0;
+        }
+
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            font-size: 20px;
+            color: #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .close-btn:hover {
+            background: #E5A93C;
+            color: #02353C;
+        }
+
+        .menu-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .menu-list a {
+            text-decoration: none;
+            color: #e2e8f0;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            transition: all 0.25s ease;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .menu-list a:hover {
+            color: #02353C;
+            background: #E5A93C;
+            transform: translateX(4px);
+            box-shadow: 0 4px 15px rgba(229, 169, 60, 0.3);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #02353C 0%, #05535E 100%);
+            color: #ffffff !important;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 2px 8px rgba(2, 53, 60, 0.2);
+            transition: all 0.25s ease;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(2, 53, 60, 0.3);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #1e293b;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.2s;
+            text-align: center;
+        }
+
         .btn-secondary:hover { background: #cbd5e1; }
-        .btn-accent { background: linear-gradient(135deg, #E5A93C 0%, #d99a2b 100%); color: #02353C !important; padding: 14px 28px; border-radius: 8px; font-weight: 700; text-decoration: none; display: inline-block; box-shadow: 0 4px 12px rgba(229, 169, 60, 0.3); transition: all 0.25s ease; text-align: center; border: none; cursor: pointer; width: 100%; }
-        .btn-accent:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(229, 169, 60, 0.4); }
-        .hero { padding: 60px 8% 40px; text-align: center; max-width: 900px; margin: 0 auto; }
-        .hero-title { font-size: 42px; font-weight: 800; color: #02353C; line-height: 1.2; margin-bottom: 16px; }
-        .hero-subtitle { font-size: 18px; color: #64748b; margin-bottom: 30px; }
-        .hero-actions { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
-        .features { padding: 60px 8%; background: #ffffff; width: 100%; }
-        .section-title { text-align: center; font-size: 30px; color: #02353C; font-weight: 700; margin-bottom: 10px; }
-        .section-subtitle { text-align: center; color: #64748b; margin-bottom: 40px; }
-        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; max-width: 1100px; margin: 0 auto; }
-        .feature-card { background: #f8fafc; padding: 24px; border-radius: 12px; border: 1px solid #e2e8f0; }
-        .feature-icon { font-size: 30px; margin-bottom: 12px; }
-        .feature-card h3 { color: #02353C; margin-bottom: 8px; font-size: 18px; }
-        .feature-card p { color: #64748b; font-size: 14px; }
-        .pricing-section { padding: 70px 8%; max-width: 1100px; margin: 0 auto; width: 100%; }
-        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; align-items: stretch; margin-top: 20px; }
-        .pricing-card { background: #ffffff; border-radius: 16px; padding: 35px 28px; border: 1px solid #e2e8f0; box-shadow: 0 4px 20px rgba(0,0,0,0.03); display: flex; flex-direction: column; justify-content: space-between; position: relative; }
-        .pricing-card.popular { border: 2px solid #E5A93C; background: #fffdfa; box-shadow: 0 10px 30px rgba(229, 169, 60, 0.15); }
-        .popular-badge { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: #E5A93C; color: #02353C; font-size: 12px; font-weight: 800; padding: 4px 16px; border-radius: 20px; letter-spacing: 0.5px; text-transform: uppercase; }
-        .card-header { text-align: center; margin-bottom: 25px; }
-        .plan-title { font-size: 22px; font-weight: 700; color: #02353C; margin-bottom: 10px; }
-        .plan-price { font-size: 38px; font-weight: 800; color: #02353C; line-height: 1; }
-        .plan-period { font-size: 14px; color: #64748b; font-weight: 500; }
-        .yearly-subtext { font-size: 13px; color: #16a34a; font-weight: 600; margin-top: 6px; }
-        .feature-list { list-style: none; margin-bottom: 30px; }
-        .feature-list li { font-size: 14px; color: #334155; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
-        .feature-list li.disabled { color: #cbd5e1; text-decoration: line-through; }
-        .check-icon { color: #16a34a; font-weight: bold; }
-        .cross-icon { color: #cbd5e1; }
-        footer { text-align: center; padding: 30px 8%; background: #02353C; color: #94a3b8; font-size: 14px; width: 100%; }
+
+        .btn-accent {
+            background: linear-gradient(135deg, #E5A93C 0%, #d99a2b 100%);
+            color: #02353C !important;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 12px rgba(229, 169, 60, 0.3);
+            transition: all 0.25s ease;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .btn-accent:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(229, 169, 60, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 60px 8% 40px;
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero-title {
+            font-size: 42px;
+            font-weight: 800;
+            color: #02353C;
+            line-height: 1.2;
+            margin-bottom: 16px;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 60px 8%;
+            background: #ffffff;
+            width: 100%;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 30px;
+            color: #02353C;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 40px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: #f8fafc;
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .feature-icon {
+            font-size: 30px;
+            margin-bottom: 12px;
+        }
+
+        .feature-card h3 {
+            color: #02353C;
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
+
+        .feature-card p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        /* Side-by-Side Pricing Cards */
+        .pricing-section {
+            padding: 70px 8%;
+            max-width: 1100px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            align-items: stretch;
+            margin-top: 20px;
+        }
+
+        .pricing-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 35px 28px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .pricing-card.popular {
+            border: 2px solid #E5A93C;
+            background: #fffdfa;
+            box-shadow: 0 10px 30px rgba(229, 169, 60, 0.15);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #E5A93C;
+            color: #02353C;
+            font-size: 12px;
+            font-weight: 800;
+            padding: 4px 16px;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .plan-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #02353C;
+            margin-bottom: 10px;
+        }
+
+        .plan-price {
+            font-size: 38px;
+            font-weight: 800;
+            color: #02353C;
+            line-height: 1;
+        }
+
+        .plan-period {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .yearly-subtext {
+            font-size: 13px;
+            color: #16a34a;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .feature-list li {
+            font-size: 14px;
+            color: #334155;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-list li.disabled {
+            color: #cbd5e1;
+            text-decoration: line-through;
+        }
+
+        .check-icon {
+            color: #16a34a;
+            font-weight: bold;
+        }
+
+        .cross-icon {
+            color: #cbd5e1;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px 8%;
+            background: #02353C;
+            color: #94a3b8;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        /* RESPONSIVE BREAKPOINTS */
         @media (max-width: 900px) {
-            .desktop-nav { display: none; }
-            .hero { padding: 40px 5% 25px; }
-            .hero-title { font-size: 26px; }
-            .hero-subtitle { font-size: 15px; }
-            .hero-actions { flex-direction: column; }
-            .hero-actions a { width: 100%; }
-            .features, .pricing-section { padding: 40px 5%; }
-            .section-title { font-size: 24px; }
+            .desktop-nav {
+                display: none;
+            }
+
+            .hero {
+                padding: 40px 5% 25px;
+            }
+
+            .hero-title { 
+                font-size: 26px; 
+            }
+
+            .hero-subtitle {
+                font-size: 15px;
+            }
+
+            .hero-actions { 
+                flex-direction: column; 
+            }
+
+            .hero-actions a {
+                width: 100%;
+            }
+
+            .features, .pricing-section {
+                padding: 40px 5%;
+            }
+
+            .section-title {
+                font-size: 24px;
+            }
         }
     </style>
 </head>
@@ -82,18 +525,21 @@
     <nav class="navbar">
         <div class="brand-container">
             <a href="/" class="brand">CVForge</a>
-            <span class="brand-subtitle">{{ t('platform_subtitle') }}</span>
+            <span class="brand-subtitle">AI Resume Platform</span>
         </div>
         
         <div class="nav-right">
+            <!-- Desktop Only Navigation -->
             <div class="desktop-nav">
-                <a href="#features">{{ t('nav_features') }}</a>
-                <a href="#pricing">{{ t('nav_plans') }}</a>
-                <a href="/auth/login">{{ t('nav_login') }}</a>
+                <a href="#features">Features</a>
+                <a href="#pricing">Plans</a>
+                <a href="/auth/login">Login</a>
             </div>
 
-            <a href="/editor" class="btn-primary">{{ t('create_cv_free') }}</a>
+            <!-- Create CV Button -->
+            <a href="/editor" class="btn-primary">Create CV Free</a>
 
+            <!-- Hamburger Button -->
             <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle Menu">
                 <span class="hamburger-bar"></span>
                 <span class="hamburger-bar"></span>
@@ -110,121 +556,124 @@
             <button class="close-btn" id="closeBtn" aria-label="Close Menu">&times;</button>
         </div>
 
+        <!-- High-Priority Conversion Action Button -->
         <div style="margin-bottom: 16px;">
             <a href="/editor" class="btn-accent" style="display: block; text-align: center; text-decoration: none; padding: 12px 16px; font-size: 14px;">
-                🚀 {{ t('build_ats_resume_free') }}
+                🚀 Build ATS Resume Free
             </a>
         </div>
 
+        <!-- Navigation Links -->
         <ul class="menu-list">
-            <li><a href="/dashboard" class="menu-link">📊 {{ t('nav_dashboard') }}</a></li>
-            <li><a href="/dashboard/account" class="menu-link">⚙️ {{ t('nav_settings') }}</a></li>
-            <li><a href="#features" class="menu-link">⚡ {{ t('ai_features_tools') }}</a></li>
-            <li><a href="#pricing" class="menu-link">💎 {{ t('pricing_pro_plans') }}</a></li>
-            <li><a href="/auth/login" class="menu-link">🔑 {{ t('login_register') }}</a></li>
-            <li><a href="/auth/logout" class="menu-link" style="opacity: 0.85;">🚪 {{ t('nav_logout') }}</a></li>
+            <li><a href="/dashboard" class="menu-link">📊 My Dashboard</a></li>
+            <li><a href="/dashboard/account" class="menu-link">⚙️ Account Settings</a></li>
+            <li><a href="#features" class="menu-link">⚡ AI Features & Tools</a></li>
+            <li><a href="#pricing" class="menu-link">💎 Pricing & Pro Plans</a></li>
+            <li><a href="/auth/login" class="menu-link">🔑 Sign Up / Login</a></li>
+            <li><a href="/auth/logout" class="menu-link" style="opacity: 0.85;">🚪 Sign Out</a></li>
         </ul>
 
+        <!-- Footer Links -->
         <div style="margin-top: auto; padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 8px;">
-            <a href="#about" style="color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">ℹ️ {{ t('about_us') }}</a>
-            <a href="#privacy" style="color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">🔒 {{ t('privacy_policy') }}</a>
-            <a href="#terms" style="color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">📜 {{ t('terms_of_service') }}</a>
+            <a href="#about" style="color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">ℹ️ About Us</a>
+            <a href="#privacy" style="color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">🔒 Privacy Policy</a>
+            <a href="#terms" style="color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">📜 Terms of Service</a>
         </div>
     </aside>
 
     <!-- HERO SECTION -->
     <header class="hero">
-        <h1 class="hero-title">{{ t('landing_hero_title') }}</h1>
-        <p class="hero-subtitle">{{ t('landing_hero_sub') }}</p>
+        <h1 class="hero-title">Craft ATS-Optimized Resumes & Land Your Dream Role</h1>
+        <p class="hero-subtitle">Generate tailored CVs, match job descriptions with AI precision, and track your applications—all in one place.</p>
         <div class="hero-actions">
-            <a href="/editor" class="btn-accent" style="width: auto;">{{ t('build_first_cv') }}</a>
-            <a href="#pricing" class="btn-secondary">{{ t('explore_premium') }}</a>
+            <a href="/editor" class="btn-accent" style="width: auto;">Build Resume Now (Free)</a>
+            <a href="#pricing" class="btn-secondary">Explore Premium Features</a>
         </div>
     </header>
 
     <!-- FEATURES OVERVIEW -->
     <section class="features" id="features">
-        <h2 class="section-title">{{ t('built_for_seekers') }}</h2>
-        <p class="section-subtitle">{{ t('features_subtitle') }}</p>
+        <h2 class="section-title">Built for Modern Job Seekers</h2>
+        <p class="section-subtitle">Everything you need to showcase your experience cleanly and efficiently</p>
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon">📄</div>
-                <h3>{{ t('feature_pdf_title') }}</h3>
-                <p>{{ t('feature_pdf_desc') }}</p>
+                <h3>Instant PDF Generation</h3>
+                <p>Choose from professional templates and download pixel-perfect PDF resumes built with ReportLab rendering.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🎯</div>
-                <h3>{{ t('feature_ats_title') }}</h3>
-                <p>{{ t('feature_ats_desc') }}</p>
+                <h3>AI ATS Match & Tailoring</h3>
+                <p>Analyze target job descriptions, receive keyword match scores, and automatically tailor your bullet points.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">📊</div>
-                <h3>{{ t('feature_tracker_title') }}</h3>
-                <p>{{ t('feature_tracker_desc') }}</p>
+                <h3>Job Application Tracker</h3>
+                <p>Organize your job search with a dedicated status dashboard. Monitor applications from saved to interview stages.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">💼</div>
-                <h3>{{ t('feature_prep_title') }}</h3>
-                <p>{{ t('feature_prep_desc') }}</p>
+                <h3>LinkedIn & Interview Prep</h3>
+                <p>Generate targeted cover letters, optimize your LinkedIn profile, and practice tailored interview questions.</p>
             </div>
         </div>
     </section>
 
     <!-- SIDE-BY-SIDE PRICING CARDS -->
     <section class="pricing-section" id="pricing">
-        <h2 class="section-title">{{ t('pricing_section_title') }}</h2>
-        <p class="section-subtitle">{{ t('pricing_section_sub') }}</p>
+        <h2 class="section-title">Simple, Transparent Pricing</h2>
+        <p class="section-subtitle">Choose the plan that fits your job search goals</p>
 
         <div class="pricing-grid">
             <!-- FREE CARD -->
             <div class="pricing-card">
                 <div>
                     <div class="card-header">
-                        <div class="plan-title">{{ t('free_plan_title') }}</div>
+                        <div class="plan-title">Free Plan</div>
                         <div class="plan-price">$0</div>
-                        <div class="plan-period">{{ t('forever_free') }}</div>
+                        <div class="plan-period">Forever free</div>
                     </div>
                     <ul class="feature-list">
-                        <li><span class="check-icon">✓</span> {{ t('free_feat_1') }}</li>
-                        <li><span class="check-icon">✓</span> {{ t('free_feat_2') }}</li>
-                        <li><span class="check-icon">✓</span> {{ t('free_feat_3') }}</li>
-                        <li class="disabled"><span class="cross-icon">✕</span> {{ t('tracker_feat') }}</li>
-                        <li class="disabled"><span class="cross-icon">✕</span> {{ t('ats_match_feat') }}</li>
-                        <li class="disabled"><span class="cross-icon">✕</span> {{ t('cover_letter_feat') }}</li>
-                        <li class="disabled"><span class="cross-icon">✕</span> {{ t('linkedin_opt_feat') }}</li>
+                        <li><span class="check-icon">✓</span> Create & edit CVs</li>
+                        <li><span class="check-icon">✓</span> Standard templates</li>
+                        <li><span class="check-icon">✓</span> PDF download</li>
+                        <li class="disabled"><span class="cross-icon">✕</span> Job Application Tracker</li>
+                        <li class="disabled"><span class="cross-icon">✕</span> AI ATS Keyword Matching</li>
+                        <li class="disabled"><span class="cross-icon">✕</span> Cover letter generator</li>
+                        <li class="disabled"><span class="cross-icon">✕</span> LinkedIn profile optimization</li>
                     </ul>
                 </div>
-                <a href="/editor" class="btn-secondary" style="display: block; width: 100%;">{{ t('start_free') }}</a>
+                <a href="/editor" class="btn-secondary" style="display: block; width: 100%;">Start Free</a>
             </div>
 
             <!-- PREMIUM CARD -->
             <div class="pricing-card popular">
-                <div class="popular-badge">★ {{ t('popular_badge') }}</div>
+                <div class="popular-badge">★ POPULAR</div>
                 <div>
                     <div class="card-header">
-                        <div class="plan-title">{{ t('premium_plan_title') }}</div>
-                        <div class="plan-price">$9.99 <span style="font-size: 16px; font-weight: 500;">{{ t('per_month') }}</span></div>
-                        <div class="yearly-subtext">{{ t('yearly_subtext') }}</div>
+                        <div class="plan-title">CVForge Premium</div>
+                        <div class="plan-price">$9.99 <span style="font-size: 16px; font-weight: 500;">/month</span></div>
+                        <div class="yearly-subtext">Or $79.00 /year (Save 34%)</div>
                     </div>
                     <ul class="feature-list">
-                        <li><span class="check-icon">✓</span> <strong>{{ t('tracker_feat') }}</strong> {{ t('dashboard_text') }}</li>
-                        <li><span class="check-icon">✓</span> <strong>{{ t('unlimited') }}</strong> {{ t('ai_ats_optimizations') }}</li>
-                        <li><span class="check-icon">✓</span> {{ t('keyword_matcher') }}</li>
-                        <li><span class="check-icon">✓</span> {{ t('premium_designs') }}</li>
-                        <li><span class="check-icon">✓</span> {{ t('cover_letter_gen') }}</li>
-                        <li><span class="check-icon">✓</span> {{ t('linkedin_optimizer') }}</li>
-                        <li><span class="check-icon">✓</span> {{ t('interview_practice') }}</li>
-                        <li><span class="check-icon">✓</span> {{ t('priority_support') }}</li>
+                        <li><span class="check-icon">✓</span> <strong>Job Application Tracker</strong> Dashboard</li>
+                        <li><span class="check-icon">✓</span> <strong>Unlimited</strong> AI ATS Optimizations</li>
+                        <li><span class="check-icon">✓</span> Job Description Keyword Matcher</li>
+                        <li><span class="check-icon">✓</span> Premium PDF Template Designs</li>
+                        <li><span class="check-icon">✓</span> Targeted Cover Letter Generator</li>
+                        <li><span class="check-icon">✓</span> LinkedIn Profile Optimizer</li>
+                        <li><span class="check-icon">✓</span> Interview Question Practice</li>
+                        <li><span class="check-icon">✓</span> Priority Customer Support</li>
                     </ul>
                 </div>
-                <a href="/auth/register" class="btn-accent">{{ t('get_premium_access') }}</a>
+                <a href="/auth/register" class="btn-accent">Get Premium Access</a>
             </div>
         </div>
     </section>
 
     <!-- FOOTER -->
     <footer>
-        <p>{{ t('footer_copyright') }}</p>
+        <p>&copy; 2026 CVForge Platform. All rights reserved.</p>
     </footer>
 
     <!-- HAMBURGER JS -->
