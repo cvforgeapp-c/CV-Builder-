@@ -58,14 +58,14 @@
             text-align: right;
         }
 
-        /* Keep form controls consistent with the selected direction */
+        /* Right-to-left form controls */
         html[dir="rtl"] input,
         html[dir="rtl"] textarea,
         html[dir="rtl"] select {
             text-align: right;
         }
 
-        /* Images and media should not overflow the viewport */
+        /* Prevent media overflow */
         img,
         video,
         canvas,
@@ -73,7 +73,7 @@
             max-width: 100%;
         }
 
-        /* Prevent long text from breaking page layouts */
+        /* Prevent long headings and paragraphs from breaking layouts */
         p,
         h1,
         h2,
@@ -91,12 +91,7 @@
         }
     </style>
 
-    <!--
-        CVForge language configuration.
-
-        This application uses its own translations.py dictionary.
-        Google Translate is not required.
-    -->
+    <!-- CVForge language configuration -->
     <script>
         (function () {
             "use strict";
@@ -125,62 +120,33 @@
             };
 
             const languageCode = languageCodes[userLang] || "en";
+            const direction = languageCode === "ar" ? "rtl" : "ltr";
 
-            /*
-             * Set the document language and direction.
-             */
+            /* Apply the selected language to the document */
             document.documentElement.lang = languageCode;
+            document.documentElement.dir = direction;
 
-            document.documentElement.dir =
-                languageCode === "ar" ? "rtl" : "ltr";
-
-            /*
-             * Expose language information to page-level JavaScript.
-             */
+            /* Expose language information to page-level JavaScript */
             window.CVForgeLanguage = Object.freeze({
                 name: userLang,
                 code: languageCode,
-                direction: languageCode === "ar" ? "rtl" : "ltr"
+                direction: direction
             });
 
             /*
-             * Remove legacy Google Translate cookies belonging
-             * to the current host and its applicable parent domain.
+             * Remove legacy Google Translate cookies for the
+             * current hostname. CVForge uses translations.py
+             * instead of the Google Translate widget.
              */
             function removeGoogleTranslateCookies() {
-                const hostname = window.location.hostname;
-
                 const cookieNames = [
                     "googtrans",
                     "googtransopt"
                 ];
 
-                const domains = [
-                    null,
-                    hostname,
-                    "." + hostname
-                ];
-
-                const parts = hostname.split(".");
-
-                if (parts.length >= 2) {
-                    const parentDomain =
-                        "." + parts.slice(-2).join(".");
-
-                    domains.push(parentDomain);
-                }
-
-                cookieNames.forEach(function (cookieName) {
-                    domains.forEach(function (domain) {
-                        let cookie =
-                            cookieName + "=; Max-Age=0; path=/; SameSite=Lax";
-
-                        if (domain) {
-                            cookie += "; domain=" + domain;
-                        }
-
-                        document.cookie = cookie;
-                    });
+                cookieNames.forEach(function (name) {
+                    document.cookie =
+                        name + "=; Max-Age=0; path=/; SameSite=Lax";
                 });
             }
 
@@ -190,11 +156,17 @@
     </script>
 
     <!--
-        Optional page-specific translation data.
+        Translation dictionary for JavaScript.
 
-        Individual templates can define this block if their
-        JavaScript needs translated strings.
+        The Flask context processor must provide
+        cvforge_translations for this variable to contain translations.
     -->
+    <script>
+        window.CVForgeTranslations =
+            {{ cvforge_translations | default({}) | tojson }};
+    </script>
+
+    <!-- Optional page-specific translation data -->
     {% block translation_data %}{% endblock %}
 
 </head>
