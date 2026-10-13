@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CV Studio - CVForge AI</title>
+{% extends "base.html" %}
+
+{% block title %}CV Studio - CVForge AI{% endblock %}
+
+{% block extra_css %}
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -79,8 +78,10 @@
             transform: scale(1) !important;
         }
     </style>
-</head>
-<body class="bg-studio-ambient text-slate-800 antialiased min-h-screen flex flex-col selection:bg-amber-400 selection:text-[#02353C]">
+{% endblock %}
+
+{% block content %}
+    <body class="bg-studio-ambient text-slate-800 antialiased min-h-screen flex flex-col selection:bg-amber-400 selection:text-[#02353C]">
 
     <!-- CUSTOM BRANDED MODAL NOTIFICATION -->
     <div id="aiModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
@@ -397,6 +398,10 @@
 
     </main>
 
+    </body>
+{% endblock %}
+
+{% block extra_js %}
     <!-- CLIENT-SIDE SCRIPT WITH ENHANCED FIELD ZOOM & TARGETED ERROR ACTIONS -->
     <script>
         let currentModalAction = 'FILL_DETAILS';
@@ -562,6 +567,4 @@
             }
         }
     </script>
-
-</body>
-</html>
+{% endblock %}
