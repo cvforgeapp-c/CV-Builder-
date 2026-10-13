@@ -151,19 +151,49 @@ login_manager.login_message_category = "info"
 
 @premium_app.context_processor
 def inject_global_translations():
-    user_lang = "English (US / UK)"
+    default_language = "English (US / UK)"
+    user_lang = default_language
+
     if current_user and getattr(current_user, "is_authenticated", False):
         prefs = getattr(current_user, "preferences_json", {}) or {}
-        user_lang = prefs.get("language") or prefs.get("aiPreferences", {}).get("aiLanguage", "English (US / UK)")
+
+        if not isinstance(prefs, dict):
+            prefs = {}
+
+        ai_preferences = prefs.get("aiPreferences", {})
+
+        if not isinstance(ai_preferences, dict):
+            ai_preferences = {}
+
+        saved_language = (
+            prefs.get("language")
+            or ai_preferences.get("aiLanguage")
+            or default_language
+        )
+
+        if saved_language in SUPPORTED_LANGUAGES:
+            user_lang = saved_language
 
     lang_codes_map = {
-        "Spanish": "es", "French": "fr", "Mandarin Chinese": "zh-CN", "German": "de",
-        "Amharic": "am", "Afaan Oromoo": "om", "Swahili": "sw", "Arabic": "ar",
-        "Hindi": "hi", "Russian": "ru", "Portuguese": "pt", "Japanese": "ja",
-        "Korean": "ko", "Italian": "it", "Turkish": "tr", "Dutch": "nl",
-        "Polish": "pl", "Swedish": "sv", "Tigrinya": "ti", "English (US / UK)": "en"
+        "English (US / UK)": "en",
+        "Spanish": "es",
+        "French": "fr",
+        "Mandarin Chinese": "zh-CN",
+        "German": "de",
+        "Swahili": "sw",
+        "Arabic": "ar",
+        "Hindi": "hi",
+        "Russian": "ru",
+        "Portuguese": "pt",
+        "Japanese": "ja",
+        "Korean": "ko",
+        "Italian": "it",
+        "Turkish": "tr",
+        "Dutch": "nl",
+        "Polish": "pl",
+        "Swedish": "sv",
     }
-    
+
     html_code = lang_codes_map.get(user_lang, "en")
 
     return {
