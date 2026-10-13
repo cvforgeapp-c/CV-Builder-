@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}CVForge — {{ t('ai_resume_platform') if t else 'AI-Powered ATS Resume Builder & Career Platform' }}{% endblock %}
+{% block title %}CVForge — {{ t('ai_resume_platform', 'AI-Powered ATS Resume Builder & Career Platform') }}{% endblock %}
 
 {% block extra_css %}
     <style>
@@ -312,96 +312,96 @@
 {% block content %}
     <!-- HERO SECTION -->
     <header class="hero">
-        <h1 class="hero-title">{{ t('hero_title') if t else 'Craft ATS-Optimized Resumes & Land Your Dream Role' }}</h1>
-        <p class="hero-subtitle">{{ t('hero_sub') if t else 'Generate tailored CVs, match job descriptions with AI precision, and track your applications—all in one place.' }}</p>
+        <h1 class="hero-title">{{ t('hero_title', 'Craft ATS-Optimized Resumes & Land Your Dream Role') if t else 'Craft ATS-Optimized Resumes & Land Your Dream Role' }}</h1>
+        <p class="hero-subtitle">{{ t('hero_sub', 'Generate tailored CVs, match job descriptions with AI precision, and track your applications—all in one place.') if t else 'Generate tailored CVs, match job descriptions with AI precision, and track your applications—all in one place.' }}</p>
         <div class="hero-actions">
-            <a href="/editor" class="btn-accent" style="width: auto;">{{ t('build_resume_now_free') if t else 'Build Resume Now (Free)' }}</a>
-            <a href="#pricing" class="btn-secondary">{{ t('explore_premium_features') if t else 'Explore Premium Features' }}</a>
+            <a href="/editor" class="btn-accent" style="width: auto;">{{ t('build_resume_now_free', 'Build Resume Now (Free)') if t else 'Build Resume Now (Free)' }}</a>
+            <a href="#pricing" class="btn-secondary">{{ t('explore_premium_features', 'Explore Premium Features') if t else 'Explore Premium Features' }}</a>
         </div>
     </header>
 
     <!-- FEATURES OVERVIEW -->
     <section class="features" id="features">
-        <h2 class="section-title">{{ t('built_for_modern_job_seekers') if t else 'Built for Modern Job Seekers' }}</h2>
-        <p class="section-subtitle">{{ t('features_sub') if t else 'Everything you need to showcase your experience cleanly and efficiently' }}</p>
+        <h2 class="section-title">{{ t('built_for_modern_job_seekers', 'Built for Modern Job Seekers') if t else 'Built for Modern Job Seekers' }}</h2>
+        <p class="section-subtitle">{{ t('features_sub', 'Everything you need to showcase your experience cleanly and efficiently') if t else 'Everything you need to showcase your experience cleanly and efficiently' }}</p>
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon">📄</div>
-                <h3>{{ t('instant_pdf_generation') if t else 'Instant PDF Generation' }}</h3>
-                <p>{{ t('instant_pdf_desc') if t else 'Choose from professional templates and download pixel-perfect PDF resumes built with ReportLab rendering.' }}</p>
+                <h3>{{ t('instant_pdf_generation', 'Instant PDF Generation') if t else 'Instant PDF Generation' }}</h3>
+                <p>{{ t('instant_pdf_desc', 'Choose from professional templates and download pixel-perfect PDF resumes built with ReportLab rendering.') if t else 'Choose from professional templates and download pixel-perfect PDF resumes built with ReportLab rendering.' }}</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🎯</div>
-                <h3>{{ t('ai_ats_match_tailoring') if t else 'AI ATS Match & Tailoring' }}</h3>
-                <p>{{ t('ai_ats_match_desc') if t else 'Analyze target job descriptions, receive keyword match scores, and automatically tailor your bullet points.' }}</p>
+                <h3>{{ t('ai_ats_match_tailoring', 'AI ATS Match & Tailoring') if t else 'AI ATS Match & Tailoring' }}</h3>
+                <p>{{ t('ai_ats_match_desc', 'Analyze target job descriptions, receive keyword match scores, and automatically tailor your bullet points.') if t else 'Analyze target job descriptions, receive keyword match scores, and automatically tailor your bullet points.' }}</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">📊</div>
-                <h3>{{ t('job_application_tracker') if t else 'Job Application Tracker' }}</h3>
-                <p>{{ t('job_application_tracker_desc') if t else 'Organize your job search with a dedicated status dashboard. Monitor applications from saved to interview stages.' }}</p>
+                <h3>{{ t('job_application_tracker', 'Job Application Tracker') if t else 'Job Application Tracker' }}</h3>
+                <p>{{ t('job_application_tracker_desc', 'Organize your job search with a dedicated status dashboard. Monitor applications from saved to interview stages.') if t else 'Organize your job search with a dedicated status dashboard. Monitor applications from saved to interview stages.' }}</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">💼</div>
-                <h3>{{ t('linkedin_interview_prep') if t else 'LinkedIn & Interview Prep' }}</h3>
-                <p>{{ t('linkedin_interview_prep_desc') if t else 'Generate targeted cover letters, optimize your LinkedIn profile, and practice tailored interview questions.' }}</p>
+                <h3>{{ t('linkedin_interview_prep', 'LinkedIn & Interview Prep') if t else 'LinkedIn & Interview Prep' }}</h3>
+                <p>{{ t('linkedin_interview_prep_desc', 'Generate targeted cover letters, optimize your LinkedIn profile, and practice tailored interview questions.') if t else 'Generate targeted cover letters, optimize your LinkedIn profile, and practice tailored interview questions.' }}</p>
             </div>
         </div>
     </section>
 
     <!-- SIDE-BY-SIDE PRICING CARDS -->
     <section class="pricing-section" id="pricing">
-        <h2 class="section-title">{{ t('simple_transparent_pricing') if t else 'Simple, Transparent Pricing' }}</h2>
-        <p class="section-subtitle">{{ t('pricing_sub') if t else 'Choose the plan that fits your job search goals' }}</p>
+        <h2 class="section-title">{{ t('simple_transparent_pricing', 'Simple, Transparent Pricing') if t else 'Simple, Transparent Pricing' }}</h2>
+        <p class="section-subtitle">{{ t('pricing_sub', 'Choose the plan that fits your job search goals') if t else 'Choose the plan that fits your job search goals' }}</p>
 
         <div class="pricing-grid">
             <!-- FREE CARD -->
             <div class="pricing-card">
                 <div>
                     <div class="card-header">
-                        <div class="plan-title">{{ t('free_plan') if t else 'Free Plan' }}</div>
+                        <div class="plan-title">{{ t('free_plan', 'Free Plan') if t else 'Free Plan' }}</div>
                         <div class="plan-price">$0</div>
-                        <div class="plan-period">{{ t('forever_free') if t else 'Forever free' }}</div>
+                        <div class="plan-period">{{ t('forever_free', 'Forever free') if t else 'Forever free' }}</div>
                     </div>
                     <ul class="feature-list">
-                        <li><span class="check-icon">✓</span> {{ t('create_edit_cvs') if t else 'Create & edit CVs' }}</li>
-                        <li><span class="check-icon">✓</span> {{ t('standard_templates') if t else 'Standard templates' }}</li>
-                        <li><span class="check-icon">✓</span> {{ t('pdf_download') if t else 'PDF download' }}</li>
-                        <li class="disabled"><span class="cross-icon">✕</span> {{ t('job_application_tracker') if t else 'Job Application Tracker' }}</li>
-                        <li class="disabled"><span class="cross-icon">✕</span> {{ t('ai_ats_keyword_matching') if t else 'AI ATS Keyword Matching' }}</li>
-                        <li class="disabled"><span class="cross-icon">✕</span> {{ t('cover_letter_generator') if t else 'Cover letter generator' }}</li>
-                        <li class="disabled"><span class="cross-icon">✕</span> {{ t('linkedin_profile_optimization') if t else 'LinkedIn profile optimization' }}</li>
+                        <li><span class="check-icon">✓</span> {{ t('create_edit_cvs', 'Create & edit CVs') if t else 'Create & edit CVs' }}</li>
+                        <li><span class="check-icon">✓</span> {{ t('standard_templates', 'Standard templates') if t else 'Standard templates' }}</li>
+                        <li><span class="check-icon">✓</span> {{ t('pdf_download', 'PDF download') if t else 'PDF download' }}</li>
+                        <li class="disabled"><span class="cross-icon">✕</span> {{ t('job_application_tracker', 'Job Application Tracker') if t else 'Job Application Tracker' }}</li>
+                        <li class="disabled"><span class="cross-icon">✕</span> {{ t('ai_ats_keyword_matching', 'AI ATS Keyword Matching') if t else 'AI ATS Keyword Matching' }}</li>
+                        <li class="disabled"><span class="cross-icon">✕</span> {{ t('cover_letter_generator', 'Cover letter generator') if t else 'Cover letter generator' }}</li>
+                        <li class="disabled"><span class="cross-icon">✕</span> {{ t('linkedin_profile_optimization', 'LinkedIn profile optimization') if t else 'LinkedIn profile optimization' }}</li>
                     </ul>
                 </div>
-                <a href="/editor" class="btn-secondary" style="display: block; width: 100%;">{{ t('start_free') if t else 'Start Free' }}</a>
+                <a href="/editor" class="btn-secondary" style="display: block; width: 100%;">{{ t('start_free', 'Start Free') if t else 'Start Free' }}</a>
             </div>
 
             <!-- PREMIUM CARD -->
             <div class="pricing-card popular">
-                <div class="popular-badge">★ {{ t('popular') if t else 'POPULAR' }}</div>
+                <div class="popular-badge">★ {{ t('popular', 'POPULAR') if t else 'POPULAR' }}</div>
                 <div>
                     <div class="card-header">
-                        <div class="plan-title">{{ t('cvforge_premium') if t else 'CVForge Premium' }}</div>
-                        <div class="plan-price">$9.99 <span style="font-size: 16px; font-weight: 500;">/{{ t('month') if t else 'month' }}</span></div>
-                        <div class="yearly-subtext">{{ t('yearly_subtext') if t else 'Or $79.00 /year (Save 34%)' }}</div>
+                        <div class="plan-title">{{ t('cvforge_premium', 'CVForge Premium') if t else 'CVForge Premium' }}</div>
+                        <div class="plan-price">$9.99 <span style="font-size: 16px; font-weight: 500;">/{{ t('month', 'month') if t else 'month' }}</span></div>
+                        <div class="yearly-subtext">{{ t('yearly_subtext', 'Or $79.00 /year (Save 34%)') if t else 'Or $79.00 /year (Save 34%)' }}</div>
                     </div>
                     <ul class="feature-list">
-                        <li><span class="check-icon">✓</span> <strong>{{ t('job_application_tracker') if t else 'Job Application Tracker' }}</strong> {{ t('dashboard') if t else 'Dashboard' }}</li>
-                        <li><span class="check-icon">✓</span> <strong>{{ t('unlimited') if t else 'Unlimited' }}</strong> {{ t('ai_ats_optimizations') if t else 'AI ATS Optimizations' }}</li>
-                        <li><span class="check-icon">✓</span> {{ t('job_description_keyword_matcher') if t else 'Job Description Keyword Matcher' }}</li>
-                        <li><span class="check-icon">✓</span> {{ t('premium_pdf_template_designs') if t else 'Premium PDF Template Designs' }}</li>
-                        <li><span class="check-icon">✓</span> {{ t('targeted_cover_letter_generator') if t else 'Targeted Cover Letter Generator' }}</li>
-                        <li><span class="check-icon">✓</span> {{ t('linkedin_profile_optimizer') if t else 'LinkedIn Profile Optimizer' }}</li>
-                        <li><span class="check-icon">✓</span> {{ t('interview_question_practice') if t else 'Interview Question Practice' }}</li>
-                        <li><span class="check-icon">✓</span> {{ t('priority_customer_support') if t else 'Priority Customer Support' }}</li>
+                        <li><span class="check-icon">✓</span> <strong>{{ t('job_application_tracker', 'Job Application Tracker') if t else 'Job Application Tracker' }}</strong> {{ t('dashboard', 'Dashboard') if t else 'Dashboard' }}</li>
+                        <li><span class="check-icon">✓</span> <strong>{{ t('unlimited', 'Unlimited') if t else 'Unlimited' }}</strong> {{ t('ai_ats_optimizations', 'AI ATS Optimizations') if t else 'AI ATS Optimizations' }}</li>
+                        <li><span class="check-icon">✓</span> {{ t('job_description_keyword_matcher', 'Job Description Keyword Matcher') if t else 'Job Description Keyword Matcher' }}</li>
+                        <li><span class="check-icon">✓</span> {{ t('premium_pdf_template_designs', 'Premium PDF Template Designs') if t else 'Premium PDF Template Designs' }}</li>
+                        <li><span class="check-icon">✓</span> {{ t('targeted_cover_letter_generator', 'Targeted Cover Letter Generator') if t else 'Targeted Cover Letter Generator' }}</li>
+                        <li><span class="check-icon">✓</span> {{ t('linkedin_profile_optimizer', 'LinkedIn Profile Optimizer') if t else 'LinkedIn Profile Optimizer' }}</li>
+                        <li><span class="check-icon">✓</span> {{ t('interview_question_practice', 'Interview Question Practice') if t else 'Interview Question Practice' }}</li>
+                        <li><span class="check-icon">✓</span> {{ t('priority_customer_support', 'Priority Customer Support') if t else 'Priority Customer Support' }}</li>
                     </ul>
                 </div>
-                <a href="/auth/register" class="btn-accent">{{ t('get_premium_access') if t else 'Get Premium Access' }}</a>
+                <a href="/auth/register" class="btn-accent">{{ t('get_premium_access', 'Get Premium Access') if t else 'Get Premium Access' }}</a>
             </div>
         </div>
     </section>
 
     <!-- FOOTER -->
     <footer>
-        <p>&copy; 2026 CVForge Platform. {{ t('all_rights_reserved') if t else 'All rights reserved.' }}</p>
+        <p>&copy; 2026 CVForge Platform. {{ t('all_rights_reserved', 'All rights reserved.') if t else 'All rights reserved.' }}</p>
     </footer>
 {% endblock %}
