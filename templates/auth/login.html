@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ t('login_page_title', 'Login - CVForge AI Resume Builder') }}{% endblock %}
+{% block title %}{{ t('welcome_back', 'Login - CVForge AI Resume Builder') }}{% endblock %}
 
 {% block extra_css %}
     <style>
@@ -254,8 +254,8 @@
         </a>
 
         <div class="auth-header">
-            <h1>{{ t('welcome_back_heading', 'Welcome Back') }}</h1>
-            <p>{{ t('login_subtitle', 'Log in to access your saved CVs & AI tools') }}</p>
+            <h1>{{ t('welcome_back', 'Welcome Back') }}</h1>
+            <p>{{ t('login_subheading', 'Log in to access your saved CVs & AI tools') }}</p>
         </div>
 
         <!-- DEDUPLICATED FLASH MESSAGES -->
@@ -282,16 +282,16 @@
             <div class="form-group">
                 <div class="label-row">
                     <label for="password">{{ t('password', 'Password') }}</label>
-                    <a href="{{ url_for('auth.forgot_password') }}" class="forgot-link">{{ t('forgot_password_link', 'Forgot password?') }}</a>
+                    <a href="{{ url_for('auth.forgot_password') }}" class="forgot-link">{{ t('forgot_password', 'Forgot password?') }}</a>
                 </div>
-                <input type="password" id="password" name="password" required placeholder="{{ t('password_placeholder', 'Enter password') }}" autocomplete="current-password">
+                <input type="password" id="password" name="password" required placeholder="••••••••" autocomplete="current-password">
             </div>
 
-            <button type="submit" class="btn-submit">{{ t('log_in', 'Log In') }}</button>
+            <button type="submit" class="btn-submit">{{ t('log_in_btn', 'Log In') }}</button>
         </form>
 
         <div class="auth-footer">
-            {{ t('no_account_text', "Don't have an account?") }} <a href="{{ url_for('auth.register') }}">{{ t('sign_up_free_link', 'Sign up free') }}</a>
+            {{ t('dont_have_account', "Don't have an account?") }} <a href="{{ url_for('auth.register') }}">{{ t('sign_up_free', 'Sign up free') }}</a>
         </div>
     </div>
 </div>
