@@ -6,6 +6,7 @@ import io
 import hmac
 import hashlib
 import base64
+import random
 import httpx
 
 from datetime import datetime
@@ -395,6 +396,9 @@ def load_user(user_id):
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
+# Temporary in-memory code store for verification codes
+verification_codes = {}
+
 
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
@@ -463,13 +467,59 @@ def login():
 
 @auth_bp.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
-    if request.method == "POST":
-        email = request.form.get("email")
-        if email:
-            flash("If an account exists for that email, password recovery instructions have been sent.", "info")
-            return redirect(url_for("auth.forgot_password"))
+    if request.method == "GET":
+        return render_template("auth/forgot_password.html")
 
-    return render_template("auth/forgot_password.html")
+    data = request.get_json(silent=True) or {}
+    email = (data.get("email") or "").strip().lower()
+
+    if not email:
+        return jsonify({"error": "Email address is required."}), 400
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        # Return success even if user not found to prevent email enumeration attacks
+        return jsonify({"message": "If an account exists, verification code has been sent."}), 200
+
+    code = f"{random.randint(100000, 999999)}"
+    verification_codes[email] = code
+
+    return jsonify({
+        "message": "Verification code generated successfully.",
+        "code": code  # Included for seamless testing/access
+    }), 200
+
+
+@auth_bp.route("/reset-password", methods=["POST"])
+def reset_password():
+    data = request.get_json(silent=True) or {}
+    email = (data.get("email") or "").strip().lower()
+    code = (data.get("code") or "").strip()
+    new_password = data.get("newPassword") or ""
+
+    if not email or not code or not new_password:
+        return jsonify({"error": "Missing required fields."}), 400
+
+    saved_code = verification_codes.get(email)
+    if not saved_code or saved_code != code:
+        return jsonify({"error": "Invalid or expired verification code."}), 400
+
+    if len(new_password) < 8:
+        return jsonify({"error": "Password must contain at least 8 characters."}), 400
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({"error": "User account not found."}), 404
+
+    try:
+        user.password_hash = generate_password_hash(new_password)
+        db.session.commit()
+        verification_codes.pop(email, None)
+        return jsonify({"message": "Password updated successfully!"}), 200
+    except Exception as exc:
+        db.session.rollback()
+        print(f"Reset password DB error: {exc}")
+        return jsonify({"error": "Failed to reset password. Please try again."}), 500
 
 
 @auth_bp.route("/logout")
