@@ -542,13 +542,12 @@ def pricing():
 @login_required
 def preview():
     resume_id = request.args.get("id")
-    resume = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first() if resume_id else None
-
-    try:
-        return render_template("preview.html", resume=resume, user=current_user)
-    except Exception:
-        return redirect("/dashboard")
-
+    resume = None
+    if resume_id:
+        resume = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first()
+        
+    return render_template("preview.html", resume=resume, user=current_user)
+    
 
 # ============================================================
 # SAVE & DELETE RESUME ENDPOINTS
