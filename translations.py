@@ -10,7 +10,6 @@ from translations_landing import LANDING_TRANSLATIONS
 from translations_preview import PREVIEW_TRANSLATIONS
 from translations_register import REGISTER_TRANSLATIONS
 from translations_settings import SETTINGS_TRANSLATIONS
-from translations_forgot_password import FORGOT_PASSWORD_TRANSLATIONS
 
 # Master list of 17 supported languages
 SUPPORTED_LANGUAGES = [
@@ -65,7 +64,6 @@ MODULES_TO_MERGE = [
     PREVIEW_TRANSLATIONS,
     REGISTER_TRANSLATIONS,
     SETTINGS_TRANSLATIONS,
-    FORGOT_PASSWORD_TRANSLATIONS,
 ]
 
 for source_dict in MODULES_TO_MERGE:
