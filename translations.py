@@ -6,7 +6,6 @@ Aggregates all screen-specific translation modules into a single, unified pipeli
 from translations_auth import AUTH_TRANSLATIONS
 from translations_dashboard import DASHBOARD_TRANSLATIONS
 from translations_editor import EDITOR_TRANSLATIONS
-from translations_forgot_password import FORGOT_PASSWORD_TRANSLATIONS
 from translations_landing import LANDING_TRANSLATIONS
 from translations_preview import PREVIEW_TRANSLATIONS
 from translations_register import REGISTER_TRANSLATIONS
@@ -61,7 +60,6 @@ MODULES_TO_MERGE = [
     AUTH_TRANSLATIONS,
     DASHBOARD_TRANSLATIONS,
     EDITOR_TRANSLATIONS,
-    FORGOT_PASSWORD_TRANSLATIONS,
     LANDING_TRANSLATIONS,
     PREVIEW_TRANSLATIONS,
     REGISTER_TRANSLATIONS,
