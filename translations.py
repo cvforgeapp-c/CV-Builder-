@@ -307,73 +307,61 @@ TRANSLATIONS = {
         "login_required": "Please sign in to continue.",
         "no_data": "No data available.",
         "coming_soon": "Coming soon.",
-    # Navbar
-    "landing_brand_subtitle": "AI Resume Platform",
-    "nav_plans": "Plans",
-    "nav_create_cv_free": "Create CV Free",
 
-    # Mobile Menu
-    "menu_build_ats_free": "Build ATS Resume Free",
-    "menu_my_dashboard": "My Dashboard",
-    "menu_account_settings": "Account Settings",
-    "menu_ai_features": "AI Features & Tools",
-    "menu_pricing_pro": "Pricing & Pro Plans",
-    "menu_signup_login": "Sign Up / Login",
-    "menu_sign_out": "Sign Out",
-    "menu_about_us": "About Us",
-    "menu_privacy": "Privacy Policy",
-    "menu_terms": "Terms of Service",
-
-    # Hero
-    "hero_title_exact": "Craft ATS-Optimized Resumes & Land Your Dream Role",
-    "hero_subtitle_exact": "Generate tailored CVs, match job descriptions with AI precision, and track your applications—all in one place.",
-    "hero_cta_exact": "Build Resume Now (Free)",
-    "hero_secondary_cta_exact": "Explore Premium Features",
-
-    # Features Section
-    "features_title": "Built for Modern Job Seekers",
-    "features_subtitle": "Everything you need to showcase your experience cleanly and efficiently",
-    "feature_pdf_title": "Instant PDF Generation",
-    "feature_pdf_desc": "Choose from professional templates and download pixel-perfect PDF resumes built with ReportLab rendering.",
-    "feature_ats_title": "AI ATS Match & Tailoring",
-    "feature_ats_desc": "Analyze target job descriptions, receive keyword match scores, and automatically tailor your bullet points.",
-    "feature_tracker_title": "Job Application Tracker",
-    "feature_tracker_desc": "Organize your job search with a dedicated status dashboard. Monitor applications from saved to interview stages.",
-    "feature_prep_title": "LinkedIn & Interview Prep",
-    "feature_prep_desc": "Generate targeted cover letters, optimize your LinkedIn profile, and practice tailored interview questions.",
-
-    # Pricing Section
-    "pricing_title": "Simple, Transparent Pricing",
-    "pricing_subtitle": "Choose the plan that fits your job search goals",
-    "plan_free_title": "Free Plan",
-    "plan_free_price": "$0",
-    "plan_free_period": "Forever free",
-    "feat_create_edit": "Create & edit CVs",
-    "feat_std_templates": "Standard templates",
-    "feat_pdf_download": "PDF download",
-    "feat_app_tracker": "Job Application Tracker",
-    "feat_ats_keyword_matching": "AI ATS Keyword Matching",
-    "feat_cover_letter_gen": "Cover letter generator",
-    "feat_linkedin_opt": "LinkedIn profile optimization",
-
-    "plan_pro_title": "CVForge Premium",
-    "plan_pro_price_unit": "/month",
-    "plan_pro_yearly_subtext": "Or $79.00 /year (Save 34%)",
-    "popular_badge_text": "★ POPULAR",
-    "feat_tracker_dashboard": "Job Application Tracker Dashboard",
-    "feat_unlimited_ats": "Unlimited AI ATS Optimizations",
-    "feat_jd_keyword_matcher": "Job Description Keyword Matcher",
-    "feat_premium_templates": "Premium PDF Template Designs",
-    "feat_targeted_cover_letter": "Targeted Cover Letter Generator",
-    "feat_linkedin_optimizer": "LinkedIn Profile Optimizer",
-    "feat_interview_practice": "Interview Question Practice",
-    "feat_priority_support": "Priority Customer Support",
-    "btn_get_premium": "Get Premium Access",
-
-    # Footer
-    "footer_copy_exact": "© 2026 CVForge Platform. All rights reserved."
-}
-
+        # Landing Exact Strings
+        "landing_brand_subtitle": "AI Resume Platform",
+        "nav_plans": "Plans",
+        "nav_create_cv_free": "Create CV Free",
+        "menu_build_ats_free": "Build ATS Resume Free",
+        "menu_my_dashboard": "My Dashboard",
+        "menu_account_settings": "Account Settings",
+        "menu_ai_features": "AI Features & Tools",
+        "menu_pricing_pro": "Pricing & Pro Plans",
+        "menu_signup_login": "Sign Up / Login",
+        "menu_sign_out": "Sign Out",
+        "menu_about_us": "About Us",
+        "menu_privacy": "Privacy Policy",
+        "menu_terms": "Terms of Service",
+        "hero_title_exact": "Craft ATS-Optimized Resumes & Land Your Dream Role",
+        "hero_subtitle_exact": "Generate tailored CVs, match job descriptions with AI precision, and track your applications—all in one place.",
+        "hero_cta_exact": "Build Resume Now (Free)",
+        "hero_secondary_cta_exact": "Explore Premium Features",
+        "features_title": "Built for Modern Job Seekers",
+        "features_subtitle": "Everything you need to showcase your experience cleanly and efficiently",
+        "feature_pdf_title": "Instant PDF Generation",
+        "feature_pdf_desc": "Choose from professional templates and download pixel-perfect PDF resumes built with ReportLab rendering.",
+        "feature_ats_title": "AI ATS Match & Tailoring",
+        "feature_ats_desc": "Analyze target job descriptions, receive keyword match scores, and automatically tailor your bullet points.",
+        "feature_tracker_title": "Job Application Tracker",
+        "feature_tracker_desc": "Organize your job search with a dedicated status dashboard. Monitor applications from saved to interview stages.",
+        "feature_prep_title": "LinkedIn & Interview Prep",
+        "feature_prep_desc": "Generate targeted cover letters, optimize your LinkedIn profile, and practice tailored interview questions.",
+        "pricing_title": "Simple, Transparent Pricing",
+        "pricing_subtitle": "Choose the plan that fits your job search goals",
+        "plan_free_title": "Free Plan",
+        "plan_free_price": "$0",
+        "plan_free_period": "Forever free",
+        "feat_create_edit": "Create & edit CVs",
+        "feat_std_templates": "Standard templates",
+        "feat_pdf_download": "PDF download",
+        "feat_app_tracker": "Job Application Tracker",
+        "feat_ats_keyword_matching": "AI ATS Keyword Matching",
+        "feat_cover_letter_gen": "Cover letter generator",
+        "feat_linkedin_opt": "LinkedIn profile optimization",
+        "plan_pro_title": "CVForge Premium",
+        "plan_pro_price_unit": "/month",
+        "plan_pro_yearly_subtext": "Or $79.00 /year (Save 34%)",
+        "popular_badge_text": "★ POPULAR",
+        "feat_tracker_dashboard": "Job Application Tracker Dashboard",
+        "feat_unlimited_ats": "Unlimited AI ATS Optimizations",
+        "feat_jd_keyword_matcher": "Job Description Keyword Matcher",
+        "feat_premium_templates": "Premium PDF Template Designs",
+        "feat_targeted_cover_letter": "Targeted Cover Letter Generator",
+        "feat_linkedin_optimizer": "LinkedIn Profile Optimizer",
+        "feat_interview_practice": "Interview Question Practice",
+        "feat_priority_support": "Priority Customer Support",
+        "btn_get_premium": "Get Premium Access",
+        "footer_copy_exact": "© 2026 CVForge Platform. All rights reserved.",
     },
 
     "Mandarin Chinese": {
@@ -1093,7 +1081,7 @@ TRANSLATIONS = {
         "session_expired": "आपका सत्र समाप्त हो गया है। दोबारा लॉग इन करें।",
         "login_required": "जारी रखने के लिए लॉग इन करें।",
         "no_data": "कोई डेटा उपलब्ध नहीं है।",
-        "coming_soon": "जल्द आ रहा है।",
+        "coming_soon": "जल्द आ रहा है。",
     },
 
     "Arabic": {
@@ -1336,9 +1324,6 @@ TRANSLATIONS = {
         "coming_soon": "قريباً.",
     },
 
-    # The remaining languages use a complete common-interface vocabulary.
-    # The existing keys are preserved, and additional keys are translated
-    # below using language-specific dictionaries.
     "French": {
         "nav_home": "Accueil",
         "nav_dashboard": "Tableau de bord",
@@ -1579,8 +1564,6 @@ TRANSLATIONS = {
         "coming_soon": "Bientôt disponible.",
     },
 
-    # Remaining supported languages are completed through the common
-    # language dictionaries below. Existing core translations are retained.
     "Portuguese": {
         "nav_home": "Início", "nav_dashboard": "Painel",
         "nav_settings": "Configurações", "nav_logout": "Sair",
@@ -1968,8 +1951,6 @@ TRANSLATIONS = {
         "no_data": "Keine Daten verfügbar.", "coming_soon": "Demnächst verfügbar.",
     },
 
-    # Japanese, Korean, Italian, Turkish, Dutch, Polish, Swedish, and Swahili
-    # are completed by the supplemental dictionaries below.
     "Japanese": {},
     "Korean": {},
     "Italian": {},
@@ -1979,10 +1960,6 @@ TRANSLATIONS = {
     "Swedish": {},
     "Swahili": {},
 }
-
-# Extra language dictionaries are separated from the main table so that
-# translations can be expanded without disturbing existing working entries.
-# All 17 languages are retained. Existing translated strings take priority.
 
 EXTRA_TRANSLATIONS = {
     "Japanese": {
@@ -2405,7 +2382,7 @@ EXTRA_TRANSLATIONS = {
         "per_month": "per maand", "per_year": "per jaar", "upgrade_now": "Nu upgraden",
         "premium_features": "Premiumfuncties", "unlimited_downloads": "Onbeperkt downloaden",
         "payment_method": "Betaalmethode", "payment_history": "Betalingsgeschiedenis",
-        "invoice": "Factuur", "purchase_credits": "Tegoed kopen",
+        "invoice": "Factura", "purchase_credits": "Tegoed kopen",
         "payment_success": "Betaling succesvol afgerond.", "payment_failed": "Betaling mislukt. Probeer het opnieuw.",
         "hero_cta": "Mijn CV maken", "features": "Functies", "how_it_works": "Hoe het werkt",
         "why_cvforge": "Waarom CVForge?", "faq": "Veelgestelde vragen", "contact_us": "Contact",
@@ -2687,16 +2664,12 @@ EXTRA_TRANSLATIONS = {
     },
 }
 
-# Merge additional translations without overwriting existing translations.
 for _language, _entries in EXTRA_TRANSLATIONS.items():
     if _language not in TRANSLATIONS:
         TRANSLATIONS[_language] = {}
     for _key, _value in _entries.items():
         TRANSLATIONS[_language].setdefault(_key, _value)
 
-# Complete every supported language dictionary with English fallback entries.
-# This ensures each language has the same set of keys, while actual translated
-# values are retained wherever supplied.
 _ENGLISH_TRANSLATIONS = TRANSLATIONS["English (US / UK)"]
 
 for _language in SUPPORTED_LANGUAGES:
@@ -2706,13 +2679,6 @@ for _language in SUPPORTED_LANGUAGES:
 
 
 def t(key, lang="English (US / UK)"):
-    """
-    Return a translated string, falling back to English.
-
-    Existing Flask templates can continue using:
-        {{ t('nav_dashboard') }}
-        {{ t('nav_dashboard', current_language) }}
-    """
     english = TRANSLATIONS["English (US / UK)"]
 
     if not isinstance(key, str):
@@ -2726,23 +2692,14 @@ def t(key, lang="English (US / UK)"):
 
 
 def get_supported_languages():
-    """Return a copy of the supported language list."""
     return SUPPORTED_LANGUAGES.copy()
 
 
 def get_language_code(lang="English (US / UK)"):
-    """Return the HTML language code for a supported language."""
     return LANGUAGE_CODES.get(lang, "en")
 
 
 def validate_translations():
-    """
-    Check supported language dictionaries for missing or extra keys.
-
-    Because English fallback entries are added at module initialization,
-    missing keys should normally be empty. This function also detects
-    invalid values and missing language dictionaries.
-    """
     english_keys = set(TRANSLATIONS["English (US / UK)"])
     issues = {}
 
@@ -2793,10 +2750,3 @@ if __name__ == "__main__":
                 print("  Invalid values:", ", ".join(details["invalid_values"]))
     else:
         print("All supported languages contain the same keys and valid string values.")
-
-    print("\nFallback tests:")
-    print("English:", t("nav_dashboard"))
-    print("Spanish:", t("nav_dashboard", "Spanish"))
-    print("Arabic:", t("nav_dashboard", "Arabic"))
-    print("Unknown language:", t("nav_dashboard", "Unknown Language"))
-    print("Unknown key:", t("unknown_key"))
