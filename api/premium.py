@@ -67,7 +67,7 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 # ============================================================
-# DATABASE MODELS & TRANSLATIONS
+# DATABASE MODELS & MASTER TRANSLATIONS PATHWAY
 # ============================================================
 
 try:
@@ -76,9 +76,24 @@ except ImportError:
     from ..models import db, User, Resume, JobApplication
 
 try:
-    from translations import t, SUPPORTED_LANGUAGES
+    from translations import t, SUPPORTED_LANGUAGES, get_supported_languages, get_language_code, TRANSLATIONS
 except ImportError:
-    from ..translations import t, SUPPORTED_LANGUAGES
+    try:
+        from ..translations import t, SUPPORTED_LANGUAGES, get_supported_languages, get_language_code, TRANSLATIONS
+    except ImportError:
+        # Fallbacks if master pathway needs standalone safety
+        SUPPORTED_LANGUAGES = [
+            "English (US / UK)", "Mandarin Chinese", "Spanish", "Hindi", "Arabic", 
+            "French", "Portuguese", "Russian", "German", "Japanese", "Korean", 
+            "Italian", "Turkish", "Dutch", "Polish", "Swedish", "Swahili"
+        ]
+        def t(key, lang="English (US / UK)"):
+            return str(key)
+        def get_supported_languages():
+            return SUPPORTED_LANGUAGES.copy()
+        def get_language_code(lang="English (US / UK)"):
+            return "en"
+        TRANSLATIONS = {}
 
 # ============================================================
 # USER LANGUAGE PREFERENCE HELPER
@@ -117,11 +132,9 @@ def get_user_preferred_language(user):
     3. preferences_json["aiPreferences"]["aiLanguage"]
     4. English fallback
     """
-    # 1. Check session first (handles live ?lang= parameters and active session overrides)
     if session.get("language") in SUPPORTED_LANGUAGES:
         return session["language"]
 
-    # 2. Check authenticated user's database profile preferences
     if user and getattr(user, "is_authenticated", False):
         preferences = getattr(user, "preferences_json", None) or {}
 
@@ -139,7 +152,6 @@ def get_user_preferred_language(user):
             if language in SUPPORTED_LANGUAGES:
                 return language
 
-    # 3. Default fallback
     return DEFAULT_LANGUAGE
 
 # ============================================================
@@ -209,22 +221,14 @@ login_manager.login_message = (
 login_manager.login_message_category = "info"
 
 # ============================================================
-# GLOBAL TRANSLATION CONTEXT PROCESSOR
+# GLOBAL TRANSLATION CONTEXT PROCESSOR (MASTER PATHWAY)
 # ============================================================
 
 @premium_app.context_processor
 def inject_global_translations():
     """
-    Make translation variables available to every Jinja template.
-
-    Available variables:
-        current_language
-        html_lang_code
-        supported_languages
-        t
-        cvforge_translations
+    Make translation variables available to every Jinja template globally across all routes.
     """
-
     user_language = get_user_preferred_language(
         current_user if current_user.is_authenticated else None
     )
@@ -233,9 +237,7 @@ def inject_global_translations():
 
     def translate(key):
         """
-        Translate a key into the selected language.
-
-        The translations.py t() function handles English fallbacks.
+        Translate a key into the selected language via master module t() function.
         """
         try:
             return t(key, user_language)
@@ -245,13 +247,10 @@ def inject_global_translations():
                 key,
                 type(exc).__name__,
             )
-
             return str(key)
 
-    # Expose translations for JavaScript.
+    # Expose translations for JavaScript frontend usage.
     try:
-        from translations import TRANSLATIONS
-
         english_dictionary = TRANSLATIONS.get(
             DEFAULT_LANGUAGE,
             {},
@@ -261,7 +260,6 @@ def inject_global_translations():
             key: translate(key)
             for key in english_dictionary
         }
-
     except (ImportError, AttributeError, TypeError):
         javascript_translations = {}
 
@@ -485,7 +483,6 @@ premium_app.register_blueprint(auth_bp)
 
 @premium_app.route("/")
 def landing():
-    # Allow explicit language switching via URL parameter: e.g. /?lang=Spanish
     requested_lang = request.args.get("lang")
     if requested_lang and requested_lang in SUPPORTED_LANGUAGES:
         session['language'] = requested_lang
@@ -994,7 +991,6 @@ def update_settings_section(section):
                 "supported_languages": SUPPORTED_LANGUAGES,
             }), 400
 
-        # Save preference and sync session immediately
         prefs["language"] = selected_language
         session["language"] = selected_language
 
