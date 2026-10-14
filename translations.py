@@ -6,11 +6,11 @@ Aggregates all screen-specific translation modules into a single, unified pipeli
 from translations_auth import AUTH_TRANSLATIONS
 from translations_dashboard import DASHBOARD_TRANSLATIONS
 from translations_editor import EDITOR_TRANSLATIONS
+from translations_forgot_password import FORGOT_PASSWORD_TRANSLATIONS
 from translations_landing import LANDING_TRANSLATIONS
 from translations_preview import PREVIEW_TRANSLATIONS
 from translations_register import REGISTER_TRANSLATIONS
 from translations_settings import SETTINGS_TRANSLATIONS
-from translations_forgot_password import FORGOT_PASSWORD_TRANSLATIONS
 
 # Master list of 17 supported languages
 SUPPORTED_LANGUAGES = [
@@ -61,19 +61,20 @@ MODULES_TO_MERGE = [
     AUTH_TRANSLATIONS,
     DASHBOARD_TRANSLATIONS,
     EDITOR_TRANSLATIONS,
+    FORGOT_PASSWORD_TRANSLATIONS,
     LANDING_TRANSLATIONS,
     PREVIEW_TRANSLATIONS,
     REGISTER_TRANSLATIONS,
     SETTINGS_TRANSLATIONS,
-    FORGOT_PASSWORD_TRANSLATIONS,
-    
 ]
 
 for source_dict in MODULES_TO_MERGE:
-    for lang, keys in source_dict.items():
-        if lang not in TRANSLATIONS:
-            TRANSLATIONS[lang] = {}
-        TRANSLATIONS[lang].update(keys)
+    if isinstance(source_dict, dict):
+        for lang, keys in source_dict.items():
+            if lang not in TRANSLATIONS:
+                TRANSLATIONS[lang] = {}
+            if isinstance(keys, dict):
+                TRANSLATIONS[lang].update(keys)
 
 # Ensure fallback to English for any missing keys in other languages
 _ENGLISH_KEYS = TRANSLATIONS.get("English (US / UK)", {})
@@ -87,10 +88,7 @@ for language in SUPPORTED_LANGUAGES:
 # --- CORE TRANSLATION HELPERS ---
 
 def t(key: str, lang: str = "English (US / UK)", default: str = None) -> str:
-    """Retrieve a translated string by key for the given language.
-    
-    Falls back to English dict, then explicit default argument, then the raw key.
-    """
+    """Retrieve a translated string by key for the given language with a bulletproof fallback chain."""
     if not isinstance(key, str):
         return str(key)
 
@@ -102,22 +100,17 @@ def t(key: str, lang: str = "English (US / UK)", default: str = None) -> str:
     english = TRANSLATIONS.get("English (US / UK)", {})
     lang_dict = TRANSLATIONS.get(lang, english)
 
-    # 1. Try target language dictionary
-    translated_val = lang_dict.get(key)
-    if translated_val is not None:
-        return translated_val
-
-    # 2. Try English master dictionary fallback
-    english_val = english.get(key)
-    if english_val is not None:
-        return english_val
-
-    # 3. Try inline template fallback default string
-    if default is not None:
-        return default
-
-    # 4. Graceful final fallback to raw key
-    return key
+    # Fallback Priority:
+    # 1. Target language dictionary match
+    # 2. English master dictionary fallback match
+    # 3. Explicit inline template default argument
+    # 4. Graceful final fallback to raw key string
+    return (
+        lang_dict.get(key)
+        or english.get(key)
+        or default
+        or key
+    )
 
 
 def get_supported_languages() -> list:
@@ -176,7 +169,7 @@ def init_app_translations(app):
 
 if __name__ == "__main__":
     print(f"✅ Merged modules successfully across {len(SUPPORTED_LANGUAGES)} languages.")
-    print(f"🔑 Total unique translation keys in English: {len(TRANSLATIONS['English (US / UK)'])}")
+    print(f"🔑 Total unique translation keys in English: {len(TRANSLATIONS.get('English (US / UK)', {}))}")
     
     validation_issues = validate_translations()
     if not validation_issues:
