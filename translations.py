@@ -85,20 +85,38 @@ for language in SUPPORTED_LANGUAGES:
 
 # --- CORE TRANSLATION HELPERS ---
 
-def t(key: str, lang: str = "English (US / UK)") -> str:
+def t(key: str, lang: str = "English (US / UK)", default: str = None) -> str:
     """Retrieve a translated string by key for the given language.
     
-    Falls back to English if key is missing or language is unsupported.
+    Falls back to English dict, then explicit default argument, then the raw key.
     """
     if not isinstance(key, str):
         return str(key)
 
+    # Normalize language name if an ISO code (e.g. 'en', 'fr') or invalid value is passed
     if not isinstance(lang, str) or lang not in SUPPORTED_LANGUAGES:
-        lang = "English (US / UK)"
+        code_map = {v: k for k, v in LANGUAGE_CODES.items()}
+        lang = code_map.get(lang, "English (US / UK)")
 
     english = TRANSLATIONS.get("English (US / UK)", {})
     lang_dict = TRANSLATIONS.get(lang, english)
-    return lang_dict.get(key, english.get(key, key))
+
+    # 1. Try target language dictionary
+    translated_val = lang_dict.get(key)
+    if translated_val is not None:
+        return translated_val
+
+    # 2. Try English master dictionary fallback
+    english_val = english.get(key)
+    if english_val is not None:
+        return english_val
+
+    # 3. Try inline template fallback default string
+    if default is not None:
+        return default
+
+    # 4. Graceful final fallback to raw key
+    return key
 
 
 def get_supported_languages() -> list:
@@ -141,13 +159,14 @@ def validate_translations() -> dict:
 
 def init_app_translations(app):
     """Inject translation functions into Jinja globally across all routes/templates."""
-    from flask import session
+    from flask import session, request
 
     @app.context_processor
     def inject_translation_helpers():
-        user_lang = session.get('language', 'English (US / UK)')
+        # Safeguard fallback resolution across sessions, request cookies, and default state
+        user_lang = session.get('language') or request.cookies.get('language') or 'English (US / UK)'
         return dict(
-            t=lambda key: t(key, user_lang),
+            t=lambda key, default=None: t(key, lang=user_lang, default=default),
             current_lang=user_lang,
             supported_languages=get_supported_languages(),
             lang_code=get_language_code(user_lang)
