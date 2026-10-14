@@ -243,14 +243,14 @@
 
 {% block content %}
 <div class="auth-page-wrapper">
-    <a href="/" class="back-nav">← {{ t('back_to_cvforge', 'Back to CVForge') }}</a>
+    <a href="/" class="back-nav">{{ t('back_to_cvforge', '← Back to CVForge') }}</a>
 
     <div class="auth-container">
         
         <!-- BRAND LOGO -->
         <a href="/" class="brand-badge">
             <span class="brand-name">CVForge</span>
-            <span class="brand-subtitle">{{ t('ai_badge', 'AI') }}</span>
+            <span class="brand-subtitle">AI</span>
         </a>
 
         <div class="auth-header">
@@ -275,19 +275,19 @@
 
         <form action="{{ url_for('auth.login') }}" method="POST">
             <div class="form-group">
-                <label for="email">{{ t('email_address_label', 'Email Address') }}</label>
-                <input type="email" id="email" name="email" required placeholder="{{ t('email_placeholder', 'name@example.com') }}" autocomplete="email">
+                <label for="email">{{ t('email_address', 'Email Address') }}</label>
+                <input type="email" id="email" name="email" required placeholder="name@example.com" autocomplete="email">
             </div>
 
             <div class="form-group">
                 <div class="label-row">
-                    <label for="password">{{ t('password_label', 'Password') }}</label>
+                    <label for="password">{{ t('password', 'Password') }}</label>
                     <a href="{{ url_for('auth.forgot_password') }}" class="forgot-link">{{ t('forgot_password_link', 'Forgot password?') }}</a>
                 </div>
                 <input type="password" id="password" name="password" required placeholder="{{ t('password_placeholder', 'Enter password') }}" autocomplete="current-password">
             </div>
 
-            <button type="submit" class="btn-submit">{{ t('log_in_btn', 'Log In') }}</button>
+            <button type="submit" class="btn-submit">{{ t('log_in', 'Log In') }}</button>
         </form>
 
         <div class="auth-footer">
