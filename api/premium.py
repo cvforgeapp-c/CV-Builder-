@@ -236,19 +236,24 @@ def inject_global_translations():
 
     language_code = LANGUAGE_CODES.get(user_language, "en")
 
-    def translate(key):
+        def translate(key, default=None):
         """
-        Translate a key into the selected language via master module t() function.
+        Translate a key into the selected language, with an optional default fallback.
         """
         try:
-            return t(key, user_language)
+            val = t(key, user_language)
+            # If t() returns the key itself (meaning it wasn't found) and a default is provided, use default
+            if val == key and default is not None:
+                return default
+            return val
         except Exception as exc:
             premium_app.logger.warning(
                 "Translation failed for key %r: %s",
                 key,
                 type(exc).__name__,
             )
-            return str(key)
+            return default if default is not None else str(key)
+            
 
     # Expose ALL translations for the active language to JavaScript frontend safely.
     try:
