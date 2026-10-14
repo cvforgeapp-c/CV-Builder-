@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}CVForge — AI-Powered ATS Resume Builder & Career Platform{% endblock %}
+{% block title %}CVForge — {{ t('landing_hero_title') }}{% endblock %}
 
 {% block extra_css %}
     <style>
@@ -527,13 +527,13 @@
         <div class="nav-right">
             <!-- Desktop Only Navigation -->
             <div class="desktop-nav">
-                <a href="#features">Features</a>
-                <a href="#pricing">Plans</a>
-                <a href="/auth/login">Login</a>
+                <a href="#features">{{ t('features') }}</a>
+                <a href="#pricing">{{ t('pricing') }}</a>
+                <a href="/auth/login">{{ t('nav_login') }}</a>
             </div>
 
             <!-- Create CV Button -->
-            <a href="/editor" class="btn-primary">Create CV Free</a>
+            <a href="/editor" class="btn-primary">{{ t('create_cv') }}</a>
 
             <!-- Hamburger Button -->
             <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle Menu">
@@ -555,121 +555,121 @@
         <!-- High-Priority Conversion Action Button -->
         <div style="margin-bottom: 16px;">
             <a href="/editor" class="btn-accent" style="display: block; text-align: center; text-decoration: none; padding: 12px 16px; font-size: 14px;">
-                🚀 Build ATS Resume Free
+                🚀 {{ t('hero_cta') }}
             </a>
         </div>
 
         <!-- Navigation Links -->
         <ul class="menu-list">
-            <li><a href="/dashboard" class="menu-link">📊 My Dashboard</a></li>
-            <li><a href="/dashboard/account" class="menu-link">⚙️ Account Settings</a></li>
-            <li><a href="#features" class="menu-link">⚡ AI Features & Tools</a></li>
-            <li><a href="#pricing" class="menu-link">💎 Pricing & Pro Plans</a></li>
-            <li><a href="/auth/login" class="menu-link">🔑 Sign Up / Login</a></li>
-            <li><a href="/auth/logout" class="menu-link" style="opacity: 0.85;">🚪 Sign Out</a></li>
+            <li><a href="/dashboard" class="menu-link">📊 {{ t('nav_dashboard') }}</a></li>
+            <li><a href="/dashboard/account" class="menu-link">⚙️ {{ t('account_settings') }}</a></li>
+            <li><a href="#features" class="menu-link">⚡ {{ t('ai_tools') }}</a></li>
+            <li><a href="#pricing" class="menu-link">💎 {{ t('nav_pricing') }}</a></li>
+            <li><a href="/auth/login" class="menu-link">🔑 {{ t('nav_login') }}</a></li>
+            <li><a href="/auth/logout" class="menu-link" style="opacity: 0.85;">🚪 {{ t('nav_logout') }}</a></li>
         </ul>
 
         <!-- Footer Links -->
         <div style="margin-top: auto; padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 8px;">
-            <a href="#about" style="color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">ℹ️ About Us</a>
-            <a href="#privacy" style="color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">🔒 Privacy Policy</a>
-            <a href="#terms" style="color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">📜 Terms of Service</a>
+            <a href="#about" style="color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">ℹ️ {{ t('learn_more') }}</a>
+            <a href="#privacy" style="color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">🔒 {{ t('privacy_policy') }}</a>
+            <a href="#terms" style="color: #94a3b8; text-decoration: none; font-size: 13px; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">📜 {{ t('terms') }}</a>
         </div>
     </aside>
 
     <!-- HERO SECTION -->
     <header class="hero">
-        <h1 class="hero-title">Craft ATS-Optimized Resumes & Land Your Dream Role</h1>
-        <p class="hero-subtitle">Generate tailored CVs, match job descriptions with AI precision, and track your applications—all in one place.</p>
+        <h1 class="hero-title">{{ t('landing_hero_title') }}</h1>
+        <p class="hero-subtitle">{{ t('landing_hero_sub') }}</p>
         <div class="hero-actions">
-            <a href="/editor" class="btn-accent" style="width: auto;">Build Resume Now (Free)</a>
-            <a href="#pricing" class="btn-secondary">Explore Premium Features</a>
+            <a href="/editor" class="btn-accent" style="width: auto;">{{ t('hero_cta') }}</a>
+            <a href="#pricing" class="btn-secondary">{{ t('hero_secondary_cta') }}</a>
         </div>
     </header>
 
     <!-- FEATURES OVERVIEW -->
     <section class="features" id="features">
-        <h2 class="section-title">Built for Modern Job Seekers</h2>
-        <p class="section-subtitle">Everything you need to showcase your experience cleanly and efficiently</p>
+        <h2 class="section-title">{{ t('why_cvforge') }}</h2>
+        <p class="section-subtitle">{{ t('dashboard_subtitle') }}</p>
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon">📄</div>
-                <h3>Instant PDF Generation</h3>
-                <p>Choose from professional templates and download pixel-perfect PDF resumes built with ReportLab rendering.</p>
+                <h3>{{ t('download_pdf') }}</h3>
+                <p>{{ t('professional_design') }}</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🎯</div>
-                <h3>AI ATS Match & Tailoring</h3>
-                <p>Analyze target job descriptions, receive keyword match scores, and automatically tailor your bullet points.</p>
+                <h3>{{ t('ats_optimization') }}</h3>
+                <p>{{ t('ats_explanation') }}</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">📊</div>
-                <h3>Job Application Tracker</h3>
-                <p>Organize your job search with a dedicated status dashboard. Monitor applications from saved to interview stages.</p>
+                <h3>{{ t('applications') }}</h3>
+                <p>{{ t('dashboard_subtitle') }}</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">💼</div>
-                <h3>LinkedIn & Interview Prep</h3>
-                <p>Generate targeted cover letters, optimize your LinkedIn profile, and practice tailored interview questions.</p>
+                <h3>{{ t('linkedin_optimization') }}</h3>
+                <p>{{ t('optimize_linkedin') }}</p>
             </div>
         </div>
     </section>
 
     <!-- SIDE-BY-SIDE PRICING CARDS -->
     <section class="pricing-section" id="pricing">
-        <h2 class="section-title">Simple, Transparent Pricing</h2>
-        <p class="section-subtitle">Choose the plan that fits your job search goals</p>
+        <h2 class="section-title">{{ t('pricing') }}</h2>
+        <p class="section-subtitle">{{ t('premium_features') }}</p>
 
         <div class="pricing-grid">
             <!-- FREE CARD -->
             <div class="pricing-card">
                 <div>
                     <div class="card-header">
-                        <div class="plan-title">Free Plan</div>
+                        <div class="plan-title">{{ t('free_plan') }}</div>
                         <div class="plan-price">$0</div>
-                        <div class="plan-period">Forever free</div>
+                        <div class="plan-period">{{ t('free_tier') }}</div>
                     </div>
                     <ul class="feature-list">
-                        <li><span class="check-icon">✓</span> Create & edit CVs</li>
-                        <li><span class="check-icon">✓</span> Standard templates</li>
-                        <li><span class="check-icon">✓</span> PDF download</li>
-                        <li class="disabled"><span class="cross-icon">✕</span> Job Application Tracker</li>
-                        <li class="disabled"><span class="cross-icon">✕</span> AI ATS Keyword Matching</li>
-                        <li class="disabled"><span class="cross-icon">✕</span> Cover letter generator</li>
-                        <li class="disabled"><span class="cross-icon">✕</span> LinkedIn profile optimization</li>
+                        <li><span class="check-icon">✓</span> {{ t('create_cv') }}</li>
+                        <li><span class="check-icon">✓</span> {{ t('templates') }}</li>
+                        <li><span class="check-icon">✓</span> {{ t('download_pdf') }}</li>
+                        <li class="disabled"><span class="cross-icon">✕</span> {{ t('applications') }}</li>
+                        <li class="disabled"><span class="cross-icon">✕</span> {{ t('ats_optimization') }}</li>
+                        <li class="disabled"><span class="cross-icon">✕</span> {{ t('cover_letter') }}</li>
+                        <li class="disabled"><span class="cross-icon">✕</span> {{ t('linkedin_optimization') }}</li>
                     </ul>
                 </div>
-                <a href="/editor" class="btn-secondary" style="display: block; width: 100%;">Start Free</a>
+                <a href="/editor" class="btn-secondary" style="display: block; width: 100%;">{{ t('start_free') }}</a>
             </div>
 
             <!-- PREMIUM CARD -->
             <div class="pricing-card popular">
-                <div class="popular-badge">★ POPULAR</div>
+                <div class="popular-badge">★ PRO</div>
                 <div>
                     <div class="card-header">
-                        <div class="plan-title">CVForge Premium</div>
-                        <div class="plan-price">$9.99 <span style="font-size: 16px; font-weight: 500;">/month</span></div>
-                        <div class="yearly-subtext">Or $79.00 /year (Save 34%)</div>
+                        <div class="plan-title">{{ t('pro_plan') }}</div>
+                        <div class="plan-price">$9.99 <span style="font-size: 16px; font-weight: 500;">/{{ t('monthly') }}</span></div>
+                        <div class="yearly-subtext">Or $79.00 /{{ t('yearly') }}</div>
                     </div>
                     <ul class="feature-list">
-                        <li><span class="check-icon">✓</span> <strong>Job Application Tracker</strong> Dashboard</li>
-                        <li><span class="check-icon">✓</span> <strong>Unlimited</strong> AI ATS Optimizations</li>
-                        <li><span class="check-icon">✓</span> Job Description Keyword Matcher</li>
-                        <li><span class="check-icon">✓</span> Premium PDF Template Designs</li>
-                        <li><span class="check-icon">✓</span> Targeted Cover Letter Generator</li>
-                        <li><span class="check-icon">✓</span> LinkedIn Profile Optimizer</li>
-                        <li><span class="check-icon">✓</span> Interview Question Practice</li>
-                        <li><span class="check-icon">✓</span> Priority Customer Support</li>
+                        <li><span class="check-icon">✓</span> <strong>{{ t('dashboard_title') }}</strong></li>
+                        <li><span class="check-icon">✓</span> <strong>{{ t('unlimited_cv') }}</strong></li>
+                        <li><span class="check-icon">✓</span> {{ t('keyword_match') }}</li>
+                        <li><span class="check-icon">✓</span> {{ t('professional_design') }}</li>
+                        <li><span class="check-icon">✓</span> {{ t('generate_cover_letter') }}</li>
+                        <li><span class="check-icon">✓</span> {{ t('optimize_linkedin') }}</li>
+                        <li><span class="check-icon">✓</span> {{ t('ai_tools') }}</li>
+                        <li><span class="check-icon">✓</span> {{ t('nav_help') }}</li>
                     </ul>
                 </div>
-                <a href="/auth/register" class="btn-accent">Get Premium Access</a>
+                <a href="/auth/register" class="btn-accent">{{ t('upgrade_now') }}</a>
             </div>
         </div>
     </section>
 
     <!-- FOOTER -->
     <footer>
-        <p>&copy; 2026 CVForge Platform. All rights reserved.</p>
+        <p>&copy; 2026 CVForge Platform. {{ t('all_rights_reserved') }}</p>
     </footer>
 {% endblock %}
 
