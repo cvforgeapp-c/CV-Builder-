@@ -37,6 +37,7 @@ from flask import (
     Blueprint,
     flash,
     send_file,
+    session,
 )
 
 from flask_login import (
@@ -108,42 +109,38 @@ LANGUAGE_CODES = {
 
 def get_user_preferred_language(user):
     """
-    Return the user's saved application language.
+    Return the user's active application language.
 
     Preference priority:
-    1. preferences_json["language"]
-    2. preferences_json["aiPreferences"]["aiLanguage"]
-    3. English fallback
+    1. session["language"] (URL query param ?lang= or manual toggle)
+    2. preferences_json["language"] (Saved DB preference)
+    3. preferences_json["aiPreferences"]["aiLanguage"]
+    4. English fallback
     """
+    # 1. Check session first (handles live ?lang= parameters and active session overrides)
+    if session.get("language") in SUPPORTED_LANGUAGES:
+        return session["language"]
 
-    if not user:
-        return DEFAULT_LANGUAGE
+    # 2. Check authenticated user's database profile preferences
+    if user and getattr(user, "is_authenticated", False):
+        preferences = getattr(user, "preferences_json", None) or {}
 
-    preferences = getattr(user, "preferences_json", None) or {}
+        if isinstance(preferences, dict):
+            ai_preferences = preferences.get("aiPreferences", {})
 
-    if not isinstance(preferences, dict):
-        return DEFAULT_LANGUAGE
+            if not isinstance(ai_preferences, dict):
+                ai_preferences = {}
 
-    ai_preferences = preferences.get("aiPreferences", {})
+            language = (
+                preferences.get("language")
+                or ai_preferences.get("aiLanguage")
+            )
 
-    if not isinstance(ai_preferences, dict):
-        ai_preferences = {}
+            if language in SUPPORTED_LANGUAGES:
+                return language
 
-    language = (
-        preferences.get("language")
-        or ai_preferences.get("aiLanguage")
-        or DEFAULT_LANGUAGE
-    )
-
-    if not isinstance(language, str):
-        return DEFAULT_LANGUAGE
-
-    language = language.strip()
-
-    if language not in SUPPORTED_LANGUAGES:
-        return DEFAULT_LANGUAGE
-
-    return language
+    # 3. Default fallback
+    return DEFAULT_LANGUAGE
 
 # ============================================================
 # APPLICATION CONFIGURATION
@@ -252,9 +249,6 @@ def inject_global_translations():
             return str(key)
 
     # Expose translations for JavaScript.
-    #
-    # Only include English dictionary keys that exist in the
-    # translation module. The t() function supplies each value.
     try:
         from translations import TRANSLATIONS
 
@@ -957,7 +951,6 @@ def update_settings_section(section):
     if not isinstance(existing_preferences, dict):
         existing_preferences = {}
 
-    # Copy the preferences so unrelated settings remain unchanged.
     prefs = json.loads(
         json.dumps(existing_preferences)
     )
@@ -1001,10 +994,10 @@ def update_settings_section(section):
                 "supported_languages": SUPPORTED_LANGUAGES,
             }), 400
 
-        # Save the application-wide language.
+        # Save preference and sync session immediately
         prefs["language"] = selected_language
+        session["language"] = selected_language
 
-        # Keep the AI language preference synchronized.
         ai_preferences = prefs.get("aiPreferences", {})
 
         if not isinstance(ai_preferences, dict):
@@ -1021,7 +1014,6 @@ def update_settings_section(section):
 
         ai_preferences.update(data)
 
-        # Validate the language if the AI settings update includes it.
         if "aiLanguage" in data:
             selected_language = data["aiLanguage"]
 
@@ -1035,6 +1027,7 @@ def update_settings_section(section):
                 }), 400
 
             prefs["language"] = selected_language
+            session["language"] = selected_language
 
         prefs["aiPreferences"] = ai_preferences
 
