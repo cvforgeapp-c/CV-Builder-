@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}CV Studio - CVForge AI{% endblock %}
+{% block title %}{{ t('cv_builder') }} - CVForge AI{% endblock %}
 
 {% block extra_css %}
     <script src="https://cdn.tailwindcss.com"></script>
@@ -91,14 +91,14 @@
             </div>
             
             <div class="space-y-2">
-                <h3 id="modalTitle" class="text-xl font-bold text-slate-900">Input Required for AI Assist</h3>
+                <h3 id="modalTitle" class="text-xl font-bold text-slate-900">{{ t('ai_tools') }}</h3>
                 <p id="modalMessage" class="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                    Please provide a <strong class="text-slate-900">Target Title</strong>, <strong class="text-slate-900">Job Title</strong>, or <strong class="text-slate-900">Skills</strong> so AI Assist can generate a high-impact, tailored summary!
+                    {{ t('no_resumes_sub') }}
                 </p>
             </div>
 
             <button id="modalActionBtn" type="button" onclick="handleModalAction()" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-300 hover:to-amber-400 text-[#02353C] font-extrabold text-xs uppercase tracking-wider shadow-lg active:scale-95 transition-all">
-                Got it, let's fill details
+                {{ t('confirm') }}
             </button>
         </div>
     </div>
@@ -113,17 +113,17 @@
                 <span class="text-base sm:text-lg font-extrabold tracking-tight brand-logo-glow flex items-center gap-1.5">
                     <span class="text-white">CVForge</span><span class="text-amber-400">AI</span>
                 </span>
-                <span class="text-[10px] uppercase tracking-widest text-slate-300 font-semibold">Executive Studio</span>
+                <span class="text-[10px] uppercase tracking-widest text-slate-300 font-semibold">{{ t('cv_builder') }}</span>
             </div>
         </a>
 
         <div class="flex items-center gap-3">
             <span class="text-xs bg-amber-400/10 text-amber-300 border border-amber-400/20 px-3 py-1.5 rounded-full font-semibold hidden sm:flex items-center gap-1.5 shadow-inner">
                 <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                ATS Global Standard Active
+                {{ t('ats_optimization') }}
             </span>
             <button type="submit" form="cvForm" class="bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-300 hover:to-amber-400 text-[#02353C] font-extrabold text-xs px-5 py-2.5 rounded-xl transition-all shadow-md hover:shadow-amber-500/20 active:scale-95 flex items-center gap-2">
-                <i class="fa-solid fa-cloud-arrow-up text-sm"></i> Save CV
+                <i class="fa-solid fa-cloud-arrow-up text-sm"></i> {{ t('save') }}
             </button>
         </div>
     </nav>
@@ -147,24 +147,24 @@
 
                 <!-- Main Hook Title -->
                 <h1 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
-                    Forge Your Career <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-[#E5A93C] hero-text-glow">Advantage</span>
+                    {{ t('landing_hero_title') }}
                 </h1>
 
                 <!-- Body Copy -->
                 <p class="text-slate-200 text-xs sm:text-sm md:text-base leading-relaxed max-w-2xl font-normal">
-                    Craft an executive, ATS-optimized resume designed to pass automated HR filters worldwide. Fill in your achievements or leverage AI Assist for real-time optimization.
+                    {{ t('landing_hero_sub') }}
                 </p>
 
                 <!-- Value Proposition Feature Tags -->
                 <div class="pt-2 flex flex-wrap gap-2.5">
                     <div class="inline-flex items-center gap-1.5 text-[11px] font-semibold bg-white/10 border border-white/10 px-3 py-1 rounded-lg text-amber-300">
-                        <i class="fa-solid fa-circle-check text-amber-400 text-xs"></i> 100% ATS Compliant
+                        <i class="fa-solid fa-circle-check text-amber-400 text-xs"></i> {{ t('feat_ats_keyword_matching') }}
                     </div>
                     <div class="inline-flex items-center gap-1.5 text-[11px] font-semibold bg-white/10 border border-white/10 px-3 py-1 rounded-lg text-amber-300">
-                        <i class="fa-solid fa-bolt text-amber-400 text-xs"></i> AI Optimization Engine
+                        <i class="fa-solid fa-bolt text-amber-400 text-xs"></i> {{ t('ai_optimize') }}
                     </div>
                     <div class="inline-flex items-center gap-1.5 text-[11px] font-semibold bg-white/10 border border-white/10 px-3 py-1 rounded-lg text-amber-300">
-                        <i class="fa-solid fa-shield-halved text-amber-400 text-xs"></i> Executive Formats
+                        <i class="fa-solid fa-shield-halved text-amber-400 text-xs"></i> {{ t('professional_design') }}
                     </div>
                 </div>
             </div>
@@ -182,44 +182,44 @@
                             <i class="fa-solid fa-id-card text-amber-500 text-lg"></i>
                         </div>
                         <div>
-                            <h2 class="text-lg font-bold text-slate-900">Contact Information</h2>
-                            <p class="text-slate-500 text-xs">Essential header details for international recruitment.</p>
+                            <h2 class="text-lg font-bold text-slate-900">{{ t('personal_info') }}</h2>
+                            <p class="text-slate-500 text-xs">{{ t('account_settings') }}</p>
                         </div>
                     </div>
 
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Document Title (Internal Reference)</label>
-                            <input type="text" name="title" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. Executive Marketing Resume 2026" value="{{ resume.title if resume else '' }}" required class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('resume_title') }}</label>
+                            <input type="text" name="title" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="{{ t('untitled_resume') }}" value="{{ resume.title if resume else '' }}" required class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Target Professional Title</label>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('job_title') }}</label>
                                 <input type="text" name="target_role" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. Vice President of Marketing / Senior Software Engineer" value="{{ resume.content_json.target_role if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Full Name</label>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('full_name') }}</label>
                                 <input type="text" name="full_name" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. Alex Morgan" value="{{ resume.content_json.full_name if resume and resume.content_json else '' }}" required class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Email Address</label>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('email') }}</label>
                                 <input type="email" name="email" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. alex.morgan@example.com" value="{{ resume.content_json.email if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Phone Number</label>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('phone') }}</label>
                                 <input type="tel" name="phone" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. +1 (555) 019-2834" value="{{ resume.content_json.phone if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Location</label>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('location') }}</label>
                                 <input type="text" name="location" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. New York, NY, USA" value="{{ resume.content_json.location if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">LinkedIn Profile URL</label>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('linkedin') }}</label>
                                 <input type="url" name="linkedin" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. https://linkedin.com/in/alexmorgan" value="{{ resume.content_json.linkedin if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                             </div>
                             <div class="sm:col-span-2">
-                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Portfolio / Website URL</label>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('website') }}</label>
                                 <input type="url" name="portfolio" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. https://alexmorgan.com" value="{{ resume.content_json.portfolio if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                             </div>
                         </div>
@@ -234,12 +234,12 @@
                                 <i class="fa-solid fa-user-pen text-amber-500 text-lg"></i>
                             </div>
                             <div>
-                                <h2 class="text-lg font-bold text-slate-900">Professional Summary</h2>
-                                <p class="text-slate-500 text-xs">High-impact 3–4 sentence executive summary.</p>
+                                <h2 class="text-lg font-bold text-slate-900">{{ t('professional_summary') }}</h2>
+                                <p class="text-slate-500 text-xs">{{ t('ai_summary') }}</p>
                             </div>
                         </div>
                         <button type="button" onclick="generateAIField('summary', 'summaryText')" class="bg-amber-50 hover:bg-amber-100/80 text-amber-900 border border-amber-300/80 px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-2 active:scale-95">
-                            <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i> AI Generate
+                            <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i> {{ t('generate_summary') }}
                         </button>
                     </div>
                     <textarea id="summaryText" name="summary" rows="3" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="Write a brief 3-4 sentence overview of your professional background..." class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm leading-relaxed">{{ resume.content_json.summary if resume and resume.content_json else '' }}</textarea>
@@ -253,36 +253,36 @@
                                 <i class="fa-solid fa-briefcase text-amber-500 text-lg"></i>
                             </div>
                             <div>
-                                <h2 class="text-lg font-bold text-slate-900">Work & Professional Experience</h2>
-                                <p class="text-slate-500 text-xs">Reverse-chronological career history.</p>
+                                <h2 class="text-lg font-bold text-slate-900">{{ t('work_experience') }}</h2>
+                                <p class="text-slate-500 text-xs">{{ t('experience') }}</p>
                             </div>
                         </div>
                         <button type="button" onclick="generateAIField('experience', 'experienceBulletsText')" class="bg-amber-50 hover:bg-amber-100/80 text-amber-900 border border-amber-300/80 px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-2 active:scale-95">
-                            <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i> AI Polish Bullets
+                            <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i> {{ t('improve_writing') }}
                         </button>
                     </div>
 
                     <div class="space-y-4">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Company / Organization</label>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('company') }}</label>
                                 <input type="text" name="company" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. Deloitte / Google" value="{{ resume.content_json.company if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Job Title</label>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('position') }}</label>
                                 <input type="text" name="job_title" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. Senior Financial Analyst" value="{{ resume.content_json.job_title if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Location</label>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('location') }}</label>
                                 <input type="text" name="job_location" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. Chicago, IL, USA" value="{{ resume.content_json.job_location if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Dates Employed</label>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('start_date') }}</label>
                                 <input type="text" name="job_dates" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. Jan 2022 - Present" value="{{ resume.content_json.job_dates if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Key Accomplishments & Bullet Points</label>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('responsibilities') }}</label>
                             <textarea id="experienceBulletsText" name="experience_bullets" rows="4" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="- Spearheaded cross-functional initiative that increased revenue by 18%" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm leading-relaxed">{{ resume.content_json.experience_bullets if resume and resume.content_json else '' }}</textarea>
                         </div>
                     </div>
@@ -295,26 +295,26 @@
                             <i class="fa-solid fa-graduation-cap text-amber-500 text-lg"></i>
                         </div>
                         <div>
-                            <h2 class="text-lg font-bold text-slate-900">Education & Academic Credentials</h2>
-                            <p class="text-slate-500 text-xs">Degrees, institutions, and academic distinctions.</p>
+                            <h2 class="text-lg font-bold text-slate-900">{{ t('education') }}</h2>
+                            <p class="text-slate-500 text-xs">{{ t('field_of_study') }}</p>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Degree Name</label>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('degree') }}</label>
                             <input type="text" name="education_degree" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. B.S. in Business Administration" value="{{ resume.content_json.education_degree if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Institution & Location</label>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('school') }}</label>
                             <input type="text" name="education_school" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. Harvard University, Cambridge, MA" value="{{ resume.content_json.education_school if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Graduation Year</label>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('graduation_date') }}</label>
                             <input type="text" name="education_dates" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. May 2021" value="{{ resume.content_json.education_dates if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Honors / Distinctions</label>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('awards') }}</label>
                             <input type="text" name="education_honors" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. Magna Cum Laude" value="{{ resume.content_json.education_honors if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                         </div>
                     </div>
@@ -328,26 +328,26 @@
                                 <i class="fa-solid fa-list-check text-amber-500 text-lg"></i>
                             </div>
                             <div>
-                                <h2 class="text-lg font-bold text-slate-900">Core Skills & Credentials</h2>
-                                <p class="text-slate-500 text-xs">Technical proficiencies, board licenses, and certifications.</p>
+                                <h2 class="text-lg font-bold text-slate-900">{{ t('skills_certs') }}</h2>
+                                <p class="text-slate-500 text-xs">{{ t('certifications') }}</p>
                             </div>
                         </div>
                         <button type="button" onclick="generateAIField('skills', 'skillsTechText')" class="bg-amber-50 hover:bg-amber-100/80 text-amber-900 border border-amber-300/80 px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-2 active:scale-95">
-                            <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i> AI Suggest Skills
+                            <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i> {{ t('add_skill') }}
                         </button>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Technical / Professional Skills</label>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('skills') }}</label>
                             <input id="skillsTechText" type="text" name="skills_tech" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. Python, Financial Modeling, SQL" value="{{ resume.content_json.skills_tech if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Soft Skills & Leadership</label>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('additional_info') }}</label>
                             <input type="text" name="skills_soft" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. Cross-Functional Leadership, Strategic Planning" value="{{ resume.content_json.skills_soft if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                         </div>
                         <div class="sm:col-span-2">
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Certifications & Professional Licenses</label>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('certifications') }}</label>
                             <input type="text" name="certifications" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. PMP, AWS Certified Solutions Architect" value="{{ resume.content_json.certifications if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                         </div>
                     </div>
@@ -361,22 +361,22 @@
                                 <i class="fa-solid fa-globe text-amber-500 text-lg"></i>
                             </div>
                             <div>
-                                <h2 class="text-lg font-bold text-slate-900">Projects & Languages</h2>
-                                <p class="text-slate-500 text-xs">Notable research, key projects, and international language fluency.</p>
+                                <h2 class="text-lg font-bold text-slate-900">{{ t('projects') }} & {{ t('languages') }}</h2>
+                                <p class="text-slate-500 text-xs">{{ t('additional_info') }}</p>
                             </div>
                         </div>
                         <button type="button" onclick="generateAIField('project', 'projectsText')" class="bg-amber-50 hover:bg-amber-100/80 text-amber-900 border border-amber-300/80 px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-2 active:scale-95">
-                            <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i> AI Summarize Project
+                            <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i> {{ t('ai_optimize') }}
                         </button>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Key Projects or Research</label>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('projects') }}</label>
                             <textarea id="projectsText" name="projects" rows="3" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. Global Supply Chain Audit..." class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm leading-relaxed">{{ resume.content_json.projects if resume and resume.content_json else '' }}</textarea>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Languages (with Fluency Levels)</label>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('languages') }}</label>
                             <textarea name="languages" rows="3" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. English (Native), Spanish (Professional)" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm leading-relaxed">{{ resume.content_json.languages if resume and resume.content_json else '' }}</textarea>
                         </div>
                     </div>
@@ -387,10 +387,10 @@
             <!-- FORM FOOTER BUTTONS -->
             <div class="flex items-center justify-between pt-4 pb-12">
                 <a href="/dashboard" class="px-6 py-3 rounded-xl border border-white/20 text-white font-bold text-sm hover:bg-white/10 transition-colors">
-                    Cancel
+                    {{ t('cancel') }}
                 </a>
                 <button type="submit" class="px-8 py-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-300 hover:to-amber-400 text-[#02353C] font-extrabold text-sm shadow-xl hover:shadow-amber-500/20 active:scale-95 transition-all flex items-center gap-2">
-                    <i class="fa-solid fa-check text-base"></i> Save & Finish CV
+                    <i class="fa-solid fa-check text-base"></i> {{ t('save_changes') }}
                 </button>
             </div>
 
@@ -406,7 +406,7 @@
     <script>
         let currentModalAction = 'FILL_DETAILS';
 
-        function showModal(title, message, buttonText = "Got it, let's fill details", actionType = 'FILL_DETAILS') {
+        function showModal(title, message, buttonText = "{{ t('confirm') }}", actionType = 'FILL_DETAILS') {
             const modal = document.getElementById('aiModal');
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('modalMessage').innerHTML = message;
@@ -479,11 +479,11 @@
                     window.location.href = response.url;
                 } else {
                     const action = result.button_action || 'CLOSE';
-                    let btnText = "Close";
-                    if (action === 'REFILL_CREDIT') btnText = "Refill Credit";
-                    else if (action === 'PAY') btnText = "Upgrade Plan";
+                    let btnText = "{{ t('close') }}";
+                    if (action === 'REFILL_CREDIT') btnText = "{{ t('credits') }}";
+                    else if (action === 'PAY') btnText = "{{ t('upgrade_now') }}";
 
-                    showModal("Save Error", result.error || "Failed to save CV. Please try again.", btnText, action);
+                    showModal("{{ t('error') }}", result.error || "{{ t('operation_failed') }}", btnText, action);
                 }
             } catch (err) {
                 console.error("Save CV Submission Error:", err);
@@ -512,9 +512,9 @@
 
             if (!targetRole && !jobTitle && !skills && !currentInput) {
                 showModal(
-                    "Input Required for AI Assist", 
-                    "Please provide a <strong class='text-slate-900'>Target Professional Title</strong>, <strong class='text-slate-900'>Job Title</strong>, or <strong class='text-slate-900'>Skills</strong> so AI Assist can generate a high-impact, tailored output!",
-                    "Got it, let's fill details",
+                    "{{ t('ai_tools') }}", 
+                    "{{ t('required_field') }}",
+                    "{{ t('confirm') }}",
                     "FILL_DETAILS"
                 );
                 if (targetRoleInput) targetRoleInput.focus();
@@ -523,7 +523,7 @@
 
             const previousValue = targetArea ? targetArea.value : "";
             if (targetArea) {
-                targetArea.value = "AI Assist is generating content for " + (targetRole || jobTitle || "your profile") + "...";
+                targetArea.value = "{{ t('processing') }}";
             }
 
             try {
@@ -551,18 +551,18 @@
                     }
                 } else {
                     const action = data.button_action || 'TRY_AGAIN';
-                    let btnText = "Got it, try again";
+                    let btnText = "{{ t('try_again') }}";
                     
-                    if (action === 'REFILL_CREDIT') btnText = "Refill credit";
-                    else if (action === 'PAY') btnText = "Pay";
-                    else if (action === 'SUBSCRIPTION_EXPIRED') btnText = "Renew Subscription";
+                    if (action === 'REFILL_CREDIT') btnText = "{{ t('credits') }}";
+                    else if (action === 'PAY') btnText = "{{ t('upgrade_now') }}";
+                    else if (action === 'SUBSCRIPTION_EXPIRED') btnText = "{{ t('manage_subscription') }}";
 
-                    showModal("AI Assist Notice", data.error || "Unable to generate AI content at this time.", btnText, action);
+                    showModal("{{ t('warning') }}", data.error || "{{ t('ai_generation_failed') }}", btnText, action);
                     if (targetArea) targetArea.value = previousValue;
                 }
             } catch (err) {
                 console.error("AI Assist Generation Error:", err);
-                showModal("Connection Error", "Connection error encountered while communicating with the AI service. Please check your network and try again.", "Got it, try again", "TRY_AGAIN");
+                showModal("{{ t('error') }}", "{{ t('network_error') }}", "{{ t('try_again') }}", "TRY_AGAIN");
                 if (targetArea) targetArea.value = previousValue;
             }
         }
