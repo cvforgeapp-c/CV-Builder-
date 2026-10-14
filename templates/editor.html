@@ -373,4 +373,219 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('projects') }}</label>
-                            <textarea id="projectsText" name="projects" rows="3" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. Global Supply Chain Audit..." class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm leading-relaxed">{{ resume.content_json.
+                            <textarea id="projectsText" name="projects" rows="3" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. Global Supply Chain Audit..." class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm leading-relaxed">{{ resume.content_json.projects if resume and resume.content_json else '' }}</textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('languages') }}</label>
+                            <textarea name="languages" rows="3" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. English (Native), Spanish (Professional)" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm leading-relaxed">{{ resume.content_json.languages if resume and resume.content_json else '' }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- FORM FOOTER BUTTONS -->
+            <div class="flex items-center justify-between pt-4 pb-12">
+                <a href="/dashboard" class="px-6 py-3 rounded-xl border border-white/20 text-white font-bold text-sm hover:bg-white/10 transition-colors">
+                    {{ t('cancel') }}
+                </a>
+                <button type="submit" class="px-8 py-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-300 hover:to-amber-400 text-[#02353C] font-extrabold text-sm shadow-xl hover:shadow-amber-500/20 active:scale-95 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-check text-base"></i> {{ t('save_changes') }}
+                </button>
+            </div>
+
+        </form>
+
+    </main>
+
+    </body>
+{% endblock %}
+
+{% block extra_js %}
+    <!-- PASS SERVER-SIDE TRANSLATIONS TO JAVASCRIPT -->
+    <script>
+        window.CVFORGE_TRANSLATIONS = {{ cvforge_translations | tojson | safe }};
+
+        function translateKey(key, fallback = '') {
+            return window.CVFORGE_TRANSLATIONS[key] || fallback || key;
+        }
+    </script>
+
+    <!-- CLIENT-SIDE SCRIPT WITH ENHANCED FIELD ZOOM & TARGETED ERROR ACTIONS -->
+    <script>
+        let currentModalAction = 'FILL_DETAILS';
+
+        function showModal(title, message, buttonText = "", actionType = 'FILL_DETAILS') {
+            const modal = document.getElementById('aiModal');
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMessage').innerHTML = message;
+            
+            const btn = document.getElementById('modalActionBtn');
+            btn.innerText = buttonText || translateKey('confirm', 'Got it');
+            currentModalAction = actionType;
+
+            modal.classList.add('modal-active');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('aiModal');
+            modal.classList.remove('modal-active');
+        }
+
+        function handleModalAction() {
+            if (currentModalAction === 'REFILL_CREDIT') {
+                window.location.href = '/pricing';
+            } else if (currentModalAction === 'PAY' || currentModalAction === 'SUBSCRIPTION_EXPIRED') {
+                window.location.href = '/pricing';
+            } else {
+                closeModal();
+            }
+        }
+
+        /* Smooth Expanded Field Zoom Out on Focus or Typing */
+        function zoomOutField(el) {
+            el.classList.add('zoomed-out');
+            if (el.tagName.toLowerCase() === 'textarea') {
+                el.style.height = 'auto';
+                el.style.height = Math.max(el.scrollHeight + 20, 260) + 'px';
+            }
+        }
+
+        function zoomInField(el) {
+            if (!el.value.trim()) {
+                el.classList.remove('zoomed-out');
+                if (el.tagName.toLowerCase() === 'textarea') {
+                    el.style.height = '';
+                }
+            }
+        }
+
+        document.getElementById('cvForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const form = this;
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => data[key] = value);
+
+            const saveUrl = form.getAttribute('action');
+
+            try {
+                const response = await fetch(saveUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.redirect_url) {
+                    window.location.href = result.redirect_url;
+                } else if (response.redirected) {
+                    window.location.href = response.url;
+                } else {
+                    const action = result.button_action || 'CLOSE';
+                    let btnText = translateKey('close', 'Close');
+                    if (action === 'REFILL_CREDIT') btnText = translateKey('credits', 'Refill Credit');
+                    else if (action === 'PAY') btnText = translateKey('upgrade_now', 'Upgrade Plan');
+
+                    showModal(translateKey('error', 'Error'), result.error || translateKey('operation_failed', 'Failed to save CV.'), btnText, action);
+                }
+            } catch (err) {
+                console.error("Save CV Submission Error:", err);
+                form.submit();
+            }
+        });
+
+        async function generateAIField(fieldType, targetElementId) {
+            const targetArea = document.getElementById(targetElementId);
+            
+            if (targetArea) {
+                zoomOutField(targetArea);
+                targetArea.focus();
+            }
+
+            const targetRoleInput = document.querySelector('input[name="target_role"]');
+            const jobTitleInput = document.querySelector('input[name="job_title"]');
+            const fullNameInput = document.querySelector('input[name="full_name"]');
+            const skillsInput = document.querySelector('input[name="skills_tech"]');
+
+            const targetRole = targetRoleInput ? targetRoleInput.value.trim() : "";
+            const jobTitle = jobTitleInput ? jobTitleInput.value.trim() : "";
+            const fullName = fullNameInput ? fullNameInput.value.trim() : "";
+            const skills = skillsInput ? skillsInput.value.trim() : "";
+            const currentInput = targetArea ? targetArea.value.trim() : "";
+
+            if (!targetRole && !jobTitle && !skills && !currentInput) {
+                showModal(
+                    translateKey('ai_tools', 'AI Assist'), 
+                    translateKey('required_field', 'Please provide a Target Professional Title, Job Title, or Skills first!'),
+                    translateKey('confirm', 'Got it'),
+                    "FILL_DETAILS"
+                );
+                if (targetRoleInput) targetRoleInput.focus();
+                return;
+            }
+
+            const previousValue = targetArea ? targetArea.value : "";
+            if (targetArea) {
+                const targetName = targetRole || jobTitle || "Professional";
+                const processingTpl = translateKey('processing', 'AI Assist is generating content for {name}...');
+                targetArea.value = processingTpl.replace('{name}', targetName);
+                
+                // MAKE FIELD UNEDITABLE DURING GENERATION
+                targetArea.setAttribute('readonly', true);
+                targetArea.classList.add('opacity-75', 'cursor-not-allowed', 'bg-slate-100');
+            }
+
+            try {
+                const response = await fetch('/api/v1/ai/generate-field', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        field_type: fieldType,
+                        target_role: targetRole || jobTitle || "Professional",
+                        job_title: jobTitle,
+                        full_name: fullName,
+                        skills: skills,
+                        current_input: currentInput
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.result) {
+                    if (targetArea) {
+                        targetArea.value = data.result;
+                        zoomOutField(targetArea);
+                    }
+                } else {
+                    const action = data.button_action || 'TRY_AGAIN';
+                    let btnText = translateKey('try_again', 'Try Again');
+                    
+                    if (action === 'REFILL_CREDIT') btnText = translateKey('credits', 'Refill credit');
+                    else if (action === 'PAY') btnText = translateKey('upgrade_now', 'Pay');
+                    else if (action === 'SUBSCRIPTION_EXPIRED') btnText = translateKey('manage_subscription', 'Renew Subscription');
+
+                    showModal(translateKey('warning', 'Warning'), data.error || translateKey('ai_generation_failed', 'Unable to generate AI content at this time.'), btnText, action);
+                    if (targetArea) targetArea.value = previousValue;
+                }
+            } catch (err) {
+                console.error("AI Assist Generation Error:", err);
+                showModal(translateKey('error', 'Error'), translateKey('network_error', 'Connection error encountered. Please check your network.'), translateKey('try_again', 'Try Again'), "TRY_AGAIN");
+                if (targetArea) targetArea.value = previousValue;
+            } finally {
+                // RESTORE EDITABILITY ONCE GENERATION COMPLETES OR FAILS
+                if (targetArea) {
+                    targetArea.removeAttribute('readonly');
+                    targetArea.classList.remove('opacity-75', 'cursor-not-allowed', 'bg-slate-100');
+                }
+            }
+        }
+    </script>
+{% endblock %}
