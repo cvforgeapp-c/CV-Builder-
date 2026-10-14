@@ -599,25 +599,25 @@
                     <div class="form-group">
                         <label for="aiTone">{{ t('default_writing_tone_label') }}</label>
                         <select id="aiTone" name="aiTone">
-                            <option value="Executive & Leadership" selected>Executive & Leadership</option>
-                            <option value="Action-Oriented & Metrics-Driven">Action-Oriented & Metrics-Driven</option>
-                            <option value="Technical & Precision-Focused">Technical & Precision-Focused</option>
+                            <option value="Executive & Leadership" selected>{{ t('tone_executive') }}</option>
+                            <option value="Action-Oriented & Metrics-Driven">{{ t('tone_action') }}</option>
+                            <option value="Technical & Precision-Focused">{{ t('tone_technical') }}</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="aiLayout">{{ t('default_resume_layout_label') }}</label>
                         <select id="aiLayout" name="aiLayout">
-                            <option value="Modern ATS Minimalist" selected>Modern ATS Minimalist</option>
-                            <option value="Classic Corporate">Classic Corporate</option>
-                            <option value="Compact Technical">Compact Technical</option>
+                            <option value="Modern ATS Minimalist" selected>{{ t('layout_modern') }}</option>
+                            <option value="Classic Corporate">{{ t('layout_classic') }}</option>
+                            <option value="Compact Technical">{{ t('layout_compact') }}</option>
                         </select>
                     </div>
                     <div class="form-group full-width">
                         <label for="atsRigor">{{ t('ats_rigor_label') }}</label>
                         <select id="atsRigor" name="atsRigor">
-                            <option value="Balanced Match (Recommended)" selected>Balanced Match (Recommended)</option>
-                            <option value="Strict Keyword Matching">Strict Keyword Matching</option>
-                            <option value="High-Frequency Focus">High-Frequency Focus</option>
+                            <option value="Balanced Match (Recommended)" selected>{{ t('rigor_balanced') }}</option>
+                            <option value="Strict Keyword Matching">{{ t('rigor_strict') }}</option>
+                            <option value="High-Frequency Focus">{{ t('rigor_high_freq') }}</option>
                         </select>
                     </div>
                     <div class="form-group full-width" style="margin-top: 6px;">
@@ -645,23 +645,23 @@
                     <div class="form-group">
                         <label for="trackerLayout">{{ t('tracker_layout_label') }}</label>
                         <select id="trackerLayout" name="trackerLayout">
-                            <option value="Kanban Drag & Drop Board" selected>Kanban Drag & Drop Board</option>
-                            <option value="Structured Data Table">Structured Data Table</option>
+                            <option value="Kanban Drag & Drop Board" selected>{{ t('tracker_kanban') }}</option>
+                            <option value="Structured Data Table">{{ t('tracker_table') }}</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="followupReminders">{{ t('followup_reminders_label') }}</label>
                         <select id="followupReminders" name="followupReminders">
-                            <option value="Remind me after 7 days" selected>Remind me after 7 days</option>
-                            <option value="Remind me after 14 days">Remind me after 14 days</option>
-                            <option value="Disabled">Disabled</option>
+                            <option value="Remind me after 7 days" selected>{{ t('remind_7_days') }}</option>
+                            <option value="Remind me after 14 days">{{ t('remind_14_days') }}</option>
+                            <option value="Disabled">{{ t('remind_disabled') }}</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="notifyMethod">{{ t('notify_method_label') }}</label>
                         <select id="notifyMethod" name="notifyMethod">
-                            <option value="Email & Dashboard Alert" selected>Email & Dashboard Alert</option>
-                            <option value="Dashboard Banner Only">Dashboard Banner Only</option>
+                            <option value="Email & Dashboard Alert" selected>{{ t('notify_email_dash') }}</option>
+                            <option value="Dashboard Banner Only">{{ t('notify_dash_only') }}</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -671,8 +671,8 @@
                     <div class="form-group">
                         <label for="aiAutomation">{{ t('ai_automation_label') }}</label>
                         <select id="aiAutomation" name="aiAutomation">
-                            <option value="Auto-draft follow-up emails on alert date" selected>Auto-draft follow-up emails on alert date</option>
-                            <option value="Disabled (Manual drafts only)">Disabled (Manual drafts only)</option>
+                            <option value="Auto-draft follow-up emails on alert date" selected>{{ t('auto_draft_emails') }}</option>
+                            <option value="Disabled (Manual drafts only)">{{ t('auto_draft_disabled') }}</option>
                         </select>
                     </div>
                     <div class="form-group full-width" style="margin-top: 6px;">
