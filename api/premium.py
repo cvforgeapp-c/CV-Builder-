@@ -491,6 +491,11 @@ premium_app.register_blueprint(auth_bp)
 
 @premium_app.route("/")
 def landing():
+    # Allow explicit language switching via URL parameter: e.g. /?lang=Spanish
+    requested_lang = request.args.get("lang")
+    if requested_lang and requested_lang in SUPPORTED_LANGUAGES:
+        session['language'] = requested_lang
+
     try:
         return render_template("landing.html")
     except Exception:
