@@ -307,6 +307,73 @@ TRANSLATIONS = {
         "login_required": "Please sign in to continue.",
         "no_data": "No data available.",
         "coming_soon": "Coming soon.",
+    # Navbar
+    "landing_brand_subtitle": "AI Resume Platform",
+    "nav_plans": "Plans",
+    "nav_create_cv_free": "Create CV Free",
+
+    # Mobile Menu
+    "menu_build_ats_free": "Build ATS Resume Free",
+    "menu_my_dashboard": "My Dashboard",
+    "menu_account_settings": "Account Settings",
+    "menu_ai_features": "AI Features & Tools",
+    "menu_pricing_pro": "Pricing & Pro Plans",
+    "menu_signup_login": "Sign Up / Login",
+    "menu_sign_out": "Sign Out",
+    "menu_about_us": "About Us",
+    "menu_privacy": "Privacy Policy",
+    "menu_terms": "Terms of Service",
+
+    # Hero
+    "hero_title_exact": "Craft ATS-Optimized Resumes & Land Your Dream Role",
+    "hero_subtitle_exact": "Generate tailored CVs, match job descriptions with AI precision, and track your applications—all in one place.",
+    "hero_cta_exact": "Build Resume Now (Free)",
+    "hero_secondary_cta_exact": "Explore Premium Features",
+
+    # Features Section
+    "features_title": "Built for Modern Job Seekers",
+    "features_subtitle": "Everything you need to showcase your experience cleanly and efficiently",
+    "feature_pdf_title": "Instant PDF Generation",
+    "feature_pdf_desc": "Choose from professional templates and download pixel-perfect PDF resumes built with ReportLab rendering.",
+    "feature_ats_title": "AI ATS Match & Tailoring",
+    "feature_ats_desc": "Analyze target job descriptions, receive keyword match scores, and automatically tailor your bullet points.",
+    "feature_tracker_title": "Job Application Tracker",
+    "feature_tracker_desc": "Organize your job search with a dedicated status dashboard. Monitor applications from saved to interview stages.",
+    "feature_prep_title": "LinkedIn & Interview Prep",
+    "feature_prep_desc": "Generate targeted cover letters, optimize your LinkedIn profile, and practice tailored interview questions.",
+
+    # Pricing Section
+    "pricing_title": "Simple, Transparent Pricing",
+    "pricing_subtitle": "Choose the plan that fits your job search goals",
+    "plan_free_title": "Free Plan",
+    "plan_free_price": "$0",
+    "plan_free_period": "Forever free",
+    "feat_create_edit": "Create & edit CVs",
+    "feat_std_templates": "Standard templates",
+    "feat_pdf_download": "PDF download",
+    "feat_app_tracker": "Job Application Tracker",
+    "feat_ats_keyword_matching": "AI ATS Keyword Matching",
+    "feat_cover_letter_gen": "Cover letter generator",
+    "feat_linkedin_opt": "LinkedIn profile optimization",
+
+    "plan_pro_title": "CVForge Premium",
+    "plan_pro_price_unit": "/month",
+    "plan_pro_yearly_subtext": "Or $79.00 /year (Save 34%)",
+    "popular_badge_text": "★ POPULAR",
+    "feat_tracker_dashboard": "Job Application Tracker Dashboard",
+    "feat_unlimited_ats": "Unlimited AI ATS Optimizations",
+    "feat_jd_keyword_matcher": "Job Description Keyword Matcher",
+    "feat_premium_templates": "Premium PDF Template Designs",
+    "feat_targeted_cover_letter": "Targeted Cover Letter Generator",
+    "feat_linkedin_optimizer": "LinkedIn Profile Optimizer",
+    "feat_interview_practice": "Interview Question Practice",
+    "feat_priority_support": "Priority Customer Support",
+    "btn_get_premium": "Get Premium Access",
+
+    # Footer
+    "footer_copy_exact": "© 2026 CVForge Platform. All rights reserved."
+}
+
     },
 
     "Mandarin Chinese": {
