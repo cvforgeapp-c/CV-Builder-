@@ -402,17 +402,26 @@
 {% endblock %}
 
 {% block extra_js %}
+    <!-- PASS SERVER-SIDE TRANSLATIONS TO JAVASCRIPT -->
+    <script>
+        window.CVFORGE_TRANSLATIONS = {{ cvforge_translations | tojson | safe }};
+
+        function translateKey(key, fallback = '') {
+            return window.CVFORGE_TRANSLATIONS[key] || fallback || key;
+        }
+    </script>
+
     <!-- CLIENT-SIDE SCRIPT WITH ENHANCED FIELD ZOOM & TARGETED ERROR ACTIONS -->
     <script>
         let currentModalAction = 'FILL_DETAILS';
 
-        function showModal(title, message, buttonText = "{{ t('confirm') }}", actionType = 'FILL_DETAILS') {
+        function showModal(title, message, buttonText = "", actionType = 'FILL_DETAILS') {
             const modal = document.getElementById('aiModal');
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('modalMessage').innerHTML = message;
             
             const btn = document.getElementById('modalActionBtn');
-            btn.innerText = buttonText;
+            btn.innerText = buttonText || translateKey('confirm', 'Got it');
             currentModalAction = actionType;
 
             modal.classList.add('modal-active');
@@ -479,11 +488,11 @@
                     window.location.href = response.url;
                 } else {
                     const action = result.button_action || 'CLOSE';
-                    let btnText = "{{ t('close') }}";
-                    if (action === 'REFILL_CREDIT') btnText = "{{ t('credits') }}";
-                    else if (action === 'PAY') btnText = "{{ t('upgrade_now') }}";
+                    let btnText = translateKey('close', 'Close');
+                    if (action === 'REFILL_CREDIT') btnText = translateKey('credits', 'Refill Credit');
+                    else if (action === 'PAY') btnText = translateKey('upgrade_now', 'Upgrade Plan');
 
-                    showModal("{{ t('error') }}", result.error || "{{ t('operation_failed') }}", btnText, action);
+                    showModal(translateKey('error', 'Error'), result.error || translateKey('operation_failed', 'Failed to save CV.'), btnText, action);
                 }
             } catch (err) {
                 console.error("Save CV Submission Error:", err);
@@ -512,9 +521,9 @@
 
             if (!targetRole && !jobTitle && !skills && !currentInput) {
                 showModal(
-                    "{{ t('ai_tools') }}", 
-                    "{{ t('required_field') }}",
-                    "{{ t('confirm') }}",
+                    translateKey('ai_tools', 'AI Assist'), 
+                    translateKey('required_field', 'Please provide a Target Professional Title, Job Title, or Skills first!'),
+                    translateKey('confirm', 'Got it'),
                     "FILL_DETAILS"
                 );
                 if (targetRoleInput) targetRoleInput.focus();
@@ -523,7 +532,9 @@
 
             const previousValue = targetArea ? targetArea.value : "";
             if (targetArea) {
-                targetArea.value = "{{ t('processing') }}";
+                const targetName = targetRole || jobTitle || "Professional";
+                const processingTpl = translateKey('processing', 'AI Assist is generating content for {name}...');
+                targetArea.value = processingTpl.replace('{name}', targetName);
             }
 
             try {
@@ -551,18 +562,18 @@
                     }
                 } else {
                     const action = data.button_action || 'TRY_AGAIN';
-                    let btnText = "{{ t('try_again') }}";
+                    let btnText = translateKey('try_again', 'Try Again');
                     
-                    if (action === 'REFILL_CREDIT') btnText = "{{ t('credits') }}";
-                    else if (action === 'PAY') btnText = "{{ t('upgrade_now') }}";
-                    else if (action === 'SUBSCRIPTION_EXPIRED') btnText = "{{ t('manage_subscription') }}";
+                    if (action === 'REFILL_CREDIT') btnText = translateKey('credits', 'Refill credit');
+                    else if (action === 'PAY') btnText = translateKey('upgrade_now', 'Pay');
+                    else if (action === 'SUBSCRIPTION_EXPIRED') btnText = translateKey('manage_subscription', 'Renew Subscription');
 
-                    showModal("{{ t('warning') }}", data.error || "{{ t('ai_generation_failed') }}", btnText, action);
+                    showModal(translateKey('warning', 'Warning'), data.error || translateKey('ai_generation_failed', 'Unable to generate AI content at this time.'), btnText, action);
                     if (targetArea) targetArea.value = previousValue;
                 }
             } catch (err) {
                 console.error("AI Assist Generation Error:", err);
-                showModal("{{ t('error') }}", "{{ t('network_error') }}", "{{ t('try_again') }}", "TRY_AGAIN");
+                showModal(translateKey('error', 'Error'), translateKey('network_error', 'Connection error encountered. Please check your network.'), translateKey('try_again', 'Try Again'), "TRY_AGAIN");
                 if (targetArea) targetArea.value = previousValue;
             }
         }
