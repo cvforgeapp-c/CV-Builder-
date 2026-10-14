@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Login - CVForge AI Resume Builder{% endblock %}
+{% block title %}{{ t('login_page_title', 'Login - CVForge AI Resume Builder') }}{% endblock %}
 
 {% block extra_css %}
     <style>
@@ -240,19 +240,19 @@
 {% endblock %}
 
 {% block content %}
-    <a href="/" class="back-nav">← Back to CVForge</a>
+    <a href="/" class="back-nav">← {{ t('back_to_cvforge', 'Back to CVForge') }}</a>
 
     <div class="auth-container">
         
         <!-- BRAND LOGO -->
         <a href="/" class="brand-badge">
             <span class="brand-name">CVForge</span>
-            <span class="brand-subtitle">AI</span>
+            <span class="brand-subtitle">{{ t('ai_badge', 'AI') }}</span>
         </a>
 
         <div class="auth-header">
-            <h1>Welcome Back</h1>
-            <p>Log in to access your saved CVs & AI tools</p>
+            <h1>{{ t('welcome_back_heading', 'Welcome Back') }}</h1>
+            <p>{{ t('login_subtitle', 'Log in to access your saved CVs & AI tools') }}</p>
         </div>
 
         <!-- DEDUPLICATED FLASH MESSAGES -->
@@ -272,23 +272,23 @@
 
         <form action="{{ url_for('auth.login') }}" method="POST">
             <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" required placeholder="name@example.com" autocomplete="email">
+                <label for="email">{{ t('email_address_label', 'Email Address') }}</label>
+                <input type="email" id="email" name="email" required placeholder="{{ t('email_placeholder', 'name@example.com') }}" autocomplete="email">
             </div>
 
             <div class="form-group">
                 <div class="label-row">
-                    <label for="password">Password</label>
-                    <a href="{{ url_for('auth.forgot_password') }}" class="forgot-link">Forgot password?</a>
+                    <label for="password">{{ t('password_label', 'Password') }}</label>
+                    <a href="{{ url_for('auth.forgot_password') }}" class="forgot-link">{{ t('forgot_password_link', 'Forgot password?') }}</a>
                 </div>
-                <input type="password" id="password" name="password" required placeholder="Enter password" autocomplete="current-password">
+                <input type="password" id="password" name="password" required placeholder="{{ t('password_placeholder', 'Enter password') }}" autocomplete="current-password">
             </div>
 
-            <button type="submit" class="btn-submit">Log In</button>
+            <button type="submit" class="btn-submit">{{ t('log_in_btn', 'Log In') }}</button>
         </form>
 
         <div class="auth-footer">
-            Don't have an account? <a href="{{ url_for('auth.register') }}">Sign up free</a>
+            {{ t('no_account_text', "Don't have an account?") }} <a href="{{ url_for('auth.register') }}">{{ t('sign_up_free_link', 'Sign up free') }}</a>
         </div>
     </div>
 {% endblock %}
