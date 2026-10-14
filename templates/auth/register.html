@@ -10,28 +10,29 @@
             padding: 0;
         }
 
-        body {
+        /* Full page dark background wrapper to prevent base.html overrides */
+        .auth-page-wrapper {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background:
-                radial-gradient(
-                    circle at 50% 0%,
-                    #05535E 0%,
-                    #02353C 45%,
-                    #011a1e 100%
-                );
+            background: radial-gradient(
+                circle at 50% 0%,
+                #05535E 0%,
+                #02353C 45%,
+                #011a1e 100%
+            ) !important;
             color: #1e293b;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            width: 100%;
             padding: 24px 16px;
             position: relative;
             overflow-x: hidden;
         }
 
         /* Ambient Background Glow */
-        body::before {
+        .auth-page-wrapper::before {
             content: '';
             position: absolute;
             width: 350px;
@@ -51,7 +52,7 @@
             top: 24px;
             left: 24px;
             text-decoration: none;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.9);
             font-size: 14px;
             font-weight: 600;
             display: flex;
@@ -249,7 +250,6 @@
 
         /* Mobile */
         @media (max-width: 480px) {
-
             .back-nav {
                 position: relative;
                 top: 0;
@@ -270,6 +270,7 @@
 {% endblock %}
 
 {% block content %}
+<div class="auth-page-wrapper">
     <a href="/" class="back-nav">
         ← {{ t('back_to_cvforge', 'Back to CVForge') }}
     </a>
@@ -290,38 +291,25 @@
 
         {% with messages = get_flashed_messages() %}
             {% if messages %}
-
                 {% set seen_messages = [] %}
-
                 {% for message in messages %}
-
                     {% if message not in seen_messages %}
-
                         {% set _ = seen_messages.append(message) %}
-
                         <div class="flash-msg">
                             <span>⚠️</span>
                             {{ message }}
                         </div>
-
                     {% endif %}
-
                 {% endfor %}
-
             {% endif %}
         {% endwith %}
 
-        <form
-            action="{{ url_for('auth.register') }}"
-            method="POST"
-        >
+        <form action="{{ url_for('auth.register') }}" method="POST">
 
             <div class="form-group">
-
                 <label for="email">
                     {{ t('email_address_label', 'Email Address') }}
                 </label>
-
                 <input
                     type="email"
                     id="email"
@@ -330,16 +318,12 @@
                     placeholder="{{ t('email_placeholder', 'name@example.com') }}"
                     autocomplete="email"
                 >
-
             </div>
 
-
             <div class="form-group">
-
                 <label for="password">
                     {{ t('password_label', 'Password') }}
                 </label>
-
                 <input
                     type="password"
                     id="password"
@@ -349,34 +333,25 @@
                     placeholder="{{ t('create_password_placeholder', 'Create a password') }}"
                     autocomplete="new-password"
                 >
-
             </div>
 
-
-            <button
-                type="submit"
-                class="btn-submit"
-            >
+            <button type="submit" class="btn-submit">
                 {{ t('nav_register', 'Create Account') }}
             </button>
 
         </form>
 
-
         <div class="terms">
             {{ t('register_terms_notice', 'By creating an account, you agree to use CVForge responsibly and keep your account information secure.') }}
         </div>
 
-
         <div class="auth-footer">
-
             {{ t('already_have_account_text', 'Already have an account?') }}
-
             <a href="{{ url_for('auth.login') }}">
                 {{ t('nav_login', 'Log in') }}
             </a>
-
         </div>
 
     </div>
+</div>
 {% endblock %}
