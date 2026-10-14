@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Sign Up - CVForge AI Resume Builder{% endblock %}
+{% block title %}{{ t('register_page_title', 'Sign Up - CVForge AI Resume Builder') }}{% endblock %}
 
 {% block extra_css %}
     <style>
@@ -271,20 +271,20 @@
 
 {% block content %}
     <a href="/" class="back-nav">
-        ← Back to CVForge
+        ← {{ t('back_to_cvforge', 'Back to CVForge') }}
     </a>
 
     <div class="auth-container">
 
         <a href="/" class="brand-badge">
             <span class="brand-name">CVForge</span>
-            <span class="brand-subtitle">AI</span>
+            <span class="brand-subtitle">{{ t('ai_badge', 'AI') }}</span>
         </a>
 
         <div class="auth-header">
-            <h1>Create Your Account</h1>
+            <h1>{{ t('create_account_heading', 'Create Your Account') }}</h1>
             <p>
-                Sign up to save your CVs and access CVForge AI tools
+                {{ t('register_subtitle', 'Sign up to save your CVs and access CVForge AI tools') }}
             </p>
         </div>
 
@@ -319,7 +319,7 @@
             <div class="form-group">
 
                 <label for="email">
-                    Email Address
+                    {{ t('email_address_label', 'Email Address') }}
                 </label>
 
                 <input
@@ -327,7 +327,7 @@
                     id="email"
                     name="email"
                     required
-                    placeholder="name@example.com"
+                    placeholder="{{ t('email_placeholder', 'name@example.com') }}"
                     autocomplete="email"
                 >
 
@@ -337,7 +337,7 @@
             <div class="form-group">
 
                 <label for="password">
-                    Password
+                    {{ t('password_label', 'Password') }}
                 </label>
 
                 <input
@@ -346,7 +346,7 @@
                     name="password"
                     required
                     minlength="6"
-                    placeholder="Create a password"
+                    placeholder="{{ t('create_password_placeholder', 'Create a password') }}"
                     autocomplete="new-password"
                 >
 
@@ -357,24 +357,23 @@
                 type="submit"
                 class="btn-submit"
             >
-                Create Account
+                {{ t('nav_register', 'Create Account') }}
             </button>
 
         </form>
 
 
         <div class="terms">
-            By creating an account, you agree to use CVForge
-            responsibly and keep your account information secure.
+            {{ t('register_terms_notice', 'By creating an account, you agree to use CVForge responsibly and keep your account information secure.') }}
         </div>
 
 
         <div class="auth-footer">
 
-            Already have an account?
+            {{ t('already_have_account_text', 'Already have an account?') }}
 
             <a href="{{ url_for('auth.login') }}">
-                Log in
+                {{ t('nav_login', 'Log in') }}
             </a>
 
         </div>
