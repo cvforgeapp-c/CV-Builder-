@@ -227,7 +227,8 @@ login_manager.login_message_category = "info"
 @premium_app.context_processor
 def inject_global_translations():
     """
-    Make translation variables available to every Jinja template globally across all routes.
+    Make translation variables and complete active language dictionary
+    available to every Jinja template and frontend script globally.
     """
     user_language = get_user_preferred_language(
         current_user if current_user.is_authenticated else None
@@ -249,16 +250,15 @@ def inject_global_translations():
             )
             return str(key)
 
-    # Expose translations for JavaScript frontend usage.
+    # Expose ALL translations for the active language to JavaScript frontend safely.
     try:
-        english_dictionary = TRANSLATIONS.get(
-            DEFAULT_LANGUAGE,
-            {},
-        )
+        active_dictionary = TRANSLATIONS.get(user_language, {})
+        if not active_dictionary:
+            active_dictionary = TRANSLATIONS.get(DEFAULT_LANGUAGE, {})
 
         javascript_translations = {
             key: translate(key)
-            for key in english_dictionary
+            for key in active_dictionary
         }
     except (ImportError, AttributeError, TypeError):
         javascript_translations = {}
