@@ -236,7 +236,7 @@ def inject_global_translations():
 
     language_code = LANGUAGE_CODES.get(user_language, "en")
 
-        def translate(key, default=None):
+    def translate(key, default=None):
         """
         Translate a key into the selected language, with an optional default fallback.
         """
@@ -253,7 +253,6 @@ def inject_global_translations():
                 type(exc).__name__,
             )
             return default if default is not None else str(key)
-            
 
     # Expose ALL translations for the active language to JavaScript frontend safely.
     try:
