@@ -115,6 +115,10 @@ def get_supported_languages() -> list:
 
 def get_language_code(lang: str = "English (US / UK)") -> str:
     """Get ISO language code for HTML lang attributes."""
+    if not isinstance(lang, str) or lang not in LANGUAGE_CODES:
+        if lang in LANGUAGE_CODES.values():
+            return lang
+        return "en"
     return LANGUAGE_CODES.get(lang, "en")
 
 
@@ -150,10 +154,20 @@ def init_app_translations(app):
     """Inject translation functions into Jinja globally across all routes/templates."""
     from flask import session, request
 
-@app.context_processor
+    @app.context_processor
     def inject_translation_helpers():
         # Safeguard fallback resolution across sessions, request cookies, and default state
-        user_lang = session.get('language') or request.cookies.get('language') or 'English (US / UK)'
+        raw_lang = session.get('language') or request.cookies.get('language') or 'English (US / UK)'
+        
+        # Normalize language to safely handle both display names and ISO codes
+        if raw_lang in LANGUAGE_CODES.values():
+            code_map = {v: k for k, v in LANGUAGE_CODES.items()}
+            user_lang = code_map.get(raw_lang, 'English (US / UK)')
+        elif raw_lang in SUPPORTED_LANGUAGES:
+            user_lang = raw_lang
+        else:
+            user_lang = 'English (US / UK)'
+
         return dict(
             t=lambda key, default=None: t(key, lang=user_lang, default=default),
             current_lang=user_lang,
