@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ t('support_title', 'Priority Customer Support — CVForge Pro') }}{% endblock %}
+{% block title %}{{ t_modular('support_title', 'Priority Customer Support — CVForge Pro') }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -213,14 +213,14 @@
         <span class="badge-pro">PRO FEATURE</span>
     </div>
     <div>
-        <a href="/dashboard" style="text-decoration: none; color: var(--text-secondary); font-size: 14px; font-weight: 600;">{{ t('btn_back_dashboard', '← Back to Dashboard') }}</a>
+        <a href="/dashboard" style="text-decoration: none; color: var(--text-secondary); font-size: 14px; font-weight: 600;">{{ t_modular('btn_back_dashboard', '← Back to Dashboard') }}</a>
     </div>
 </header>
 
 <div class="support-container">
     <div class="page-heading">
-        <h1>{{ t('support_heading', 'Priority Customer Support & Concierge') }}</h1>
-        <p>{{ t('support_subheading', 'As a CVForge Pro member, your requests jump to the front of our support queue with guaranteed priority response times.') }}</p>
+        <h1>{{ t_modular('support_heading', 'Priority Customer Support & Concierge') }}</h1>
+        <p>{{ t_modular('support_subheading', 'As a CVForge Pro member, your requests jump to the front of our support queue with guaranteed priority response times.') }}</p>
     </div>
 
     <div class="support-grid">
@@ -230,39 +230,39 @@
             
             <div class="sla-banner">
                 <div>
-                    <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--brand-gold);">⚡ PRO SLA GUARANTEE</span>
-                    <h3 style="font-size: 16px; font-weight: 800; margin-top: 2px;">Guaranteed Response < 2 Hours</h3>
+                    <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--brand-gold);">⚡ {{ t_modular('label_pro_sla_guarantee', 'PRO SLA GUARANTEE') }}</span>
+                    <h3 style="font-size: 16px; font-weight: 800; margin-top: 2px;">{{ t_modular('guaranteed_response_time', 'Guaranteed Response < 2 Hours') }}</h3>
                 </div>
                 <span style="font-size: 24px;">🛡️</span>
             </div>
 
             <div class="panel-title">
-                <span>📩</span> {{ t('support_section_new', 'Submit Priority Ticket') }}
+                <span>📩</span> {{ t_modular('support_section_new', 'Submit Priority Ticket') }}
             </div>
 
             <form id="supportTicketForm">
                 <div class="form-group">
-                    <label>{{ t('label_ticket_category', 'Topic / Request Type') }}</label>
+                    <label>{{ t_modular('label_ticket_category', 'Topic / Request Type') }}</label>
                     <select id="ticketCategory" required>
-                        <option value="template_help">Custom PDF Template / Formatting Help</option>
-                        <option value="account">Account & Billing Inquiry</option>
-                        <option value="ai_assistance">AI Feature Guidance</option>
-                        <option value="feature_request">Priority Feature Request</option>
+                        <option value="template_help">{{ t_modular('cat_template_help', 'Custom PDF Template / Formatting Help') }}</option>
+                        <option value="account">{{ t_modular('cat_account_billing', 'Account & Billing Inquiry') }}</option>
+                        <option value="ai_assistance">{{ t_modular('cat_ai_guidance', 'AI Feature Guidance') }}</option>
+                        <option value="feature_request">{{ t_modular('cat_feature_request', 'Priority Feature Request') }}</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label>{{ t('label_ticket_subject', 'Subject') }}</label>
-                    <input type="text" id="ticketSubject" placeholder="e.g. Need assistance custom formatting my technical skills section" required>
+                    <label>{{ t_modular('label_ticket_subject', 'Subject') }}</label>
+                    <input type="text" id="ticketSubject" placeholder="{{ t_modular('placeholder_ticket_subject', 'e.g. Need assistance custom formatting my technical skills section') }}" required>
                 </div>
 
                 <div class="form-group">
-                    <label>{{ t('label_ticket_details', 'Message Details') }}</label>
-                    <textarea id="ticketDetails" rows="6" placeholder="Describe your request in detail..." required></textarea>
+                    <label>{{ t_modular('label_ticket_details', 'Message Details') }}</label>
+                    <textarea id="ticketDetails" rows="6" placeholder="{{ t_modular('placeholder_ticket_details', 'Describe your request in detail...') }}" required></textarea>
                 </div>
 
                 <button type="submit" class="btn-submit-ticket" id="submitTicketBtn">
-                    🚀 {{ t('btn_submit_ticket', 'Submit Priority Ticket') }}
+                    🚀 {{ t_modular('btn_submit_ticket', 'Submit Priority Ticket') }}
                 </button>
             </form>
         </div>
@@ -270,27 +270,27 @@
         <!-- TICKET HISTORY -->
         <div class="panel-card">
             <div class="panel-title">
-                <span>📋</span> {{ t('support_section_history', 'Your Support Tickets') }}
+                <span>📋</span> {{ t_modular('support_section_history', 'Your Support Tickets') }}
             </div>
 
             <!-- TICKET 1 -->
             <div class="ticket-item">
                 <div class="ticket-header">
                     <span class="ticket-id">#PR-8042</span>
-                    <span class="badge-status status-open">In Progress (ETA 30m)</span>
+                    <span class="badge-status status-open">{{ t_modular('status_in_progress', 'In Progress (ETA 30m)') }}</span>
                 </div>
-                <div class="ticket-subject">Custom ReportLab layout adjustment for multi-page resume</div>
-                <div class="ticket-meta">Submitted Today at 10:15 AM • Priority Queue</div>
+                <div class="ticket-subject">{{ t_modular('sample_ticket_1_subject', 'Custom ReportLab layout adjustment for multi-page resume') }}</div>
+                <div class="ticket-meta">{{ t_modular('sample_ticket_1_meta', 'Submitted Today at 10:15 AM • Priority Queue') }}</div>
             </div>
 
             <!-- TICKET 2 -->
             <div class="ticket-item">
                 <div class="ticket-header">
                     <span class="ticket-id">#PR-7921</span>
-                    <span class="badge-status status-resolved">Resolved</span>
+                    <span class="badge-status status-resolved">{{ t_modular('status_resolved', 'Resolved') }}</span>
                 </div>
-                <div class="ticket-subject">Paddle Subscription Tier Upgrade Confirmation</div>
-                <div class="ticket-meta">Submitted Yesterday • Resolved in 14 minutes</div>
+                <div class="ticket-subject">{{ t_modular('sample_ticket_2_subject', 'Paddle Subscription Tier Upgrade Confirmation') }}</div>
+                <div class="ticket-meta">{{ t_modular('sample_ticket_2_meta', 'Submitted Yesterday • Resolved in 14 minutes') }}</div>
             </div>
 
         </div>
@@ -307,12 +307,12 @@
             e.preventDefault();
             const btn = document.getElementById('submitTicketBtn');
             btn.disabled = true;
-            btn.textContent = '⏳ Sending Request...';
+            btn.textContent = '⏳ {{ t_modular("btn_sending_state", "Sending Request...") }}';
 
             setTimeout(() => {
                 btn.disabled = false;
-                btn.textContent = '🚀 Submit Priority Ticket';
-                alert('Priority ticket submitted! Our VIP support team will respond shortly.');
+                btn.textContent = '🚀 {{ t_modular("btn_submit_ticket", "Submit Priority Ticket") }}';
+                alert('{{ t_modular("alert_ticket_submitted", "Priority ticket submitted! Our VIP support team will respond shortly.") }}');
             }, 1000);
         });
     });
