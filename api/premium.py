@@ -665,6 +665,62 @@ def preview():
         resume = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first()
         
     return render_template("preview.html", resume=resume, user=current_user)
+
+
+# ============================================================
+# CVFORGE PRO CAREER SUITE FEATURE ROUTES
+# ============================================================
+
+@premium_app.route("/ats")
+@login_required
+def ats_optimizer():
+    resumes = Resume.query.filter_by(user_id=current_user.id).all()
+    return render_template("ats.html", resumes=resumes, user=current_user)
+
+
+@premium_app.route("/cover-letter")
+@login_required
+def cover_letter():
+    resumes = Resume.query.filter_by(user_id=current_user.id).all()
+    return render_template("cover_letter.html", resumes=resumes, user=current_user)
+
+
+@premium_app.route("/interview")
+@login_required
+def interview_prep():
+    return render_template("interview.html", user=current_user)
+
+
+@premium_app.route("/tracker")
+@login_required
+def job_tracker():
+    return render_template("tracker.html", user=current_user)
+
+
+@premium_app.route("/matcher")
+@login_required
+def keyword_matcher():
+    resumes = Resume.query.filter_by(user_id=current_user.id).all()
+    return render_template("matcher.html", resumes=resumes, user=current_user)
+
+
+@premium_app.route("/linkedin")
+@login_required
+def linkedin_optimizer():
+    resumes = Resume.query.filter_by(user_id=current_user.id).all()
+    return render_template("linkedin.html", resumes=resumes, user=current_user)
+
+
+@premium_app.route("/pdf-studio")
+@login_required
+def pdf_studio():
+    return render_template("pdf_studio.html", user=current_user)
+
+
+@premium_app.route("/support")
+@login_required
+def priority_support():
+    return render_template("support.html", user=current_user)
     
 
 # ============================================================
