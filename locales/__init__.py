@@ -1,7 +1,5 @@
-"""Unified Locales Aggregator for CVForge.
-
-Safely combines all modular dictionaries (common UI, auth, and all 8 premium features)
-into a unified translation mapping across all 17 supported core global languages.
+"""Unified Locales Aggregator for CVForge Modular Feature Pathways.
+Combines core translation logic, validation, and Flask integration helpers.
 """
 
 from .common import COMMON_LOCALES
@@ -63,7 +61,7 @@ LANGUAGE_CODES = {
 # MASTER DICTIONARY AGGREGATION
 # ============================================================
 
-ALL_LOCALES = {}
+TRANSLATIONS = {}
 
 MODULE_PACKAGES = [
     COMMON_LOCALES,
@@ -79,40 +77,33 @@ MODULE_PACKAGES = [
 ]
 
 for package in MODULE_PACKAGES:
-    for lang, translations in package.items():
-        if lang not in ALL_LOCALES:
-            ALL_LOCALES[lang] = {}
-        if isinstance(translations, dict):
-            ALL_LOCALES[lang].update(translations)
+    for lang, translations_dict in package.items():
+        if lang not in TRANSLATIONS:
+            TRANSLATIONS[lang] = {}
+        if isinstance(translations_dict, dict):
+            TRANSLATIONS[lang].update(translations_dict)
 
 
 # ============================================================
-# BULLETPROOF LOOKUP & TRANSLATION RESOLVER
+# CORE TRANSLATION HELPERS & VALIDATION
 # ============================================================
 
-def resolve_translation(key: str, lang: str = "English (US / UK)", default: str = None) -> str:
-    """Bulletproof translation lookup with explicit fallback mechanisms.
-    
-    Resolution Order:
-    1. Target language translation dictionary
-    2. English (US / UK) fallback dictionary
-    3. Default parameter string (if provided)
-    4. Clean Title-Cased string derived from key
-    """
+def t(key: str, lang: str = "English (US / UK)", default: str = None) -> str:
+    """Core translation lookup helper matching legacy translation patterns."""
     if not isinstance(key, str):
         return str(key)
 
     if not lang or lang not in SUPPORTED_LANGUAGES:
         lang = "English (US / UK)"
 
-    english_dict = ALL_LOCALES.get("English (US / UK)", {})
-    target_dict = ALL_LOCALES.get(lang, english_dict)
+    lang_dict = TRANSLATIONS.get(lang, {})
+    fallback_dict = TRANSLATIONS.get("English (US / UK)", {})
 
     return (
-        target_dict.get(key)
-        or english_dict.get(key)
+        lang_dict.get(key)
+        or fallback_dict.get(key)
         or default
-        or key.replace('_', ' ').title()
+        or key
     )
 
 
@@ -126,20 +117,65 @@ def get_language_code(lang: str = "English (US / UK)") -> str:
     return LANGUAGE_CODES.get(lang, "en")
 
 
+def validate_translations() -> dict:
+    """Audit all modular languages against English to verify key completeness."""
+    english_keys = set(TRANSLATIONS.get("English (US / UK)", {}))
+    issues = {}
+
+    for language in SUPPORTED_LANGUAGES:
+        lang_dict = TRANSLATIONS.get(language)
+        if not isinstance(lang_dict, dict):
+            issues[language] = {"missing": sorted(english_keys), "extra": [], "invalid_values": []}
+            continue
+
+        lang_keys = set(lang_dict)
+        missing = sorted(english_keys - lang_keys)
+        extra = sorted(lang_keys - english_keys)
+        invalid_values = sorted(k for k, v in lang_dict.items() if not isinstance(v, str))
+
+        if missing or extra or invalid_values:
+            issues[language] = {
+                "missing": missing,
+                "extra": extra,
+                "invalid_values": invalid_values,
+            }
+
+    return issues
+
+
 # ============================================================
-# FLASK CONTEXT PROCESSOR INTEGRATION
+# FLASK INTEGRATION HELPER
 # ============================================================
 
 def init_app_locales(app):
-    """Registers global translation helpers into Flask's Jinja context."""
+    """Registers modular translation functions into Flask's Jinja context."""
     from flask import session, request
 
     @app.context_processor
-    def inject_locales():
-        user_lang = session.get("language") or "English (US / UK)"
+    def inject_modular_locales():
+        user_lang = session.get("language") or request.cookies.get("language") or "English (US / UK)"
+        
+        if user_lang not in SUPPORTED_LANGUAGES:
+            user_lang = "English (US / UK)"
+
         return {
-            "current_language": user_lang,
-            "html_lang_code": get_language_code(user_lang),
+            "t_modular": lambda key, default=None: t(key, lang=user_lang, default=default),
+            "current_lang": user_lang,
             "supported_languages": SUPPORTED_LANGUAGES,
-            "t": lambda key, default=None: resolve_translation(key, lang=user_lang, default=default),
+            "lang_code": get_language_code(user_lang),
         }
+
+
+# ============================================================
+# STANDALONE EXECUTION CHECK
+# ============================================================
+
+if __name__ == "__main__":
+    print(f"✅ Merged modular modules successfully across {len(SUPPORTED_LANGUAGES)} languages.")
+    print(f"🔑 Total unique modular translation keys in English: {len(TRANSLATIONS.get('English (US / UK)', {}))}")
+    
+    validation_issues = validate_translations()
+    if not validation_issues:
+        print("✨ All modular languages contain identical, valid keys!")
+    else:
+        print("⚠️ Validation issues found in modules:", validation_issues)
