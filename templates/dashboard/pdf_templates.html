@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ t('pdf_studio_title', 'Premium PDF Template Designs — CVForge Pro') }}{% endblock %}
+{% block title %}{{ t_modular('pdf_studio_title', 'Premium PDF Template Designs — CVForge Pro') }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -249,49 +249,49 @@
         <span class="badge-pro">PRO FEATURE</span>
     </div>
     <div>
-        <a href="/dashboard" style="text-decoration: none; color: var(--text-secondary); font-size: 14px; font-weight: 600;">{{ t('btn_back_dashboard', '← Back to Dashboard') }}</a>
+        <a href="/dashboard" style="text-decoration: none; color: var(--text-secondary); font-size: 14px; font-weight: 600;">{{ t_modular('btn_back_dashboard', '← Back to Dashboard') }}</a>
     </div>
 </header>
 
 <div class="studio-container">
     <div class="page-heading">
-        <h1>{{ t('pdf_studio_heading', 'Premium PDF Template Studio') }}</h1>
-        <p>{{ t('pdf_studio_subheading', 'Select executive ReportLab rendering templates, adjust font pairings, and customize brand accent colors for maximum visual impact.') }}</p>
+        <h1>{{ t_modular('pdf_studio_heading', 'Premium PDF Template Studio') }}</h1>
+        <p>{{ t_modular('pdf_studio_subheading', 'Select executive ReportLab rendering templates, adjust font pairings, and customize brand accent colors for maximum visual impact.') }}</p>
     </div>
 
     <div class="studio-layout">
         
         <!-- SIDEBAR CONTROLS -->
         <div class="controls-panel">
-            <span class="section-label">{{ t('label_accent_color', 'Brand Accent Color') }}</span>
+            <span class="section-label">{{ t_modular('label_accent_color', 'Brand Accent Color') }}</span>
             <div class="color-swatches">
-                <div class="swatch active" style="background: #02353C;" title="Executive Navy/Teal"></div>
-                <div class="swatch" style="background: #2563eb;" title="Corporate Blue"></div>
-                <div class="swatch" style="background: #059669;" title="Emerald Professional"></div>
-                <div class="swatch" style="background: #7c3aed;" title="Modern Purple"></div>
-                <div class="swatch" style="background: #d97706;" title="Amber Gold"></div>
+                <div class="swatch active" style="background: #02353C;" title="{{ t_modular('swatch_teal', 'Executive Navy/Teal') }}"></div>
+                <div class="swatch" style="background: #2563eb;" title="{{ t_modular('swatch_blue', 'Corporate Blue') }}"></div>
+                <div class="swatch" style="background: #059669;" title="{{ t_modular('swatch_green', 'Emerald Professional') }}"></div>
+                <div class="swatch" style="background: #7c3aed;" title="{{ t_modular('swatch_purple', 'Modern Purple') }}"></div>
+                <div class="swatch" style="background: #d97706;" title="{{ t_modular('swatch_gold', 'Amber Gold') }}"></div>
             </div>
 
             <div class="form-group">
-                <label>{{ t('label_font_pairing', 'Typography Pairing') }}</label>
+                <label>{{ t_modular('label_font_pairing', 'Typography Pairing') }}</label>
                 <select id="fontPairing">
-                    <option value="helvetica">Helvetica / Arial (Standard Executive)</option>
-                    <option value="times">Times New Roman (Classic Traditional)</option>
-                    <option value="georgia">Georgia / Garamond (Modern Editorial)</option>
+                    <option value="helvetica">{{ t_modular('font_helvetica', 'Helvetica / Arial (Standard Executive)') }}</option>
+                    <option value="times">{{ t_modular('font_times', 'Times New Roman (Classic Traditional)') }}</option>
+                    <option value="georgia">{{ t_modular('font_georgia', 'Georgia / Garamond (Modern Editorial)') }}</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label>{{ t('label_line_spacing', 'Layout Spacing & Density') }}</label>
+                <label>{{ t_modular('label_line_spacing', 'Layout Spacing & Density') }}</label>
                 <select id="lineSpacing">
-                    <option value="compact">Compact (Fit maximum experience on 1 page)</option>
-                    <option value="normal" selected>Balanced (Standard ATS spacing)</option>
-                    <option value="spacious">Spacious (Clean executive layout)</option>
+                    <option value="compact">{{ t_modular('spacing_compact', 'Compact (Fit maximum experience on 1 page)') }}</option>
+                    <option value="normal" selected>{{ t_modular('spacing_normal', 'Balanced (Standard ATS spacing)') }}</option>
+                    <option value="spacious">{{ t_modular('spacing_spacious', 'Spacious (Clean executive layout)') }}</option>
                 </select>
             </div>
 
-            <button class="btn-apply" onclick="alert('Template preferences saved! Applied to PDF generator.')">
-                {{ t('btn_save_style_prefs', 'Save Template Settings') }}
+            <button class="btn-apply" onclick="alert('{{ t_modular("alert_prefs_saved", "Template preferences saved! Applied to PDF generator.") }}')">
+                {{ t_modular('btn_save_style_prefs', 'Save Template Settings') }}
             </button>
         </div>
 
@@ -311,10 +311,10 @@
                 </div>
                 <div class="template-info">
                     <div>
-                        <div class="template-name">Executive Minimalist</div>
+                        <div class="template-name">{{ t_modular('tmpl_exec_minimalist', 'Executive Minimalist') }}</div>
                         <span class="badge-ats">100% ATS Safe</span>
                     </div>
-                    <span style="font-size: 12px; font-weight: 700; color: var(--brand-teal);">Selected</span>
+                    <span style="font-size: 12px; font-weight: 700; color: var(--brand-teal);">{{ t_modular('label_selected', 'Selected') }}</span>
                 </div>
             </div>
 
@@ -331,7 +331,7 @@
                 </div>
                 <div class="template-info">
                     <div>
-                        <div class="template-name">Tech Vanguard</div>
+                        <div class="template-name">{{ t_modular('tmpl_tech_vanguard', 'Tech Vanguard') }}</div>
                         <span class="badge-ats">100% ATS Safe</span>
                     </div>
                 </div>
@@ -351,7 +351,7 @@
                 </div>
                 <div class="template-info">
                     <div>
-                        <div class="template-name">Sidebar Executive</div>
+                        <div class="template-name">{{ t_modular('tmpl_sidebar_exec', 'Sidebar Executive') }}</div>
                         <span class="badge-ats">100% ATS Safe</span>
                     </div>
                 </div>
