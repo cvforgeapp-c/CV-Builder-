@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ t('matcher_title', 'Job Description Keyword Matcher — CVForge Pro') }}{% endblock %}
+{% block title %}{{ t_modular('matcher_title', 'Job Description Keyword Matcher — CVForge Pro') }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -219,14 +219,14 @@
         <span class="badge-pro">PRO FEATURE</span>
     </div>
     <div>
-        <a href="/dashboard" style="text-decoration: none; color: var(--text-secondary); font-size: 14px; font-weight: 600;">{{ t('btn_back_dashboard', '← Back to Dashboard') }}</a>
+        <a href="/dashboard" style="text-decoration: none; color: var(--text-secondary); font-size: 14px; font-weight: 600;">{{ t_modular('btn_back_dashboard', '← Back to Dashboard') }}</a>
     </div>
 </header>
 
 <div class="matcher-container">
     <div class="page-heading">
-        <h1>{{ t('matcher_heading', 'Job Description Keyword Matcher') }}</h1>
-        <p>{{ t('matcher_subheading', 'Extract high-value hard and soft skills directly from job postings and instantly inject missing keywords into your CV.') }}</p>
+        <h1>{{ t_modular('matcher_heading', 'Job Description Keyword Matcher') }}</h1>
+        <p>{{ t_modular('matcher_subheading', 'Extract high-value hard and soft skills directly from job postings and instantly inject missing keywords into your CV.') }}</p>
     </div>
 
     <div class="matcher-grid">
@@ -234,29 +234,29 @@
         <!-- INPUT FORM -->
         <div class="card-panel">
             <div class="card-title">
-                <span>🎯</span> {{ t('section_extract_title', 'Job Description Parser') }}
+                <span>🎯</span> {{ t_modular('section_extract_title', 'Job Description Parser') }}
             </div>
 
             <form id="matcherForm">
                 <div class="form-group">
-                    <label>{{ t('label_select_resume', 'Target CV') }}</label>
+                    <label>{{ t_modular('label_select_resume', 'Target CV') }}</label>
                     <select id="resumeId" required>
-                        <option value="">-- Choose your CV --</option>
+                        <option value="">-- {{ t_modular('option_choose_cv', 'Choose your CV') }} --</option>
                         {% for resume in resumes %}
                             <option value="{{ resume.id }}">{{ resume.title }}</option>
                         {% else %}
-                            <option value="demo">Sample Full Stack Developer CV</option>
+                            <option value="demo">{{ t_modular('option_sample_cv', 'Sample Full Stack Developer CV') }}</option>
                         {% endfor %}
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label>{{ t('label_posting_text', 'Paste Job Description / Requirements') }}</label>
-                    <textarea id="postingText" rows="11" placeholder="Paste the complete job description text here..." required></textarea>
+                    <label>{{ t_modular('label_posting_text', 'Paste Job Description / Requirements') }}</label>
+                    <textarea id="postingText" rows="11" placeholder="{{ t_modular('placeholder_posting_text', 'Paste the complete job description text here...') }}" required></textarea>
                 </div>
 
                 <button type="submit" class="btn-extract" id="extractBtn">
-                    🔍 {{ t('btn_extract_keywords', 'Extract & Compare Keywords') }}
+                    🔍 {{ t_modular('btn_extract_keywords', 'Extract & Compare Keywords') }}
                 </button>
             </form>
         </div>
@@ -264,27 +264,27 @@
         <!-- KEYWORD GAP ANALYSIS & INJECTOR -->
         <div class="card-panel">
             <div class="card-title">
-                <span>⚡</span> {{ t('section_gap_title', 'Keyword Gap Analysis') }}
+                <span>⚡</span> {{ t_modular('section_gap_title', 'Keyword Gap Analysis') }}
             </div>
 
             <!-- HARD SKILLS -->
             <div class="keyword-category">
                 <div class="category-title">
-                    <span>{{ t('cat_technical_skills', 'Technical / Hard Skills') }}</span>
-                    <span style="color: var(--text-secondary); font-size: 12px;">3 Missing</span>
+                    <span>{{ t_modular('cat_technical_skills', 'Technical / Hard Skills') }}</span>
+                    <span style="color: var(--text-secondary); font-size: 12px;">3 {{ t_modular('label_missing_count', 'Missing') }}</span>
                 </div>
                 <div class="keyword-list">
                     <div class="keyword-item">
                         <span class="keyword-name">PostgreSQL & Database Design</span>
-                        <span class="keyword-status status-matched">✓ Matched</span>
+                        <span class="keyword-status status-matched">✓ {{ t_modular('status_matched', 'Matched') }}</span>
                     </div>
                     <div class="keyword-item">
                         <span class="keyword-name">Docker & Containerization</span>
-                        <button class="btn-inject" onclick="alert('Injected Docker into Technical Skills!')">+ Inject to CV</button>
+                        <button class="btn-inject" onclick="alert('{{ t_modular("alert_injected_docker", "Injected Docker into Technical Skills!") }}')">+ {{ t_modular('btn_inject_cv', 'Inject to CV') }}</button>
                     </div>
                     <div class="keyword-item">
                         <span class="keyword-name">Vercel Serverless Functions</span>
-                        <button class="btn-inject" onclick="alert('Injected Vercel Serverless into Technical Skills!')">+ Inject to CV</button>
+                        <button class="btn-inject" onclick="alert('{{ t_modular("alert_injected_vercel", "Injected Vercel Serverless into Technical Skills!") }}')">+ {{ t_modular('btn_inject_cv', 'Inject to CV') }}</button>
                     </div>
                 </div>
             </div>
@@ -292,17 +292,17 @@
             <!-- SOFT SKILLS & METHODOLOGIES -->
             <div class="keyword-category">
                 <div class="category-title">
-                    <span>{{ t('cat_soft_skills', 'Methodologies & Core Competencies') }}</span>
-                    <span style="color: var(--text-secondary); font-size: 12px;">1 Missing</span>
+                    <span>{{ t_modular('cat_soft_skills', 'Methodologies & Core Competencies') }}</span>
+                    <span style="color: var(--text-secondary); font-size: 12px;">1 {{ t_modular('label_missing_count', 'Missing') }}</span>
                 </div>
                 <div class="keyword-list">
                     <div class="keyword-item">
                         <span class="keyword-name">Agile / Scrum Methodologies</span>
-                        <span class="keyword-status status-matched">✓ Matched</span>
+                        <span class="keyword-status status-matched">✓ {{ t_modular('status_matched', 'Matched') }}</span>
                     </div>
                     <div class="keyword-item">
                         <span class="keyword-name">Cross-Functional Leadership</span>
-                        <button class="btn-inject" onclick="alert('Injected Leadership into Summary section!')">+ Inject to CV</button>
+                        <button class="btn-inject" onclick="alert('{{ t_modular("alert_injected_leadership", "Injected Leadership into Summary section!") }}')">+ {{ t_modular('btn_inject_cv', 'Inject to CV') }}</button>
                     </div>
                 </div>
             </div>
@@ -321,11 +321,11 @@
             e.preventDefault();
             const btn = document.getElementById('extractBtn');
             btn.disabled = true;
-            btn.textContent = '⏳ Extracting Keywords...';
+            btn.textContent = '⏳ {{ t_modular("btn_extracting_state", "Extracting Keywords...") }}';
             setTimeout(() => {
                 btn.disabled = false;
-                btn.textContent = '🔍 Extract & Compare Keywords';
-                alert('Keyword gap analysis updated successfully!');
+                btn.textContent = '🔍 {{ t_modular("btn_extract_keywords", "Extract & Compare Keywords") }}';
+                alert('{{ t_modular("alert_analysis_updated", "Keyword gap analysis updated successfully!") }}');
             }, 1000);
         });
     });
