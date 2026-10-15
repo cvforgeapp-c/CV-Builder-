@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ t('cover_letter_title', 'Targeted Cover Letter Generator — CVForge Pro') }}{% endblock %}
+{% block title %}{{ t_modular('cover_letter_title', 'Targeted Cover Letter Generator — CVForge Pro') }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -201,14 +201,14 @@
         <span class="badge-pro">PRO FEATURE</span>
     </div>
     <div>
-        <a href="/dashboard" style="text-decoration: none; color: var(--text-secondary); font-size: 14px; font-weight: 600;">{{ t('btn_back_dashboard', '← Back to Dashboard') }}</a>
+        <a href="/dashboard" style="text-decoration: none; color: var(--text-secondary); font-size: 14px; font-weight: 600;">{{ t_modular('btn_back_dashboard', '← Back to Dashboard') }}</a>
     </div>
 </header>
 
 <div class="cl-container">
     <div class="page-heading">
-        <h1>{{ t('cl_heading', 'Targeted Cover Letter Generator') }}</h1>
-        <p>{{ t('cl_subheading', 'Automatically craft tailored, persuasive cover letters that highlight your relevant experience for any specific job role.') }}</p>
+        <h1>{{ t_modular('cl_heading', 'Targeted Cover Letter Generator') }}</h1>
+        <p>{{ t_modular('cl_subheading', 'Automatically craft tailored, persuasive cover letters that highlight your relevant experience for any specific job role.') }}</p>
     </div>
 
     <div class="cl-grid">
@@ -216,48 +216,48 @@
         <!-- INPUT FORM -->
         <div class="panel-card">
             <div class="panel-title">
-                <span>📝</span> {{ t('cl_section_input', 'Job & Company Details') }}
+                <span>📝</span> {{ t_modular('cl_section_input', 'Job & Company Details') }}
             </div>
 
             <form id="coverLetterForm">
                 <div class="form-group">
-                    <label>{{ t('label_source_cv', 'Source CV') }}</label>
+                    <label>{{ t_modular('label_source_cv', 'Source CV') }}</label>
                     <select id="sourceCv" required>
-                        <option value="">-- Choose your CV --</option>
+                        <option value="">-- {{ t_modular('option_choose_cv', 'Choose your CV') }} --</option>
                         {% for resume in resumes %}
                             <option value="{{ resume.id }}">{{ resume.title }}</option>
                         {% else %}
-                            <option value="demo">Sample Full Stack Developer CV</option>
+                            <option value="demo">{{ t_modular('option_sample_cv', 'Sample Full Stack Developer CV') }}</option>
                         {% endfor %}
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label>{{ t('label_target_company', 'Target Company Name') }}</label>
-                    <input type="text" id="targetCompany" placeholder="e.g. Stripe, OpenAI, Vercel" required>
+                    <label>{{ t_modular('label_target_company', 'Target Company Name') }}</label>
+                    <input type="text" id="targetCompany" placeholder="{{ t_modular('placeholder_target_company', 'e.g. Stripe, OpenAI, Vercel') }}" required>
                 </div>
 
                 <div class="form-group">
-                    <label>{{ t('label_target_role', 'Target Position Title') }}</label>
-                    <input type="text" id="targetRole" placeholder="e.g. Senior Software Engineer" required>
+                    <label>{{ t_modular('label_target_role', 'Target Position Title') }}</label>
+                    <input type="text" id="targetRole" placeholder="{{ t_modular('placeholder_target_role', 'e.g. Senior Software Engineer') }}" required>
                 </div>
 
                 <div class="form-group">
-                    <label>{{ t('label_tone', 'Tone & Style') }}</label>
+                    <label>{{ t_modular('label_tone', 'Tone & Style') }}</label>
                     <select id="letterTone">
-                        <option value="executive">Executive & Leadership</option>
-                        <option value="confident" selected>Confident & Professional</option>
-                        <option value="modern">Modern & Direct</option>
+                        <option value="executive">{{ t_modular('tone_executive', 'Executive & Leadership') }}</option>
+                        <option value="confident" selected>{{ t_modular('tone_confident', 'Confident & Professional') }}</option>
+                        <option value="modern">{{ t_modular('tone_modern', 'Modern & Direct') }}</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label>{{ t('label_job_requirements', 'Job Description / Key Requirements') }}</label>
-                    <textarea id="jobReqs" rows="5" placeholder="Paste relevant job responsibilities or key requirements..." required></textarea>
+                    <label>{{ t_modular('label_job_requirements', 'Job Description / Key Requirements') }}</label>
+                    <textarea id="jobReqs" rows="5" placeholder="{{ t_modular('placeholder_job_reqs', 'Paste relevant job responsibilities or key requirements...') }}" required></textarea>
                 </div>
 
                 <button type="submit" class="btn-generate" id="generateBtn">
-                    ✨ {{ t('btn_generate_cl', 'Generate Cover Letter') }}
+                    ✨ {{ t_modular('btn_generate_cl', 'Generate Cover Letter') }}
                 </button>
             </form>
         </div>
@@ -265,26 +265,17 @@
         <!-- GENERATED RESULT & EDIT PANEL -->
         <div class="panel-card">
             <div class="panel-title">
-                <span>📄</span> {{ t('cl_section_output', 'Generated Cover Letter') }}
+                <span>📄</span> {{ t_modular('cl_section_output', 'Generated Cover Letter') }}
             </div>
 
-            <textarea class="output-editor" id="clOutputText" placeholder="Your AI-generated cover letter will appear here ready for editing...">Dear Hiring Manager,
-
-I am writing to express my enthusiastic interest in the Senior Software Engineer position at Stripe. With my extensive background in architecting scalable Python/Flask microservices, PostgreSQL database management, and modern Web Application development, I am confident in my ability to immediately contribute to your team's ambitious goals.
-
-In my recent projects, I designed and deployed high-performance web applications, leveraging RESTful API architectures and Vercel serverless deployments to deliver sub-100ms response times. My hands-on experience aligns directly with Stripe's emphasis on clean code, reliability, and modern full-stack workflows.
-
-Thank you for your time and consideration. I look forward to discussing how my technical background and problem-solving approach fit your engineering roadmap.
-
-Sincerely,
-[Your Name]</textarea>
+            <textarea class="output-editor" id="clOutputText" placeholder="{{ t_modular('placeholder_cl_output', 'Your AI-generated cover letter will appear here ready for editing...') }}">{{ t_modular('default_cover_letter_content', 'Dear Hiring Manager,\n\nI am writing to express my enthusiastic interest in the Senior Software Engineer position at Stripe. With my extensive background in architecting scalable Python/Flask microservices, PostgreSQL database management, and modern Web Application development, I am confident in my ability to immediately contribute to your team\'s ambitious goals.\n\nIn my recent projects, I designed and deployed high-performance web applications, leveraging RESTful API architectures and Vercel serverless deployments to deliver sub-100ms response times. My hands-on experience aligns directly with Stripe\'s emphasis on clean code, reliability, and modern full-stack workflows.\n\nThank you for your time and consideration. I look forward to discussing how my technical background and problem-solving approach fit your engineering roadmap.\n\nSincerely,\n[Your Name]') }}</textarea>
 
             <div class="action-bar">
-                <button class="btn-action" onclick="navigator.clipboard.writeText(document.getElementById('clOutputText').value); alert('Cover letter copied to clipboard!');">
-                    📋 {{ t('btn_copy', 'Copy Text') }}
+                <button class="btn-action" onclick="navigator.clipboard.writeText(document.getElementById('clOutputText').value); alert('{{ t_modular('alert_copied', 'Cover letter copied to clipboard!') }}');">
+                    📋 {{ t_modular('btn_copy', 'Copy Text') }}
                 </button>
-                <button class="btn-action btn-action-primary" onclick="alert('Cover letter saved to your documents!');">
-                    💾 {{ t('btn_save_pdf', 'Save & Export PDF') }}
+                <button class="btn-action btn-action-primary" onclick="alert('{{ t_modular('alert_saved_pdf', 'Cover letter saved to your documents!') }}');">
+                    💾 {{ t_modular('btn_save_pdf', 'Save & Export PDF') }}
                 </button>
             </div>
         </div>
@@ -301,12 +292,12 @@ Sincerely,
             e.preventDefault();
             const btn = document.getElementById('generateBtn');
             btn.disabled = true;
-            btn.textContent = '⏳ Writing Cover Letter...';
+            btn.textContent = '⏳ {{ t_modular("btn_writing_state", "Writing Cover Letter...") }}';
 
             setTimeout(() => {
                 btn.disabled = false;
-                btn.textContent = '✨ Generate Cover Letter';
-                alert('Targeted Cover Letter generated!');
+                btn.textContent = '✨ {{ t_modular("btn_generate_cl", "Generate Cover Letter") }}';
+                alert('{{ t_modular("alert_generated", "Targeted Cover Letter generated!") }}');
             }, 1200);
         });
     });
