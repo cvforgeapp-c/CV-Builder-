@@ -1,4 +1,6 @@
-"""Common / Global UI Translations."""
+"""Common / Global UI Translations for all 17 supported global languages.
+Namespaced for shared layout elements, buttons, and navigation.
+"""
 
 COMMON_LOCALES = {
     "English (US / UK)": {
@@ -12,6 +14,7 @@ COMMON_LOCALES = {
         "btn_copy": "Copy Text",
         "btn_save_pdf": "Save & Export PDF",
     },
+
     "Mandarin Chinese": {
         "btn_back_dashboard": "← 返回控制面板",
         "nav_plans": "套餐",
@@ -23,6 +26,7 @@ COMMON_LOCALES = {
         "btn_copy": "复制文本",
         "btn_save_pdf": "保存并导出 PDF",
     },
+
     "Spanish": {
         "btn_back_dashboard": "← Volver al Panel",
         "nav_plans": "Planes",
@@ -33,5 +37,173 @@ COMMON_LOCALES = {
         "btn_get_premium": "Obtener Acceso Premium",
         "btn_copy": "Copiar Texto",
         "btn_save_pdf": "Guardar y Exportar PDF",
+    },
+
+    "Hindi": {
+        "btn_back_dashboard": "← डैशबोर्ड पर वापस जाएं",
+        "nav_plans": "योजनाएं",
+        "nav_create_cv_free": "मुफ्त रेज़्यूमे बनाएं",
+        "landing_brand_subtitle": "AI रेज़्यूमे प्लेटफ़ॉर्म",
+        "footer_copy_exact": "© 2026 CVForge प्लेटफ़ॉर्म। सर्वाधिकार सुरक्षित।",
+        "popular_badge_text": "★ लोकप्रिय",
+        "btn_get_premium": "प्रीमियम एक्सेस प्राप्त करें",
+        "btn_copy": "टेक्स्ट कॉपी करें",
+        "btn_save_pdf": "सहेजें और PDF निर्यात करें",
+    },
+
+    "Arabic": {
+        "btn_back_dashboard": "← العودة إلى لوحة التحكم",
+        "nav_plans": "الخطط",
+        "nav_create_cv_free": "إنشاء سيرة ذاتية مجانًا",
+        "landing_brand_subtitle": "منصة السيرة الذاتية بالذكاء الاصطناعي",
+        "footer_copy_exact": "© 2026 منصة CVForge. جميع الحقوق محفوظة.",
+        "popular_badge_text": "★ شائعة",
+        "btn_get_premium": "الحصول على وصول مميز",
+        "btn_copy": "نسخ النص",
+        "btn_save_pdf": "حفظ وتصدير PDF",
+    },
+
+    "French": {
+        "btn_back_dashboard": "← Retour au Tableau de Bord",
+        "nav_plans": "Tarifs",
+        "nav_create_cv_free": "Créer un CV Gratuit",
+        "landing_brand_subtitle": "Plateforme de CV IA",
+        "footer_copy_exact": "© 2026 Plateforme CVForge. Tous droits réservés.",
+        "popular_badge_text": "★ POPULAIRE",
+        "btn_get_premium": "Obtenir l'Accès Premium",
+        "btn_copy": "Copier le Texte",
+        "btn_save_pdf": "Enregistrer & Exporter en PDF",
+    },
+
+    "Portuguese": {
+        "btn_back_dashboard": "← Voltar ao Painel",
+        "nav_plans": "Planos",
+        "nav_create_cv_free": "Criar Currículo Grátis",
+        "landing_brand_subtitle": "Plataforma de Currículos com IA",
+        "footer_copy_exact": "© 2026 Plataforma CVForge. Todos os direitos reservados.",
+        "popular_badge_text": "★ POPULAR",
+        "btn_get_premium": "Obter Acesso Premium",
+        "btn_copy": "Copiar Texto",
+        "btn_save_pdf": "Salvar e Exportar PDF",
+    },
+
+    "Russian": {
+        "btn_back_dashboard": "← Назад в панель управления",
+        "nav_plans": "Тарифы",
+        "nav_create_cv_free": "Создать резюме бесплатно",
+        "landing_brand_subtitle": "Платформа резюме с ИИ",
+        "footer_copy_exact": "© 2026 Платформа CVForge. Все права защищены.",
+        "popular_badge_text": "★ ПОПУЛЯРНОЕ",
+        "btn_get_premium": "Получить Премиум доступ",
+        "btn_copy": "Скопировать текст",
+        "btn_save_pdf": "Сохранить и экспортировать PDF",
+    },
+
+    "German": {
+        "btn_back_dashboard": "← Zurück zum Dashboard",
+        "nav_plans": "Tarife",
+        "nav_create_cv_free": "Kostenlos Lebenslauf erstellen",
+        "landing_brand_subtitle": "KI-Lebenslauf-Plattform",
+        "footer_copy_exact": "© 2026 CVForge Plattform. Alle Rechte vorbehalten.",
+        "popular_badge_text": "★ BELIEBT",
+        "btn_get_premium": "Premium-Zugang sichern",
+        "btn_copy": "Text kopieren",
+        "btn_save_pdf": "Speichern & als PDF exportieren",
+    },
+
+    "Japanese": {
+        "btn_back_dashboard": "← ダッシュボードに戻る",
+        "nav_plans": "料金プラン",
+        "nav_create_cv_free": "無料で履歴書を作成",
+        "landing_brand_subtitle": "AI履歴書プラットフォーム",
+        "footer_copy_exact": "© 2026 CVForge Platform. All rights reserved.",
+        "popular_badge_text": "★ 人気",
+        "btn_get_premium": "プレミアムアクセスを取得",
+        "btn_copy": "テキストをコピー",
+        "btn_save_pdf": "保存してPDF出力",
+    },
+
+    "Korean": {
+        "btn_back_dashboard": "← 대시보드로 돌아가기",
+        "nav_plans": "요금제",
+        "nav_create_cv_free": "무료 이력서 작성",
+        "landing_brand_subtitle": "AI 이력서 플랫폼",
+        "footer_copy_exact": "© 2026 CVForge 플랫폼. 판권 소유.",
+        "popular_badge_text": "★ 인기",
+        "btn_get_premium": "프리미엄 액세스 획득",
+        "btn_copy": "텍스트 복사",
+        "btn_save_pdf": "저장 및 PDF 내보내기",
+    },
+
+    "Italian": {
+        "btn_back_dashboard": "← Torna alla Dashboard",
+        "nav_plans": "Piani",
+        "nav_create_cv_free": "Crea CV Gratis",
+        "landing_brand_subtitle": "Piattaforma CV con IA",
+        "footer_copy_exact": "© 2026 Piattaforma CVForge. Tutti i diritti riservati.",
+        "popular_badge_text": "★ POPOLARE",
+        "btn_get_premium": "Ottieni Accesso Premium",
+        "btn_copy": "Copia Testo",
+        "btn_save_pdf": "Salva ed Esporta PDF",
+    },
+
+    "Turkish": {
+        "btn_back_dashboard": "← Kontrol Paneline Dön",
+        "nav_plans": "Planlar",
+        "nav_create_cv_free": "Ücretsiz Özgeçmiş Oluştur",
+        "landing_brand_subtitle": "Yapay Zekâ Özgeçmiş Platformu",
+        "footer_copy_exact": "© 2026 CVForge Platformu. Tüm hakları saklıdır.",
+        "popular_badge_text": "★ POPÜLER",
+        "btn_get_premium": "Premiuma Erişin",
+        "btn_copy": "Metni Kopyala",
+        "btn_save_pdf": "Kaydet ve PDF Dışa Aktar",
+    },
+
+    "Dutch": {
+        "btn_back_dashboard": "← Terug naar Dashboard",
+        "nav_plans": "Pakketten",
+        "nav_create_cv_free": "Gratis CV Maken",
+        "landing_brand_subtitle": "AI Cv-platform",
+        "footer_copy_exact": "© 2026 CVForge Platform. Alle rechten voorbehouden.",
+        "popular_badge_text": "★ POPULAIR",
+        "btn_get_premium": "Krijg Premium Toegang",
+        "btn_copy": "Tekst Kopiëren",
+        "btn_save_pdf": "Opslaan & Exporteren als PDF",
+    },
+
+    "Polish": {
+        "btn_back_dashboard": "← Powrót do Pulpitu",
+        "nav_plans": "Cennik",
+        "nav_create_cv_free": "Stwórz Darmowe CV",
+        "landing_brand_subtitle": "Platforma CV z AI",
+        "footer_copy_exact": "© 2026 Platforma CVForge. Wszelkie prawa zastrzeżone.",
+        "popular_badge_text": "★ POPULARNE",
+        "btn_get_premium": "Uzyskaj Dostęp Premium",
+        "btn_copy": "Kopiuj Tekst",
+        "btn_save_pdf": "Zapisz i Eksportuj PDF",
+    },
+
+    "Swedish": {
+        "btn_back_dashboard": "← Tillbaka till Översikten",
+        "nav_plans": "Priser",
+        "nav_create_cv_free": "Skapa Gratis CV",
+        "landing_brand_subtitle": "AI CV-plattform",
+        "footer_copy_exact": "© 2026 CVForge Plattform. Med ensamrätt.",
+        "popular_badge_text": "★ POPULÄR",
+        "btn_get_premium": "Skaffa Premiumåtkomst",
+        "btn_copy": "Kopiera Text",
+        "btn_save_pdf": "Spara & Exportera PDF",
+    },
+
+    "Swahili": {
+        "btn_back_dashboard": "← Rudi kwenye Dashibodi",
+        "nav_plans": "Mipango",
+        "nav_create_cv_free": "Tengeneza CV Libre",
+        "landing_brand_subtitle": "Jukwaa la CV la AI",
+        "footer_copy_exact": "© 2026 Jukwaa la CVForge. Haki zote zimehifadhiwa.",
+        "popular_badge_text": "★ MAARUFU",
+        "btn_get_premium": "Pata Upatikanaji wa Pro",
+        "btn_copy": "Nakili Maandishi",
+        "btn_save_pdf": "Hifadhi & Pakua PDF",
     }
 }
