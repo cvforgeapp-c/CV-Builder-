@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('matcher_title', 'Job Description Keyword Matcher — CVForge Pro') }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --brand-teal: #02353C;
+        --brand-teal-light: #05535E;
+        --brand-gold: #E5A83B;
+        --bg-slate: #f8fafc;
+        --card-bg: #ffffff;
+        --border-color: #e2e8f0;
+        --text-primary: #0f172a;
+        --text-secondary: #64748b;
+        --matched-green: #15803d;
+        --missing-red: #b91c1c;
+    }
+
+    body {
+        background-color: var(--bg-slate);
+        color: var(--text-primary);
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    .matcher-header {
+        background: #ffffff;
+        border-bottom: 1px solid var(--border-color);
+        padding: 16px 5%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+
+    .brand-title {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--brand-teal);
+        text-decoration: none;
+    }
+
+    .badge-pro {
+        background: linear-gradient(135deg, var(--brand-gold), #d99321);
+        color: #ffffff;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-left: 8px;
+    }
+
+    .matcher-container {
+        padding: 30px 5%;
+        max-width: 1300px;
+        margin: 0 auto;
+    }
+
+    .page-heading h1 {
+        font-size: 26px;
+        font-weight: 800;
+        color: var(--brand-teal);
+    }
+
+    .page-heading p {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin-top: 4px;
+        margin-bottom: 24px;
+    }
+
+    .matcher-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 28px;
+    }
+
+    @media (max-width: 992px) {
+        .matcher-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .card-panel {
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        padding: 24px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    }
+
+    .card-title {
+        font-size: 16px;
+        font-weight: 800;
+        color: var(--brand-teal);
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 16px;
+    }
+
+    .form-group label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .form-group select, .form-group textarea {
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        font-size: 14px;
+        outline: none;
+        font-family: inherit;
+    }
+
+    .btn-extract {
+        background: linear-gradient(135deg, var(--brand-teal) 0%, var(--brand-teal-light) 100%);
+        color: #ffffff;
+        border: none;
+        padding: 14px 24px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 15px;
+        cursor: pointer;
+        width: 100%;
+        transition: transform 0.2s;
+    }
+
+    .btn-extract:hover {
+        transform: translateY(-1px);
+    }
+
+    /* Keyword List & Injector Items */
+    .keyword-category {
+        margin-bottom: 20px;
+    }
+
+    .category-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--brand-teal);
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .keyword-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .keyword-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        border-radius: 8px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+    }
+
+    .keyword-name {
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .keyword-status {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 10px;
+    }
+
+    .status-matched {
+        background: #dcfce7;
+        color: var(--matched-green);
+    }
+
+    .status-missing {
+        background: #fee2e2;
+        color: var(--missing-red);
+    }
+
+    .btn-inject {
+        background: var(--brand-gold);
+        color: #0f172a;
+        border: none;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: opacity 0.2s;
+    }
+
+    .btn-inject:hover {
+        opacity: 0.9;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HEADER -->
+<header class="matcher-header">
+    <div style="display: flex; align-items: center;">
+        <a href="/" class="brand-title">CVForge</a>
+        <span class="badge-pro">PRO FEATURE</span>
+    </div>
+    <div>
+        <a href="/dashboard" style="text-decoration: none; color: var(--text-secondary); font-size: 14px; font-weight: 600;">{{ t('btn_back_dashboard', '← Back to Dashboard') }}</a>
+    </div>
+</header>
+
+<div class="matcher-container">
+    <div class="page-heading">
+        <h1>{{ t('matcher_heading', 'Job Description Keyword Matcher') }}</h1>
+        <p>{{ t('matcher_subheading', 'Extract high-value hard and soft skills directly from job postings and instantly inject missing keywords into your CV.') }}</p>
+    </div>
+
+    <div class="matcher-grid">
+        
+        <!-- INPUT FORM -->
+        <div class="card-panel">
+            <div class="card-title">
+                <span>🎯</span> {{ t('section_extract_title', 'Job Description Parser') }}
+            </div>
+
+            <form id="matcherForm">
+                <div class="form-group">
+                    <label>{{ t('label_select_resume', 'Target CV') }}</label>
+                    <select id="resumeId" required>
+                        <option value="">-- Choose your CV --</option>
+                        {% for resume in resumes %}
+                            <option value="{{ resume.id }}">{{ resume.title }}</option>
+                        {% else %}
+                            <option value="demo">Sample Full Stack Developer CV</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>{{ t('label_posting_text', 'Paste Job Description / Requirements') }}</label>
+                    <textarea id="postingText" rows="11" placeholder="Paste the complete job description text here..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn-extract" id="extractBtn">
+                    🔍 {{ t('btn_extract_keywords', 'Extract & Compare Keywords') }}
+                </button>
+            </form>
+        </div>
+
+        <!-- KEYWORD GAP ANALYSIS & INJECTOR -->
+        <div class="card-panel">
+            <div class="card-title">
+                <span>⚡</span> {{ t('section_gap_title', 'Keyword Gap Analysis') }}
+            </div>
+
+            <!-- HARD SKILLS -->
+            <div class="keyword-category">
+                <div class="category-title">
+                    <span>{{ t('cat_technical_skills', 'Technical / Hard Skills') }}</span>
+                    <span style="color: var(--text-secondary); font-size: 12px;">3 Missing</span>
+                </div>
+                <div class="keyword-list">
+                    <div class="keyword-item">
+                        <span class="keyword-name">PostgreSQL & Database Design</span>
+                        <span class="keyword-status status-matched">✓ Matched</span>
+                    </div>
+                    <div class="keyword-item">
+                        <span class="keyword-name">Docker & Containerization</span>
+                        <button class="btn-inject" onclick="alert('Injected Docker into Technical Skills!')">+ Inject to CV</button>
+                    </div>
+                    <div class="keyword-item">
+                        <span class="keyword-name">Vercel Serverless Functions</span>
+                        <button class="btn-inject" onclick="alert('Injected Vercel Serverless into Technical Skills!')">+ Inject to CV</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SOFT SKILLS & METHODOLOGIES -->
+            <div class="keyword-category">
+                <div class="category-title">
+                    <span>{{ t('cat_soft_skills', 'Methodologies & Core Competencies') }}</span>
+                    <span style="color: var(--text-secondary); font-size: 12px;">1 Missing</span>
+                </div>
+                <div class="keyword-list">
+                    <div class="keyword-item">
+                        <span class="keyword-name">Agile / Scrum Methodologies</span>
+                        <span class="keyword-status status-matched">✓ Matched</span>
+                    </div>
+                    <div class="keyword-item">
+                        <span class="keyword-name">Cross-Functional Leadership</span>
+                        <button class="btn-inject" onclick="alert('Injected Leadership into Summary section!')">+ Inject to CV</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('matcherForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('extractBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Extracting Keywords...';
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.textContent = '🔍 Extract & Compare Keywords';
+                alert('Keyword gap analysis updated successfully!');
+            }, 1000);
+        });
+    });
+</script>
+{% endblock %}
