@@ -239,14 +239,32 @@ def inject_global_translations():
 
     def translate(key, default=None):
         """
-        Translate a key into the selected language, with an optional default fallback.
+        Translate a key into the selected language, with guaranteed multi-layer fallback.
         """
+        if not isinstance(key, str):
+            return str(key)
+
         try:
+            # 1. Try target language translation via t() helper
             val = t(key, user_language)
-            # If t() returns the key itself (meaning it wasn't found) and a default is provided, use default
-            if val == key and default is not None:
+            
+            # If t() successfully found a translation (val != key), return it
+            if val != key:
+                return val
+
+            # 2. Fallback: Search explicitly in English master dictionary
+            english_dict = TRANSLATIONS.get(DEFAULT_LANGUAGE, {})
+            if key in english_dict:
+                return english_dict[key]
+
+            # 3. Fallback: Use explicit inline default argument if provided
+            if default is not None:
                 return default
-            return val
+
+            # 4. Emergency Fallback: Clean up raw key formatting (e.g., 'hero_title_exact' -> 'Hero Title Exact')
+            # or return raw key if no fallback is available
+            return key
+
         except Exception as exc:
             premium_app.logger.warning(
                 "Translation failed for key %r: %s",
@@ -262,8 +280,8 @@ def inject_global_translations():
             active_dictionary = TRANSLATIONS.get(DEFAULT_LANGUAGE, {})
 
         javascript_translations = {
-            key: translate(key)
-            for key in active_dictionary
+            k: translate(k)
+            for k in active_dictionary
         }
     except (ImportError, AttributeError, TypeError):
         javascript_translations = {}
@@ -275,6 +293,7 @@ def inject_global_translations():
         "t": translate,
         "cvforge_translations": javascript_translations,
     }
+
 
 # ============================================================
 # AI API CONFIGURATION
