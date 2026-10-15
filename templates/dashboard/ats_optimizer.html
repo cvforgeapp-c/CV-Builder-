@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ t_page('ats_title', 'AI ATS Optimizer — CVForge Pro') }}{% endblock %}
+{% block title %}{{ t_modular('ats_title', 'AI ATS Optimizer — CVForge Pro') }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -232,14 +232,14 @@
         <span class="badge-pro">PRO FEATURE</span>
     </div>
     <div>
-        <a href="/dashboard" style="text-decoration: none; color: var(--text-secondary); font-size: 14px; font-weight: 600;">{{ t_page('btn_back_dashboard', '← Back to Dashboard') }}</a>
+        <a href="/dashboard" style="text-decoration: none; color: var(--text-secondary); font-size: 14px; font-weight: 600;">{{ t_modular('btn_back_dashboard', '← Back to Dashboard') }}</a>
     </div>
 </header>
 
 <div class="ats-container">
     <div class="page-heading">
-        <h1>{{ t_page('ats_heading', 'Unlimited AI ATS Optimization Engine') }}</h1>
-        <p>{{ t_page('ats_subheading', 'Target any job description, pinpoint ATS keyword gaps, and automatically rewrite your resume bullet points for high-match scores.') }}</p>
+        <h1>{{ t_modular('ats_heading', 'Unlimited AI ATS Optimization Engine') }}</h1>
+        <p>{{ t_modular('ats_subheading', 'Target any job description, pinpoint ATS keyword gaps, and automatically rewrite your resume bullet points for high-match scores.') }}</p>
     </div>
 
     <div class="ats-workspace">
@@ -247,12 +247,12 @@
         <!-- LEFT: INPUT FORM -->
         <div class="panel-card">
             <div class="panel-title">
-                <span>📄</span> {{ t_page('section_input_title', 'Select CV & Paste Target Job') }}
+                <span>📄</span> {{ t_modular('section_input_title', 'Select CV & Paste Target Job') }}
             </div>
 
             <form id="atsForm">
                 <div class="form-group">
-                    <label>{{ t_page('label_select_cv', 'Select CV to Optimize') }}</label>
+                    <label>{{ t_modular('label_select_cv', 'Select CV to Optimize') }}</label>
                     <select id="resumeSelect" required>
                         <option value="">-- Choose your saved CV --</option>
                         {% for resume in resumes %}
@@ -264,12 +264,12 @@
                 </div>
 
                 <div class="form-group">
-                    <label>{{ t_page('label_job_desc', 'Target Job Description') }}</label>
-                    <textarea id="jobDescInput" rows="12" placeholder="Paste the job requirements, responsibilities, or target posting here..." required></textarea>
+                    <label>{{ t_modular('label_job_desc', 'Target Job Description') }}</label>
+                    <textarea id="jobDescInput" rows="12" placeholder="{{ t_modular('placeholder_job_desc', 'Paste the job requirements, responsibilities, or target posting here...') }}" required></textarea>
                 </div>
 
                 <button type="submit" class="btn-analyze" id="analyzeBtn">
-                    ⚡ {{ t_page('btn_analyze_now', 'Analyze & Optimize ATS Match') }}
+                    ⚡ {{ t_modular('btn_analyze_now', 'Analyze & Optimize ATS Match') }}
                 </button>
             </form>
         </div>
@@ -277,21 +277,21 @@
         <!-- RIGHT: LIVE AI ANALYSIS & KEYWORD MATCH -->
         <div class="panel-card" id="resultsPanel">
             <div class="panel-title">
-                <span>📊</span> {{ t_page('section_results_title', 'ATS Match Analysis & Keyword Report') }}
+                <span>📊</span> {{ t_modular('section_results_title', 'ATS Match Analysis & Keyword Report') }}
             </div>
 
             <!-- SCORE BANNER -->
             <div class="score-banner">
                 <div>
-                    <h3 style="font-size: 18px; font-weight: 800;">{{ t_page('score_title', 'Estimated ATS Match Score') }}</h3>
-                    <p style="font-size: 13px; opacity: 0.9; margin-top: 4px;">{{ t_page('score_desc', 'Based on keyword density, skills alignment & formatting') }}</p>
+                    <h3 style="font-size: 18px; font-weight: 800;">{{ t_modular('score_title', 'Estimated ATS Match Score') }}</h3>
+                    <p style="font-size: 13px; opacity: 0.9; margin-top: 4px;">{{ t_modular('score_desc', 'Based on keyword density, skills alignment & formatting') }}</p>
                 </div>
                 <div class="score-circle" id="scoreValue">88%</div>
             </div>
 
             <!-- MATCHED KEYWORDS -->
             <div style="margin-bottom: 20px;">
-                <h4 style="font-size: 14px; font-weight: 700; color: var(--brand-teal);">✅ {{ t_page('title_matched_keywords', 'Matched Keywords Found') }}</h4>
+                <h4 style="font-size: 14px; font-weight: 700; color: var(--brand-teal);">✅ {{ t_modular('title_matched_keywords', 'Matched Keywords Found') }}</h4>
                 <div class="keyword-pill-container" id="matchedKeywords">
                     <span class="pill-matched">Python</span>
                     <span class="pill-matched">Flask</span>
@@ -303,7 +303,7 @@
 
             <!-- MISSING KEYWORDS -->
             <div style="margin-bottom: 20px;">
-                <h4 style="font-size: 14px; font-weight: 700; color: #b91c1c;">⚠️ {{ t_page('title_missing_keywords', 'Missing Critical Keywords') }}</h4>
+                <h4 style="font-size: 14px; font-weight: 700; color: #b91c1c;">⚠️ {{ t_modular('title_missing_keywords', 'Missing Critical Keywords') }}</h4>
                 <div class="keyword-pill-container" id="missingKeywords">
                     <span class="pill-missing">Docker</span>
                     <span class="pill-missing">Vercel Serverless</span>
@@ -314,12 +314,12 @@
 
             <!-- AI BULLET REWRITE SUGGESTION -->
             <div class="ai-suggestion-box">
-                <h4>🤖 {{ t_page('ai_suggestion_title', 'AI Bullet-Point Optimization Suggestion') }}</h4>
+                <h4>🤖 {{ t_modular('ai_suggestion_title', 'AI Bullet-Point Optimization Suggestion') }}</h4>
                 <p id="aiSuggestionText">
                     "Architected scalable Python/Flask backend microservices on PostgreSQL database infrastructure, integrating Docker container deployment pipelines to improve API response speeds by 35%."
                 </p>
                 <button style="margin-top: 12px; background: var(--brand-teal); color: #ffffff; border: none; padding: 8px 14px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;">
-                    {{ t_page('btn_apply_rewrite', 'Apply Rewrite to CV') }}
+                    {{ t_modular('btn_apply_rewrite', 'Apply Rewrite to CV') }}
                 </button>
             </div>
         </div>
@@ -338,13 +338,13 @@
         atsForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             analyzeBtn.disabled = true;
-            analyzeBtn.textContent = '⏳ Analyzing ATS Match...';
+            analyzeBtn.textContent = '⏳ {{ t_modular("btn_analyzing_state", "Analyzing ATS Match...") }}';
 
             // Simulate real-time API feedback
             setTimeout(() => {
                 analyzeBtn.disabled = false;
-                analyzeBtn.textContent = '⚡ Analyze & Optimize ATS Match';
-                alert('ATS Analysis refreshed successfully!');
+                analyzeBtn.textContent = '⚡ {{ t_modular("btn_analyze_now", "Analyze & Optimize ATS Match") }}';
+                alert('{{ t_modular("alert_refreshed_success", "ATS Analysis refreshed successfully!") }}');
             }, 1200);
         });
     });
