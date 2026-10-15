@@ -1,0 +1,365 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('pdf_studio_title', 'Premium PDF Template Designs — CVForge Pro') }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --brand-teal: #02353C;
+        --brand-teal-light: #05535E;
+        --brand-gold: #E5A83B;
+        --bg-slate: #f8fafc;
+        --card-bg: #ffffff;
+        --border-color: #e2e8f0;
+        --text-primary: #0f172a;
+        --text-secondary: #64748b;
+    }
+
+    body {
+        background-color: var(--bg-slate);
+        color: var(--text-primary);
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    .studio-header {
+        background: #ffffff;
+        border-bottom: 1px solid var(--border-color);
+        padding: 16px 5%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+
+    .brand-title {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--brand-teal);
+        text-decoration: none;
+    }
+
+    .badge-pro {
+        background: linear-gradient(135deg, var(--brand-gold), #d99321);
+        color: #ffffff;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-left: 8px;
+    }
+
+    .studio-container {
+        padding: 30px 5%;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .page-heading h1 {
+        font-size: 26px;
+        font-weight: 800;
+        color: var(--brand-teal);
+    }
+
+    .page-heading p {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin-top: 4px;
+        margin-bottom: 24px;
+    }
+
+    .studio-layout {
+        display: grid;
+        grid-template-columns: 340px 1fr;
+        gap: 28px;
+    }
+
+    @media (max-width: 992px) {
+        .studio-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Controls Panel */
+    .controls-panel {
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        padding: 24px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    }
+
+    .section-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--brand-teal);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 12px;
+        display: block;
+    }
+
+    .color-swatches {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 24px;
+    }
+
+    .swatch {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 2px solid #ffffff;
+        box-shadow: 0 0 0 1px var(--border-color);
+        transition: transform 0.2s;
+    }
+
+    .swatch:hover, .swatch.active {
+        transform: scale(1.15);
+        box-shadow: 0 0 0 2px var(--brand-teal);
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 18px;
+    }
+
+    .form-group label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .form-group select {
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        font-size: 14px;
+        outline: none;
+    }
+
+    /* Template Grid */
+    .template-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+    }
+
+    .template-card {
+        background: #ffffff;
+        border: 2px solid var(--border-color);
+        border-radius: 12px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .template-card:hover {
+        border-color: var(--brand-teal);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.06);
+    }
+
+    .template-card.active {
+        border-color: var(--brand-teal);
+        box-shadow: 0 0 0 2px var(--brand-teal);
+    }
+
+    .template-preview-frame {
+        height: 320px;
+        background: #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .mock-doc {
+        width: 80%;
+        height: 90%;
+        background: #ffffff;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        padding: 16px;
+        border-radius: 4px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .mock-header {
+        height: 18px;
+        border-radius: 3px;
+    }
+
+    .mock-line {
+        height: 6px;
+        background: #e2e8f0;
+        border-radius: 2px;
+    }
+
+    .template-info {
+        padding: 16px;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .template-name {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--brand-teal);
+    }
+
+    .badge-ats {
+        font-size: 10px;
+        font-weight: 700;
+        color: #16a34a;
+        background: #dcfce7;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+
+    .btn-apply {
+        background: linear-gradient(135deg, var(--brand-teal) 0%, var(--brand-teal-light) 100%);
+        color: #ffffff;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 14px;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 16px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- STUDIO HEADER -->
+<header class="studio-header">
+    <div style="display: flex; align-items: center;">
+        <a href="/" class="brand-title">CVForge</a>
+        <span class="badge-pro">PRO FEATURE</span>
+    </div>
+    <div>
+        <a href="/dashboard" style="text-decoration: none; color: var(--text-secondary); font-size: 14px; font-weight: 600;">{{ t('btn_back_dashboard', '← Back to Dashboard') }}</a>
+    </div>
+</header>
+
+<div class="studio-container">
+    <div class="page-heading">
+        <h1>{{ t('pdf_studio_heading', 'Premium PDF Template Studio') }}</h1>
+        <p>{{ t('pdf_studio_subheading', 'Select executive ReportLab rendering templates, adjust font pairings, and customize brand accent colors for maximum visual impact.') }}</p>
+    </div>
+
+    <div class="studio-layout">
+        
+        <!-- SIDEBAR CONTROLS -->
+        <div class="controls-panel">
+            <span class="section-label">{{ t('label_accent_color', 'Brand Accent Color') }}</span>
+            <div class="color-swatches">
+                <div class="swatch active" style="background: #02353C;" title="Executive Navy/Teal"></div>
+                <div class="swatch" style="background: #2563eb;" title="Corporate Blue"></div>
+                <div class="swatch" style="background: #059669;" title="Emerald Professional"></div>
+                <div class="swatch" style="background: #7c3aed;" title="Modern Purple"></div>
+                <div class="swatch" style="background: #d97706;" title="Amber Gold"></div>
+            </div>
+
+            <div class="form-group">
+                <label>{{ t('label_font_pairing', 'Typography Pairing') }}</label>
+                <select id="fontPairing">
+                    <option value="helvetica">Helvetica / Arial (Standard Executive)</option>
+                    <option value="times">Times New Roman (Classic Traditional)</option>
+                    <option value="georgia">Georgia / Garamond (Modern Editorial)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>{{ t('label_line_spacing', 'Layout Spacing & Density') }}</label>
+                <select id="lineSpacing">
+                    <option value="compact">Compact (Fit maximum experience on 1 page)</option>
+                    <option value="normal" selected>Balanced (Standard ATS spacing)</option>
+                    <option value="spacious">Spacious (Clean executive layout)</option>
+                </select>
+            </div>
+
+            <button class="btn-apply" onclick="alert('Template preferences saved! Applied to PDF generator.')">
+                {{ t('btn_save_style_prefs', 'Save Template Settings') }}
+            </button>
+        </div>
+
+        <!-- TEMPLATES CATALOG -->
+        <div class="template-grid">
+            
+            <!-- TEMPLATE 1 -->
+            <div class="template-card active">
+                <div class="template-preview-frame">
+                    <div class="mock-doc">
+                        <div class="mock-header" style="background: #02353C;"></div>
+                        <div class="mock-line" style="width: 100%;"></div>
+                        <div class="mock-line" style="width: 85%;"></div>
+                        <div class="mock-line" style="width: 90%;"></div>
+                        <div class="mock-line" style="width: 70%;"></div>
+                    </div>
+                </div>
+                <div class="template-info">
+                    <div>
+                        <div class="template-name">Executive Minimalist</div>
+                        <span class="badge-ats">100% ATS Safe</span>
+                    </div>
+                    <span style="font-size: 12px; font-weight: 700; color: var(--brand-teal);">Selected</span>
+                </div>
+            </div>
+
+            <!-- TEMPLATE 2 -->
+            <div class="template-card">
+                <div class="template-preview-frame">
+                    <div class="mock-doc">
+                        <div class="mock-header" style="background: #2563eb;"></div>
+                        <div class="mock-line" style="width: 100%;"></div>
+                        <div class="mock-line" style="width: 95%;"></div>
+                        <div class="mock-line" style="width: 80%;"></div>
+                        <div class="mock-line" style="width: 60%;"></div>
+                    </div>
+                </div>
+                <div class="template-info">
+                    <div>
+                        <div class="template-name">Tech Vanguard</div>
+                        <span class="badge-ats">100% ATS Safe</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TEMPLATE 3 -->
+            <div class="template-card">
+                <div class="template-preview-frame">
+                    <div class="mock-doc" style="flex-direction: row;">
+                        <div style="width: 30%; background: #05535E; height: 100%; border-radius: 3px;"></div>
+                        <div style="width: 70%; display: flex; flex-direction: column; gap: 8px; padding-left: 8px;">
+                            <div class="mock-line" style="width: 100%;"></div>
+                            <div class="mock-line" style="width: 80%;"></div>
+                            <div class="mock-line" style="width: 90%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="template-info">
+                    <div>
+                        <div class="template-name">Sidebar Executive</div>
+                        <span class="badge-ats">100% ATS Safe</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
