@@ -68,7 +68,7 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 # ============================================================
-# DATABASE MODELS & MASTER TRANSLATIONS PATHWAY
+# DATABASE MODELS & MODULAR LOCALES PATHWAY
 # ============================================================
 
 try:
@@ -77,18 +77,39 @@ except ImportError:
     from ..models import db, User, Resume, JobApplication
 
 try:
-    from translations import t, SUPPORTED_LANGUAGES, get_supported_languages, get_language_code, TRANSLATIONS
+    from locales import (
+        resolve_translation as t,
+        SUPPORTED_LANGUAGES,
+        get_supported_languages,
+        get_language_code,
+        LANGUAGE_CODES,
+        ALL_LOCALES as TRANSLATIONS
+    )
 except ImportError:
     try:
-        from ..translations import t, SUPPORTED_LANGUAGES, get_supported_languages, get_language_code, TRANSLATIONS
+        from ..locales import (
+            resolve_translation as t,
+            SUPPORTED_LANGUAGES,
+            get_supported_languages,
+            get_language_code,
+            LANGUAGE_CODES,
+            ALL_LOCALES as TRANSLATIONS
+        )
     except ImportError:
-        # Fallbacks if master pathway needs standalone safety
+        # Fallbacks if local package needs standalone safety
         SUPPORTED_LANGUAGES = [
             "English (US / UK)", "Mandarin Chinese", "Spanish", "Hindi", "Arabic", 
             "French", "Portuguese", "Russian", "German", "Japanese", "Korean", 
             "Italian", "Turkish", "Dutch", "Polish", "Swedish", "Swahili"
         ]
-        def t(key, lang="English (US / UK)"):
+        LANGUAGE_CODES = {
+            "English (US / UK)": "en", "Mandarin Chinese": "zh-CN", "Spanish": "es",
+            "Hindi": "hi", "Arabic": "ar", "French": "fr", "Portuguese": "pt",
+            "Russian": "ru", "German": "de", "Japanese": "ja", "Korean": "ko",
+            "Italian": "it", "Turkish": "tr", "Dutch": "nl", "Polish": "pl",
+            "Swedish": "sv", "Swahili": "sw"
+        }
+        def t(key, lang="English (US / UK)", default=None):
             return str(key)
         def get_supported_languages():
             return SUPPORTED_LANGUAGES.copy()
@@ -101,27 +122,6 @@ except ImportError:
 # ============================================================
 
 DEFAULT_LANGUAGE = "English (US / UK)"
-
-LANGUAGE_CODES = {
-    "English (US / UK)": "en",
-    "Mandarin Chinese": "zh-CN",
-    "Spanish": "es",
-    "Hindi": "hi",
-    "Arabic": "ar",
-    "French": "fr",
-    "Portuguese": "pt",
-    "Russian": "ru",
-    "German": "de",
-    "Japanese": "ja",
-    "Korean": "ko",
-    "Italian": "it",
-    "Turkish": "tr",
-    "Dutch": "nl",
-    "Polish": "pl",
-    "Swedish": "sv",
-    "Swahili": "sw",
-}
-
 
 def get_user_preferred_language(user):
     """
@@ -222,7 +222,7 @@ login_manager.login_message = (
 login_manager.login_message_category = "info"
 
 # ============================================================
-# GLOBAL TRANSLATION CONTEXT PROCESSOR (MASTER PATHWAY)
+# GLOBAL TRANSLATION CONTEXT PROCESSOR (MODULAR PATHWAY)
 # ============================================================
 
 @premium_app.context_processor
@@ -239,32 +239,13 @@ def inject_global_translations():
 
     def translate(key, default=None):
         """
-        Translate a key into the selected language, with guaranteed multi-layer fallback.
+        Translate a key into the selected language via the modular locales package.
         """
         if not isinstance(key, str):
             return str(key)
 
         try:
-            # 1. Try target language translation via t() helper
-            val = t(key, user_language)
-            
-            # If t() successfully found a translation (val != key), return it
-            if val != key:
-                return val
-
-            # 2. Fallback: Search explicitly in English master dictionary
-            english_dict = TRANSLATIONS.get(DEFAULT_LANGUAGE, {})
-            if key in english_dict:
-                return english_dict[key]
-
-            # 3. Fallback: Use explicit inline default argument if provided
-            if default is not None:
-                return default
-
-            # 4. Emergency Fallback: Clean up raw key formatting (e.g., 'hero_title_exact' -> 'Hero Title Exact')
-            # or return raw key if no fallback is available
-            return key
-
+            return t(key, lang=user_language, default=default)
         except Exception as exc:
             premium_app.logger.warning(
                 "Translation failed for key %r: %s",
@@ -497,7 +478,6 @@ def forgot_password():
 
     user = User.query.filter_by(email=email).first()
     if not user:
-        # Return success even if user not found to prevent email enumeration attacks
         return jsonify({"message": "If an account exists, verification code has been sent."}), 200
 
     code = f"{random.randint(100000, 999999)}"
@@ -505,7 +485,7 @@ def forgot_password():
 
     return jsonify({
         "message": "Verification code generated successfully.",
-        "code": code  # Included for seamless testing/access
+        "code": code
     }), 200
 
 
