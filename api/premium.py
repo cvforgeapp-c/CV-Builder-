@@ -68,7 +68,7 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 # ============================================================
-# DATABASE MODELS & DUAL-PATHWAY TRANSLATION SETUP
+# DATABASE MODELS & DUAL TRANSLATION PATHWAY SETUP
 # ============================================================
 
 try:
@@ -76,7 +76,7 @@ try:
 except ImportError:
     from ..models import db, User, Resume, JobApplication
 
-# 1. LEGACY CORE PATHWAY (Untouched for existing pages)
+# 1. LEGACY CORE PATHWAY (translations.py) - 100% UNTOUCHED
 try:
     from translations import t, SUPPORTED_LANGUAGES, get_supported_languages, get_language_code, TRANSLATIONS
 except ImportError:
@@ -96,21 +96,32 @@ except ImportError:
             return "en"
         TRANSLATIONS = {}
 
-# 2. NEW MODULAR LOCALES PATHWAY (Isolated for the 8 new feature dashboards)
+# 2. NEW MODULAR LOCALES PATHWAY (locales/__init__.py) - STRUCTURED IDENTICALLY TO translations.py
 try:
     from locales import (
-        resolve_translation as modular_t,
-        ALL_LOCALES as MODULAR_TRANSLATIONS
+        t as modular_t,
+        SUPPORTED_LANGUAGES as MODULAR_SUPPORTED_LANGUAGES,
+        get_supported_languages as get_modular_supported_languages,
+        get_language_code as get_modular_language_code,
+        TRANSLATIONS as MODULAR_TRANSLATIONS
     )
 except ImportError:
     try:
         from ..locales import (
-            resolve_translation as modular_t,
-            ALL_LOCALES as MODULAR_TRANSLATIONS
+            t as modular_t,
+            SUPPORTED_LANGUAGES as MODULAR_SUPPORTED_LANGUAGES,
+            get_supported_languages as get_modular_supported_languages,
+            get_language_code as get_modular_language_code,
+            TRANSLATIONS as MODULAR_TRANSLATIONS
         )
     except ImportError:
         def modular_t(key, lang="English (US / UK)", default=None):
             return str(key)
+        MODULAR_SUPPORTED_LANGUAGES = SUPPORTED_LANGUAGES.copy()
+        def get_modular_supported_languages():
+            return MODULAR_SUPPORTED_LANGUAGES.copy()
+        def get_modular_language_code(lang="English (US / UK)"):
+            return "en"
         MODULAR_TRANSLATIONS = {}
 
 # ============================================================
@@ -239,14 +250,14 @@ login_manager.login_message = (
 login_manager.login_message_category = "info"
 
 # ============================================================
-# GLOBAL TRANSLATION CONTEXT PROCESSORS (ISOLATED PATHWAYS)
+# GLOBAL TRANSLATION CONTEXT PROCESSORS (STRICTLY ISOLATED PATHWAYS)
 # ============================================================
 
 @premium_app.context_processor
 def inject_global_translations():
     """
-    Make legacy translation variables available to core templates globally,
-    while exposing `t_modular` exclusively for the new partitioned features.
+    Make legacy translation variables available to core templates globally via `t`,
+    while exposing `t_modular` exclusively using the new parallel `locales/` pathway.
     """
     user_language = get_user_preferred_language(
         current_user if current_user.is_authenticated else None
@@ -255,7 +266,7 @@ def inject_global_translations():
     language_code = LANGUAGE_CODES.get(user_language, "en")
 
     def translate(key, default=None):
-        """Legacy core translation lookup (translations.py)."""
+        """Legacy core translation lookup (translations.py) - Untouched."""
         if not isinstance(key, str):
             return str(key)
 
@@ -282,12 +293,30 @@ def inject_global_translations():
             return default if default is not None else str(key)
 
     def translate_modular(key, default=None):
-        """New modular feature lookup (locales/__init__.py)."""
+        """New modular feature lookup (locales/__init__.py) - Structured identically."""
         if not isinstance(key, str):
             return str(key)
+
         try:
-            return modular_t(key, lang=user_language, default=default)
+            val = modular_t(key, lang=user_language)
+            if val != key:
+                return val
+
+            english_dict = MODULAR_TRANSLATIONS.get(DEFAULT_LANGUAGE, {})
+            if key in english_dict:
+                return english_dict[key]
+
+            if default is not None:
+                return default
+
+            return key
+
         except Exception as exc:
+            premium_app.logger.warning(
+                "Modular translation failed for key %r: %s",
+                key,
+                type(exc).__name__,
+            )
             return default if default is not None else str(key)
 
     # Expose legacy frontend translations safely
@@ -307,8 +336,8 @@ def inject_global_translations():
         "current_language": user_language,
         "html_lang_code": language_code,
         "supported_languages": SUPPORTED_LANGUAGES,
-        "t": translate,                     # Legacy template helper
-        "t_modular": translate_modular,     # New isolated modular feature helper
+        "t": translate,                     # Legacy core helper (translations.py)
+        "t_modular": translate_modular,     # New modular feature helper (locales/__init__.py)
         "cvforge_translations": javascript_translations,
     }
 
