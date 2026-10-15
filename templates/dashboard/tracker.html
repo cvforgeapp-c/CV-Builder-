@@ -1,0 +1,475 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t_page('tracker_title', 'Job Application Tracker — CVForge Pro') }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --brand-teal: #02353C;
+        --brand-teal-light: #05535E;
+        --brand-gold: #E5A83B;
+        --bg-slate: #f8fafc;
+        --card-bg: #ffffff;
+        --border-color: #e2e8f0;
+        --text-primary: #0f172a;
+        --text-secondary: #64748b;
+    }
+
+    body {
+        background-color: var(--bg-slate);
+        color: var(--text-primary);
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    /* Top Navigation Header */
+    .tracker-header {
+        background: #ffffff;
+        border-bottom: 1px solid var(--border-color);
+        padding: 16px 5%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+
+    .brand-title {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--brand-teal);
+        text-decoration: none;
+    }
+
+    .badge-pro {
+        background: linear-gradient(135deg, var(--brand-gold), #d99321);
+        color: #ffffff;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-left: 8px;
+    }
+
+    /* Container & Actions */
+    .tracker-container {
+        padding: 30px 5%;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .tracker-top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+
+    .page-heading h1 {
+        font-size: 26px;
+        font-weight: 800;
+        color: var(--brand-teal);
+    }
+
+    .page-heading p {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin-top: 4px;
+    }
+
+    .btn-add-app {
+        background: linear-gradient(135deg, var(--brand-teal) 0%, var(--brand-teal-light) 100%);
+        color: #ffffff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-add-app:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(2, 53, 60, 0.2);
+    }
+
+    /* Metrics Bar */
+    .metrics-bar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 28px;
+    }
+
+    .metric-card {
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 18px 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+
+    .metric-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .metric-value {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--brand-teal);
+        margin-top: 4px;
+    }
+
+    /* Kanban Board Columns */
+    .kanban-board {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        align-items: start;
+    }
+
+    @media (max-width: 1024px) {
+        .kanban-board {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 640px) {
+        .kanban-board {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .kanban-column {
+        background: #f1f5f9;
+        border-radius: 12px;
+        padding: 16px;
+        min-height: 500px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .column-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #cbd5e1;
+    }
+
+    .column-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--brand-teal);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .card-count {
+        background: #cbd5e1;
+        color: var(--text-primary);
+        font-size: 11px;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 10px;
+    }
+
+    /* Application Cards */
+    .app-card {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 16px;
+        margin-bottom: 14px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+        cursor: grab;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .app-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+    }
+
+    .app-role {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .app-company {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--brand-teal-light);
+        margin-top: 2px;
+    }
+
+    .app-details {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 14px;
+        padding-top: 10px;
+        border-top: 1px solid #f1f5f9;
+        font-size: 12px;
+        color: var(--text-secondary);
+    }
+
+    .app-salary {
+        font-weight: 600;
+        color: #15803d;
+    }
+
+    /* Modal Form */
+    .modal-overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(15, 23, 42, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 3000;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+    }
+
+    .modal-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .modal-card {
+        background: #ffffff;
+        border-radius: 14px;
+        width: 100%;
+        max-width: 500px;
+        padding: 28px;
+        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 16px;
+    }
+
+    .form-group label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .form-group input, .form-group select {
+        padding: 10px 14px;
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        font-size: 14px;
+        outline: none;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+        border-color: var(--brand-teal);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- TRACKER HEADER -->
+<header class="tracker-header">
+    <div style="display: flex; align-items: center;">
+        <a href="/" class="brand-title">CVForge</a>
+        <span class="badge-pro">PRO FEATURE</span>
+    </div>
+    <div>
+        <a href="/dashboard" style="text-decoration: none; color: var(--text-secondary); font-size: 14px; font-weight: 600;">{{ t_page('btn_back_dashboard', '← Back to Dashboard') }}</a>
+    </div>
+</header>
+
+<div class="tracker-container">
+
+    <!-- TOP TITLE & BUTTON -->
+    <div class="tracker-top-bar">
+        <div class="page-heading">
+            <h1>{{ t_page('tracker_heading', 'Job Application Tracker') }}</h1>
+            <p>{{ t_page('tracker_subheading', 'Monitor your target applications, interview stages, and follow-ups in real time.') }}</p>
+        </div>
+        <button class="btn-add-app" id="openModalBtn">
+            <span>+</span> {{ t_page('btn_add_application', 'Add Application') }}
+        </button>
+    </div>
+
+    <!-- METRICS SUMMARY -->
+    <div class="metrics-bar">
+        <div class="metric-card">
+            <div class="metric-title">{{ t_page('metric_applied', 'Total Applied') }}</div>
+            <div class="metric-value" id="metricTotal">12</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-title">{{ t_page('metric_interviewing', 'Interviewing') }}</div>
+            <div class="metric-value" style="color: #2563eb;" id="metricInterviews">3</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-title">{{ t_page('metric_offers', 'Offers Received') }}</div>
+            <div class="metric-value" style="color: #16a34a;" id="metricOffers">1</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-title">{{ t_page('metric_response_rate', 'Interview Rate') }}</div>
+            <div class="metric-value" style="color: var(--brand-gold);" id="metricRate">25%</div>
+        </div>
+    </div>
+
+    <!-- KANBAN BOARD -->
+    <div class="kanban-board">
+        
+        <!-- COLUMN 1: SAVED -->
+        <div class="kanban-column" id="col-saved">
+            <div class="column-header">
+                <span class="column-title">📌 {{ t_page('col_saved', 'Saved / Target') }}</span>
+                <span class="card-count" id="count-saved">2</span>
+            </div>
+            <div class="app-list">
+                <div class="app-card">
+                    <div class="app-role">Senior Full Stack Engineer</div>
+                    <div class="app-company">Vercel Inc.</div>
+                    <div class="app-details">
+                        <span>San Francisco, CA</span>
+                        <span class="app-salary">$160k - $190k</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMN 2: APPLIED -->
+        <div class="kanban-column" id="col-applied">
+            <div class="column-header">
+                <span class="column-title">📩 {{ t_page('col_applied', 'Applied') }}</span>
+                <span class="card-count" id="count-applied">6</span>
+            </div>
+            <div class="app-list">
+                <div class="app-card">
+                    <div class="app-role">Lead Backend Architect</div>
+                    <div class="app-company">Stripe</div>
+                    <div class="app-details">
+                        <span>Remote</span>
+                        <span class="app-salary">$175k</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMN 3: INTERVIEWING -->
+        <div class="kanban-column" id="col-interview">
+            <div class="column-header">
+                <span class="column-title" style="color: #2563eb;">🤝 {{ t_page('col_interview', 'Interviewing') }}</span>
+                <span class="card-count" id="count-interview">3</span>
+            </div>
+            <div class="app-list">
+                <div class="app-card" style="border-left: 4px solid #2563eb;">
+                    <div class="app-role">AI Systems Engineer</div>
+                    <div class="app-company">Anthropic</div>
+                    <div class="app-details">
+                        <span>Stage: Technical Round</span>
+                        <span class="app-salary">$210k</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMN 4: OFFER -->
+        <div class="kanban-column" id="col-offer">
+            <div class="column-header">
+                <span class="column-title" style="color: #16a34a;">🎉 {{ t_page('col_offer', 'Offer Received') }}</span>
+                <span class="card-count" id="count-offer">1</span>
+            </div>
+            <div class="app-list">
+                <div class="app-card" style="border-left: 4px solid #16a34a;">
+                    <div class="app-role">Principal Product Developer</div>
+                    <div class="app-company">Supabase</div>
+                    <div class="app-details">
+                        <span>Offer Pending</span>
+                        <span class="app-salary">$185k</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ADD APPLICATION MODAL -->
+<div class="modal-overlay" id="appModal">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3 style="font-size: 18px; font-weight: 800; color: var(--brand-teal);">{{ t_page('modal_title', 'Add Job Application') }}</h3>
+            <button id="closeModalBtn" style="background: none; border: none; font-size: 20px; cursor: pointer;">✕</button>
+        </div>
+        <form id="addAppForm">
+            <div class="form-group">
+                <label>{{ t_page('label_company', 'Company Name') }}</label>
+                <input type="text" id="companyInput" placeholder="e.g. OpenAI" required>
+            </div>
+            <div class="form-group">
+                <label>{{ t_page('label_role', 'Job Title / Role') }}</label>
+                <input type="text" id="roleInput" placeholder="e.g. Full Stack Developer" required>
+            </div>
+            <div class="form-group">
+                <label>{{ t_page('label_salary', 'Salary Range (Optional)') }}</label>
+                <input type="text" id="salaryInput" placeholder="e.g. $140,000 - $160,000">
+            </div>
+            <div class="form-group">
+                <label>{{ t_page('label_status', 'Application Status') }}</label>
+                <select id="statusSelect">
+                    <option value="saved">{{ t_page('opt_saved', 'Saved / Target') }}</option>
+                    <option value="applied" selected>{{ t_page('opt_applied', 'Applied') }}</option>
+                    <option value="interview">{{ t_page('opt_interview', 'Interviewing') }}</option>
+                    <option value="offer">{{ t_page('opt_offer', 'Offer Received') }}</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-add-app" style="width: 100%; justify-content: center; margin-top: 12px;">
+                {{ t_page('btn_save_app', 'Save Application') }}
+            </button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('appModal');
+        const openBtn = document.getElementById('openModalBtn');
+        const closeBtn = document.getElementById('closeModalBtn');
+
+        openBtn.addEventListener('click', () => modal.classList.add('active'));
+        closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+
+        document.getElementById('addAppForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Application saved to your tracker dashboard!');
+            modal.classList.remove('active');
+        });
+    });
+</script>
+{% endblock %}
