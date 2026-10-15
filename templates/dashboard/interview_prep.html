@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ t('interview_title', 'Interview Question Practice — CVForge Pro') }}{% endblock %}
+{% block title %}{{ t_modular('interview_title', 'Interview Question Practice — CVForge Pro') }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -227,14 +227,14 @@
         <span class="badge-pro">PRO FEATURE</span>
     </div>
     <div>
-        <a href="/dashboard" style="text-decoration: none; color: var(--text-secondary); font-size: 14px; font-weight: 600;">{{ t('btn_back_dashboard', '← Back to Dashboard') }}</a>
+        <a href="/dashboard" style="text-decoration: none; color: var(--text-secondary); font-size: 14px; font-weight: 600;">{{ t_modular('btn_back_dashboard', '← Back to Dashboard') }}</a>
     </div>
 </header>
 
 <div class="prep-container">
     <div class="page-heading">
-        <h1>{{ t('prep_heading', 'Interview Question Practice & AI Coach') }}</h1>
-        <p>{{ t('prep_subheading', 'Generate tailor-made behavioral and technical questions for your target role and get instant STAR-method coaching on your answers.') }}</p>
+        <h1>{{ t_modular('prep_heading', 'Interview Question Practice & AI Coach') }}</h1>
+        <p>{{ t_modular('prep_subheading', 'Generate tailor-made behavioral and technical questions for your target role and get instant STAR-method coaching on your answers.') }}</p>
     </div>
 
     <div class="prep-grid">
@@ -242,31 +242,31 @@
         <!-- INPUT CONFIGURATION -->
         <div class="panel-card">
             <div class="panel-title">
-                <span>🎯</span> {{ t('prep_section_config', 'Role & Interview Settings') }}
+                <span>🎯</span> {{ t_modular('prep_section_config', 'Role & Interview Settings') }}
             </div>
 
             <form id="interviewForm">
                 <div class="form-group">
-                    <label>{{ t('label_target_role', 'Target Position') }}</label>
-                    <input type="text" id="targetRolePrep" placeholder="e.g. Senior Full Stack Engineer" required>
+                    <label>{{ t_modular('label_target_role', 'Target Position') }}</label>
+                    <input type="text" id="targetRolePrep" placeholder="{{ t_modular('placeholder_target_role', 'e.g. Senior Full Stack Engineer') }}" required>
                 </div>
 
                 <div class="form-group">
-                    <label>{{ t('label_question_category', 'Focus Category') }}</label>
+                    <label>{{ t_modular('label_question_category', 'Focus Category') }}</label>
                     <select id="questionCategory">
-                        <option value="behavioral" selected>Behavioral & Leadership (STAR Method)</option>
-                        <option value="technical">Technical Architecture & Stack Deep-Dive</option>
-                        <option value="situational">Problem Solving & Conflict Resolution</option>
+                        <option value="behavioral" selected>{{ t_modular('opt_cat_behavioral', 'Behavioral & Leadership (STAR Method)') }}</option>
+                        <option value="technical">{{ t_modular('opt_cat_technical', 'Technical Architecture & Stack Deep-Dive') }}</option>
+                        <option value="situational">{{ t_modular('opt_cat_situational', 'Problem Solving & Conflict Resolution') }}</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label>{{ t('label_jd_context', 'Job Posting / Skills Context (Optional)') }}</label>
-                    <textarea id="jdContext" rows="6" placeholder="Paste key responsibilities to generate highly targeted questions..."></textarea>
+                    <label>{{ t_modular('label_jd_context', 'Job Posting / Skills Context (Optional)') }}</label>
+                    <textarea id="jdContext" rows="6" placeholder="{{ t_modular('placeholder_jd_context', 'Paste key responsibilities to generate highly targeted questions...') }}"></textarea>
                 </div>
 
                 <button type="submit" class="btn-prep" id="generateQuestionsBtn">
-                    🎙️ {{ t('btn_generate_questions', 'Generate Practice Questions') }}
+                    🎙️ {{ t_modular('btn_generate_questions', 'Generate Practice Questions') }}
                 </button>
             </form>
         </div>
@@ -274,32 +274,32 @@
         <!-- PRACTICE WORKSPACE -->
         <div class="panel-card">
             <div class="panel-title">
-                <span>💬</span> {{ t('prep_section_practice', 'Interactive Practice Session') }}
+                <span>💬</span> {{ t_modular('prep_section_practice', 'Interactive Practice Session') }}
             </div>
 
             <!-- QUESTION CARD 1 -->
             <div class="question-card">
-                <span class="question-type">BEHAVIORAL • SYSTEM SCALABILITY</span>
-                <div class="question-text">"Tell me about a time you encountered a severe performance bottleneck in production. How did you diagnose and resolve it?"</div>
+                <span class="question-type">{{ t_modular('sample_question_type', 'BEHAVIORAL • SYSTEM SCALABILITY') }}</span>
+                <div class="question-text">{{ t_modular('sample_question_text', '"Tell me about a time you encountered a severe performance bottleneck in production. How did you diagnose and resolve it?"') }}</div>
                 
                 <div class="star-guide">
-                    <div class="star-pill">1. Situation</div>
-                    <div class="star-pill">2. Task</div>
-                    <div class="star-pill">3. Action</div>
-                    <div class="star-pill">4. Result</div>
+                    <div class="star-pill">{{ t_modular('star_step_1', '1. Situation') }}</div>
+                    <div class="star-pill">{{ t_modular('star_step_2', '2. Task') }}</div>
+                    <div class="star-pill">{{ t_modular('star_step_3', '3. Action') }}</div>
+                    <div class="star-pill">{{ t_modular('star_step_4', '4. Result') }}</div>
                 </div>
 
-                <textarea class="answer-box" placeholder="Type your response here using the STAR framework..."></textarea>
+                <textarea class="answer-box" placeholder="{{ t_modular('placeholder_answer_box', 'Type your response here using the STAR framework...') }}"></textarea>
                 
                 <button style="background: var(--brand-teal); color: #ffffff; border: none; padding: 8px 14px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;" onclick="document.getElementById('feedbackBox1').style.display = 'block';">
-                    🤖 {{ t('btn_get_ai_feedback', 'Get AI Coaching Feedback') }}
+                    🤖 {{ t_modular('btn_get_ai_feedback', 'Get AI Coaching Feedback') }}
                 </button>
 
                 <div class="ai-coaching-feedback" id="feedbackBox1" style="display: none;">
-                    <div class="feedback-title">✅ Excellent STAR Structure!</div>
+                    <div class="feedback-title">✅ {{ t_modular('sample_feedback_title', 'Excellent STAR Structure!') }}</div>
                     <div class="feedback-body">
-                        <strong>Strength:</strong> Clear metrics cited for performance recovery.<br>
-                        <strong>Improvement Tip:</strong> Emphasize the specific diagnostic tools used (e.g., PostgreSQL query explain plans, APM traces) during the <em>Action</em> step to showcase technical depth.
+                        <strong>{{ t_modular('label_strength', 'Strength:') }}</strong> {{ t_modular('sample_feedback_strength', 'Clear metrics cited for performance recovery.') }}<br>
+                        <strong>{{ t_modular('label_improvement', 'Improvement Tip:') }}</strong> {{ t_modular('sample_feedback_tip', 'Emphasize the specific diagnostic tools used (e.g., PostgreSQL query explain plans, APM traces) during the Action step to showcase technical depth.') }}
                     </div>
                 </div>
             </div>
@@ -318,12 +318,12 @@
             e.preventDefault();
             const btn = document.getElementById('generateQuestionsBtn');
             btn.disabled = true;
-            btn.textContent = '⏳ Generating Questions...';
+            btn.textContent = '⏳ {{ t_modular("btn_generating_state", "Generating Questions...") }}';
 
             setTimeout(() => {
                 btn.disabled = false;
-                btn.textContent = '🎙️ Generate Practice Questions';
-                alert('Practice questions generated successfully!');
+                btn.textContent = '🎙️ {{ t_modular("btn_generate_questions", "Generate Practice Questions") }}';
+                alert('{{ t_modular("alert_questions_generated", "Practice questions generated successfully!") }}');
             }, 1000);
         });
     });
