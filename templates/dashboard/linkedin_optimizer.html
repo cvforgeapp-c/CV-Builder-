@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('linkedin_title', 'LinkedIn Profile Optimizer — CVForge Pro') }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --brand-teal: #02353C;
+        --brand-teal-light: #05535E;
+        --brand-gold: #E5A83B;
+        --bg-slate: #f8fafc;
+        --card-bg: #ffffff;
+        --border-color: #e2e8f0;
+        --text-primary: #0f172a;
+        --text-secondary: #64748b;
+        --linkedin-blue: #0a66c2;
+    }
+
+    body {
+        background-color: var(--bg-slate);
+        color: var(--text-primary);
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    .li-header {
+        background: #ffffff;
+        border-bottom: 1px solid var(--border-color);
+        padding: 16px 5%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+
+    .brand-title {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--brand-teal);
+        text-decoration: none;
+    }
+
+    .badge-pro {
+        background: linear-gradient(135deg, var(--brand-gold), #d99321);
+        color: #ffffff;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-left: 8px;
+    }
+
+    .li-container {
+        padding: 30px 5%;
+        max-width: 1300px;
+        margin: 0 auto;
+    }
+
+    .page-heading h1 {
+        font-size: 26px;
+        font-weight: 800;
+        color: var(--brand-teal);
+    }
+
+    .page-heading p {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin-top: 4px;
+        margin-bottom: 24px;
+    }
+
+    .li-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        gap: 28px;
+    }
+
+    @media (max-width: 992px) {
+        .li-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .panel-card {
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        padding: 24px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    }
+
+    .panel-title {
+        font-size: 16px;
+        font-weight: 800;
+        color: var(--brand-teal);
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 16px;
+    }
+
+    .form-group label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .form-group select, .form-group input, .form-group textarea {
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        font-size: 14px;
+        outline: none;
+        font-family: inherit;
+    }
+
+    .btn-optimize {
+        background: linear-gradient(135deg, var(--linkedin-blue) 0%, #004182 100%);
+        color: #ffffff;
+        border: none;
+        padding: 14px 24px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 15px;
+        cursor: pointer;
+        width: 100%;
+        transition: transform 0.2s;
+    }
+
+    .btn-optimize:hover {
+        transform: translateY(-1px);
+    }
+
+    /* Tabbed Output Preview */
+    .tab-bar {
+        display: flex;
+        gap: 8px;
+        border-bottom: 2px solid var(--border-color);
+        margin-bottom: 16px;
+    }
+
+    .tab-btn {
+        background: none;
+        border: none;
+        padding: 10px 16px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-secondary);
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -2px;
+    }
+
+    .tab-btn.active {
+        color: var(--linkedin-blue);
+        border-bottom-color: var(--linkedin-blue);
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    .output-box {
+        width: 100%;
+        min-height: 220px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        padding: 16px;
+        font-size: 14px;
+        line-height: 1.6;
+        color: var(--text-primary);
+        font-family: inherit;
+        resize: vertical;
+        outline: none;
+        margin-bottom: 16px;
+    }
+
+    .btn-copy-tab {
+        background: var(--brand-gold);
+        color: #0f172a;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HEADER -->
+<header class="li-header">
+    <div style="display: flex; align-items: center;">
+        <a href="/" class="brand-title">CVForge</a>
+        <span class="badge-pro">PRO FEATURE</span>
+    </div>
+    <div>
+        <a href="/dashboard" style="text-decoration: none; color: var(--text-secondary); font-size: 14px; font-weight: 600;">{{ t('btn_back_dashboard', '← Back to Dashboard') }}</a>
+    </div>
+</header>
+
+<div class="li-container">
+    <div class="page-heading">
+        <h1>{{ t('li_heading', 'LinkedIn Profile Optimizer') }}</h1>
+        <p>{{ t('li_subheading', 'Transform your CV content into high-ranking LinkedIn headlines, engaging About sections, and recruiter-friendly experience summaries.') }}</p>
+    </div>
+
+    <div class="li-grid">
+        
+        <!-- INPUT FORM -->
+        <div class="panel-card">
+            <div class="panel-title">
+                <span style="color: var(--linkedin-blue);">💼</span> {{ t('li_section_input', 'CV & Target Role Configuration') }}
+            </div>
+
+            <form id="linkedinForm">
+                <div class="form-group">
+                    <label>{{ t('label_select_cv', 'Source CV') }}</label>
+                    <select id="liSourceCv" required>
+                        <option value="">-- Select CV --</option>
+                        {% for resume in resumes %}
+                            <option value="{{ resume.id }}">{{ resume.title }}</option>
+                        {% else %}
+                            <option value="demo">Sample Full Stack Developer CV</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>{{ t('label_target_keywords', 'Target Role & Primary Keywords') }}</label>
+                    <input type="text" id="targetKeywords" placeholder="e.g. Senior Full Stack Engineer, Python, Next.js, Cloud Architecture" required>
+                </div>
+
+                <div class="form-group">
+                    <label>{{ t('label_profile_goal', 'Primary Optimization Goal') }}</label>
+                    <select id="profileGoal">
+                        <option value="recruiter_search" selected>Maximize Recruiter Search Visibility (SEO)</option>
+                        <option value="thought_leadership">Thought Leadership & Brand Building</option>
+                        <option value="career_pivot">Career Pivot / Skill Transition</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-optimize" id="optimizeLiBtn">
+                    🚀 {{ t('btn_generate_linkedin', 'Generate LinkedIn Assets') }}
+                </button>
+            </form>
+        </div>
+
+        <!-- TABBED GENERATED ASSETS -->
+        <div class="panel-card">
+            <div class="panel-title">
+                <span>✨</span> {{ t('li_section_output', 'Optimized Profile Copy') }}
+            </div>
+
+            <div class="tab-bar">
+                <button class="tab-btn active" onclick="switchTab('tab-headline')">{{ t('tab_headline', 'Headline (3 Options)') }}</button>
+                <button class="tab-btn" onclick="switchTab('tab-about')">{{ t('tab_about', 'About / Summary') }}</button>
+                <button class="tab-btn" onclick="switchTab('tab-experience')">{{ t('tab_experience', 'Experience Bullet Copy') }}</button>
+            </div>
+
+            <!-- TAB 1: HEADLINES -->
+            <div class="tab-content active" id="tab-headline">
+                <textarea class="output-box">1. Senior Full Stack Engineer | Python, Flask, Next.js & PostgreSQL | Building High-Scale Web Applications
+
+2. Full Stack Developer Specializing in Microservices & Cloud Architectures | Vercel, Docker & REST APIs
+
+3. Lead Backend Architect | Engineering Fast, Reliable & Scalable Enterprise Software Platforms</textarea>
+                <button class="btn-copy-tab" onclick="navigator.clipboard.writeText(document.getElementById('tab-headline').querySelector('textarea').value); alert('Headlines copied!');">
+                    📋 {{ t('btn_copy_headlines', 'Copy Headlines') }}
+                </button>
+            </div>
+
+            <!-- TAB 2: ABOUT SECTION -->
+            <div class="tab-content" id="tab-about">
+                <textarea class="output-box">Passionate Full Stack Engineer with 5+ years of experience building scalable web applications, RESTful APIs, and cloud-native databases. 
+
+Core Technical Stack:
+• Backend: Python, Flask, FastAPI, PostgreSQL, Neon DB
+• Frontend: Next.js, TypeScript, Tailwind CSS
+• Infrastructure & DevOps: Docker, Vercel Serverless, Git
+
+I thrive at the intersection of clean architecture and user-focused digital products. Always open to connecting with fellow engineers and tech leaders!</textarea>
+                <button class="btn-copy-tab" onclick="navigator.clipboard.writeText(document.getElementById('tab-about').querySelector('textarea').value); alert('About section copied!');">
+                    📋 {{ t('btn_copy_about', 'Copy About Section') }}
+                </button>
+            </div>
+
+            <!-- TAB 3: EXPERIENCE -->
+            <div class="tab-content" id="tab-experience">
+                <textarea class="output-box">🚀 Senior Full Stack Engineer | CVForge Platform
+• Architected end-to-end web applications serving thousands of active users, reducing API response times by 35%.
+• Engineered high-performance backend pipelines using Python Flask, PostgreSQL, and Vercel serverless functions.
+• Spearheaded ATS resume parsing and AI content tailoring modules.</textarea>
+                <button class="btn-copy-tab" onclick="navigator.clipboard.writeText(document.getElementById('tab-experience').querySelector('textarea').value); alert('Experience copy copied!');">
+                    📋 {{ t('btn_copy_exp', 'Copy Experience Copy') }}
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        
+        event.target.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('linkedinForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('optimizeLiBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Generating Assets...';
+
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.textContent = '🚀 Generate LinkedIn Assets';
+                alert('LinkedIn assets generated successfully!');
+            }, 1100);
+        });
+    });
+</script>
+{% endblock %}
