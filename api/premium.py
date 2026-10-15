@@ -68,7 +68,7 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 # ============================================================
-# DATABASE MODELS & MODULAR LOCALES PATHWAY
+# DATABASE MODELS & DUAL-PATHWAY TRANSLATION SETUP
 # ============================================================
 
 try:
@@ -76,40 +76,19 @@ try:
 except ImportError:
     from ..models import db, User, Resume, JobApplication
 
+# 1. LEGACY CORE PATHWAY (Untouched for existing pages)
 try:
-    from locales import (
-        resolve_translation as t,
-        SUPPORTED_LANGUAGES,
-        get_supported_languages,
-        get_language_code,
-        LANGUAGE_CODES,
-        ALL_LOCALES as TRANSLATIONS
-    )
+    from translations import t, SUPPORTED_LANGUAGES, get_supported_languages, get_language_code, TRANSLATIONS
 except ImportError:
     try:
-        from ..locales import (
-            resolve_translation as t,
-            SUPPORTED_LANGUAGES,
-            get_supported_languages,
-            get_language_code,
-            LANGUAGE_CODES,
-            ALL_LOCALES as TRANSLATIONS
-        )
+        from ..translations import t, SUPPORTED_LANGUAGES, get_supported_languages, get_language_code, TRANSLATIONS
     except ImportError:
-        # Fallbacks if local package needs standalone safety
         SUPPORTED_LANGUAGES = [
             "English (US / UK)", "Mandarin Chinese", "Spanish", "Hindi", "Arabic", 
             "French", "Portuguese", "Russian", "German", "Japanese", "Korean", 
             "Italian", "Turkish", "Dutch", "Polish", "Swedish", "Swahili"
         ]
-        LANGUAGE_CODES = {
-            "English (US / UK)": "en", "Mandarin Chinese": "zh-CN", "Spanish": "es",
-            "Hindi": "hi", "Arabic": "ar", "French": "fr", "Portuguese": "pt",
-            "Russian": "ru", "German": "de", "Japanese": "ja", "Korean": "ko",
-            "Italian": "it", "Turkish": "tr", "Dutch": "nl", "Polish": "pl",
-            "Swedish": "sv", "Swahili": "sw"
-        }
-        def t(key, lang="English (US / UK)", default=None):
+        def t(key, lang="English (US / UK)"):
             return str(key)
         def get_supported_languages():
             return SUPPORTED_LANGUAGES.copy()
@@ -117,11 +96,49 @@ except ImportError:
             return "en"
         TRANSLATIONS = {}
 
+# 2. NEW MODULAR LOCALES PATHWAY (Isolated for the 8 new feature dashboards)
+try:
+    from locales import (
+        resolve_translation as modular_t,
+        ALL_LOCALES as MODULAR_TRANSLATIONS
+    )
+except ImportError:
+    try:
+        from ..locales import (
+            resolve_translation as modular_t,
+            ALL_LOCALES as MODULAR_TRANSLATIONS
+        )
+    except ImportError:
+        def modular_t(key, lang="English (US / UK)", default=None):
+            return str(key)
+        MODULAR_TRANSLATIONS = {}
+
 # ============================================================
 # USER LANGUAGE PREFERENCE HELPER
 # ============================================================
 
 DEFAULT_LANGUAGE = "English (US / UK)"
+
+LANGUAGE_CODES = {
+    "English (US / UK)": "en",
+    "Mandarin Chinese": "zh-CN",
+    "Spanish": "es",
+    "Hindi": "hi",
+    "Arabic": "ar",
+    "French": "fr",
+    "Portuguese": "pt",
+    "Russian": "ru",
+    "German": "de",
+    "Japanese": "ja",
+    "Korean": "ko",
+    "Italian": "it",
+    "Turkish": "tr",
+    "Dutch": "nl",
+    "Polish": "pl",
+    "Swedish": "sv",
+    "Swahili": "sw",
+}
+
 
 def get_user_preferred_language(user):
     """
@@ -222,14 +239,14 @@ login_manager.login_message = (
 login_manager.login_message_category = "info"
 
 # ============================================================
-# GLOBAL TRANSLATION CONTEXT PROCESSOR (MODULAR PATHWAY)
+# GLOBAL TRANSLATION CONTEXT PROCESSORS (ISOLATED PATHWAYS)
 # ============================================================
 
 @premium_app.context_processor
 def inject_global_translations():
     """
-    Make translation variables and complete active language dictionary
-    available to every Jinja template and frontend script globally.
+    Make legacy translation variables available to core templates globally,
+    while exposing `t_modular` exclusively for the new partitioned features.
     """
     user_language = get_user_preferred_language(
         current_user if current_user.is_authenticated else None
@@ -238,23 +255,42 @@ def inject_global_translations():
     language_code = LANGUAGE_CODES.get(user_language, "en")
 
     def translate(key, default=None):
-        """
-        Translate a key into the selected language via the modular locales package.
-        """
+        """Legacy core translation lookup (translations.py)."""
         if not isinstance(key, str):
             return str(key)
 
         try:
-            return t(key, lang=user_language, default=default)
+            val = t(key, user_language)
+            if val != key:
+                return val
+
+            english_dict = TRANSLATIONS.get(DEFAULT_LANGUAGE, {})
+            if key in english_dict:
+                return english_dict[key]
+
+            if default is not None:
+                return default
+
+            return key
+
         except Exception as exc:
             premium_app.logger.warning(
-                "Translation failed for key %r: %s",
+                "Legacy translation failed for key %r: %s",
                 key,
                 type(exc).__name__,
             )
             return default if default is not None else str(key)
 
-    # Expose ALL translations for the active language to JavaScript frontend safely.
+    def translate_modular(key, default=None):
+        """New modular feature lookup (locales/__init__.py)."""
+        if not isinstance(key, str):
+            return str(key)
+        try:
+            return modular_t(key, lang=user_language, default=default)
+        except Exception as exc:
+            return default if default is not None else str(key)
+
+    # Expose legacy frontend translations safely
     try:
         active_dictionary = TRANSLATIONS.get(user_language, {})
         if not active_dictionary:
@@ -271,7 +307,8 @@ def inject_global_translations():
         "current_language": user_language,
         "html_lang_code": language_code,
         "supported_languages": SUPPORTED_LANGUAGES,
-        "t": translate,
+        "t": translate,                     # Legacy template helper
+        "t_modular": translate_modular,     # New isolated modular feature helper
         "cvforge_translations": javascript_translations,
     }
 
@@ -396,7 +433,6 @@ def load_user(user_id):
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
-# Temporary in-memory code store for verification codes
 verification_codes = {}
 
 
@@ -531,7 +567,7 @@ def logout():
 premium_app.register_blueprint(auth_bp)
 
 # ============================================================
-# PUBLIC ROOT & SETTINGS ROUTES (WITH FALLBACKS)
+# PUBLIC ROOT & SETTINGS ROUTES
 # ============================================================
 
 @premium_app.route("/")
@@ -1233,7 +1269,7 @@ def delete_user_account():
 premium_app.register_blueprint(settings_api_bp)
 
 # ============================================================
-# DIRECT APP-LEVEL EXPORT ROUTE FALLBACK (PREVENTS 404s)
+# DIRECT APP-LEVEL EXPORT ROUTE FALLBACK
 # ============================================================
 
 @premium_app.route("/api/v1/settings/export", methods=["GET"])
