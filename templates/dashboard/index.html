@@ -170,10 +170,10 @@
                     <div class="w-7 h-7 rounded-lg bg-amber-400/20 text-amber-600 flex items-center justify-center text-xs font-bold">
                         <i class="fa-solid fa-bolt"></i>
                     </div>
-                    <h2 class="text-sm sm:text-base font-extrabold text-[#02353C]">CVForge Pro Career Suite</h2>
+                    <h2 class="text-sm sm:text-base font-extrabold text-[#02353C]">{{ t('career_suite_title') }}</h2>
                 </div>
                 <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-gradient-to-r from-amber-400 to-amber-500 text-[#02353C] shadow-2xs">
-                    <i class="fa-solid fa-crown text-[9px]"></i> UNLOCKED SUITE
+                    <i class="fa-solid fa-crown text-[9px]"></i> {{ t('unlocked_suite') }}
                 </span>
             </div>
 
@@ -183,88 +183,88 @@
                 <a href="/ats" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
-                            <i class="fa-solid fa-file-shield text-amber-500"></i> AI ATS Optimizer
+                            <i class="fa-solid fa-file-shield text-amber-500"></i> {{ t('suite_ats_title') }}
                         </span>
                         <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
                     </div>
-                    <p class="text-[11px] text-slate-500 leading-snug">Analyze job descriptions and score resume match accuracy.</p>
+                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_ats_desc') }}</p>
                 </a>
 
                 <!-- Cover Letter Generator -->
                 <a href="/cover-letter" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
-                            <i class="fa-solid fa-envelope-open-text text-amber-500"></i> Cover Letter
+                            <i class="fa-solid fa-envelope-open-text text-amber-500"></i> {{ t('suite_cover_title') }}
                         </span>
                         <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
                     </div>
-                    <p class="text-[11px] text-slate-500 leading-snug">Instantly draft targeted, persuasive cover letters with AI.</p>
+                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_cover_desc') }}</p>
                 </a>
 
                 <!-- Interview AI Coach -->
                 <a href="/interview" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
-                            <i class="fa-solid fa-comments text-amber-500"></i> Interview Coach
+                            <i class="fa-solid fa-comments text-amber-500"></i> {{ t('suite_interview_title') }}
                         </span>
                         <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
                     </div>
-                    <p class="text-[11px] text-slate-500 leading-snug">Practice behavioral questions using the STAR framework.</p>
+                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_interview_desc') }}</p>
                 </a>
 
                 <!-- Application Tracker -->
                 <a href="/tracker" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
-                            <i class="fa-solid fa-kanban text-amber-500"></i> Job Tracker
+                            <i class="fa-solid fa-kanban text-amber-500"></i> {{ t('suite_tracker_title') }}
                         </span>
                         <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
                     </div>
-                    <p class="text-[11px] text-slate-500 leading-snug">Monitor target applications on an interactive Kanban board.</p>
+                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_tracker_desc') }}</p>
                 </a>
 
                 <!-- Keyword Matcher -->
                 <a href="/matcher" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
-                            <i class="fa-solid fa-magnifying-glass-chart text-amber-500"></i> Keyword Matcher
+                            <i class="fa-solid fa-magnifying-glass-chart text-amber-500"></i> {{ t('suite_matcher_title') }}
                         </span>
                         <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
                     </div>
-                    <p class="text-[11px] text-slate-500 leading-snug">Extract hard/soft skills and inject missing keywords into CV.</p>
+                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_matcher_desc') }}</p>
                 </a>
 
                 <!-- LinkedIn Optimizer -->
                 <a href="/linkedin" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold text-[#0a66c2] transition-colors flex items-center gap-1.5">
-                            <i class="fa-brands fa-linkedin text-blue-600"></i> LinkedIn Optimizer
+                            <i class="fa-brands fa-linkedin text-blue-600"></i> {{ t('suite_linkedin_title') }}
                         </span>
                         <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
                     </div>
-                    <p class="text-[11px] text-slate-500 leading-snug">Boost recruiter visibility with optimized headline & summary.</p>
+                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_linkedin_desc') }}</p>
                 </a>
 
                 <!-- PDF Studio -->
                 <a href="/pdf-studio" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
-                            <i class="fa-solid fa-palette text-amber-500"></i> PDF Template Studio
+                            <i class="fa-solid fa-palette text-amber-500"></i> {{ t('suite_pdf_title') }}
                         </span>
                         <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
                     </div>
-                    <p class="text-[11px] text-slate-500 leading-snug">Customize ReportLab layouts, typography, and accent colors.</p>
+                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_pdf_desc') }}</p>
                 </a>
 
                 <!-- Priority Support -->
                 <a href="/support" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
-                            <i class="fa-solid fa-headset text-amber-500"></i> VIP Concierge
+                            <i class="fa-solid fa-headset text-amber-500"></i> {{ t('suite_support_title') }}
                         </span>
                         <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
                     </div>
-                    <p class="text-[11px] text-slate-500 leading-snug">Jump to front of support queue with 2-hour SLA response.</p>
+                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_support_desc') }}</p>
                 </a>
 
             </div>
