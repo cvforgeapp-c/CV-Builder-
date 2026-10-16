@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ t_modular('cover_letter_title', 'Targeted Cover Letter Generator — CVForge Pro') }}{% endblock %}
+{% block title %}{{ t_modular('cl_page_title', 'Targeted Cover Letter Generator — CVForge Pro') }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -227,7 +227,7 @@
 
             <form id="coverLetterForm">
                 <div class="form-group">
-                    <label>{{ t_modular('label_source_cv', 'Source CV') }}</label>
+                    <label>{{ t_modular('cl_label_source_cv', 'Source CV') }}</label>
                     <select id="sourceCv" name="resume_id" required>
                         <option value="">-- {{ t_modular('option_choose_cv', 'Choose your CV') }} --</option>
                         {% for resume in resumes %}
@@ -239,44 +239,44 @@
                 </div>
 
                 <div class="form-group">
-                    <label>{{ t_modular('label_target_company', 'Target Company Name') }}</label>
-                    <input type="text" id="targetCompany" name="company_name" placeholder="{{ t_modular('placeholder_target_company', 'e.g. Stripe, OpenAI, Vercel') }}" required>
+                    <label>{{ t_modular('cl_label_target_company', 'Target Company Name') }}</label>
+                    <input type="text" id="targetCompany" name="company_name" placeholder="{{ t_modular('cl_placeholder_company', 'e.g. Stripe, OpenAI, Vercel') }}" required>
                 </div>
 
                 <div class="form-group">
-                    <label>{{ t_modular('label_target_role', 'Target Position Title') }}</label>
-                    <input type="text" id="targetRole" name="job_title" placeholder="{{ t_modular('placeholder_target_role', 'e.g. Senior Software Engineer') }}" required>
+                    <label>{{ t_modular('cl_label_target_role', 'Target Position Title') }}</label>
+                    <input type="text" id="targetRole" name="job_title" placeholder="{{ t_modular('cl_placeholder_role', 'e.g. Senior Software Engineer') }}" required>
                 </div>
 
                 <div class="form-group">
-                    <label>{{ t_modular('label_tone', 'Tone & Style') }}</label>
+                    <label>{{ t_modular('cl_label_tone', 'Tone & Style') }}</label>
                     <select id="letterTone" name="tone">
-                        <option value="executive">{{ t_modular('tone_executive', 'Executive & Leadership') }}</option>
-                        <option value="confident" selected>{{ t_modular('tone_confident', 'Confident & Professional') }}</option>
-                        <option value="modern">{{ t_modular('tone_modern', 'Modern & Direct') }}</option>
+                        <option value="executive">{{ t_modular('cl_opt_tone_executive', 'Executive & Leadership') }}</option>
+                        <option value="confident" selected>{{ t_modular('cl_opt_tone_confident', 'Confident & Professional') }}</option>
+                        <option value="modern">{{ t_modular('cl_opt_tone_modern', 'Modern & Direct') }}</option>
                     </select>
                 </div>
 
                 <!-- JOB LINK SCRAPER WIDGET -->
                 <div class="form-group" style="background: #f8fafc; padding: 12px; border-radius: 10px; border: 1px solid var(--border-color);">
                     <label style="color: var(--brand-teal); font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 6px;">
-                        🔗 {{ t_modular('label_scrape_job_link', 'Import from Job Posting Link (Optional)') }}
+                        🔗 {{ t_modular('cl_label_scrape_job_link', 'Import from Job Posting Link (Optional)') }}
                     </label>
                     <div style="display: flex; gap: 8px; margin-top: 4px;">
                         <input type="url" id="scrapeJobUrl" placeholder="https://www.linkedin.com/jobs/view/..." style="flex: 1; font-size: 13px;">
                         <button type="button" id="btnScrapeUrl" style="background: var(--brand-teal); color: #ffffff; border: none; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;">
-                            ⚡ {{ t_modular('btn_fetch_url', 'Fetch') }}
+                            ⚡ {{ t_modular('cl_btn_fetch_url', 'Fetch') }}
                         </button>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label>{{ t_modular('label_job_requirements', 'Job Description / Key Requirements') }}</label>
-                    <textarea id="jobReqs" name="job_description" rows="5" placeholder="{{ t_modular('placeholder_job_reqs', 'Paste relevant job responsibilities or key requirements...') }}" required></textarea>
+                    <label>{{ t_modular('cl_label_job_requirements', 'Job Description / Key Requirements') }}</label>
+                    <textarea id="jobReqs" name="job_description" rows="5" placeholder="{{ t_modular('cl_placeholder_reqs', 'Paste relevant job responsibilities or key requirements...') }}" required></textarea>
                 </div>
 
                 <button type="submit" class="btn-generate" id="generateBtn">
-                    ✨ {{ t_modular('btn_generate_cl', 'Generate Cover Letter') }}
+                    ✨ {{ t_modular('cl_btn_generate', 'Generate Cover Letter') }}
                 </button>
             </form>
         </div>
@@ -287,13 +287,13 @@
                 <span>📄</span> {{ t_modular('cl_section_output', 'Generated Cover Letter') }}
             </div>
 
-            <textarea class="output-editor" id="clOutputText" placeholder="{{ t_modular('placeholder_cl_output', 'Your AI-generated cover letter will appear here ready for editing...') }}">{{ t_modular('default_cover_letter_content', 'Dear Hiring Manager,\n\nI am writing to express my enthusiastic interest in the Senior Software Engineer position at Stripe. With my extensive background in architecting scalable Python/Flask microservices, PostgreSQL database management, and modern Web Application development, I am confident in my ability to immediately contribute to your team\'s ambitious goals.\n\nIn my recent projects, I designed and deployed high-performance web applications, leveraging RESTful API architectures and Vercel serverless deployments to deliver sub-100ms response times. My hands-on experience aligns directly with Stripe\'s emphasis on clean code, reliability, and modern full-stack workflows.\n\nThank you for your time and consideration. I look forward to discussing how my technical background and problem-solving approach fit your engineering roadmap.\n\nSincerely,\n[Your Name]') }}</textarea>
+            <textarea class="output-editor" id="clOutputText" placeholder="{{ t_modular('cl_placeholder_output', 'Your AI-generated cover letter will appear here ready for editing...') }}">{{ t_modular('default_cover_letter_content', 'Dear Hiring Manager,\n\nI am writing to express my enthusiastic interest in the Senior Software Engineer position at Stripe. With my extensive background in architecting scalable Python/Flask microservices, PostgreSQL database management, and modern Web Application development, I am confident in my ability to immediately contribute to your team\'s ambitious goals.\n\nIn my recent projects, I designed and deployed high-performance web applications, leveraging RESTful API architectures and Vercel serverless deployments to deliver sub-100ms response times. My hands-on experience aligns directly with Stripe\'s emphasis on clean code, reliability, and modern full-stack workflows.\n\nThank you for your time and consideration. I look forward to discussing how my technical background and problem-solving approach fit your engineering roadmap.\n\nSincerely,\n[Your Name]') }}</textarea>
 
             <div class="action-bar">
-                <button type="button" class="btn-action" onclick="navigator.clipboard.writeText(document.getElementById('clOutputText').value); alert('{{ t_modular('alert_copied', 'Cover letter copied to clipboard!') }}');">
+                <button type="button" class="btn-action" onclick="navigator.clipboard.writeText(document.getElementById('clOutputText').value); alert('{{ t_modular('cl_alert_copied', 'Cover letter copied to clipboard!') }}');">
                     📋 {{ t_modular('btn_copy', 'Copy Text') }}
                 </button>
-                <button type="button" class="btn-action btn-action-primary" onclick="alert('{{ t_modular('alert_saved_pdf', 'Cover letter saved to your documents!') }}');">
+                <button type="button" class="btn-action btn-action-primary" onclick="alert('{{ t_modular('cl_alert_saved_pdf', 'Cover letter saved to your documents!') }}');">
                     💾 {{ t_modular('btn_save_pdf', 'Save & Export PDF') }}
                 </button>
             </div>
@@ -344,7 +344,6 @@
                 document.getElementById('scrapeJobUrl').value = activeCampaign.jobUrl;
             }
             if (activeCampaign.resumeTitle) {
-                // Infer role/title if present in title format
                 const cleanTitle = activeCampaign.resumeTitle.split('—')[1] || '';
                 if (cleanTitle && !document.getElementById('targetRole').value) {
                     document.getElementById('targetRole').value = cleanTitle.trim();
@@ -356,12 +355,12 @@
         btnScrapeUrl.addEventListener('click', async () => {
             const urlInput = document.getElementById('scrapeJobUrl').value.trim();
             if (!urlInput) {
-                alert('{{ t_modular("alert_enter_url", "Please enter a job posting URL.") }}');
+                alert('{{ t_modular("cl_alert_enter_url", "Please enter a job posting URL.") }}');
                 return;
             }
 
             btnScrapeUrl.disabled = true;
-            btnScrapeUrl.textContent = '⏳ {{ t_modular("btn_fetching_state", "Fetching...") }}';
+            btnScrapeUrl.textContent = '⏳ {{ t_modular("cl_btn_fetching_state", "Fetching...") }}';
 
             try {
                 const res = await fetch('/api/v1/premium/scrape-job', {
@@ -381,19 +380,19 @@
                     document.getElementById('targetRole').value = data.job_title_meta.slice(0, 50);
                 }
 
-                alert('{{ t_modular("alert_scraped_success", "Job requirements extracted successfully!") }}');
+                alert('{{ t_modular("cl_alert_scraped_success", "Job requirements extracted successfully!") }}');
             } catch (err) {
-                alert(err.message || '{{ t_modular("alert_scraped_error", "Error scraping job requirements from the link.") }}');
+                alert(err.message || '{{ t_modular("cl_alert_scraped_error", "Error scraping job requirements from the link.") }}');
             } finally {
                 btnScrapeUrl.disabled = false;
-                btnScrapeUrl.textContent = '⚡ {{ t_modular("btn_fetch_url", "Fetch") }}';
+                btnScrapeUrl.textContent = '⚡ {{ t_modular("cl_btn_fetch_url", "Fetch") }}';
             }
         });
 
         // 4. One-Click Auto Trigger Execution
         const triggerSubmit = async () => {
             generateBtn.disabled = true;
-            generateBtn.textContent = '⏳ {{ t_modular("btn_writing_state", "Writing Cover Letter...") }}';
+            generateBtn.textContent = '⏳ {{ t_modular("cl_btn_writing_state", "Writing Cover Letter...") }}';
 
             const payload = {
                 resume_id: document.getElementById('sourceCv').value || resumeIdParam,
@@ -423,7 +422,7 @@
                 console.warn('API route pending, using client rendering');
             } finally {
                 generateBtn.disabled = false;
-                generateBtn.textContent = '✨ {{ t_modular("btn_generate_cl", "Generate Cover Letter") }}';
+                generateBtn.textContent = '✨ {{ t_modular("cl_btn_generate", "Generate Cover Letter") }}';
             }
         };
 
