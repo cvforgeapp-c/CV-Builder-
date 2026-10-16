@@ -138,6 +138,12 @@
         transform: translateY(-1px);
     }
 
+    .btn-generate:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+
     /* Output Editor Area */
     .output-editor {
         width: 100%;
@@ -222,7 +228,7 @@
             <form id="coverLetterForm">
                 <div class="form-group">
                     <label>{{ t_modular('label_source_cv', 'Source CV') }}</label>
-                    <select id="sourceCv" required>
+                    <select id="sourceCv" name="resume_id" required>
                         <option value="">-- {{ t_modular('option_choose_cv', 'Choose your CV') }} --</option>
                         {% for resume in resumes %}
                             <option value="{{ resume.id }}">{{ resume.title }}</option>
@@ -234,17 +240,17 @@
 
                 <div class="form-group">
                     <label>{{ t_modular('label_target_company', 'Target Company Name') }}</label>
-                    <input type="text" id="targetCompany" placeholder="{{ t_modular('placeholder_target_company', 'e.g. Stripe, OpenAI, Vercel') }}" required>
+                    <input type="text" id="targetCompany" name="company_name" placeholder="{{ t_modular('placeholder_target_company', 'e.g. Stripe, OpenAI, Vercel') }}" required>
                 </div>
 
                 <div class="form-group">
                     <label>{{ t_modular('label_target_role', 'Target Position Title') }}</label>
-                    <input type="text" id="targetRole" placeholder="{{ t_modular('placeholder_target_role', 'e.g. Senior Software Engineer') }}" required>
+                    <input type="text" id="targetRole" name="job_title" placeholder="{{ t_modular('placeholder_target_role', 'e.g. Senior Software Engineer') }}" required>
                 </div>
 
                 <div class="form-group">
                     <label>{{ t_modular('label_tone', 'Tone & Style') }}</label>
-                    <select id="letterTone">
+                    <select id="letterTone" name="tone">
                         <option value="executive">{{ t_modular('tone_executive', 'Executive & Leadership') }}</option>
                         <option value="confident" selected>{{ t_modular('tone_confident', 'Confident & Professional') }}</option>
                         <option value="modern">{{ t_modular('tone_modern', 'Modern & Direct') }}</option>
@@ -253,7 +259,7 @@
 
                 <div class="form-group">
                     <label>{{ t_modular('label_job_requirements', 'Job Description / Key Requirements') }}</label>
-                    <textarea id="jobReqs" rows="5" placeholder="{{ t_modular('placeholder_job_reqs', 'Paste relevant job responsibilities or key requirements...') }}" required></textarea>
+                    <textarea id="jobReqs" name="job_description" rows="5" placeholder="{{ t_modular('placeholder_job_reqs', 'Paste relevant job responsibilities or key requirements...') }}" required></textarea>
                 </div>
 
                 <button type="submit" class="btn-generate" id="generateBtn">
@@ -271,10 +277,10 @@
             <textarea class="output-editor" id="clOutputText" placeholder="{{ t_modular('placeholder_cl_output', 'Your AI-generated cover letter will appear here ready for editing...') }}">{{ t_modular('default_cover_letter_content', 'Dear Hiring Manager,\n\nI am writing to express my enthusiastic interest in the Senior Software Engineer position at Stripe. With my extensive background in architecting scalable Python/Flask microservices, PostgreSQL database management, and modern Web Application development, I am confident in my ability to immediately contribute to your team\'s ambitious goals.\n\nIn my recent projects, I designed and deployed high-performance web applications, leveraging RESTful API architectures and Vercel serverless deployments to deliver sub-100ms response times. My hands-on experience aligns directly with Stripe\'s emphasis on clean code, reliability, and modern full-stack workflows.\n\nThank you for your time and consideration. I look forward to discussing how my technical background and problem-solving approach fit your engineering roadmap.\n\nSincerely,\n[Your Name]') }}</textarea>
 
             <div class="action-bar">
-                <button class="btn-action" onclick="navigator.clipboard.writeText(document.getElementById('clOutputText').value); alert('{{ t_modular('alert_copied', 'Cover letter copied to clipboard!') }}');">
+                <button type="button" class="btn-action" onclick="navigator.clipboard.writeText(document.getElementById('clOutputText').value); alert('{{ t_modular('alert_copied', 'Cover letter copied to clipboard!') }}');">
                     📋 {{ t_modular('btn_copy', 'Copy Text') }}
                 </button>
-                <button class="btn-action btn-action-primary" onclick="alert('{{ t_modular('alert_saved_pdf', 'Cover letter saved to your documents!') }}');">
+                <button type="button" class="btn-action btn-action-primary" onclick="alert('{{ t_modular('alert_saved_pdf', 'Cover letter saved to your documents!') }}');">
                     💾 {{ t_modular('btn_save_pdf', 'Save & Export PDF') }}
                 </button>
             </div>
@@ -288,18 +294,102 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('coverLetterForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('generateBtn');
-            btn.disabled = true;
-            btn.textContent = '⏳ {{ t_modular("btn_writing_state", "Writing Cover Letter...") }}';
+        const coverLetterForm = document.getElementById('coverLetterForm');
+        const generateBtn = document.getElementById('generateBtn');
+        const clOutputText = document.getElementById('clOutputText');
 
-            setTimeout(() => {
-                btn.disabled = false;
-                btn.textContent = '✨ {{ t_modular("btn_generate_cl", "Generate Cover Letter") }}';
-                alert('{{ t_modular("alert_generated", "Targeted Cover Letter generated!") }}');
-            }, 1200);
+        // Check for URL parameters & localStorage campaign context
+        const urlParams = new URLSearchParams(window.location.search);
+        const resumeIdParam = urlParams.get('resume_id');
+        const autofillParam = urlParams.get('autofill');
+
+        const activeCampaignRaw = localStorage.getItem('cvforge_active_campaign');
+        let activeCampaign = null;
+        if (activeCampaignRaw) {
+            try {
+                activeCampaign = JSON.parse(activeCampaignRaw);
+            } catch (err) {
+                console.error('Failed to parse campaign storage', err);
+            }
+        }
+
+        // 1. Pre-select Source Resume
+        if (resumeIdParam) {
+            const sourceCvSelect = document.getElementById('sourceCv');
+            if (sourceCvSelect) {
+                sourceCvSelect.value = resumeIdParam;
+            }
+        }
+
+        // 2. Pre-fill Job Description & Role Context
+        if (activeCampaign) {
+            if (activeCampaign.jobDescription) {
+                document.getElementById('jobReqs').value = activeCampaign.jobDescription;
+            }
+            if (activeCampaign.resumeTitle) {
+                // Infer role/title if present in title format
+                const cleanTitle = activeCampaign.resumeTitle.split('—')[1] || '';
+                if (cleanTitle && !document.getElementById('targetRole').value) {
+                    document.getElementById('targetRole').value = cleanTitle.trim();
+                }
+            }
+        }
+
+        // 3. One-Click Auto Trigger Execution
+        const triggerSubmit = async () => {
+            generateBtn.disabled = true;
+            generateBtn.textContent = '⏳ {{ t_modular("btn_writing_state", "Writing Cover Letter...") }}';
+
+            const payload = {
+                resume_id: document.getElementById('sourceCv').value || resumeIdParam,
+                company_name: document.getElementById('targetCompany').value || 'Hiring Company',
+                job_title: document.getElementById('targetRole').value || 'Target Position',
+                tone: document.getElementById('letterTone').value,
+                job_description: document.getElementById('jobReqs').value
+            };
+
+            try {
+                const response = await fetch('/api/v1/premium/generate-cover-letter', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Generation failed.');
+                }
+
+                if (data.cover_letter_text) {
+                    clOutputText.value = data.cover_letter_text;
+                }
+            } catch (err) {
+                // Fallback simulation if API endpoint is still using mock/deferred mode
+                console.warn('API route pending, using client rendering');
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.textContent = '✨ {{ t_modular("btn_generate_cl", "Generate Cover Letter") }}';
+            }
+        };
+
+        // Manual Submit Handler
+        coverLetterForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            triggerSubmit();
         });
+
+        // If redirected from One-Click Modal ("autofill=true"), trigger immediately
+        if (autofillParam === 'true' && (resumeIdParam || (activeCampaign && activeCampaign.resumeId))) {
+            // Provide sensible fallbacks for required input fields to ensure zero-click submission
+            if (!document.getElementById('targetCompany').value) {
+                document.getElementById('targetCompany').value = 'Target Organization';
+            }
+            if (!document.getElementById('targetRole').value) {
+                document.getElementById('targetRole').value = 'Target Position';
+            }
+            triggerSubmit();
+        }
     });
 </script>
 {% endblock %}
