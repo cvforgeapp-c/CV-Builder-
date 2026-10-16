@@ -872,6 +872,8 @@ def create_job_application():
     role_title = (data.get("role_title") or "").strip()
     salary = (data.get("salary") or "").strip()
     status = (data.get("status") or "saved").strip()
+    
+    # Safely handle job_url since it is optional/absent in the form modal
     job_url = (data.get("job_url") or "").strip()
 
     if not company_name or not role_title:
