@@ -870,9 +870,12 @@ def create_job_application():
     data = request.get_json(silent=True) or {}
     company_name = (data.get("company_name") or "").strip()
     role_title = (data.get("role_title") or "").strip()
+    salary = (data.get("salary") or "").strip()
+    status = (data.get("status") or "saved").strip()
+    job_url = (data.get("job_url") or "").strip()
 
     if not company_name or not role_title:
-        return jsonify({"error": "Company name and job title are required."}), 400
+        return jsonify({"success": False, "error": "Company name and job title are required."}), 400
 
     try:
         new_app = JobApplication(
@@ -880,9 +883,9 @@ def create_job_application():
             user_id=current_user.id,
             company_name=company_name,
             role_title=role_title,
-            salary=data.get("salary", ""),
-            status=data.get("status", "saved"),
-            job_url=data.get("job_url", ""),
+            salary=salary,
+            status=status,
+            job_url=job_url,
             updated_at=datetime.utcnow()
         )
         db.session.add(new_app)
@@ -890,8 +893,8 @@ def create_job_application():
         return jsonify({"success": True, "message": "Application saved successfully!", "id": new_app.id}), 201
     except Exception as exc:
         db.session.rollback()
-        print(f"Error creating job application: {exc}")
-        return jsonify({"error": "Failed to save application."}), 500
+        print(f"CRITICAL DB Error creating job application: {type(exc).__name__}: {exc}")
+        return jsonify({"success": False, "error": f"Database error: {str(exc)}"}), 500
 
 
 @tracker_api_bp.route("/<app_id>", methods=["DELETE"])
