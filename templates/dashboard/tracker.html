@@ -99,7 +99,7 @@
         box-shadow: 0 4px 12px rgba(2, 53, 60, 0.2);
     }
 
-    /* Metrics Bar - Expanded to 5 columns to include weekly goal */
+    /* Metrics Bar */
     .metrics-bar {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -377,6 +377,11 @@
 
 {% block content %}
 
+<!-- DEFINE SETTINGS VARIABLES GLOBALLY AT THE VERY TOP OF CONTENT -->
+{% set tracker_settings = current_user.preferences_json.trackerSettings if current_user.preferences_json and current_user.preferences_json.trackerSettings else {} %}
+{% set weekly_goal = tracker_settings.weeklyGoal | int if tracker_settings.weeklyGoal else 5 %}
+{% set tracker_layout = tracker_settings.trackerLayout if tracker_settings.trackerLayout else 'Kanban Drag & Drop Board' %}
+
 <!-- TRACKER HEADER -->
 <header class="tracker-header">
     <div style="display: flex; align-items: center;">
@@ -401,12 +406,7 @@
         </button>
     </div>
 
-    <!-- PULL SETTINGS FROM DATABASE -->
-    {% set tracker_settings = current_user.preferences_json.trackerSettings if current_user.preferences_json and current_user.preferences_json.trackerSettings else {} %}
-    {% set weekly_goal = tracker_settings.weeklyGoal | int if tracker_settings.weeklyGoal else 5 %}
-    {% set tracker_layout = tracker_settings.trackerLayout if tracker_settings.trackerLayout else 'Kanban Drag & Drop Board' %}
-
-    <!-- METRICS SUMMARY (INCLUDES WEEKLY GOAL PROGRESS) -->
+    <!-- METRICS SUMMARY -->
     <div class="metrics-bar">
         <div class="metric-card">
             <div class="metric-title">{{ t_modular('trk_metric_applied', 'Total Applied') }}</div>
@@ -565,7 +565,7 @@
         const closeBtn = document.getElementById('closeModalBtn');
         const addAppForm = document.getElementById('addAppForm');
 
-        // Extract currency preference symbol (e.g. "€" from "EUR (€)")
+        // Extract currency preference symbol (e.g. "€" from "EUR (€)") safely
         const currencyPref = "{{ tracker_settings.currency if tracker_settings.currency else 'USD ($)' }}";
         const getCurrencySymbol = (currStr) => {
             const match = currStr.match(/\(([^)]+)\)/);
@@ -711,7 +711,7 @@
             if (goalDisplay) {
                 goalDisplay.textContent = `${total} / ${weeklyGoal}`;
                 if (total >= weeklyGoal) {
-                    goalDisplay.style.color = '#16a34a'; // Turns green when goal is reached!
+                    goalDisplay.style.color = '#16a34a';
                 } else {
                     goalDisplay.style.color = 'var(--brand-teal)';
                 }
