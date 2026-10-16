@@ -102,7 +102,7 @@
     /* Metrics Bar */
     .metrics-bar {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 16px;
         margin-bottom: 24px;
     }
@@ -377,9 +377,8 @@
 
 {% block content %}
 
-{# BULLETPROOF SETTINGS INITIALIZATION #}
+{# SAFE LAYOUT & SETTINGS PARSING #}
 {% set tracker_settings = current_user.preferences_json.trackerSettings if current_user and current_user.preferences_json and current_user.preferences_json.trackerSettings is defined else {} %}
-{% set weekly_goal = tracker_settings.weeklyGoal | int if tracker_settings and tracker_settings.weeklyGoal is defined else 5 %}
 {% set tracker_layout = tracker_settings.trackerLayout if tracker_settings and tracker_settings.trackerLayout is defined else 'Kanban Drag & Drop Board' %}
 
 <!-- TRACKER HEADER -->
@@ -401,6 +400,7 @@
             <h1>{{ t_modular('trk_heading', 'Job Application Tracker') }}</h1>
             <p>{{ t_modular('trk_subheading', 'Monitor your target applications, interview stages, and follow-ups in real time.') }}</p>
         </div>
+        <!-- GLOBAL ONCLICK ENSURES MODAL OPENS RELIABLY -->
         <button class="btn-add-app" id="openModalBtn" type="button" onclick="openAppModal()">
             <span>+</span> {{ t_modular('trk_btn_add_app', 'Add Application') }}
         </button>
@@ -411,10 +411,6 @@
         <div class="metric-card">
             <div class="metric-title">{{ t_modular('trk_metric_applied', 'Total Applied') }}</div>
             <div class="metric-value" id="metricTotal">0</div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-title">{{ t_modular('trk_metric_weekly_goal', 'Weekly Goal') }}</div>
-            <div class="metric-value" style="color: var(--brand-teal);" id="weeklyGoalDisplay">0 / {{ weekly_goal }}</div>
         </div>
         <div class="metric-card">
             <div class="metric-title">{{ t_modular('trk_metric_interviewing', 'Interviewing') }}</div>
@@ -559,6 +555,7 @@
 
 {% block extra_js %}
 <script>
+    // Global modal functions for robust interaction
     window.openAppModal = function() {
         const modal = document.getElementById('appModal');
         if (modal) modal.classList.add('active');
@@ -700,7 +697,6 @@
             if (document.getElementById('count-offer')) document.getElementById('count-offer').textContent = counts.offer;
         };
 
-        const weeklyGoal = {{ weekly_goal }};
         const updateMetrics = (apps) => {
             const total = apps.length;
             const interviews = apps.filter(a => a.status === 'interview').length;
@@ -708,17 +704,6 @@
             const rate = total > 0 ? Math.round((interviews / total) * 100) : 0;
 
             if (document.getElementById('metricTotal')) document.getElementById('metricTotal').textContent = total;
-            
-            const goalDisplay = document.getElementById('weeklyGoalDisplay');
-            if (goalDisplay) {
-                goalDisplay.textContent = `${total} / ${weeklyGoal}`;
-                if (total >= weeklyGoal) {
-                    goalDisplay.style.color = '#16a34a';
-                } else {
-                    goalDisplay.style.color = 'var(--brand-teal)';
-                }
-            }
-
             if (document.getElementById('metricInterviews')) document.getElementById('metricInterviews').textContent = interviews;
             if (document.getElementById('metricOffers')) document.getElementById('metricOffers').textContent = offers;
             if (document.getElementById('metricRate')) document.getElementById('metricRate').textContent = rate + '%';
