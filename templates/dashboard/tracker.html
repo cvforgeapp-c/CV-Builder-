@@ -99,7 +99,7 @@
         box-shadow: 0 4px 12px rgba(2, 53, 60, 0.2);
     }
 
-    /* Metrics Bar - Updated grid to accommodate weekly goal */
+    /* Metrics Bar */
     .metrics-bar {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -401,7 +401,7 @@
             <h1>{{ t_modular('trk_heading', 'Job Application Tracker') }}</h1>
             <p>{{ t_modular('trk_subheading', 'Monitor your target applications, interview stages, and follow-ups in real time.') }}</p>
         </div>
-        <button class="btn-add-app" id="openModalBtn">
+        <button class="btn-add-app" id="openModalBtn" type="button">
             <span>+</span> {{ t_modular('trk_btn_add_app', 'Add Application') }}
         </button>
     </div>
@@ -524,7 +524,7 @@
     <div class="modal-card">
         <div class="modal-header">
             <h3 style="font-size: 18px; font-weight: 800; color: var(--brand-teal);">{{ t_modular('trk_modal_title', 'Add Job Application') }}</h3>
-            <button id="closeModalBtn" style="background: none; border: none; font-size: 20px; cursor: pointer;">✕</button>
+            <button id="closeModalBtn" type="button" style="background: none; border: none; font-size: 20px; cursor: pointer;">✕</button>
         </div>
         <form id="addAppForm">
             <div class="form-group">
@@ -565,6 +565,30 @@
         const closeBtn = document.getElementById('closeModalBtn');
         const addAppForm = document.getElementById('addAppForm');
 
+        // Safe modal open/close handlers
+        if (openBtn && modal) {
+            openBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                modal.classList.add('active');
+            });
+        }
+
+        if (closeBtn && modal) {
+            closeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                modal.classList.remove('active');
+            });
+        }
+
+        // Close modal when clicking outside of modal-card
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+        }
+
         // Extract currency preference symbol safely from settings
         const currencyPref = "{{ tracker_settings.currency if tracker_settings and tracker_settings.currency else 'USD ($)' }}";
         const getCurrencySymbol = (currStr) => {
@@ -589,9 +613,6 @@
             interview: "{{ t_modular('trk_benefit_interview', 'Roles where a recruiter or hiring manager has reached out to schedule a screening call, technical assessment, or panel interview.') }}",
             offer: "{{ t_modular('trk_benefit_offer', 'Positions where you have received a formal offer and are reviewing terms or negotiating.') }}"
         };
-
-        openBtn.addEventListener('click', () => modal.classList.add('active'));
-        closeBtn.addEventListener('click', () => modal.classList.remove('active'));
 
         // Fetch applications from database API endpoint
         const fetchApplications = async () => {
@@ -711,7 +732,7 @@
             if (goalDisplay) {
                 goalDisplay.textContent = `${total} / ${weeklyGoal}`;
                 if (total >= weeklyGoal) {
-                    goalDisplay.style.color = '#16a34a'; // Turns green when goal is achieved!
+                    goalDisplay.style.color = '#16a34a';
                 } else {
                     goalDisplay.style.color = 'var(--brand-teal)';
                 }
@@ -723,33 +744,35 @@
         };
 
         // Submit new application to backend DB
-        addAppForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const payload = {
-                company_name: document.getElementById('companyInput').value,
-                role_title: document.getElementById('roleInput').value,
-                salary: document.getElementById('salaryInput').value,
-                status: document.getElementById('statusSelect').value
-            };
+        if (addAppForm) {
+            addAppForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const payload = {
+                    company_name: document.getElementById('companyInput').value,
+                    role_title: document.getElementById('roleInput').value,
+                    salary: document.getElementById('salaryInput').value,
+                    status: document.getElementById('statusSelect').value
+                };
 
-            try {
-                const res = await fetch('/api/v1/tracker', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const data = await res.json();
-                if (data.success) {
-                    modal.classList.remove('active');
-                    addAppForm.reset();
-                    fetchApplications();
-                } else {
-                    alert(data.error || 'Failed to save application.');
+                try {
+                    const res = await fetch('/api/v1/tracker', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        modal.classList.remove('active');
+                        addAppForm.reset();
+                        fetchApplications();
+                    } else {
+                        alert(data.error || 'Failed to save application.');
+                    }
+                } catch (err) {
+                    alert('Error connecting to server.');
                 }
-            } catch (err) {
-                alert('Error connecting to server.');
-            }
-        });
+            });
+        }
 
         // Delete application handler
         window.deleteApp = async (id) => {
