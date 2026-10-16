@@ -9,6 +9,7 @@ import base64
 import random
 import httpx
 import re
+import requests
 
 from datetime import datetime
 from bs4 import BeautifulSoup
@@ -1417,6 +1418,57 @@ def verify_paddle_webhook(request_data, signature_header):
 # ============================================================
 
 premium_bp = Blueprint("premium_api", __name__, url_prefix="/api/v1/premium")
+
+HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Accept-Language': 'en-US,en;q=0.9'
+}
+
+@premium_bp.route('/scrape-job', methods=['POST'])
+@login_required
+def scrape_job_url():
+    data = request.get_json() or {}
+    job_url = data.get('url', '').strip()
+
+    if not job_url:
+        return jsonify({'error': 'Please provide a valid job posting URL.'}), 400
+
+    try:
+        # 1. Fetch webpage content
+        response = requests.get(job_url, headers=HEADERS, timeout=8)
+        if response.status_code != 200:
+            return jsonify({'error': f'Failed to load job page (HTTP {response.status_code}).'}), 400
+
+        # 2. Parse HTML & Remove unnecessary boilerplate elements
+        soup = BeautifulSoup(response.text, 'html.parser')
+        for script in soup(["script", "style", "nav", "footer", "header", "noscript"]):
+            script.extract()
+
+        # 3. Extract text content
+        raw_text = soup.get_text(separator=' ')
+        # Clean up whitespace
+        clean_text = ' '.join(raw_text.split())
+
+        # 4. Extract basic metadata (Page title, OpenGraph meta tags)
+        page_title = soup.title.string.strip() if soup.title else ""
+        
+        # Try finding company and position from meta tags if available
+        og_title = soup.find("meta", property="og:title")
+        meta_title = og_title["content"] if og_title else page_title
+
+        # Limit overall payload size sent back to client
+        trimmed_description = clean_text[:4000]
+
+        return jsonify({
+            'success': True,
+            'job_title_meta': meta_title,
+            'job_description': trimmed_description
+        })
+
+    except requests.exceptions.Timeout:
+        return jsonify({'error': 'The job website took too long to respond.'}), 504
+    except Exception as e:
+        return jsonify({'error': f'Could not extract text from link: {str(e)}'}), 500
 
 
 @premium_bp.route("/user-status", methods=["GET"])
