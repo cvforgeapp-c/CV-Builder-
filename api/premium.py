@@ -834,6 +834,85 @@ def delete_resume(resume_id):
 
 
 # ============================================================
+# JOB TRACKER API BLUEPRINT
+# ============================================================
+
+tracker_api_bp = Blueprint("tracker_api", __name__, url_prefix="/api/v1/tracker")
+
+@tracker_api_bp.route("", methods=["GET"])
+@login_required
+def get_job_applications():
+    try:
+        apps = JobApplication.query.filter_by(user_id=current_user.id).all()
+        return jsonify({
+            "success": True,
+            "applications": [
+                {
+                    "id": app.id,
+                    "company_name": getattr(app, "company_name", ""),
+                    "role_title": getattr(app, "role_title", ""),
+                    "salary": getattr(app, "salary", ""),
+                    "status": getattr(app, "status", "saved"),
+                    "job_url": getattr(app, "job_url", ""),
+                    "updated_at": app.updated_at.isoformat() if getattr(app, "updated_at", None) else None
+                }
+                for app in apps
+            ]
+        }), 200
+    except Exception as exc:
+        print(f"Error fetching tracker apps: {exc}")
+        return jsonify({"error": "Failed to fetch applications."}), 500
+
+
+@tracker_api_bp.route("", methods=["POST"])
+@login_required
+def create_job_application():
+    data = request.get_json(silent=True) or {}
+    company_name = (data.get("company_name") or "").strip()
+    role_title = (data.get("role_title") or "").strip()
+
+    if not company_name or not role_title:
+        return jsonify({"error": "Company name and job title are required."}), 400
+
+    try:
+        new_app = JobApplication(
+            id=str(uuid.uuid4()),
+            user_id=current_user.id,
+            company_name=company_name,
+            role_title=role_title,
+            salary=data.get("salary", ""),
+            status=data.get("status", "saved"),
+            job_url=data.get("job_url", ""),
+            updated_at=datetime.utcnow()
+        )
+        db.session.add(new_app)
+        db.session.commit()
+        return jsonify({"success": True, "message": "Application saved successfully!", "id": new_app.id}), 201
+    except Exception as exc:
+        db.session.rollback()
+        print(f"Error creating job application: {exc}")
+        return jsonify({"error": "Failed to save application."}), 500
+
+
+@tracker_api_bp.route("/<app_id>", methods=["DELETE"])
+@login_required
+def delete_job_application(app_id):
+    try:
+        app = JobApplication.query.filter_by(id=app_id, user_id=current_user.id).first()
+        if not app:
+            return jsonify({"error": "Application not found."}), 404
+        db.session.delete(app)
+        db.session.commit()
+        return jsonify({"success": True, "message": "Application deleted."}), 200
+    except Exception as exc:
+        db.session.rollback()
+        print(f"Error deleting application: {exc}")
+        return jsonify({"error": "Failed to delete application."}), 500
+
+premium_app.register_blueprint(tracker_api_bp)
+
+
+# ============================================================
 # DEVELOPER ACCESS & AI GENERATION ENDPOINTS
 # ============================================================
 
