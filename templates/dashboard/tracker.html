@@ -401,7 +401,8 @@
             <h1>{{ t_modular('trk_heading', 'Job Application Tracker') }}</h1>
             <p>{{ t_modular('trk_subheading', 'Monitor your target applications, interview stages, and follow-ups in real time.') }}</p>
         </div>
-        <button class="btn-add-app" id="openModalBtn" type="button">
+        <!-- INLINE ONCLICK HANDLER GUARANTEES IT FIRES -->
+        <button class="btn-add-app" id="openModalBtn" type="button" onclick="openAppModal()">
             <span>+</span> {{ t_modular('trk_btn_add_app', 'Add Application') }}
         </button>
     </div>
@@ -520,11 +521,11 @@
 </div>
 
 <!-- ADD APPLICATION MODAL -->
-<div class="modal-overlay" id="appModal">
+<div class="modal-overlay" id="appModal" onclick="handleOutsideClick(event)">
     <div class="modal-card">
         <div class="modal-header">
             <h3 style="font-size: 18px; font-weight: 800; color: var(--brand-teal);">{{ t_modular('trk_modal_title', 'Add Job Application') }}</h3>
-            <button id="closeModalBtn" type="button" style="background: none; border: none; font-size: 20px; cursor: pointer;">✕</button>
+            <button id="closeModalBtn" type="button" onclick="closeAppModal()" style="background: none; border: none; font-size: 20px; cursor: pointer;">✕</button>
         </div>
         <form id="addAppForm">
             <div class="form-group">
@@ -559,35 +560,26 @@
 
 {% block extra_js %}
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    // Global functions so onclick attributes can invoke them reliably
+    window.openAppModal = function() {
         const modal = document.getElementById('appModal');
-        const openBtn = document.getElementById('openModalBtn');
-        const closeBtn = document.getElementById('closeModalBtn');
+        if (modal) modal.classList.add('active');
+    };
+
+    window.closeAppModal = function() {
+        const modal = document.getElementById('appModal');
+        if (modal) modal.classList.remove('active');
+    };
+
+    window.handleOutsideClick = function(event) {
+        const modal = document.getElementById('appModal');
+        if (event.target === modal) {
+            modal.classList.remove('active');
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
         const addAppForm = document.getElementById('addAppForm');
-
-        // Safe modal open/close handlers
-        if (openBtn && modal) {
-            openBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                modal.classList.add('active');
-            });
-        }
-
-        if (closeBtn && modal) {
-            closeBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                modal.classList.remove('active');
-            });
-        }
-
-        // Close modal when clicking outside of modal-card
-        if (modal) {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.classList.remove('active');
-                }
-            });
-        }
 
         // Extract currency preference symbol safely from settings
         const currencyPref = "{{ tracker_settings.currency if tracker_settings and tracker_settings.currency else 'USD ($)' }}";
@@ -762,7 +754,7 @@
                     });
                     const data = await res.json();
                     if (data.success) {
-                        modal.classList.remove('active');
+                        window.closeAppModal();
                         addAppForm.reset();
                         fetchApplications();
                     } else {
