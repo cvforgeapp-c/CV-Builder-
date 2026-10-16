@@ -158,7 +158,7 @@
                 </div>
                 <div>
                     <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ t('applications') }}</p>
-                    <p class="text-base sm:text-xl font-extrabold text-slate-900">0 {{ t('active') }}</p>
+                    <p class="text-base sm:text-xl font-extrabold text-slate-900" id="dashboardActiveAppsCount">0 {{ t('active') }}</p>
                 </div>
             </div>
         </div>
@@ -412,7 +412,28 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', loadStoredSettings);
+        // Fetch live job application count from tracker API
+        async function loadDashboardApplicationCount() {
+            try {
+                const res = await fetch('/api/v1/tracker');
+                if (!res.ok) return;
+                const data = await res.json();
+                if (data.success && data.applications) {
+                    const activeCount = data.applications.length;
+                    const countEl = document.getElementById('dashboardActiveAppsCount');
+                    if (countEl) {
+                        countEl.textContent = `${activeCount} {{ t('active') }}`;
+                    }
+                }
+            } catch (err) {
+                console.log("Could not load application count:", err);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStoredSettings();
+            loadDashboardApplicationCount();
+        });
 
         // Resume Deletion Script
         let targetResumeId = null;
