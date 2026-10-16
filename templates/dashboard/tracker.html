@@ -104,7 +104,7 @@
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 16px;
-        margin-bottom: 28px;
+        margin-bottom: 24px;
     }
 
     .metric-card {
@@ -128,6 +128,48 @@
         font-weight: 800;
         color: var(--brand-teal);
         margin-top: 4px;
+    }
+
+    /* STAGE GUIDANCE BANNER */
+    .stage-guide-box {
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-left: 4px solid var(--brand-teal);
+        border-radius: 10px;
+        padding: 18px 22px;
+        margin-bottom: 28px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+
+    .stage-guide-title {
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--brand-teal);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .stage-guide-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 12px;
+    }
+
+    .guide-item {
+        font-size: 12.5px;
+        color: var(--text-secondary);
+        line-height: 1.5;
+        background: #f8fafc;
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1px solid #f1f5f9;
+    }
+
+    .guide-item strong {
+        color: var(--text-primary);
+        font-weight: 700;
     }
 
     /* Kanban Board Columns */
@@ -183,6 +225,30 @@
         font-weight: 700;
         padding: 2px 8px;
         border-radius: 10px;
+    }
+
+    /* READ-ONLY PLACEHOLDER CARD FOR EMPTY COLUMNS */
+    .read-only-placeholder {
+        background: #ffffff;
+        border: 1px dashed #cbd5e1;
+        border-radius: 10px;
+        padding: 16px;
+        color: var(--text-secondary);
+        font-size: 12px;
+        line-height: 1.5;
+        text-align: left;
+    }
+
+    .read-only-placeholder-header {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--brand-teal-light);
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
     }
 
     /* Application Cards */
@@ -355,6 +421,31 @@
         </div>
     </div>
 
+    <!-- STAGE GUIDANCE BANNER -->
+    <div class="stage-guide-box">
+        <div class="stage-guide-title">
+            ℹ️ {{ t_modular('trk_guide_title', 'Pipeline Stage Benefits & Explanations') }}
+        </div>
+        <div class="stage-guide-grid">
+            <div class="guide-item">
+                <strong>📌 {{ t_modular('trk_col_saved', 'Saved / Target') }}:</strong>
+                {{ t_modular('trk_benefit_saved', "Roles or postings you find interesting but haven't formally submitted yet. Storing them here allows the system to save the job description so you don't lose it if the posting gets taken down.") }}
+            </div>
+            <div class="guide-item">
+                <strong>📩 {{ t_modular('trk_col_applied', 'Applied') }}:</strong>
+                {{ t_modular('trk_benefit_applied', 'Positions where you have formally submitted your CV and cover letter.') }}
+            </div>
+            <div class="guide-item">
+                <strong>🤝 {{ t_modular('trk_col_interview', 'Interviewing') }}:</strong>
+                {{ t_modular('trk_benefit_interview', 'Roles where a recruiter or hiring manager has reached out to schedule a screening call, technical assessment, or panel interview.') }}
+            </div>
+            <div class="guide-item">
+                <strong>🎉 {{ t_modular('trk_col_offer', 'Offer Received') }}:</strong>
+                {{ t_modular('trk_benefit_offer', 'Positions where you have received a formal offer and are reviewing terms or negotiating.') }}
+            </div>
+        </div>
+    </div>
+
     <!-- KANBAN BOARD -->
     <div class="kanban-board">
         
@@ -443,6 +534,13 @@
         const closeBtn = document.getElementById('closeModalBtn');
         const addAppForm = document.getElementById('addAppForm');
 
+        const stageBenefits = {
+            saved: "{{ t_modular('trk_benefit_saved', 'Roles or postings you find interesting but haven\'t formally submitted yet. Storing them here allows the system to save the job description so you don\'t lose it if the posting gets taken down.') }}",
+            applied: "{{ t_modular('trk_benefit_applied', 'Positions where you have formally submitted your CV and cover letter.') }}",
+            interview: "{{ t_modular('trk_benefit_interview', 'Roles where a recruiter or hiring manager has reached out to schedule a screening call, technical assessment, or panel interview.') }}",
+            offer: "{{ t_modular('trk_benefit_offer', 'Positions where you have received a formal offer and are reviewing terms or negotiating.') }}"
+        };
+
         openBtn.addEventListener('click', () => modal.classList.add('active'));
         closeBtn.addEventListener('click', () => modal.classList.remove('active'));
 
@@ -491,6 +589,19 @@
                     </div>
                 `;
                 lists[st].appendChild(card);
+            });
+
+            // Display read-only placeholder in empty columns
+            Object.keys(lists).forEach(stage => {
+                if (counts[stage] === 0) {
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'read-only-placeholder';
+                    placeholder.innerHTML = `
+                        <div class="read-only-placeholder-header">💡 {{ t_modular('trk_label_stage_purpose', 'Stage Benefit') }}</div>
+                        ${stageBenefits[stage]}
+                    `;
+                    lists[stage].appendChild(placeholder);
+                }
             });
 
             // Update column counts
