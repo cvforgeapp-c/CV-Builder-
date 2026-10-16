@@ -23,6 +23,14 @@ ATS_LOCALES = {
         "ats_btn_edit_optimized": "Edit in Editor",
         "ats_btn_preview_optimized": "Preview & Download",
         "ats_placeholder_job_desc": "Paste full job requirements or posting text here...",
+        "ats_step_badge": "STEP 1 & 2",
+        "ats_live_badge": "LIVE AI OUTPUT",
+        "ats_divider_or_upload": "or upload local file",
+        "ats_divider_or_paste": "or paste description text",
+        "ats_select_default": "-- Select from your Dashboard --",
+        "ats_ready_title": "Ready to Optimize",
+        "ats_ready_desc": "Select a resume, paste a job URL or description, and click generate to run the ATS Engine.",
+        "ats_btn_back_dashboard": "← Back to Dashboard",
     },
 
     "Mandarin Chinese": {
@@ -45,6 +53,14 @@ ATS_LOCALES = {
         "ats_btn_edit_optimized": "在编辑器中编辑",
         "ats_btn_preview_optimized": "预览与下载",
         "ats_placeholder_job_desc": "在此处粘贴完整的职位要求或招聘文本...",
+        "ats_step_badge": "步骤 1 与 2",
+        "ats_live_badge": "实时 AI 输出",
+        "ats_divider_or_upload": "或上传本地文件",
+        "ats_divider_or_paste": "或粘贴职位描述文本",
+        "ats_select_default": "-- 从您的控制面板选择 --",
+        "ats_ready_title": "准备开始优化",
+        "ats_ready_desc": "选择简历，粘贴职位链接或描述，然后点击生成以运行 ATS 引擎。",
+        "ats_btn_back_dashboard": "← 返回控制面板",
     },
 
     "Spanish": {
@@ -67,6 +83,14 @@ ATS_LOCALES = {
         "ats_btn_edit_optimized": "Editar en el Editor",
         "ats_btn_preview_optimized": "Vista Previa y Descarga",
         "ats_placeholder_job_desc": "Pegue los requisitos completos del puesto o texto de la oferta aquí...",
+        "ats_step_badge": "PASO 1 Y 2",
+        "ats_live_badge": "RESULTADO EN VIVO CON IA",
+        "ats_divider_or_upload": "o subir archivo local",
+        "ats_divider_or_paste": "o pegar texto de descripción",
+        "ats_select_default": "-- Seleccionar de su panel --",
+        "ats_ready_title": "Listo para optimizar",
+        "ats_ready_desc": "Seleccione un CV, pegue la URL o descripción del trabajo y haga clic en generar para ejecutar el motor ATS.",
+        "ats_btn_back_dashboard": "← Volver al Panel",
     },
 
     "Hindi": {
@@ -89,6 +113,14 @@ ATS_LOCALES = {
         "ats_btn_edit_optimized": "एडिटर में संपादित करें",
         "ats_btn_preview_optimized": "पूर्वावलोकन और डाउनलोड",
         "ats_placeholder_job_desc": "यहाँ पूरी नौकरी की आवश्यकताएं या पोस्टिंग टेक्स्ट पेस्ट करें...",
+        "ats_step_badge": "चरण 1 और 2",
+        "ats_live_badge": "लाइव AI आउटपुट",
+        "ats_divider_or_upload": "या स्थानीय फ़ाइल अपलोड करें",
+        "ats_divider_or_paste": "या विवरण टेक्स्ट पेस्ट करें",
+        "ats_select_default": "-- अपने डैशबोर्ड से चुनें --",
+        "ats_ready_title": "ऑप्टिमाइज़ करने के लिए तैयार",
+        "ats_ready_desc": "एक रेज़्यूमे चुनें, नौकरी का URL या विवरण पेस्ट करें, और ATS इंजन चलाने के लिए जनरेट पर क्लिक करें।",
+        "ats_btn_back_dashboard": "← डैशबोर्ड पर वापस जाएं",
     },
 
     "Arabic": {
@@ -111,6 +143,14 @@ ATS_LOCALES = {
         "ats_btn_edit_optimized": "تعديل في المحرر",
         "ats_btn_preview_optimized": "معاينة وتحميل",
         "ats_placeholder_job_desc": "الصق متطلبات الوظيفة الكاملة أو نص الإعلان هنا...",
+        "ats_step_badge": "الخطوة 1 و 2",
+        "ats_live_badge": "مخرجات الذكاء الاصطناعي المباشرة",
+        "ats_divider_or_upload": "أو ارفع ملفاً محلياً",
+        "ats_divider_or_paste": "أو الصق نص الوصف",
+        "ats_select_default": "-- اختر من لوحة التحكم الخاص بك --",
+        "ats_ready_title": "جاهز للتحسين",
+        "ats_ready_desc": "اختر سيرة ذاتية، وانقلي رابط أو وصف الوظيفة، وانقر على إنشاء لتشغيل محرك ATS.",
+        "ats_btn_back_dashboard": "← العودة إلى لوحة التحكم",
     },
 
     "French": {
@@ -133,6 +173,14 @@ ATS_LOCALES = {
         "ats_btn_edit_optimized": "Modifier dans l'éditeur",
         "ats_btn_preview_optimized": "Aperçu et Téléchargement",
         "ats_placeholder_job_desc": "Collez ici les exigences complètes de l'offre ou le texte de l'annonce...",
+        "ats_step_badge": "ÉTAPE 1 & 2",
+        "ats_live_badge": "RÉSULTAT IA EN DIRECT",
+        "ats_divider_or_upload": "ou télécharger un fichier local",
+        "ats_divider_or_paste": "ou coller le texte de description",
+        "ats_select_default": "-- Sélectionner depuis votre tableau de bord --",
+        "ats_ready_title": "Prêt à optimiser",
+        "ats_ready_desc": "Sélectionnez un CV, collez une URL d'offre ou une description, puis cliquez sur générer pour lancer le moteur ATS.",
+        "ats_btn_back_dashboard": "← Retour au Tableau de bord",
     },
 
     "Portuguese": {
@@ -155,6 +203,14 @@ ATS_LOCALES = {
         "ats_btn_edit_optimized": "Editar no Editor",
         "ats_btn_preview_optimized": "Visualizar e Baixar",
         "ats_placeholder_job_desc": "Cole os requisitos completos da vaga ou o texto do anúncio aqui...",
+        "ats_step_badge": "PASSO 1 E 2",
+        "ats_live_badge": "SAÍDA DE IA EM TEMPO REAL",
+        "ats_divider_or_upload": "ou enviar arquivo local",
+        "ats_divider_or_paste": "ou colar texto de descrição",
+        "ats_select_default": "-- Selecionar do seu Painel --",
+        "ats_ready_title": "Pronto para Otimizar",
+        "ats_ready_desc": "Selecione um currículo, cole o URL ou descrição da vaga e clique em gerar para executar o motor ATS.",
+        "ats_btn_back_dashboard": "← Voltar ao Painel",
     },
 
     "Russian": {
@@ -177,6 +233,14 @@ ATS_LOCALES = {
         "ats_btn_edit_optimized": "Править в редакторе",
         "ats_btn_preview_optimized": "Просмотр и скачивание",
         "ats_placeholder_job_desc": "Вставьте полные требования к вакансии или текст объявления здесь...",
+        "ats_step_badge": "ШАГ 1 И 2",
+        "ats_live_badge": "РЕЗУЛЬТАТ ИИ В РЕАЛЬНОМ ВРЕМЕНИ",
+        "ats_divider_or_upload": "или загрузить локальный файл",
+        "ats_divider_or_paste": "или вставить текст описания",
+        "ats_select_default": "-- Выберите из вашей панели --",
+        "ats_ready_title": "Готово к оптимизации",
+        "ats_ready_desc": "Выберите резюме, вставьте URL или описание вакансии и нажмите кнопку генерации для запуска движка ATS.",
+        "ats_btn_back_dashboard": "← Назад в панель управления",
     },
 
     "German": {
@@ -199,6 +263,14 @@ ATS_LOCALES = {
         "ats_btn_edit_optimized": "Im Editor bearbeiten",
         "ats_btn_preview_optimized": "Vorschau & Download",
         "ats_placeholder_job_desc": "Fügen Sie hier die vollständigen Stellenanforderungen oder den Text ein...",
+        "ats_step_badge": "SCHRITT 1 & 2",
+        "ats_live_badge": "LIVE-KI-AUSGABE",
+        "ats_divider_or_upload": "oder lokale Datei hochladen",
+        "ats_divider_or_paste": "oder Beschreibungstext einfügen",
+        "ats_select_default": "-- Aus Ihrem Dashboard auswählen --",
+        "ats_ready_title": "Bereit zur Optimierung",
+        "ats_ready_desc": "Wählen Sie einen Lebenslauf aus, fügen Sie eine Stellen-URL oder -Beschreibung ein und klicken Sie auf Generieren, um die ATS-Engine auszuführen.",
+        "ats_btn_back_dashboard": "← Zurück zum Dashboard",
     },
 
     "Japanese": {
@@ -221,6 +293,14 @@ ATS_LOCALES = {
         "ats_btn_edit_optimized": "エディターで編集",
         "ats_btn_preview_optimized": "プレビューとダウンロード",
         "ats_placeholder_job_desc": "ここに完全な求人要件や募集テキストを貼り付けてください...",
+        "ats_step_badge": "ステップ 1 & 2",
+        "ats_live_badge": "リアルタイム AI 出力",
+        "ats_divider_or_upload": "またはローカルファイルをアップロード",
+        "ats_divider_or_paste": "または募集要項テキストを貼り付け",
+        "ats_select_default": "-- ダッシュボードから選択 --",
+        "ats_ready_title": "最適化の準備が完了しました",
+        "ats_ready_desc": "履歴書を選択し、求人URLまたは要件テキストを貼り付けて「生成」をクリックするとATSエンジンが実行されます。",
+        "ats_btn_back_dashboard": "← ダッシュボードに戻る",
     },
 
     "Korean": {
@@ -243,6 +323,14 @@ ATS_LOCALES = {
         "ats_btn_edit_optimized": "편집기에서 수정",
         "ats_btn_preview_optimized": "미리보기 및 다운로드",
         "ats_placeholder_job_desc": "여기에 전체 채용 공고 요건이나 텍스트를 붙여넣으세요...",
+        "ats_step_badge": "1단계 및 2단계",
+        "ats_live_badge": "실시간 AI 출력",
+        "ats_divider_or_upload": "또는 로컬 파일 업로드",
+        "ats_divider_or_paste": "또는 상세 내용 텍스트 붙여넣기",
+        "ats_select_default": "-- 대시보드에서 선택 --",
+        "ats_ready_title": "최적화 준비 완료",
+        "ats_ready_desc": "이력서를 선택하고, 채용 공고 URL 또는 텍스트를 붙여넣은 후 생성 버튼을 클릭하여 ATS 엔진을 실행하세요.",
+        "ats_btn_back_dashboard": "← 대시보드로 돌아가기",
     },
 
     "Italian": {
@@ -265,6 +353,14 @@ ATS_LOCALES = {
         "ats_btn_edit_optimized": "Modifica nell'Editor",
         "ats_btn_preview_optimized": "Anteprima e Download",
         "ats_placeholder_job_desc": "Incolla qui i requisiti completi del lavoro o il testo dell'offerta...",
+        "ats_step_badge": "PASSAGGIO 1 E 2",
+        "ats_live_badge": "OUTPUT IA IN TEMPO REALE",
+        "ats_divider_or_upload": "o carica un file locale",
+        "ats_divider_or_paste": "o incolla il testo della descrizione",
+        "ats_select_default": "-- Seleziona dalla tua Dashboard --",
+        "ats_ready_title": "Pronto per l'ottimizzazione",
+        "ats_ready_desc": "Seleziona un CV, incolla un URL o una descrizione dell'offerta di lavoro e fai clic su Genera per eseguire il motore ATS.",
+        "ats_btn_back_dashboard": "← Torna alla Dashboard",
     },
 
     "Turkish": {
@@ -287,6 +383,14 @@ ATS_LOCALES = {
         "ats_btn_edit_optimized": "Düzenleyicide Düzenle",
         "ats_btn_preview_optimized": "Önizleme ve İndir",
         "ats_placeholder_job_desc": "İş gereksinimlerinin tamamını veya ilan metnini buraya yapıştırın...",
+        "ats_step_badge": "ADIM 1 VE 2",
+        "ats_live_badge": "CANLI YAPAY ZEKÂ ÇIKTISI",
+        "ats_divider_or_upload": "veya yerel dosya yükleyin",
+        "ats_divider_or_paste": "veya açıklama metnini yapıştırın",
+        "ats_select_default": "-- Panonuzdan seçin --",
+        "ats_ready_title": "İyileştirmeye Hazır",
+        "ats_ready_desc": "Bir özgeçmiş seçin, bir iş ilanı URL'si veya açıklaması yapıştırın ve ATS Motorunu çalıştırmak için oluştur düğmesine tıklayın.",
+        "ats_btn_back_dashboard": "← Panoya Geri Dön",
     },
 
     "Dutch": {
@@ -309,6 +413,14 @@ ATS_LOCALES = {
         "ats_btn_edit_optimized": "Bewerken in Editor",
         "ats_btn_preview_optimized": "Voorvertoning & Downloaden",
         "ats_placeholder_job_desc": "Plak hier de volledige functie-eisen of vacaturetekst...",
+        "ats_step_badge": "STAP 1 & 2",
+        "ats_live_badge": "LIVE AI-OUTPUT",
+        "ats_divider_or_upload": "of upload een lokaal bestand",
+        "ats_divider_or_paste": "of plak functieomschrijving",
+        "ats_select_default": "-- Selecteer uit uw dashboard --",
+        "ats_ready_title": "Klaar om te optimaliseren",
+        "ats_ready_desc": "Selecteer een cv, plak een vacature-URL of omschrving en klik op genereren om de ATS-engine uit te voeren.",
+        "ats_btn_back_dashboard": "← Terug naar Dashboard",
     },
 
     "Polish": {
@@ -331,6 +443,14 @@ ATS_LOCALES = {
         "ats_btn_edit_optimized": "Edytuj w edytorze",
         "ats_btn_preview_optimized": "Podgląd i pobieranie",
         "ats_placeholder_job_desc": "Wklej tutaj pełne wymagania stanowiska lub tekst ogłoszenia...",
+        "ats_step_badge": "KROK 1 I 2",
+        "ats_live_badge": "WYNIK AI NA ŻYWO",
+        "ats_divider_or_upload": "lub prześlij plik lokalny",
+        "ats_divider_or_paste": "lub wklej tekst opisu",
+        "ats_select_default": "-- Wybierz z pulpitu nawigacyjnego --",
+        "ats_ready_title": "Gotowe do optymalizacji",
+        "ats_ready_desc": "Wybierz CV, wklej URL lub opis oferty pracy i kliknij generuj, aby uruchomić silnik ATS.",
+        "ats_btn_back_dashboard": "← Powrót do Pulpitu",
     },
 
     "Swedish": {
@@ -353,6 +473,14 @@ ATS_LOCALES = {
         "ats_btn_edit_optimized": "Redigera i redigeraren",
         "ats_btn_preview_optimized": "Förhandsgranska & ladda ner",
         "ats_placeholder_job_desc": "Klistra in fullständiga jobbkrav eller annonstext här...",
+        "ats_step_badge": "STEG 1 & 2",
+        "ats_live_badge": "REALTIDS-AI-RESULTAT",
+        "ats_divider_or_upload": "eller ladda upp en lokal fil",
+        "ats_divider_or_paste": "eller klistra in beskrivningstext",
+        "ats_select_default": "-- Välj från din översikt --",
+        "ats_ready_title": "Redo att optimera",
+        "ats_ready_desc": "Välj ett CV, klistra in en jobb-URL eller beskrivning och klicka på generera för att köra ATS-motorn.",
+        "ats_btn_back_dashboard": "← Tillbaka till Översikten",
     },
 
     "Swahili": {
@@ -375,5 +503,13 @@ ATS_LOCALES = {
         "ats_btn_edit_optimized": "Hariri kwenye Kihariri",
         "ats_btn_preview_optimized": "Hakiki na Upakue",
         "ats_placeholder_job_desc": "Bandika mahitaji kamili ya kazi au maandishi ya chapisho hapa...",
+        "ats_step_badge": "HATUA YA 1 NA 2",
+        "ats_live_badge": "MATOKEO YA AI MASHINANI",
+        "ats_divider_or_upload": "au pakia faili ya eneo husika",
+        "ats_divider_or_paste": "au bandika maandishi ya maelezo",
+        "ats_select_default": "-- Chagua kutoka kwenye Dashibodi yako --",
+        "ats_ready_title": "Tayari Kuboresha",
+        "ats_ready_desc": "Chagua CV, bandika URL ya kazi au maelezo, kisha ubofye tengeneza ili kuendesha Injini ya ATS.",
+        "ats_btn_back_dashboard": "← Rudi kwenye Dashibodi",
     }
 }
