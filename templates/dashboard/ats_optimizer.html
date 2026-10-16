@@ -654,8 +654,13 @@
     <div class="campaign-modal-card">
         <div class="campaign-modal-header">
             <div class="success-icon-badge">🎉</div>
-            <h2>CV Successfully Optimized!</h2>
-            <p>Your high-matching resume has been saved. Complete your application campaign to maximize interview callbacks.</p>
+            <h2>{{ t_modular('ats_modal_title', 'CV Successfully Optimized!') }}</h2>
+            <p>{{ t_modular('ats_modal_desc', 'Your high-matching resume has been saved. Complete your application campaign to maximize interview callbacks.') }}</p>
+            
+            <!-- DISTINCT SAVED NAME BADGE -->
+            <div style="margin-top: 12px; display: inline-block; background: rgba(2, 53, 60, 0.08); color: var(--brand-teal); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; border: 1px solid rgba(2, 53, 60, 0.15);">
+                📄 <span id="cvTitleDisplay">Optimized Resume</span>
+            </div>
         </div>
 
         <div class="campaign-steps-list">
@@ -663,11 +668,11 @@
             <div class="campaign-step-item">
                 <div class="step-icon">✉️</div>
                 <div class="step-details">
-                    <h4>1. Generate Tailored Cover Letter</h4>
-                    <p>Auto-draft a matching cover letter targeting this job description.</p>
+                    <h4>{{ t_modular('ats_modal_step1_title', '1. Generate Tailored Cover Letter') }}</h4>
+                    <p>{{ t_modular('ats_modal_step1_desc', 'Auto-draft a matching cover letter targeting this job description.') }}</p>
                 </div>
                 <button type="button" class="btn-step-action" id="modalBtnCoverLetter">
-                    Create Letter &rarr;
+                    {{ t_modular('ats_modal_step1_btn', 'Create Letter →') }}
                 </button>
             </div>
 
@@ -675,11 +680,11 @@
             <div class="campaign-step-item">
                 <div class="step-icon">📌</div>
                 <div class="step-details">
-                    <h4>2. Save to Job Tracker</h4>
-                    <p>Add to your Kanban board and set an automated 7-day follow-up alert.</p>
+                    <h4>{{ t_modular('ats_modal_step2_title', '2. Save to Job Tracker') }}</h4>
+                    <p>{{ t_modular('ats_modal_step2_desc', 'Add to your Kanban board and set an automated 7-day follow-up alert.') }}</p>
                 </div>
                 <button type="button" class="btn-step-action secondary" id="modalBtnTrack">
-                    Log Application &rarr;
+                    {{ t_modular('ats_modal_step2_btn', 'Log Application →') }}
                 </button>
             </div>
 
@@ -687,18 +692,18 @@
             <div class="campaign-step-item">
                 <div class="step-icon">🎯</div>
                 <div class="step-details">
-                    <h4>3. Practice Interview Questions</h4>
-                    <p>Get AI-generated STAR questions tailored to missing/matched keywords.</p>
+                    <h4>{{ t_modular('ats_modal_step3_title', '3. Practice Interview Questions') }}</h4>
+                    <p>{{ t_modular('ats_modal_step3_desc', 'Get AI-generated STAR questions tailored to missing/matched keywords.') }}</p>
                 </div>
                 <button type="button" class="btn-step-action secondary" id="modalBtnInterview">
-                    Start Prep &rarr;
+                    {{ t_modular('ats_modal_step3_btn', 'Start Prep →') }}
                 </button>
             </div>
         </div>
 
         <div class="campaign-modal-footer">
             <button type="button" class="btn-close-modal" onclick="closeCampaignModal()">
-                Dismiss & Review Output
+                {{ t_modular('ats_modal_dismiss', 'Dismiss & Review Output') }}
             </button>
         </div>
     </div>
@@ -775,9 +780,15 @@
                     document.getElementById('editCvBtn').href = `/editor?id=${data.optimized_resume_id}`;
                     document.getElementById('previewCvBtn').href = `/preview?id=${data.optimized_resume_id}`;
 
+                    // Display the distinct saved CV title in the modal badge
+                    if (data.optimized_resume_title) {
+                        document.getElementById('cvTitleDisplay').textContent = data.optimized_resume_title;
+                    }
+
                     // Store current campaign session context in localStorage for cross-tool inheritance
                     const campaignData = {
                         resumeId: data.optimized_resume_id,
+                        resumeTitle: data.optimized_resume_title || 'Optimized Resume',
                         jobUrl: jobUrl,
                         jobDescription: jobDesc,
                         matchedKeywords: data.matched_keywords || [],
