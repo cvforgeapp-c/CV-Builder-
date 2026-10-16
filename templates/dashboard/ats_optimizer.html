@@ -365,6 +365,148 @@
         color: #cbd5e1;
         margin-bottom: 16px;
     }
+
+    /* APPLICATION CAMPAIGN MODAL STYLING */
+    .campaign-modal-overlay {
+        position: fixed;
+        top: 0; left: 0; width: 100vw; height: 100vh;
+        background: rgba(15, 23, 42, 0.65);
+        backdrop-filter: blur(4px);
+        z-index: 9999;
+        display: flex; align-items: center; justify-content: center;
+        padding: 20px;
+    }
+
+    .campaign-modal-card {
+        background: #ffffff;
+        border-radius: 20px;
+        max-width: 540px;
+        width: 100%;
+        padding: 28px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes modalSlideUp {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    .campaign-modal-header {
+        text-align: center;
+        margin-bottom: 24px;
+    }
+
+    .success-icon-badge {
+        font-size: 36px;
+        margin-bottom: 10px;
+    }
+
+    .campaign-modal-header h2 {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--brand-teal);
+        margin-bottom: 6px;
+    }
+
+    .campaign-modal-header p {
+        font-size: 13px;
+        color: var(--text-secondary);
+        line-height: 1.5;
+    }
+
+    .campaign-steps-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .campaign-step-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: #f8fafc;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 14px 16px;
+        transition: border-color 0.2s ease;
+    }
+
+    .campaign-step-item:hover {
+        border-color: var(--brand-teal);
+    }
+
+    .step-icon {
+        font-size: 22px;
+        background: #ffffff;
+        padding: 8px;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+
+    .step-details {
+        flex: 1;
+    }
+
+    .step-details h4 {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 2px;
+    }
+
+    .step-details p {
+        font-size: 11px;
+        color: var(--text-secondary);
+    }
+
+    .btn-step-action {
+        background: var(--brand-teal);
+        color: #ffffff;
+        border: none;
+        padding: 8px 14px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .btn-step-action:hover {
+        background: var(--brand-teal-light);
+    }
+
+    .btn-step-action.secondary {
+        background: #ffffff;
+        color: var(--brand-teal);
+        border: 1px solid var(--border-color);
+    }
+
+    .btn-step-action.secondary:hover {
+        border-color: var(--brand-teal);
+        background: #f1f5f9;
+    }
+
+    .campaign-modal-footer {
+        text-align: center;
+        border-top: 1px solid var(--border-color);
+        padding-top: 16px;
+    }
+
+    .btn-close-modal {
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .btn-close-modal:hover {
+        color: var(--text-primary);
+    }
 </style>
 {% endblock %}
 
@@ -507,6 +649,61 @@
     </div>
 </div>
 
+<!-- APPLICATION CAMPAIGN SUCCESS MODAL -->
+<div id="campaignModal" class="campaign-modal-overlay" style="display: none;">
+    <div class="campaign-modal-card">
+        <div class="campaign-modal-header">
+            <div class="success-icon-badge">🎉</div>
+            <h2>CV Successfully Optimized!</h2>
+            <p>Your high-matching resume has been saved. Complete your application campaign to maximize interview callbacks.</p>
+        </div>
+
+        <div class="campaign-steps-list">
+            <!-- STEP 1: COVER LETTER -->
+            <div class="campaign-step-item">
+                <div class="step-icon">✉️</div>
+                <div class="step-details">
+                    <h4>1. Generate Tailored Cover Letter</h4>
+                    <p>Auto-draft a matching cover letter targeting this job description.</p>
+                </div>
+                <button type="button" class="btn-step-action" id="modalBtnCoverLetter">
+                    Create Letter &rarr;
+                </button>
+            </div>
+
+            <!-- STEP 2: JOB TRACKER -->
+            <div class="campaign-step-item">
+                <div class="step-icon">📌</div>
+                <div class="step-details">
+                    <h4>2. Save to Job Tracker</h4>
+                    <p>Add to your Kanban board and set an automated 7-day follow-up alert.</p>
+                </div>
+                <button type="button" class="btn-step-action secondary" id="modalBtnTrack">
+                    Log Application &rarr;
+                </button>
+            </div>
+
+            <!-- STEP 3: INTERVIEW PREP -->
+            <div class="campaign-step-item">
+                <div class="step-icon">🎯</div>
+                <div class="step-details">
+                    <h4>3. Practice Interview Questions</h4>
+                    <p>Get AI-generated STAR questions tailored to missing/matched keywords.</p>
+                </div>
+                <button type="button" class="btn-step-action secondary" id="modalBtnInterview">
+                    Start Prep &rarr;
+                </button>
+            </div>
+        </div>
+
+        <div class="campaign-modal-footer">
+            <button type="button" class="btn-close-modal" onclick="closeCampaignModal()">
+                Dismiss & Review Output
+            </button>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
@@ -577,6 +774,32 @@
                 if (data.optimized_resume_id) {
                     document.getElementById('editCvBtn').href = `/editor?id=${data.optimized_resume_id}`;
                     document.getElementById('previewCvBtn').href = `/preview?id=${data.optimized_resume_id}`;
+
+                    // Store current campaign session context in localStorage for cross-tool inheritance
+                    const campaignData = {
+                        resumeId: data.optimized_resume_id,
+                        jobUrl: jobUrl,
+                        jobDescription: jobDesc,
+                        matchedKeywords: data.matched_keywords || [],
+                        missingKeywords: data.missing_keywords || []
+                    };
+                    localStorage.setItem('cvforge_active_campaign', JSON.stringify(campaignData));
+
+                    // Bind Modal Navigation CTAs
+                    document.getElementById('modalBtnCoverLetter').onclick = () => {
+                        window.location.href = `/cover-letter?resume_id=${data.optimized_resume_id}&autofill=true`;
+                    };
+
+                    document.getElementById('modalBtnTrack').onclick = () => {
+                        window.location.href = `/tracker?add_job=true&resume_id=${data.optimized_resume_id}`;
+                    };
+
+                    document.getElementById('modalBtnInterview').onclick = () => {
+                        window.location.href = `/interview?resume_id=${data.optimized_resume_id}`;
+                    };
+
+                    // Trigger Campaign Modal
+                    document.getElementById('campaignModal').style.display = 'flex';
                 }
 
                 // Show Results
@@ -591,5 +814,9 @@
             }
         });
     });
+
+    function closeCampaignModal() {
+        document.getElementById('campaignModal').style.display = 'none';
+    }
 </script>
 {% endblock %}
