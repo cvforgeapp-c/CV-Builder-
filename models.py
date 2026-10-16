@@ -59,3 +59,4 @@ class JobApplication(db.Model):
     job_url = db.Column("job_url", db.Text, nullable=True)
     ats_score = db.Column("ats_score", db.Integer, nullable=True)
     applied_date = db.Column("applied_date", db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column("updated_at", db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
