@@ -99,10 +99,10 @@
         box-shadow: 0 4px 12px rgba(2, 53, 60, 0.2);
     }
 
-    /* Metrics Bar */
+    /* Metrics Bar - Updated grid to accommodate weekly goal */
     .metrics-bar {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
         gap: 16px;
         margin-bottom: 24px;
     }
@@ -377,6 +377,11 @@
 
 {% block content %}
 
+{# SAFE SERVER-SIDE SETTINGS PARSING #}
+{% set tracker_settings = current_user.preferences_json.trackerSettings if current_user.preferences_json and current_user.preferences_json.trackerSettings else {} %}
+{% set weekly_goal = tracker_settings.weeklyGoal | int if tracker_settings.weeklyGoal else 5 %}
+{% set tracker_layout = tracker_settings.trackerLayout if tracker_settings.trackerLayout else 'Kanban Drag & Drop Board' %}
+
 <!-- TRACKER HEADER -->
 <header class="tracker-header">
     <div style="display: flex; align-items: center;">
@@ -401,11 +406,15 @@
         </button>
     </div>
 
-    <!-- METRICS SUMMARY (COMPUTED DYNAMICALLY FROM DATABASE) -->
+    <!-- METRICS SUMMARY (INCLUDES WEEKLY GOAL) -->
     <div class="metrics-bar">
         <div class="metric-card">
             <div class="metric-title">{{ t_modular('trk_metric_applied', 'Total Applied') }}</div>
             <div class="metric-value" id="metricTotal">0</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-title">{{ t_modular('trk_metric_weekly_goal', 'Weekly Goal') }}</div>
+            <div class="metric-value" style="color: var(--brand-teal);" id="weeklyGoalDisplay">0 / {{ weekly_goal }}</div>
         </div>
         <div class="metric-card">
             <div class="metric-title">{{ t_modular('trk_metric_interviewing', 'Interviewing') }}</div>
@@ -447,8 +456,6 @@
     </div>
 
     <!-- LAYOUT SELECTION: TABLE OR KANBAN -->
-    {% set tracker_layout = current_user.preferences_json.trackerSettings.trackerLayout if current_user.preferences_json and current_user.preferences_json.trackerSettings else 'Kanban Drag & Drop Board' %}
-
     {% if 'Table' in tracker_layout %}
         <!-- STRUCTURED DATA TABLE VIEW -->
         <div style="background: #ffffff; border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
@@ -558,8 +565,8 @@
         const closeBtn = document.getElementById('closeModalBtn');
         const addAppForm = document.getElementById('addAppForm');
 
-        // Extract currency preference symbol (e.g. "€" from "EUR (€)")
-        const currencyPref = "{{ current_user.preferences_json.trackerSettings.currency if current_user.preferences_json and current_user.preferences_json.trackerSettings else 'USD ($)' }}";
+        // Extract currency preference symbol safely from settings
+        const currencyPref = "{{ tracker_settings.currency if tracker_settings and tracker_settings.currency else 'USD ($)' }}";
         const getCurrencySymbol = (currStr) => {
             const match = currStr.match(/\(([^)]+)\)/);
             return match ? match[1] : '$';
@@ -689,7 +696,8 @@
             if (document.getElementById('count-offer')) document.getElementById('count-offer').textContent = counts.offer;
         };
 
-        // Compute real metric stats
+        // Compute real metric stats including Weekly Goal Progress
+        const weeklyGoal = {{ weekly_goal }};
         const updateMetrics = (apps) => {
             const total = apps.length;
             const interviews = apps.filter(a => a.status === 'interview').length;
@@ -697,6 +705,18 @@
             const rate = total > 0 ? Math.round((interviews / total) * 100) : 0;
 
             if (document.getElementById('metricTotal')) document.getElementById('metricTotal').textContent = total;
+            
+            // Weekly Goal Display Update
+            const goalDisplay = document.getElementById('weeklyGoalDisplay');
+            if (goalDisplay) {
+                goalDisplay.textContent = `${total} / ${weeklyGoal}`;
+                if (total >= weeklyGoal) {
+                    goalDisplay.style.color = '#16a34a'; // Turns green when goal is achieved!
+                } else {
+                    goalDisplay.style.color = 'var(--brand-teal)';
+                }
+            }
+
             if (document.getElementById('metricInterviews')) document.getElementById('metricInterviews').textContent = interviews;
             if (document.getElementById('metricOffers')) document.getElementById('metricOffers').textContent = offers;
             if (document.getElementById('metricRate')) document.getElementById('metricRate').textContent = rate + '%';
