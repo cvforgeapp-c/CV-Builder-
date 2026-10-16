@@ -31,7 +31,6 @@ ATS_LOCALES = {
         "ats_ready_title": "Ready to Optimize",
         "ats_ready_desc": "Select a resume, paste a job URL or description, and click generate to run the ATS Engine.",
         "ats_btn_back_dashboard": "← Back to Dashboard",
-        # Modal Keys
         "ats_modal_title": "CV Successfully Optimized!",
         "ats_modal_desc": "Your high-matching resume has been saved. Complete your application campaign to maximize interview callbacks.",
         "ats_modal_step1_title": "1. Generate Tailored Cover Letter",
@@ -44,6 +43,7 @@ ATS_LOCALES = {
         "ats_modal_step3_desc": "Get AI-generated STAR questions tailored to missing/matched keywords.",
         "ats_modal_step3_btn": "Start Prep →",
         "ats_modal_dismiss": "Dismiss & Review Output",
+        "ats_default_cv_title": "Optimized Resume",
     },
 
     "Mandarin Chinese": {
@@ -86,6 +86,7 @@ ATS_LOCALES = {
         "ats_modal_step3_desc": "获取根据缺失/匹配关键词定制的 AI 生成 STAR 问题。",
         "ats_modal_step3_btn": "开始准备 →",
         "ats_modal_dismiss": "关闭并查看结果",
+        "ats_default_cv_title": "优化的简历",
     },
 
     "Spanish": {
@@ -128,6 +129,7 @@ ATS_LOCALES = {
         "ats_modal_step3_desc": "Obtenga preguntas STAR generadas por IA adaptadas a las palabras clave.",
         "ats_modal_step3_btn": "Iniciar Preparación →",
         "ats_modal_dismiss": "Descartar y Revisar Resultado",
+        "ats_default_cv_title": "CV Optimizado",
     },
 
     "Hindi": {
@@ -170,6 +172,7 @@ ATS_LOCALES = {
         "ats_modal_step3_desc": "छूटे/मेल खाते कीवर्ड के अनुरूप AI-जनरेटेड STAR प्रश्न प्राप्त करें।",
         "ats_modal_step3_btn": "तैयारी शुरू करें →",
         "ats_modal_dismiss": "खारिज करें और आउटपुट की समीक्षा करें",
+        "ats_default_cv_title": "ऑप्टिमाइज़्ड रेज़्यूमे",
     },
 
     "Arabic": {
@@ -212,6 +215,7 @@ ATS_LOCALES = {
         "ats_modal_step3_desc": "احصل على أسئلة STAR التي تم إنشاؤها بواسطة الذكاء الاصطناعي والمصممة خصيصاً للكلمات الرئيسية.",
         "ats_modal_step3_btn": "بدء التحضير ←",
         "ats_modal_dismiss": "إغلاق ومراجعة النتيجة",
+        "ats_default_cv_title": "سيرة ذاتية محسنة",
     },
 
     "French": {
@@ -254,6 +258,7 @@ ATS_LOCALES = {
         "ats_modal_step3_desc": "Obtenez des questions STAR générées par l'IA adaptées aux mots-clés.",
         "ats_modal_step3_btn": "Commencer la prép →",
         "ats_modal_dismiss": "Ignorer et examiner le résultat",
+        "ats_default_cv_title": "CV Optimisé",
     },
 
     "Portuguese": {
@@ -296,6 +301,7 @@ ATS_LOCALES = {
         "ats_modal_step3_desc": "Obtenha perguntas STAR geradas por IA adaptadas às palavras-chave.",
         "ats_modal_step3_btn": "Iniciar Preparação →",
         "ats_modal_dismiss": "Dispensar e Revisar Resultado",
+        "ats_default_cv_title": "CV Otimizado",
     },
 
     "Russian": {
@@ -338,6 +344,7 @@ ATS_LOCALES = {
         "ats_modal_step3_desc": "Получите вопросы STAR на основе ключевых слов, сгенерированные ИИ.",
         "ats_modal_step3_btn": "Начать подготовку →",
         "ats_modal_dismiss": "Закрыть и просмотреть результат",
+        "ats_default_cv_title": "Оптимизированное резюме",
     },
 
     "German": {
@@ -380,6 +387,7 @@ ATS_LOCALES = {
         "ats_modal_step3_desc": "Erhalten Sie KI-generierte STAR-Fragen passend zu den Schlüsselwörtern.",
         "ats_modal_step3_btn": "Vorbereitung starten →",
         "ats_modal_dismiss": "Schließen & Ergebnis ansehen",
+        "ats_default_cv_title": "Optimierter Lebenslauf",
     },
 
     "Japanese": {
@@ -422,6 +430,7 @@ ATS_LOCALES = {
         "ats_modal_step3_desc": "キーワードに基づいたAI生成のSTAR面接質問を取得します。",
         "ats_modal_step3_btn": "準備を開始 →",
         "ats_modal_dismiss": "閉じて結果を確認する",
+        "ats_default_cv_title": "最適化された履歴書",
     },
 
     "Korean": {
@@ -464,6 +473,7 @@ ATS_LOCALES = {
         "ats_modal_step3_desc": "키워드에 맞춤화된 AI 생성 STAR 면접 질문을 받아보세요.",
         "ats_modal_step3_btn": "준비 시작 →",
         "ats_modal_dismiss": "닫기 및 결과 검토",
+        "ats_default_cv_title": "최적화된 이력서",
     },
 
     "Italian": {
@@ -506,6 +516,7 @@ ATS_LOCALES = {
         "ats_modal_step3_desc": "Ottieni domande STAR generate dall'IA personalizzate sulle parole chiave.",
         "ats_modal_step3_btn": "Inizia Preparazione →",
         "ats_modal_dismiss": "Chiudi e Rivedi Risultato",
+        "ats_default_cv_title": "CV Ottimizzato",
     },
 
     "Turkish": {
@@ -548,6 +559,7 @@ ATS_LOCALES = {
         "ats_modal_step3_desc": "Eksik/eşleşen anahtar kelimelere göre yapay zekâ destekli STAR soruları alın.",
         "ats_modal_step3_btn": "Hazırlığa Başla →",
         "ats_modal_dismiss": "Kapat ve Sonucu İncele",
+        "ats_default_cv_title": "İyileştirilmiş CV",
     },
 
     "Dutch": {
@@ -590,6 +602,7 @@ ATS_LOCALES = {
         "ats_modal_step3_desc": "Ontvang door AI gegenereerde STAR-vragen afgestemd op de trefwoorden.",
         "ats_modal_step3_btn": "Start voorbereiding →",
         "ats_modal_dismiss": "Sluiten & Resultaat bekijken",
+        "ats_default_cv_title": "Geoptimaliseerd CV",
     },
 
     "Polish": {
@@ -632,6 +645,7 @@ ATS_LOCALES = {
         "ats_modal_step3_desc": "Uzyskaj pytania STAR wygenerowane przez AI dostosowane do słów kluczowych.",
         "ats_modal_step3_btn": "Rozpocznij przygotowania →",
         "ats_modal_dismiss": "Zamknij i przejrzyj wynik",
+        "ats_default_cv_title": "Zoptymalizované CV",
     },
 
     "Swedish": {
@@ -674,6 +688,7 @@ ATS_LOCALES = {
         "ats_modal_step3_desc": "Få AI-genererade STAR-frågor skräddarsydda för nyckelorden.",
         "ats_modal_step3_btn": "Starta förberedelse →",
         "ats_modal_dismiss": "Stäng & granska resultat",
+        "ats_default_cv_title": "Optimerat CV",
     },
 
     "Swahili": {
@@ -716,5 +731,6 @@ ATS_LOCALES = {
         "ats_modal_step3_desc": "Pata maswali ya STAR yaliyotengenezwa na AI yaliyolengwa kwa maneno muhimu.",
         "ats_modal_step3_btn": "Anza Maandalizi →",
         "ats_modal_dismiss": "Funga na Kagua Matokeo",
+        "ats_default_cv_title": "CV Iliyoboreshwa",
     }
 }
