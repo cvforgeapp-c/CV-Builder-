@@ -377,10 +377,10 @@
 
 {% block content %}
 
-{# SAFE SERVER-SIDE SETTINGS PARSING #}
-{% set tracker_settings = current_user.preferences_json.trackerSettings if current_user.preferences_json and current_user.preferences_json.trackerSettings else {} %}
-{% set weekly_goal = tracker_settings.weeklyGoal | int if tracker_settings.weeklyGoal else 5 %}
-{% set tracker_layout = tracker_settings.trackerLayout if tracker_settings.trackerLayout else 'Kanban Drag & Drop Board' %}
+{# BULLETPROOF SETTINGS INITIALIZATION #}
+{% set tracker_settings = current_user.preferences_json.trackerSettings if current_user and current_user.preferences_json and current_user.preferences_json.trackerSettings is defined else {} %}
+{% set weekly_goal = tracker_settings.weeklyGoal | int if tracker_settings and tracker_settings.weeklyGoal is defined else 5 %}
+{% set tracker_layout = tracker_settings.trackerLayout if tracker_settings and tracker_settings.trackerLayout is defined else 'Kanban Drag & Drop Board' %}
 
 <!-- TRACKER HEADER -->
 <header class="tracker-header">
@@ -401,13 +401,12 @@
             <h1>{{ t_modular('trk_heading', 'Job Application Tracker') }}</h1>
             <p>{{ t_modular('trk_subheading', 'Monitor your target applications, interview stages, and follow-ups in real time.') }}</p>
         </div>
-        <!-- INLINE ONCLICK HANDLER GUARANTEES IT FIRES -->
         <button class="btn-add-app" id="openModalBtn" type="button" onclick="openAppModal()">
             <span>+</span> {{ t_modular('trk_btn_add_app', 'Add Application') }}
         </button>
     </div>
 
-    <!-- METRICS SUMMARY (INCLUDES WEEKLY GOAL) -->
+    <!-- METRICS SUMMARY -->
     <div class="metrics-bar">
         <div class="metric-card">
             <div class="metric-title">{{ t_modular('trk_metric_applied', 'Total Applied') }}</div>
@@ -560,7 +559,6 @@
 
 {% block extra_js %}
 <script>
-    // Global functions so onclick attributes can invoke them reliably
     window.openAppModal = function() {
         const modal = document.getElementById('appModal');
         if (modal) modal.classList.add('active');
@@ -581,7 +579,6 @@
     document.addEventListener('DOMContentLoaded', () => {
         const addAppForm = document.getElementById('addAppForm');
 
-        // Extract currency preference symbol safely from settings
         const currencyPref = "{{ tracker_settings.currency if tracker_settings and tracker_settings.currency else 'USD ($)' }}";
         const getCurrencySymbol = (currStr) => {
             const match = currStr.match(/\(([^)]+)\)/);
@@ -589,7 +586,6 @@
         };
         const currencySymbol = getCurrencySymbol(currencyPref);
 
-        // Helper to format salary with user's preferred currency if it's purely a number range
         const formatSalary = (salaryVal) => {
             if (!salaryVal) return '';
             let trimmed = salaryVal.trim();
@@ -606,7 +602,6 @@
             offer: "{{ t_modular('trk_benefit_offer', 'Positions where you have received a formal offer and are reviewing terms or negotiating.') }}"
         };
 
-        // Fetch applications from database API endpoint
         const fetchApplications = async () => {
             try {
                 const res = await fetch('/api/v1/tracker');
@@ -626,7 +621,6 @@
             }
         };
 
-        // Render Structured Data Table View
         const renderTable = (apps) => {
             const tbody = document.getElementById('trackerTableBody');
             if (!tbody) return;
@@ -653,7 +647,6 @@
             });
         };
 
-        // Render Kanban board and calculate metrics dynamically
         const renderKanban = (apps) => {
             const lists = {
                 saved: document.getElementById('list-saved'),
@@ -689,7 +682,6 @@
                 if (lists[st]) lists[st].appendChild(card);
             });
 
-            // Display read-only placeholder in empty columns
             Object.keys(lists).forEach(stage => {
                 if (counts[stage] === 0 && lists[stage]) {
                     const placeholder = document.createElement('div');
@@ -702,14 +694,12 @@
                 }
             });
 
-            // Update column counts
             if (document.getElementById('count-saved')) document.getElementById('count-saved').textContent = counts.saved;
             if (document.getElementById('count-applied')) document.getElementById('count-applied').textContent = counts.applied;
             if (document.getElementById('count-interview')) document.getElementById('count-interview').textContent = counts.interview;
             if (document.getElementById('count-offer')) document.getElementById('count-offer').textContent = counts.offer;
         };
 
-        // Compute real metric stats including Weekly Goal Progress
         const weeklyGoal = {{ weekly_goal }};
         const updateMetrics = (apps) => {
             const total = apps.length;
@@ -719,7 +709,6 @@
 
             if (document.getElementById('metricTotal')) document.getElementById('metricTotal').textContent = total;
             
-            // Weekly Goal Display Update
             const goalDisplay = document.getElementById('weeklyGoalDisplay');
             if (goalDisplay) {
                 goalDisplay.textContent = `${total} / ${weeklyGoal}`;
@@ -735,7 +724,6 @@
             if (document.getElementById('metricRate')) document.getElementById('metricRate').textContent = rate + '%';
         };
 
-        // Submit new application to backend DB
         if (addAppForm) {
             addAppForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -766,7 +754,6 @@
             });
         }
 
-        // Delete application handler
         window.deleteApp = async (id) => {
             if (!confirm('Are you sure you want to delete this application?')) return;
             try {
@@ -780,7 +767,6 @@
             }
         };
 
-        // Initial load
         fetchApplications();
     });
 </script>
