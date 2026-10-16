@@ -54,6 +54,7 @@ class JobApplication(db.Model):
     user_id = db.Column("userId", db.String(36), db.ForeignKey('users.id'), nullable=False)
     company_name = db.Column("company_name", db.String(255), nullable=False)
     role_title = db.Column("role_title", db.String(255), nullable=False)
+    salary = db.Column("salary", db.String(100), nullable=True, default="")
     status = db.Column(db.String(50), default="Applied")
     job_url = db.Column("job_url", db.Text, nullable=True)
     ats_score = db.Column("ats_score", db.Integer, nullable=True)
