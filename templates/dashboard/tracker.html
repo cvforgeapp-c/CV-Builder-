@@ -446,46 +446,70 @@
         </div>
     </div>
 
-    <!-- KANBAN BOARD -->
-    <div class="kanban-board">
-        
-        <!-- COLUMN 1: SAVED -->
-        <div class="kanban-column" id="col-saved">
-            <div class="column-header">
-                <span class="column-title">📌 {{ t_modular('trk_col_saved', 'Saved / Target') }}</span>
-                <span class="card-count" id="count-saved">0</span>
-            </div>
-            <div class="app-list" id="list-saved"></div>
-        </div>
+    <!-- LAYOUT SELECTION: TABLE OR KANBAN -->
+    {% set tracker_layout = current_user.preferences_json.trackerSettings.trackerLayout if current_user.preferences_json and current_user.preferences_json.trackerSettings else 'Kanban Drag & Drop Board' %}
 
-        <!-- COLUMN 2: APPLIED -->
-        <div class="kanban-column" id="col-applied">
-            <div class="column-header">
-                <span class="column-title">📩 {{ t_modular('trk_col_applied', 'Applied') }}</span>
-                <span class="card-count" id="count-applied">0</span>
-            </div>
-            <div class="app-list" id="list-applied"></div>
+    {% if 'Table' in tracker_layout %}
+        <!-- STRUCTURED DATA TABLE VIEW -->
+        <div style="background: #ffffff; border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+                <thead style="background: #f1f5f9; border-bottom: 1px solid var(--border-color); color: var(--text-secondary);">
+                    <tr>
+                        <th style="padding: 14px 16px; font-weight: 700;">Role Title</th>
+                        <th style="padding: 14px 16px; font-weight: 700;">Company</th>
+                        <th style="padding: 14px 16px; font-weight: 700;">Status</th>
+                        <th style="padding: 14px 16px; font-weight: 700;">Salary</th>
+                        <th style="padding: 14px 16px; font-weight: 700; text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="trackerTableBody">
+                    <!-- Populated dynamically via JS -->
+                </tbody>
+            </table>
         </div>
-
-        <!-- COLUMN 3: INTERVIEWING -->
-        <div class="kanban-column" id="col-interview">
-            <div class="column-header">
-                <span class="column-title" style="color: #2563eb;">🤝 {{ t_modular('trk_col_interview', 'Interviewing') }}</span>
-                <span class="card-count" id="count-interview">0</span>
+    {% else %}
+        <!-- KANBAN BOARD VIEW -->
+        <div class="kanban-board">
+            
+            <!-- COLUMN 1: SAVED -->
+            <div class="kanban-column" id="col-saved">
+                <div class="column-header">
+                    <span class="column-title">📌 {{ t_modular('trk_col_saved', 'Saved / Target') }}</span>
+                    <span class="card-count" id="count-saved">0</span>
+                </div>
+                <div class="app-list" id="list-saved"></div>
             </div>
-            <div class="app-list" id="list-interview"></div>
-        </div>
 
-        <!-- COLUMN 4: OFFER -->
-        <div class="kanban-column" id="col-offer">
-            <div class="column-header">
-                <span class="column-title" style="color: #16a34a;">🎉 {{ t_modular('trk_col_offer', 'Offer Received') }}</span>
-                <span class="card-count" id="count-offer">0</span>
+            <!-- COLUMN 2: APPLIED -->
+            <div class="kanban-column" id="col-applied">
+                <div class="column-header">
+                    <span class="column-title">📩 {{ t_modular('trk_col_applied', 'Applied') }}</span>
+                    <span class="card-count" id="count-applied">0</span>
+                </div>
+                <div class="app-list" id="list-applied"></div>
             </div>
-            <div class="app-list" id="list-offer"></div>
-        </div>
 
-    </div>
+            <!-- COLUMN 3: INTERVIEWING -->
+            <div class="kanban-column" id="col-interview">
+                <div class="column-header">
+                    <span class="column-title" style="color: #2563eb;">🤝 {{ t_modular('trk_col_interview', 'Interviewing') }}</span>
+                    <span class="card-count" id="count-interview">0</span>
+                </div>
+                <div class="app-list" id="list-interview"></div>
+            </div>
+
+            <!-- COLUMN 4: OFFER -->
+            <div class="kanban-column" id="col-offer">
+                <div class="column-header">
+                    <span class="column-title" style="color: #16a34a;">🎉 {{ t_modular('trk_col_offer', 'Offer Received') }}</span>
+                    <span class="card-count" id="count-offer">0</span>
+                </div>
+                <div class="app-list" id="list-offer"></div>
+            </div>
+
+        </div>
+    {% endif %}
+
 </div>
 
 <!-- ADD APPLICATION MODAL -->
@@ -534,6 +558,25 @@
         const closeBtn = document.getElementById('closeModalBtn');
         const addAppForm = document.getElementById('addAppForm');
 
+        // Extract currency preference symbol (e.g. "$" from "USD ($)")
+        const currencyPref = "{{ current_user.preferences_json.trackerSettings.currency if current_user.preferences_json and current_user.preferences_json.trackerSettings else 'USD ($)' }}";
+        const getCurrencySymbol = (currStr) => {
+            const match = currStr.match(/\(([^)]+)\)/);
+            return match ? match[1] : '$';
+        };
+        const currencySymbol = getCurrencySymbol(currencyPref);
+
+        // Helper to format salary with user's preferred currency if it's purely a number range
+        const formatSalary = (salaryVal) => {
+            if (!salaryVal) return '';
+            let trimmed = salaryVal.trim();
+            // If it starts with a number and doesn't already contain a symbol, prepend preferred symbol
+            if (/^\d/.test(trimmed) && !trimmed.includes(currencySymbol)) {
+                return `${currencySymbol}${trimmed}`;
+            }
+            return trimmed;
+        };
+
         const stageBenefits = {
             saved: "{{ t_modular('trk_benefit_saved', 'Roles or postings you find interesting but haven\'t formally submitted yet. Storing them here allows the system to save the job description so you don\'t lose it if the posting gets taken down.') }}",
             applied: "{{ t_modular('trk_benefit_applied', 'Positions where you have formally submitted your CV and cover letter.') }}",
@@ -550,11 +593,45 @@
                 const res = await fetch('/api/v1/tracker');
                 const data = await res.json();
                 if (data.success) {
-                    renderKanban(data.applications || []);
+                    const apps = data.applications || [];
+                    const isTableLayout = "{{ 'Table' in tracker_layout }}" === "True";
+                    if (isTableLayout) {
+                        renderTable(apps);
+                    } else {
+                        renderKanban(apps);
+                    }
+                    updateMetrics(apps);
                 }
             } catch (err) {
                 console.error('Failed to load job applications:', err);
             }
+        };
+
+        // Render Structured Data Table View
+        const renderTable = (apps) => {
+            const tbody = document.getElementById('trackerTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            if (apps.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="padding: 24px; text-align: center; color: var(--text-secondary);">No job applications found. Click "+ Add Application" to get started.</td></tr>`;
+                return;
+            }
+
+            apps.forEach(app => {
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid var(--border-color)';
+                tr.innerHTML = `
+                    <td style="padding: 14px 16px; font-weight: 700; color: var(--text-primary);">${app.role_title}</td>
+                    <td style="padding: 14px 16px; font-weight: 600; color: var(--brand-teal-light);">${app.company_name}</td>
+                    <td style="padding: 14px 16px; text-transform: uppercase; font-size: 11px; font-weight: 700; color: var(--text-secondary);">${app.status}</td>
+                    <td style="padding: 14px 16px; font-weight: 600; color: #15803d;">${formatSalary(app.salary)}</td>
+                    <td style="padding: 14px 16px; text-align: right;">
+                        <button onclick="deleteApp('${app.id}')" style="background: transparent; border: none; color: #ef4444; font-weight: 600; cursor: pointer; font-size: 13px;">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
         };
 
         // Render Kanban board and calculate metrics dynamically
@@ -568,7 +645,9 @@
 
             const counts = { saved: 0, applied: 0, interview: 0, offer: 0 };
             
-            Object.values(lists).forEach(el => el.innerHTML = '');
+            Object.values(lists).forEach(el => {
+                if (el) el.innerHTML = '';
+            });
 
             apps.forEach(app => {
                 const st = app.status in lists ? app.status : 'saved';
@@ -585,15 +664,15 @@
                     <div class="app-company">${app.company_name}</div>
                     <div class="app-details">
                         <span>${st.toUpperCase()}</span>
-                        <span class="app-salary">${app.salary || ''}</span>
+                        <span class="app-salary">${formatSalary(app.salary)}</span>
                     </div>
                 `;
-                lists[st].appendChild(card);
+                if (lists[st]) lists[st].appendChild(card);
             });
 
             // Display read-only placeholder in empty columns
             Object.keys(lists).forEach(stage => {
-                if (counts[stage] === 0) {
+                if (counts[stage] === 0 && lists[stage]) {
                     const placeholder = document.createElement('div');
                     placeholder.className = 'read-only-placeholder';
                     placeholder.innerHTML = `
@@ -605,19 +684,23 @@
             });
 
             // Update column counts
-            document.getElementById('count-saved').textContent = counts.saved;
-            document.getElementById('count-applied').textContent = counts.applied;
-            document.getElementById('count-interview').textContent = counts.interview;
-            document.getElementById('count-offer').textContent = counts.offer;
+            if (document.getElementById('count-saved')) document.getElementById('count-saved').textContent = counts.saved;
+            if (document.getElementById('count-applied')) document.getElementById('count-applied').textContent = counts.applied;
+            if (document.getElementById('count-interview')) document.getElementById('count-interview').textContent = counts.interview;
+            if (document.getElementById('count-offer')) document.getElementById('count-offer').textContent = counts.offer;
+        };
 
-            // Compute real metric stats
+        // Compute real metric stats
+        const updateMetrics = (apps) => {
             const total = apps.length;
-            const rate = total > 0 ? Math.round((counts.interview / total) * 100) : 0;
+            const interviews = apps.filter(a => a.status === 'interview').length;
+            const offers = apps.filter(a => a.status === 'offer').length;
+            const rate = total > 0 ? Math.round((interviews / total) * 100) : 0;
 
-            document.getElementById('metricTotal').textContent = total;
-            document.getElementById('metricInterviews').textContent = counts.interview;
-            document.getElementById('metricOffers').textContent = counts.offer;
-            document.getElementById('metricRate').textContent = rate + '%';
+            if (document.getElementById('metricTotal')) document.getElementById('metricTotal').textContent = total;
+            if (document.getElementById('metricInterviews')) document.getElementById('metricInterviews').textContent = interviews;
+            if (document.getElementById('metricOffers')) document.getElementById('metricOffers').textContent = offers;
+            if (document.getElementById('metricRate')) document.getElementById('metricRate').textContent = rate + '%';
         };
 
         // Submit new application to backend DB
