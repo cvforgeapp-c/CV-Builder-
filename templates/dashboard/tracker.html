@@ -377,10 +377,18 @@
 
 {% block content %}
 
-<!-- DEFINE SETTINGS VARIABLES GLOBALLY AT THE VERY TOP OF CONTENT -->
-{% set tracker_settings = current_user.preferences_json.trackerSettings if current_user.preferences_json and current_user.preferences_json.trackerSettings else {} %}
-{% set weekly_goal = tracker_settings.weeklyGoal | int if tracker_settings.weeklyGoal else 5 %}
-{% set tracker_layout = tracker_settings.trackerLayout if tracker_settings.trackerLayout else 'Kanban Drag & Drop Board' %}
+{# ROBUST BULLETPROOF USER & SETTINGS PARSING #}
+{% set active_user = user if user is defined else (current_user if current_user is defined else none) %}
+{% set raw_prefs = active_user.preferences_json if active_user and active_user.preferences_json is defined else {} %}
+{% if raw_prefs is string %}
+    {% set prefs = raw_prefs | from_json %}
+{% else %}
+    {% set prefs = raw_prefs %}
+{% endif %}
+{% set tracker_settings = prefs.trackerSettings if prefs and prefs.trackerSettings is defined else {} %}
+{% set weekly_goal = tracker_settings.weeklyGoal | int if tracker_settings and tracker_settings.weeklyGoal else 5 %}
+{% set tracker_layout = tracker_settings.trackerLayout if tracker_settings and tracker_settings.trackerLayout else 'Kanban Drag & Drop Board' %}
+{% set currency_pref = tracker_settings.currency if tracker_settings and tracker_settings.currency else 'USD ($)' %}
 
 <!-- TRACKER HEADER -->
 <header class="tracker-header">
@@ -565,8 +573,8 @@
         const closeBtn = document.getElementById('closeModalBtn');
         const addAppForm = document.getElementById('addAppForm');
 
-        // Extract currency preference symbol (e.g. "€" from "EUR (€)") safely
-        const currencyPref = "{{ tracker_settings.currency if tracker_settings.currency else 'USD ($)' }}";
+        // Extract currency preference symbol safely using pre-evaluated server variable
+        const currencyPref = "{{ currency_pref }}";
         const getCurrencySymbol = (currStr) => {
             const match = currStr.match(/\(([^)]+)\)/);
             return match ? match[1] : '$';
