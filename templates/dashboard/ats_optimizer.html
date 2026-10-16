@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ t_modular('ats_title', 'AI ATS Optimization Engine — CVForge Pro') }}{% endblock %}
+{% block title %}{{ t_modular('ats_page_title', 'AI ATS Optimization Engine — CVForge Pro') }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -378,7 +378,7 @@
     </div>
     <div>
         <a href="/dashboard" style="text-decoration: none; color: var(--text-secondary); font-size: 13px; font-weight: 700;">
-            {{ t_modular('btn_back_dashboard', '← Back to Dashboard') }}
+            {{ t_modular('ats_btn_back_dashboard', '← Back to Dashboard') }}
         </a>
     </div>
 </header>
@@ -394,27 +394,27 @@
         <!-- LEFT PANEL: DUAL INPUT WORKSPACE -->
         <div class="panel-card">
             <div class="panel-title">
-                <span class="step-badge">STEP 1 & 2</span>
-                <span>⚙️</span> {{ t_modular('section_input_title', 'Configure CV & Target Job') }}
+                <span class="step-badge">{{ t_modular('ats_step_badge', 'STEP 1 & 2') }}</span>
+                <span>⚙️</span> {{ t_modular('ats_section_input_title', 'Configure CV & Target Job') }}
             </div>
 
             <form id="atsForm" enctype="multipart/form-data">
                 
                 <!-- 1. RESUME SELECTION SOURCE -->
                 <div class="form-group">
-                    <label>{{ t_modular('label_select_cv', '1. Select Saved Resume') }}</label>
+                    <label>{{ t_modular('ats_label_select_cv', '1. Select Saved Resume') }}</label>
                     <select id="resumeSelect" name="resume_id">
-                        <option value="">-- Select from your Dashboard --</option>
+                        <option value="">{{ t_modular('ats_select_default', '-- Select from your Dashboard --') }}</option>
                         {% for resume in resumes %}
                             <option value="{{ resume.id }}">{{ resume.title }} (Updated: {{ resume.updated_at.strftime('%b %d') if resume.updated_at else 'Recent' }})</option>
                         {% endfor %}
                     </select>
                 </div>
 
-                <div class="divider-or">or upload local file</div>
+                <div class="divider-or">{{ t_modular('ats_divider_or_upload', 'or upload local file') }}</div>
 
                 <div class="form-group">
-                    <label>{{ t_modular('label_upload_cv', 'Upload CV Document (.txt, .pdf)') }}</label>
+                    <label>{{ t_modular('ats_label_upload_cv', 'Upload CV Document (.txt, .pdf)') }}</label>
                     <div class="file-input-wrapper">
                         <input type="file" id="cvFileInput" name="cv_file" accept=".txt,.pdf,.docx" style="font-size: 11px; cursor: pointer;">
                     </div>
@@ -424,20 +424,20 @@
 
                 <!-- 2. TARGET JOB SPEC SOURCE -->
                 <div class="form-group">
-                    <label>{{ t_modular('label_job_url', '2. Target Job Posting Link (URL)') }}</label>
+                    <label>{{ t_modular('ats_label_job_url', '2. Target Job Posting Link (URL)') }}</label>
                     <input type="url" id="jobUrlInput" name="job_url" placeholder="https://www.linkedin.com/jobs/view/..." />
                 </div>
 
-                <div class="divider-or">or paste description text</div>
+                <div class="divider-or">{{ t_modular('ats_divider_or_paste', 'or paste description text') }}</div>
 
                 <div class="form-group">
-                    <label>{{ t_modular('label_job_desc', 'Target Job Description') }}</label>
-                    <textarea id="jobDescInput" name="job_description" rows="5" placeholder="{{ t_modular('placeholder_job_desc', 'Paste full job requirements or posting text here...') }}"></textarea>
+                    <label>{{ t_modular('ats_label_job_desc', 'Target Job Description') }}</label>
+                    <textarea id="jobDescInput" name="job_description" rows="5" placeholder="{{ t_modular('ats_placeholder_job_desc', 'Paste full job requirements or posting text here...') }}"></textarea>
                 </div>
 
                 <button type="submit" class="btn-analyze" id="analyzeBtn">
                     <span>⚡</span>
-                    <span id="btnText">{{ t_modular('btn_analyze_now', 'Generate Optimized Resume & Report') }}</span>
+                    <span id="btnText">{{ t_modular('ats_btn_analyze_now', 'Generate Optimized Resume & Report') }}</span>
                 </button>
             </form>
         </div>
@@ -445,15 +445,19 @@
         <!-- RIGHT PANEL: REAL-TIME REPORT & AUTOMATIC CV CREATION -->
         <div class="panel-card" id="resultsPanel">
             <div class="panel-title">
-                <span class="step-badge">LIVE AI OUTPUT</span>
-                <span>📊</span> {{ t_modular('section_results_title', 'ATS Match Analysis & Optimized CV') }}
+                <span class="step-badge">{{ t_modular('ats_live_badge', 'LIVE AI OUTPUT') }}</span>
+                <span>📊</span> {{ t_modular('ats_section_results_title', 'ATS Match Analysis & Optimized CV') }}
             </div>
 
             <!-- INITIAL EMPTY STATE -->
             <div id="emptyState" class="empty-results-state">
                 <i class="fa-solid fa-wand-magic-sparkles"></i>
-                <h3 style="font-size: 15px; font-weight: 800; color: var(--brand-teal); margin-bottom: 6px;">Ready to Optimize</h3>
-                <p style="font-size: 12px; color: var(--text-secondary);">Select a resume, paste a job URL or description, and click generate to run the ATS Engine.</p>
+                <h3 style="font-size: 15px; font-weight: 800; color: var(--brand-teal); margin-bottom: 6px;">
+                    {{ t_modular('ats_ready_title', 'Ready to Optimize') }}
+                </h3>
+                <p style="font-size: 12px; color: var(--text-secondary);">
+                    {{ t_modular('ats_ready_desc', 'Select a resume, paste a job URL or description, and click generate to run the ATS Engine.') }}
+                </p>
             </div>
 
             <!-- ACTIVE RESULTS DASHBOARD (Hidden by Default) -->
@@ -462,37 +466,37 @@
                 <!-- SCORE BANNER -->
                 <div class="score-banner">
                     <div>
-                        <h3 style="font-size: 18px; font-weight: 800;">{{ t_modular('score_title', 'ATS Match Score') }}</h3>
-                        <p style="font-size: 12px; opacity: 0.9; margin-top: 4px;">{{ t_modular('score_desc', 'Keyword density, job alignment & technical terminology') }}</p>
+                        <h3 style="font-size: 18px; font-weight: 800;">{{ t_modular('ats_score_title', 'ATS Match Score') }}</h3>
+                        <p style="font-size: 12px; opacity: 0.9; margin-top: 4px;">{{ t_modular('ats_score_desc', 'Keyword density, job alignment & technical terminology') }}</p>
                     </div>
                     <div class="score-circle" id="scoreValue">88%</div>
                 </div>
 
                 <!-- MATCHED KEYWORDS -->
                 <div style="margin-bottom: 20px;">
-                    <h4 style="font-size: 13px; font-weight: 800; color: var(--brand-teal);">✅ {{ t_modular('title_matched_keywords', 'Matched Keywords Found') }}</h4>
+                    <h4 style="font-size: 13px; font-weight: 800; color: var(--brand-teal);">✅ {{ t_modular('ats_title_matched_keywords', 'Matched Keywords Found') }}</h4>
                     <div class="keyword-pill-container" id="matchedKeywords"></div>
                 </div>
 
                 <!-- MISSING KEYWORDS INJECTED -->
                 <div style="margin-bottom: 20px;">
-                    <h4 style="font-size: 13px; font-weight: 800; color: #b91c1c;">⚠️ {{ t_modular('title_missing_keywords', 'Injected Missing Keywords') }}</h4>
+                    <h4 style="font-size: 13px; font-weight: 800; color: #b91c1c;">⚠️ {{ t_modular('ats_title_missing_keywords', 'Injected Missing Keywords') }}</h4>
                     <div class="keyword-pill-container" id="missingKeywords"></div>
                 </div>
 
                 <!-- AI STRATEGY FEEDBACK -->
                 <div class="ai-feedback-box">
-                    <h4>🤖 {{ t_modular('ai_suggestion_title', 'AI Optimization Strategy') }}</h4>
+                    <h4>🤖 {{ t_modular('ats_ai_suggestion_title', 'AI Optimization Strategy') }}</h4>
                     <p id="aiFeedbackText"></p>
                 </div>
 
                 <!-- AUTOMATIC CV CREATION DIRECT CTA LINKS -->
                 <div class="action-cta-group">
                     <a id="editCvBtn" href="#" class="btn-action-gold">
-                        ✏️ {{ t_modular('btn_edit_optimized', 'Edit in Editor') }}
+                        ✏️ {{ t_modular('ats_btn_edit_optimized', 'Edit in Editor') }}
                     </a>
                     <a id="previewCvBtn" href="#" class="btn-action-primary">
-                        👁️ {{ t_modular('btn_preview_optimized', 'Preview & Download') }}
+                        👁️ {{ t_modular('ats_btn_preview_optimized', 'Preview & Download') }}
                     </a>
                 </div>
 
@@ -535,7 +539,7 @@
 
             // Set loading state
             analyzeBtn.disabled = true;
-            btnText.textContent = '⏳ {{ t_modular("btn_analyzing_state", "Analyzing & Rewriting CV...") }}';
+            btnText.textContent = '⏳ {{ t_modular("ats_btn_analyzing_state", "Analyzing & Rewriting CV...") }}';
 
             const formData = new FormData(atsForm);
 
@@ -583,7 +587,7 @@
                 alert(err.message || 'An error occurred while analyzing the CV.');
             } finally {
                 analyzeBtn.disabled = false;
-                btnText.textContent = '{{ t_modular("btn_analyze_now", "Generate Optimized Resume & Report") }}';
+                btnText.textContent = '{{ t_modular("ats_btn_analyze_now", "Generate Optimized Resume & Report") }}';
             }
         });
     });
