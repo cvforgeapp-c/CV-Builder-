@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ t_modular('tracker_title', 'Job Application Tracker — CVForge Pro') }}{% endblock %}
+{% block title %}{{ t_modular('trk_page_title', 'Job Application Tracker — CVForge Pro') }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -327,30 +327,30 @@
     <!-- TOP TITLE & BUTTON -->
     <div class="tracker-top-bar">
         <div class="page-heading">
-            <h1>{{ t_modular('tracker_heading', 'Job Application Tracker') }}</h1>
-            <p>{{ t_modular('tracker_subheading', 'Monitor your target applications, interview stages, and follow-ups in real time.') }}</p>
+            <h1>{{ t_modular('trk_heading', 'Job Application Tracker') }}</h1>
+            <p>{{ t_modular('trk_subheading', 'Monitor your target applications, interview stages, and follow-ups in real time.') }}</p>
         </div>
         <button class="btn-add-app" id="openModalBtn">
-            <span>+</span> {{ t_modular('btn_add_application', 'Add Application') }}
+            <span>+</span> {{ t_modular('trk_btn_add_app', 'Add Application') }}
         </button>
     </div>
 
-    <!-- METRICS SUMMARY (COMPUTED DYNAMICALLY) -->
+    <!-- METRICS SUMMARY (COMPUTED DYNAMICALLY FROM DATABASE) -->
     <div class="metrics-bar">
         <div class="metric-card">
-            <div class="metric-title">{{ t_modular('metric_applied', 'Total Applied') }}</div>
+            <div class="metric-title">{{ t_modular('trk_metric_applied', 'Total Applied') }}</div>
             <div class="metric-value" id="metricTotal">0</div>
         </div>
         <div class="metric-card">
-            <div class="metric-title">{{ t_modular('metric_interviewing', 'Interviewing') }}</div>
+            <div class="metric-title">{{ t_modular('trk_metric_interviewing', 'Interviewing') }}</div>
             <div class="metric-value" style="color: #2563eb;" id="metricInterviews">0</div>
         </div>
         <div class="metric-card">
-            <div class="metric-title">{{ t_modular('metric_offers', 'Offers Received') }}</div>
+            <div class="metric-title">{{ t_modular('trk_metric_offers', 'Offers Received') }}</div>
             <div class="metric-value" style="color: #16a34a;" id="metricOffers">0</div>
         </div>
         <div class="metric-card">
-            <div class="metric-title">{{ t_modular('metric_response_rate', 'Interview Rate') }}</div>
+            <div class="metric-title">{{ t_modular('trk_metric_rate', 'Interview Rate') }}</div>
             <div class="metric-value" style="color: var(--brand-gold);" id="metricRate">0%</div>
         </div>
     </div>
@@ -361,7 +361,7 @@
         <!-- COLUMN 1: SAVED -->
         <div class="kanban-column" id="col-saved">
             <div class="column-header">
-                <span class="column-title">📌 {{ t_modular('col_saved', 'Saved / Target') }}</span>
+                <span class="column-title">📌 {{ t_modular('trk_col_saved', 'Saved / Target') }}</span>
                 <span class="card-count" id="count-saved">0</span>
             </div>
             <div class="app-list" id="list-saved"></div>
@@ -370,7 +370,7 @@
         <!-- COLUMN 2: APPLIED -->
         <div class="kanban-column" id="col-applied">
             <div class="column-header">
-                <span class="column-title">📩 {{ t_modular('col_applied', 'Applied') }}</span>
+                <span class="column-title">📩 {{ t_modular('trk_col_applied', 'Applied') }}</span>
                 <span class="card-count" id="count-applied">0</span>
             </div>
             <div class="app-list" id="list-applied"></div>
@@ -379,7 +379,7 @@
         <!-- COLUMN 3: INTERVIEWING -->
         <div class="kanban-column" id="col-interview">
             <div class="column-header">
-                <span class="column-title" style="color: #2563eb;">🤝 {{ t_modular('col_interview', 'Interviewing') }}</span>
+                <span class="column-title" style="color: #2563eb;">🤝 {{ t_modular('trk_col_interview', 'Interviewing') }}</span>
                 <span class="card-count" id="count-interview">0</span>
             </div>
             <div class="app-list" id="list-interview"></div>
@@ -388,7 +388,7 @@
         <!-- COLUMN 4: OFFER -->
         <div class="kanban-column" id="col-offer">
             <div class="column-header">
-                <span class="column-title" style="color: #16a34a;">🎉 {{ t_modular('col_offer', 'Offer Received') }}</span>
+                <span class="column-title" style="color: #16a34a;">🎉 {{ t_modular('trk_col_offer', 'Offer Received') }}</span>
                 <span class="card-count" id="count-offer">0</span>
             </div>
             <div class="app-list" id="list-offer"></div>
@@ -401,33 +401,33 @@
 <div class="modal-overlay" id="appModal">
     <div class="modal-card">
         <div class="modal-header">
-            <h3 style="font-size: 18px; font-weight: 800; color: var(--brand-teal);">{{ t_modular('modal_title', 'Add Job Application') }}</h3>
+            <h3 style="font-size: 18px; font-weight: 800; color: var(--brand-teal);">{{ t_modular('trk_modal_title', 'Add Job Application') }}</h3>
             <button id="closeModalBtn" style="background: none; border: none; font-size: 20px; cursor: pointer;">✕</button>
         </div>
         <form id="addAppForm">
             <div class="form-group">
-                <label>{{ t_modular('label_company', 'Company Name') }}</label>
-                <input type="text" id="companyInput" placeholder="{{ t_modular('placeholder_company', 'e.g. OpenAI') }}" required>
+                <label>{{ t_modular('trk_label_company', 'Company Name') }}</label>
+                <input type="text" id="companyInput" placeholder="{{ t_modular('trk_placeholder_company', 'e.g. OpenAI') }}" required>
             </div>
             <div class="form-group">
-                <label>{{ t_modular('label_role', 'Job Title / Role') }}</label>
-                <input type="text" id="roleInput" placeholder="{{ t_modular('placeholder_role', 'e.g. Full Stack Developer') }}" required>
+                <label>{{ t_modular('trk_label_role', 'Job Title / Role') }}</label>
+                <input type="text" id="roleInput" placeholder="{{ t_modular('trk_placeholder_role', 'e.g. Full Stack Developer') }}" required>
             </div>
             <div class="form-group">
-                <label>{{ t_modular('label_salary', 'Salary Range (Optional)') }}</label>
-                <input type="text" id="salaryInput" placeholder="{{ t_modular('placeholder_salary', 'e.g. $140,000 - $160,000') }}">
+                <label>{{ t_modular('trk_label_salary', 'Salary Range (Optional)') }}</label>
+                <input type="text" id="salaryInput" placeholder="{{ t_modular('trk_placeholder_salary', 'e.g. $140,000 - $160,000') }}">
             </div>
             <div class="form-group">
-                <label>{{ t_modular('label_status', 'Application Status') }}</label>
+                <label>{{ t_modular('trk_label_status', 'Application Status') }}</label>
                 <select id="statusSelect">
-                    <option value="saved">{{ t_modular('opt_saved', 'Saved / Target') }}</option>
-                    <option value="applied" selected>{{ t_modular('opt_applied', 'Applied') }}</option>
-                    <option value="interview">{{ t_modular('opt_interview', 'Interviewing') }}</option>
-                    <option value="offer">{{ t_modular('opt_offer', 'Offer Received') }}</option>
+                    <option value="saved">{{ t_modular('trk_opt_saved', 'Saved / Target') }}</option>
+                    <option value="applied" selected>{{ t_modular('trk_opt_applied', 'Applied') }}</option>
+                    <option value="interview">{{ t_modular('trk_opt_interview', 'Interviewing') }}</option>
+                    <option value="offer">{{ t_modular('trk_opt_offer', 'Offer Received') }}</option>
                 </select>
             </div>
             <button type="submit" class="btn-add-app" style="width: 100%; justify-content: center; margin-top: 12px;">
-                {{ t_modular('btn_save_app', 'Save Application') }}
+                {{ t_modular('trk_btn_save_app', 'Save Application') }}
             </button>
         </form>
     </div>
@@ -499,7 +499,7 @@
             document.getElementById('count-interview').textContent = counts.interview;
             document.getElementById('count-offer').textContent = counts.offer;
 
-            // Compute real metric metrics
+            // Compute real metric stats
             const total = apps.length;
             const rate = total > 0 ? Math.round((counts.interview / total) * 100) : 0;
 
