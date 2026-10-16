@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ t_modular('ats_title', 'AI ATS Optimizer — CVForge Pro') }}{% endblock %}
+{% block title %}{{ t_modular('ats_title', 'AI ATS Optimization Engine — CVForge Pro') }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -8,21 +8,25 @@
         --brand-teal: #02353C;
         --brand-teal-light: #05535E;
         --brand-gold: #E5A83B;
+        --brand-gold-hover: #D99321;
         --bg-slate: #f8fafc;
         --card-bg: #ffffff;
         --border-color: #e2e8f0;
         --text-primary: #0f172a;
         --text-secondary: #64748b;
         --success-green: #16a34a;
+        --success-green-bg: #f0fdf4;
         --danger-red: #dc2626;
+        --danger-red-bg: #fef2f2;
     }
 
     body {
         background-color: var(--bg-slate);
         color: var(--text-primary);
-        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
     }
 
+    /* HEADER STYLING */
     .ats-header {
         background: #ffffff;
         border-bottom: 1px solid var(--border-color);
@@ -38,44 +42,50 @@
         font-weight: 800;
         color: var(--brand-teal);
         text-decoration: none;
+        letter-spacing: -0.5px;
     }
 
     .badge-pro {
-        background: linear-gradient(135deg, var(--brand-gold), #d99321);
+        background: linear-gradient(135deg, var(--brand-gold), var(--brand-gold-hover));
         color: #ffffff;
-        font-size: 11px;
-        font-weight: 700;
-        padding: 3px 8px;
-        border-radius: 12px;
+        font-size: 10px;
+        font-weight: 800;
+        padding: 4px 10px;
+        border-radius: 20px;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-left: 8px;
+        letter-spacing: 0.6px;
+        margin-left: 10px;
+        box-shadow: 0 2px 6px rgba(229, 168, 59, 0.3);
     }
 
+    /* CONTAINER & LAYOUT */
     .ats-container {
-        padding: 30px 5%;
-        max-width: 1300px;
+        padding: 36px 5%;
+        max-width: 1320px;
         margin: 0 auto;
     }
 
     .page-heading h1 {
-        font-size: 26px;
+        font-size: 28px;
         font-weight: 800;
         color: var(--brand-teal);
+        letter-spacing: -0.5px;
     }
 
     .page-heading p {
         font-size: 14px;
         color: var(--text-secondary);
-        margin-top: 4px;
-        margin-bottom: 24px;
+        margin-top: 6px;
+        margin-bottom: 28px;
+        max-width: 720px;
+        line-height: 1.5;
     }
 
-    /* Grid Layout for Inputs & Real-time Results */
     .ats-workspace {
         display: grid;
-        grid-template-columns: 1fr 1.2fr;
+        grid-template-columns: 1fr 1.15fr;
         gap: 28px;
+        align-items: start;
     }
 
     @media (max-width: 992px) {
@@ -84,22 +94,34 @@
         }
     }
 
+    /* CARDS & PANELS */
     .panel-card {
         background: #ffffff;
         border: 1px solid var(--border-color);
-        border-radius: 14px;
-        padding: 24px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        border-radius: 16px;
+        padding: 26px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
     }
 
     .panel-title {
         font-size: 16px;
         font-weight: 800;
         color: var(--brand-teal);
-        margin-bottom: 16px;
+        margin-bottom: 20px;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .step-badge {
+        background: rgba(2, 53, 60, 0.08);
+        color: var(--brand-teal);
+        font-size: 11px;
+        font-weight: 800;
+        padding: 2px 8px;
+        border-radius: 6px;
     }
 
     .form-group {
@@ -110,73 +132,130 @@
     }
 
     .form-group label {
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 700;
         color: var(--text-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
-    .form-group select, .form-group textarea {
-        padding: 12px;
-        border-radius: 8px;
+    .form-group select, 
+    .form-group input[type="url"], 
+    .form-group textarea {
+        padding: 12px 14px;
+        border-radius: 10px;
         border: 1px solid #cbd5e1;
-        font-size: 14px;
+        font-size: 13px;
         outline: none;
         font-family: inherit;
-        transition: border-color 0.2s;
+        background-color: #ffffff;
+        transition: all 0.2s ease;
     }
 
-    .form-group select:focus, .form-group textarea:focus {
+    .form-group select:focus, 
+    .form-group input[type="url"]:focus, 
+    .form-group textarea:focus {
         border-color: var(--brand-teal);
+        box-shadow: 0 0 0 3px rgba(2, 53, 60, 0.08);
     }
 
+    .file-input-wrapper {
+        border: 2px dashed #cbd5e1;
+        border-radius: 10px;
+        padding: 12px;
+        text-align: center;
+        background: #f8fafc;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .file-input-wrapper:hover {
+        border-color: var(--brand-teal);
+        background: #f1f5f9;
+    }
+
+    .divider-or {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        color: var(--text-secondary);
+        font-size: 11px;
+        font-weight: 700;
+        margin: 12px 0;
+        text-transform: uppercase;
+    }
+
+    .divider-or::before, .divider-or::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .divider-or::before { margin-right: 10px; }
+    .divider-or::after { margin-left: 10px; }
+
+    /* ACTION BUTTON */
     .btn-analyze {
         background: linear-gradient(135deg, var(--brand-teal) 0%, var(--brand-teal-light) 100%);
         color: #ffffff;
         border: none;
-        padding: 14px 24px;
-        border-radius: 8px;
-        font-weight: 700;
-        font-size: 15px;
+        padding: 16px 24px;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 14px;
         cursor: pointer;
         width: 100%;
-        transition: transform 0.2s, box-shadow 0.2s;
+        transition: all 0.25s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        box-shadow: 0 4px 14px rgba(2, 53, 60, 0.2);
     }
 
     .btn-analyze:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(2, 53, 60, 0.25);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(2, 53, 60, 0.3);
     }
 
-    /* Score Meter & Visual Dashboard */
+    .btn-analyze:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* RESULTS DASHBOARD */
     .score-banner {
         background: linear-gradient(135deg, #02353C 0%, #05535E 100%);
         color: #ffffff;
-        border-radius: 12px;
-        padding: 20px;
+        border-radius: 14px;
+        padding: 22px;
         display: flex;
         align-items: center;
         justify-content: space-between;
         margin-bottom: 24px;
+        box-shadow: 0 8px 24px rgba(2, 53, 60, 0.15);
     }
 
     .score-circle {
-        width: 80px;
-        height: 80px;
+        width: 86px;
+        height: 86px;
         border-radius: 50%;
         border: 6px solid var(--brand-gold);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 24px;
-        font-weight: 800;
+        font-size: 26px;
+        font-weight: 900;
         color: #ffffff;
-        background: rgba(255,255,255,0.05);
+        background: rgba(255,255,255,0.06);
+        box-shadow: 0 0 20px rgba(229, 168, 59, 0.25);
     }
 
     .keyword-pill-container {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
+        gap: 6px;
         margin-top: 10px;
     }
 
@@ -185,9 +264,9 @@
         color: #15803d;
         border: 1px solid #bbf7d0;
         padding: 4px 10px;
-        border-radius: 12px;
-        font-size: 12px;
-        font-weight: 600;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
     }
 
     .pill-missing {
@@ -195,133 +274,230 @@
         color: #b91c1c;
         border: 1px solid #fecaca;
         padding: 4px 10px;
-        border-radius: 12px;
-        font-size: 12px;
-        font-weight: 600;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
     }
 
-    .ai-suggestion-box {
-        background: #f0fdf4;
+    .ai-feedback-box {
+        background: var(--success-green-bg);
         border: 1px dashed var(--success-green);
-        border-radius: 10px;
-        padding: 16px;
+        border-radius: 12px;
+        padding: 18px;
         margin-top: 20px;
     }
 
-    .ai-suggestion-box h4 {
+    .ai-feedback-box h4 {
         color: var(--success-green);
-        font-size: 14px;
-        font-weight: 700;
+        font-size: 13px;
+        font-weight: 800;
         margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
-    .ai-suggestion-box p {
+    .ai-feedback-box p {
         font-size: 13px;
         color: #166534;
-        line-height: 1.5;
+        line-height: 1.6;
+    }
+
+    .action-cta-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 24px;
+        padding-top: 18px;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .btn-action-primary {
+        background: var(--brand-teal);
+        color: #ffffff;
+        text-decoration: none;
+        padding: 12px;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: 800;
+        text-align: center;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-action-primary:hover {
+        background: var(--brand-teal-light);
+        color: #ffffff;
+    }
+
+    .btn-action-gold {
+        background: var(--brand-gold);
+        color: #ffffff;
+        text-decoration: none;
+        padding: 12px;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: 800;
+        text-align: center;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-action-gold:hover {
+        background: var(--brand-gold-hover);
+        color: #ffffff;
+    }
+
+    /* EMPTY STATE PLACEHOLDER */
+    .empty-results-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--text-secondary);
+    }
+
+    .empty-results-state i {
+        font-size: 48px;
+        color: #cbd5e1;
+        margin-bottom: 16px;
     }
 </style>
 {% endblock %}
 
 {% block content %}
 
-<!-- ATS HEADER -->
+<!-- HEADER NAV -->
 <header class="ats-header">
     <div style="display: flex; align-items: center;">
         <a href="/" class="brand-title">CVForge</a>
-        <span class="badge-pro">PRO FEATURE</span>
+        <span class="badge-pro">PRO SUITE</span>
     </div>
     <div>
-        <a href="/dashboard" style="text-decoration: none; color: var(--text-secondary); font-size: 14px; font-weight: 600;">{{ t_modular('btn_back_dashboard', '← Back to Dashboard') }}</a>
+        <a href="/dashboard" style="text-decoration: none; color: var(--text-secondary); font-size: 13px; font-weight: 700;">
+            {{ t_modular('btn_back_dashboard', '← Back to Dashboard') }}
+        </a>
     </div>
 </header>
 
 <div class="ats-container">
     <div class="page-heading">
         <h1>{{ t_modular('ats_heading', 'Unlimited AI ATS Optimization Engine') }}</h1>
-        <p>{{ t_modular('ats_subheading', 'Target any job description, pinpoint ATS keyword gaps, and automatically rewrite your resume bullet points for high-match scores.') }}</p>
+        <p>{{ t_modular('ats_subheading', 'Select a resume or upload a file, target any job posting URL or text, and automatically generate a high-scoring ATS-optimized CV.') }}</p>
     </div>
 
     <div class="ats-workspace">
         
-        <!-- LEFT: INPUT FORM -->
+        <!-- LEFT PANEL: DUAL INPUT WORKSPACE -->
         <div class="panel-card">
             <div class="panel-title">
-                <span>📄</span> {{ t_modular('section_input_title', 'Select CV & Paste Target Job') }}
+                <span class="step-badge">STEP 1 & 2</span>
+                <span>⚙️</span> {{ t_modular('section_input_title', 'Configure CV & Target Job') }}
             </div>
 
-            <form id="atsForm">
+            <form id="atsForm" enctype="multipart/form-data">
+                
+                <!-- 1. RESUME SELECTION SOURCE -->
                 <div class="form-group">
-                    <label>{{ t_modular('label_select_cv', 'Select CV to Optimize') }}</label>
-                    <select id="resumeSelect" required>
-                        <option value="">-- Choose your saved CV --</option>
+                    <label>{{ t_modular('label_select_cv', '1. Select Saved Resume') }}</label>
+                    <select id="resumeSelect" name="resume_id">
+                        <option value="">-- Select from your Dashboard --</option>
                         {% for resume in resumes %}
-                            <option value="{{ resume.id }}">{{ resume.title }} (Last updated: {{ resume.updated_at.strftime('%b %d') if resume.updated_at else 'Recent' }})</option>
-                        {% else %}
-                            <option value="demo">Sample Full Stack Developer CV</option>
+                            <option value="{{ resume.id }}">{{ resume.title }} (Updated: {{ resume.updated_at.strftime('%b %d') if resume.updated_at else 'Recent' }})</option>
                         {% endfor %}
                     </select>
                 </div>
 
+                <div class="divider-or">or upload local file</div>
+
+                <div class="form-group">
+                    <label>{{ t_modular('label_upload_cv', 'Upload CV Document (.txt, .pdf)') }}</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="cvFileInput" name="cv_file" accept=".txt,.pdf,.docx" style="font-size: 11px; cursor: pointer;">
+                    </div>
+                </div>
+
+                <div style="margin: 24px 0 16px 0; border-top: 1px solid var(--border-color);"></div>
+
+                <!-- 2. TARGET JOB SPEC SOURCE -->
+                <div class="form-group">
+                    <label>{{ t_modular('label_job_url', '2. Target Job Posting Link (URL)') }}</label>
+                    <input type="url" id="jobUrlInput" name="job_url" placeholder="https://www.linkedin.com/jobs/view/..." />
+                </div>
+
+                <div class="divider-or">or paste description text</div>
+
                 <div class="form-group">
                     <label>{{ t_modular('label_job_desc', 'Target Job Description') }}</label>
-                    <textarea id="jobDescInput" rows="12" placeholder="{{ t_modular('placeholder_job_desc', 'Paste the job requirements, responsibilities, or target posting here...') }}" required></textarea>
+                    <textarea id="jobDescInput" name="job_description" rows="5" placeholder="{{ t_modular('placeholder_job_desc', 'Paste full job requirements or posting text here...') }}"></textarea>
                 </div>
 
                 <button type="submit" class="btn-analyze" id="analyzeBtn">
-                    ⚡ {{ t_modular('btn_analyze_now', 'Analyze & Optimize ATS Match') }}
+                    <span>⚡</span>
+                    <span id="btnText">{{ t_modular('btn_analyze_now', 'Generate Optimized Resume & Report') }}</span>
                 </button>
             </form>
         </div>
 
-        <!-- RIGHT: LIVE AI ANALYSIS & KEYWORD MATCH -->
+        <!-- RIGHT PANEL: REAL-TIME REPORT & AUTOMATIC CV CREATION -->
         <div class="panel-card" id="resultsPanel">
             <div class="panel-title">
-                <span>📊</span> {{ t_modular('section_results_title', 'ATS Match Analysis & Keyword Report') }}
+                <span class="step-badge">LIVE AI OUTPUT</span>
+                <span>📊</span> {{ t_modular('section_results_title', 'ATS Match Analysis & Optimized CV') }}
             </div>
 
-            <!-- SCORE BANNER -->
-            <div class="score-banner">
-                <div>
-                    <h3 style="font-size: 18px; font-weight: 800;">{{ t_modular('score_title', 'Estimated ATS Match Score') }}</h3>
-                    <p style="font-size: 13px; opacity: 0.9; margin-top: 4px;">{{ t_modular('score_desc', 'Based on keyword density, skills alignment & formatting') }}</p>
+            <!-- INITIAL EMPTY STATE -->
+            <div id="emptyState" class="empty-results-state">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <h3 style="font-size: 15px; font-weight: 800; color: var(--brand-teal); margin-bottom: 6px;">Ready to Optimize</h3>
+                <p style="font-size: 12px; color: var(--text-secondary);">Select a resume, paste a job URL or description, and click generate to run the ATS Engine.</p>
+            </div>
+
+            <!-- ACTIVE RESULTS DASHBOARD (Hidden by Default) -->
+            <div id="resultsContent" style="display: none;">
+                
+                <!-- SCORE BANNER -->
+                <div class="score-banner">
+                    <div>
+                        <h3 style="font-size: 18px; font-weight: 800;">{{ t_modular('score_title', 'ATS Match Score') }}</h3>
+                        <p style="font-size: 12px; opacity: 0.9; margin-top: 4px;">{{ t_modular('score_desc', 'Keyword density, job alignment & technical terminology') }}</p>
+                    </div>
+                    <div class="score-circle" id="scoreValue">88%</div>
                 </div>
-                <div class="score-circle" id="scoreValue">88%</div>
-            </div>
 
-            <!-- MATCHED KEYWORDS -->
-            <div style="margin-bottom: 20px;">
-                <h4 style="font-size: 14px; font-weight: 700; color: var(--brand-teal);">✅ {{ t_modular('title_matched_keywords', 'Matched Keywords Found') }}</h4>
-                <div class="keyword-pill-container" id="matchedKeywords">
-                    <span class="pill-matched">Python</span>
-                    <span class="pill-matched">Flask</span>
-                    <span class="pill-matched">PostgreSQL</span>
-                    <span class="pill-matched">REST APIs</span>
-                    <span class="pill-matched">System Architecture</span>
+                <!-- MATCHED KEYWORDS -->
+                <div style="margin-bottom: 20px;">
+                    <h4 style="font-size: 13px; font-weight: 800; color: var(--brand-teal);">✅ {{ t_modular('title_matched_keywords', 'Matched Keywords Found') }}</h4>
+                    <div class="keyword-pill-container" id="matchedKeywords"></div>
                 </div>
-            </div>
 
-            <!-- MISSING KEYWORDS -->
-            <div style="margin-bottom: 20px;">
-                <h4 style="font-size: 14px; font-weight: 700; color: #b91c1c;">⚠️ {{ t_modular('title_missing_keywords', 'Missing Critical Keywords') }}</h4>
-                <div class="keyword-pill-container" id="missingKeywords">
-                    <span class="pill-missing">Docker</span>
-                    <span class="pill-missing">Vercel Serverless</span>
-                    <span class="pill-missing">Tailwind CSS</span>
-                    <span class="pill-missing">CI/CD Pipelines</span>
+                <!-- MISSING KEYWORDS INJECTED -->
+                <div style="margin-bottom: 20px;">
+                    <h4 style="font-size: 13px; font-weight: 800; color: #b91c1c;">⚠️ {{ t_modular('title_missing_keywords', 'Injected Missing Keywords') }}</h4>
+                    <div class="keyword-pill-container" id="missingKeywords"></div>
                 </div>
+
+                <!-- AI STRATEGY FEEDBACK -->
+                <div class="ai-feedback-box">
+                    <h4>🤖 {{ t_modular('ai_suggestion_title', 'AI Optimization Strategy') }}</h4>
+                    <p id="aiFeedbackText"></p>
+                </div>
+
+                <!-- AUTOMATIC CV CREATION DIRECT CTA LINKS -->
+                <div class="action-cta-group">
+                    <a id="editCvBtn" href="#" class="btn-action-gold">
+                        ✏️ {{ t_modular('btn_edit_optimized', 'Edit in Editor') }}
+                    </a>
+                    <a id="previewCvBtn" href="#" class="btn-action-primary">
+                        👁️ {{ t_modular('btn_preview_optimized', 'Preview & Download') }}
+                    </a>
+                </div>
+
             </div>
 
-            <!-- AI BULLET REWRITE SUGGESTION -->
-            <div class="ai-suggestion-box">
-                <h4>🤖 {{ t_modular('ai_suggestion_title', 'AI Bullet-Point Optimization Suggestion') }}</h4>
-                <p id="aiSuggestionText">
-                    "Architected scalable Python/Flask backend microservices on PostgreSQL database infrastructure, integrating Docker container deployment pipelines to improve API response speeds by 35%."
-                </p>
-                <button style="margin-top: 12px; background: var(--brand-teal); color: #ffffff; border: none; padding: 8px 14px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;">
-                    {{ t_modular('btn_apply_rewrite', 'Apply Rewrite to CV') }}
-                </button>
-            </div>
         </div>
 
     </div>
@@ -334,18 +510,81 @@
     document.addEventListener('DOMContentLoaded', () => {
         const atsForm = document.getElementById('atsForm');
         const analyzeBtn = document.getElementById('analyzeBtn');
+        const btnText = document.getElementById('btnText');
+        const emptyState = document.getElementById('emptyState');
+        const resultsContent = document.getElementById('resultsContent');
 
         atsForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            analyzeBtn.disabled = true;
-            analyzeBtn.textContent = '⏳ {{ t_modular("btn_analyzing_state", "Analyzing ATS Match...") }}';
 
-            // Simulate real-time API feedback
-            setTimeout(() => {
+            // Validate inputs
+            const resumeId = document.getElementById('resumeSelect').value;
+            const cvFile = document.getElementById('cvFileInput').files[0];
+            const jobUrl = document.getElementById('jobUrlInput').value.trim();
+            const jobDesc = document.getElementById('jobDescInput').value.trim();
+
+            if (!resumeId && !cvFile) {
+                alert('Please select a saved resume from your dashboard or upload a CV document.');
+                return;
+            }
+
+            if (!jobUrl && !jobDesc) {
+                alert('Please enter a job posting URL or paste the job description text.');
+                return;
+            }
+
+            // Set loading state
+            analyzeBtn.disabled = true;
+            btnText.textContent = '⏳ {{ t_modular("btn_analyzing_state", "Analyzing & Rewriting CV...") }}';
+
+            const formData = new FormData(atsForm);
+
+            try {
+                const response = await fetch('/api/v1/premium/analyze-ats', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Optimization failed.');
+                }
+
+                // Render Score
+                document.getElementById('scoreValue').textContent = (data.ats_score || 85) + '%';
+
+                // Render Matched Keywords
+                const matchedContainer = document.getElementById('matchedKeywords');
+                matchedContainer.innerHTML = (data.matched_keywords || []).map(
+                    k => `<span class="pill-matched">${k}</span>`
+                ).join('');
+
+                // Render Missing Keywords
+                const missingContainer = document.getElementById('missingKeywords');
+                missingContainer.innerHTML = (data.missing_keywords || []).map(
+                    k => `<span class="pill-missing">${k}</span>`
+                ).join('');
+
+                // Render Feedback
+                document.getElementById('aiFeedbackText').textContent = data.summary_feedback || 'Your resume has been rewritten to align with the target job posting requirements.';
+
+                // Bind Links to Automatically Created Resume
+                if (data.optimized_resume_id) {
+                    document.getElementById('editCvBtn').href = `/editor?id=${data.optimized_resume_id}`;
+                    document.getElementById('previewCvBtn').href = `/preview?id=${data.optimized_resume_id}`;
+                }
+
+                // Show Results
+                emptyState.style.display = 'none';
+                resultsContent.style.display = 'block';
+
+            } catch (err) {
+                alert(err.message || 'An error occurred while analyzing the CV.');
+            } finally {
                 analyzeBtn.disabled = false;
-                analyzeBtn.textContent = '⚡ {{ t_modular("btn_analyze_now", "Analyze & Optimize ATS Match") }}';
-                alert('{{ t_modular("alert_refreshed_success", "ATS Analysis refreshed successfully!") }}');
-            }, 1200);
+                btnText.textContent = '{{ t_modular("btn_analyze_now", "Generate Optimized Resume & Report") }}';
+            }
         });
     });
 </script>
