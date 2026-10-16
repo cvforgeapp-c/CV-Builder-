@@ -8,9 +8,11 @@ import hashlib
 import base64
 import random
 import httpx
+import re
 
 from datetime import datetime
 from bs4 import BeautifulSoup
+from werkzeug.utils import secure_filename
 from sqlalchemy.orm.attributes import flag_modified
 
 # ============================================================
@@ -1498,6 +1500,27 @@ def paddle_webhook():
     return jsonify({"status": "success"}), 200
 
 
+def extract_text_from_url(url: str) -> str:
+    try:
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        }
+        with httpx.Client(timeout=10.0, follow_redirects=True) as client:
+            response = client.get(url, headers=headers)
+            response.raise_for_status()
+
+        soup = BeautifulSoup(response.text, "html.parser")
+        for tag in soup(["script", "style", "noscript", "header", "footer", "nav", "svg"]):
+            tag.decompose()
+
+        text = soup.get_text(separator=" ")
+        clean_text = re.sub(r"\s+", " ", text).strip()
+        return clean_text[:8000]
+    except Exception as exc:
+        print(f"URL Fetch Error: {exc}")
+        return ""
+
+
 @premium_bp.route("/analyze-ats", methods=["POST"])
 @login_required
 def analyze_ats():
@@ -1508,36 +1531,127 @@ def analyze_ats():
             "button_action": "PAY"
         }), 403
 
-    data = request.get_json(silent=True)
-    if not isinstance(data, dict):
-        return jsonify({"error": "A valid JSON request is required."}), 400
+    if request.is_json:
+        data = request.get_json(silent=True) or {}
+    else:
+        data = request.form.to_dict()
 
-    cv_data = data.get("cv_data")
-    job_desc = data.get("job_description")
+    cv_text = ""
+    resume_obj = None
 
-    if not cv_data or not job_desc:
-        return jsonify({"error": "CV data and job description are required."}), 400
+    dashboard_resume_id = data.get("resume_id") or data.get("saved_resume_id")
+    uploaded_file = request.files.get("cv_file") if not request.is_json else None
 
-    try:
-        cv_json = json.dumps(cv_data, ensure_ascii=False)
-    except (TypeError, ValueError):
-        return jsonify({"error": "CV data must be valid JSON-compatible content."}), 400
+    if dashboard_resume_id:
+        resume_obj = Resume.query.filter_by(id=dashboard_resume_id, user_id=current_user.id).first()
+        if resume_obj:
+            cv_text = json.dumps(resume_obj.content_json, ensure_ascii=False)
+    
+    if not cv_text and uploaded_file and uploaded_file.filename:
+        filename = secure_filename(uploaded_file.filename)
+        file_bytes = uploaded_file.read()
+        cv_text = file_bytes.decode("utf-8", errors="ignore")
+
+    if not cv_text:
+        return jsonify({"error": "Please select a resume from your dashboard or upload a CV file."}), 400
+
+    job_url = (data.get("job_url") or "").strip()
+    job_desc = (data.get("job_description") or "").strip()
+
+    if job_url:
+        scraped_text = extract_text_from_url(job_url)
+        if scraped_text:
+            job_desc = scraped_text
+        elif not job_desc:
+            return jsonify({"error": "Could not extract content from the provided job URL. Please paste the job description text."}), 400
+
+    if not job_desc:
+        return jsonify({"error": "Please provide a job posting URL or paste the job description."}), 400
 
     preferred_language = get_user_preferred_language(current_user)
 
-    prompt = f"Analyze the candidate's CV against the supplied job description.\nCRITICAL INSTRUCTION: Write the entire analysis report and feedback strictly in {preferred_language}.\n\nCV DATA:\n{cv_json}\n\nJOB DESCRIPTION:\n{job_desc}\n\nReturn a detailed ATS analysis in {preferred_language} containing:\n1. An estimated ATS match score from 0 to 100.\n2. Keywords found in the CV.\n3. Important job-description keywords missing from the CV.\n4. Relevant strengths supported by the CV.\n5. Suggestions for improving alignment."
+    prompt = f"""
+You are an expert ATS Optimization Engine. Analyze the candidate's CV against the target job description.
+CRITICAL REQUIREMENT: Write all analysis text, reports, and optimized content strictly in {preferred_language}.
+
+Candidate CV Data:
+{cv_text}
+
+Target Job Details:
+{job_desc}
+
+Provide your response as a valid JSON object with the following structure:
+{{
+  "ats_score": 88,
+  "matched_keywords": ["Keyword1", "Keyword2"],
+  "missing_keywords": ["MissingKeyword1", "MissingKeyword2"],
+  "summary_feedback": "Detailed ATS match overview and strategy...",
+  "optimized_cv": {{
+    "full_name": "Candidate Name",
+    "target_role": "Target Job Title",
+    "summary": "Rewritten ATS-optimized professional summary incorporating missing keywords naturally.",
+    "experience_bullets": "- Rewritten experience bullet point 1\\n- Rewritten bullet point 2",
+    "skills_tech": "Comma-separated technical skills aligned with job post",
+    "skills_soft": "Comma-separated soft skills aligned with job post"
+  }}
+}}
+Return ONLY valid JSON without markdown wrapping.
+"""
 
     gemini_key = get_gemini_api_key()
     if not gemini_key:
         return jsonify({"error": "ATS analysis is temporarily unavailable. The Gemini API key is not configured."}), 503
 
     try:
-        analysis_text = generate_ai_text(prompt)
+        raw_response = generate_ai_text(prompt)
+        
+        clean_json_str = raw_response.strip()
+        if clean_json_str.startswith("```json"):
+            clean_json_str = clean_json_str[7:]
+        if clean_json_str.startswith("```"):
+            clean_json_str = clean_json_str[3:]
+        if clean_json_str.endswith("```"):
+            clean_json_str = clean_json_str[:-3]
+
+        parsed_data = json.loads(clean_json_str.strip())
+
+        new_resume_id = str(uuid.uuid4())
+        optimized_content = parsed_data.get("optimized_cv", {})
+
+        if resume_obj and isinstance(resume_obj.content_json, dict):
+            merged_content = dict(resume_obj.content_json)
+            merged_content.update({
+                "summary": optimized_content.get("summary", merged_content.get("summary", "")),
+                "experience_bullets": optimized_content.get("experience_bullets", merged_content.get("experience_bullets", "")),
+                "skills_tech": optimized_content.get("skills_tech", merged_content.get("skills_tech", "")),
+                "skills_soft": optimized_content.get("skills_soft", merged_content.get("skills_soft", ""))
+            })
+        else:
+            merged_content = optimized_content
+
+        new_resume = Resume(
+            id=new_resume_id,
+            user_id=current_user.id,
+            title=f"Optimized - {resume_obj.title if resume_obj else 'New CV'}",
+            content_json=merged_content,
+            template_used="ats",
+            updated_at=datetime.utcnow()
+        )
+        db.session.add(new_resume)
+        db.session.commit()
+
         return jsonify({
-            "analysis": analysis_text,
+            "success": True,
+            "ats_score": parsed_data.get("ats_score", 85),
+            "matched_keywords": parsed_data.get("matched_keywords", []),
+            "missing_keywords": parsed_data.get("missing_keywords", []),
+            "summary_feedback": parsed_data.get("summary_feedback", ""),
+            "optimized_resume_id": new_resume.id,
+            "optimized_cv": merged_content
         }), 200
 
     except Exception as exc:
+        db.session.rollback()
         premium_app.logger.error(
             "ATS analysis failed: %s",
             type(exc).__name__,
