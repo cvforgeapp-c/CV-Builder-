@@ -257,6 +257,19 @@
                     </select>
                 </div>
 
+                <!-- JOB LINK SCRAPER WIDGET -->
+                <div class="form-group" style="background: #f8fafc; padding: 12px; border-radius: 10px; border: 1px solid var(--border-color);">
+                    <label style="color: var(--brand-teal); font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 6px;">
+                        🔗 {{ t_modular('label_scrape_job_link', 'Import from Job Posting Link (Optional)') }}
+                    </label>
+                    <div style="display: flex; gap: 8px; margin-top: 4px;">
+                        <input type="url" id="scrapeJobUrl" placeholder="https://www.linkedin.com/jobs/view/..." style="flex: 1; font-size: 13px;">
+                        <button type="button" id="btnScrapeUrl" style="background: var(--brand-teal); color: #ffffff; border: none; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;">
+                            ⚡ {{ t_modular('btn_fetch_url', 'Fetch') }}
+                        </button>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label>{{ t_modular('label_job_requirements', 'Job Description / Key Requirements') }}</label>
                     <textarea id="jobReqs" name="job_description" rows="5" placeholder="{{ t_modular('placeholder_job_reqs', 'Paste relevant job responsibilities or key requirements...') }}" required></textarea>
@@ -297,6 +310,7 @@
         const coverLetterForm = document.getElementById('coverLetterForm');
         const generateBtn = document.getElementById('generateBtn');
         const clOutputText = document.getElementById('clOutputText');
+        const btnScrapeUrl = document.getElementById('btnScrapeUrl');
 
         // Check for URL parameters & localStorage campaign context
         const urlParams = new URLSearchParams(window.location.search);
@@ -326,6 +340,9 @@
             if (activeCampaign.jobDescription) {
                 document.getElementById('jobReqs').value = activeCampaign.jobDescription;
             }
+            if (activeCampaign.jobUrl) {
+                document.getElementById('scrapeJobUrl').value = activeCampaign.jobUrl;
+            }
             if (activeCampaign.resumeTitle) {
                 // Infer role/title if present in title format
                 const cleanTitle = activeCampaign.resumeTitle.split('—')[1] || '';
@@ -335,7 +352,45 @@
             }
         }
 
-        // 3. One-Click Auto Trigger Execution
+        // 3. Scrape Job Requirements from Link
+        btnScrapeUrl.addEventListener('click', async () => {
+            const urlInput = document.getElementById('scrapeJobUrl').value.trim();
+            if (!urlInput) {
+                alert('{{ t_modular("alert_enter_url", "Please enter a job posting URL.") }}');
+                return;
+            }
+
+            btnScrapeUrl.disabled = true;
+            btnScrapeUrl.textContent = '⏳ {{ t_modular("btn_fetching_state", "Fetching...") }}';
+
+            try {
+                const res = await fetch('/api/v1/premium/scrape-job', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: urlInput })
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Failed to fetch page.');
+
+                if (data.job_description) {
+                    document.getElementById('jobReqs').value = data.job_description;
+                }
+
+                if (data.job_title_meta && !document.getElementById('targetRole').value) {
+                    document.getElementById('targetRole').value = data.job_title_meta.slice(0, 50);
+                }
+
+                alert('{{ t_modular("alert_scraped_success", "Job requirements extracted successfully!") }}');
+            } catch (err) {
+                alert(err.message || '{{ t_modular("alert_scraped_error", "Error scraping job requirements from the link.") }}');
+            } finally {
+                btnScrapeUrl.disabled = false;
+                btnScrapeUrl.textContent = '⚡ {{ t_modular("btn_fetch_url", "Fetch") }}';
+            }
+        });
+
+        // 4. One-Click Auto Trigger Execution
         const triggerSubmit = async () => {
             generateBtn.disabled = true;
             generateBtn.textContent = '⏳ {{ t_modular("btn_writing_state", "Writing Cover Letter...") }}';
@@ -365,7 +420,6 @@
                     clOutputText.value = data.cover_letter_text;
                 }
             } catch (err) {
-                // Fallback simulation if API endpoint is still using mock/deferred mode
                 console.warn('API route pending, using client rendering');
             } finally {
                 generateBtn.disabled = false;
@@ -381,7 +435,6 @@
 
         // If redirected from One-Click Modal ("autofill=true"), trigger immediately
         if (autofillParam === 'true' && (resumeIdParam || (activeCampaign && activeCampaign.resumeId))) {
-            // Provide sensible fallbacks for required input fields to ensure zero-click submission
             if (!document.getElementById('targetCompany').value) {
                 document.getElementById('targetCompany').value = 'Target Organization';
             }
