@@ -193,7 +193,7 @@
         margin-bottom: 14px;
         border: 1px solid var(--border-color);
         box-shadow: 0 2px 4px rgba(0,0,0,0.03);
-        cursor: grab;
+        position: relative;
         transition: transform 0.2s, box-shadow 0.2s;
     }
 
@@ -206,6 +206,7 @@
         font-size: 15px;
         font-weight: 700;
         color: var(--text-primary);
+        padding-right: 20px;
     }
 
     .app-company {
@@ -229,6 +230,21 @@
     .app-salary {
         font-weight: 600;
         color: #15803d;
+    }
+
+    .btn-delete-card {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .btn-delete-card:hover {
+        color: #ef4444;
     }
 
     /* Modal Form */
@@ -319,23 +335,23 @@
         </button>
     </div>
 
-    <!-- METRICS SUMMARY -->
+    <!-- METRICS SUMMARY (COMPUTED DYNAMICALLY) -->
     <div class="metrics-bar">
         <div class="metric-card">
             <div class="metric-title">{{ t_modular('metric_applied', 'Total Applied') }}</div>
-            <div class="metric-value" id="metricTotal">12</div>
+            <div class="metric-value" id="metricTotal">0</div>
         </div>
         <div class="metric-card">
             <div class="metric-title">{{ t_modular('metric_interviewing', 'Interviewing') }}</div>
-            <div class="metric-value" style="color: #2563eb;" id="metricInterviews">3</div>
+            <div class="metric-value" style="color: #2563eb;" id="metricInterviews">0</div>
         </div>
         <div class="metric-card">
             <div class="metric-title">{{ t_modular('metric_offers', 'Offers Received') }}</div>
-            <div class="metric-value" style="color: #16a34a;" id="metricOffers">1</div>
+            <div class="metric-value" style="color: #16a34a;" id="metricOffers">0</div>
         </div>
         <div class="metric-card">
             <div class="metric-title">{{ t_modular('metric_response_rate', 'Interview Rate') }}</div>
-            <div class="metric-value" style="color: var(--brand-gold);" id="metricRate">25%</div>
+            <div class="metric-value" style="color: var(--brand-gold);" id="metricRate">0%</div>
         </div>
     </div>
 
@@ -346,72 +362,36 @@
         <div class="kanban-column" id="col-saved">
             <div class="column-header">
                 <span class="column-title">📌 {{ t_modular('col_saved', 'Saved / Target') }}</span>
-                <span class="card-count" id="count-saved">2</span>
+                <span class="card-count" id="count-saved">0</span>
             </div>
-            <div class="app-list">
-                <div class="app-card">
-                    <div class="app-role">Senior Full Stack Engineer</div>
-                    <div class="app-company">Vercel Inc.</div>
-                    <div class="app-details">
-                        <span>San Francisco, CA</span>
-                        <span class="app-salary">$160k - $190k</span>
-                    </div>
-                </div>
-            </div>
+            <div class="app-list" id="list-saved"></div>
         </div>
 
         <!-- COLUMN 2: APPLIED -->
         <div class="kanban-column" id="col-applied">
             <div class="column-header">
                 <span class="column-title">📩 {{ t_modular('col_applied', 'Applied') }}</span>
-                <span class="card-count" id="count-applied">6</span>
+                <span class="card-count" id="count-applied">0</span>
             </div>
-            <div class="app-list">
-                <div class="app-card">
-                    <div class="app-role">Lead Backend Architect</div>
-                    <div class="app-company">Stripe</div>
-                    <div class="app-details">
-                        <span>Remote</span>
-                        <span class="app-salary">$175k</span>
-                    </div>
-                </div>
-            </div>
+            <div class="app-list" id="list-applied"></div>
         </div>
 
         <!-- COLUMN 3: INTERVIEWING -->
         <div class="kanban-column" id="col-interview">
             <div class="column-header">
                 <span class="column-title" style="color: #2563eb;">🤝 {{ t_modular('col_interview', 'Interviewing') }}</span>
-                <span class="card-count" id="count-interview">3</span>
+                <span class="card-count" id="count-interview">0</span>
             </div>
-            <div class="app-list">
-                <div class="app-card" style="border-left: 4px solid #2563eb;">
-                    <div class="app-role">AI Systems Engineer</div>
-                    <div class="app-company">Anthropic</div>
-                    <div class="app-details">
-                        <span>Stage: Technical Round</span>
-                        <span class="app-salary">$210k</span>
-                    </div>
-                </div>
-            </div>
+            <div class="app-list" id="list-interview"></div>
         </div>
 
         <!-- COLUMN 4: OFFER -->
         <div class="kanban-column" id="col-offer">
             <div class="column-header">
                 <span class="column-title" style="color: #16a34a;">🎉 {{ t_modular('col_offer', 'Offer Received') }}</span>
-                <span class="card-count" id="count-offer">1</span>
+                <span class="card-count" id="count-offer">0</span>
             </div>
-            <div class="app-list">
-                <div class="app-card" style="border-left: 4px solid #16a34a;">
-                    <div class="app-role">Principal Product Developer</div>
-                    <div class="app-company">Supabase</div>
-                    <div class="app-details">
-                        <span>Offer Pending</span>
-                        <span class="app-salary">$185k</span>
-                    </div>
-                </div>
-            </div>
+            <div class="app-list" id="list-offer"></div>
         </div>
 
     </div>
@@ -461,15 +441,119 @@
         const modal = document.getElementById('appModal');
         const openBtn = document.getElementById('openModalBtn');
         const closeBtn = document.getElementById('closeModalBtn');
+        const addAppForm = document.getElementById('addAppForm');
 
         openBtn.addEventListener('click', () => modal.classList.add('active'));
         closeBtn.addEventListener('click', () => modal.classList.remove('active'));
 
-        document.getElementById('addAppForm').addEventListener('submit', (e) => {
+        // Fetch applications from database API endpoint
+        const fetchApplications = async () => {
+            try {
+                const res = await fetch('/api/v1/tracker');
+                const data = await res.json();
+                if (data.success) {
+                    renderKanban(data.applications || []);
+                }
+            } catch (err) {
+                console.error('Failed to load job applications:', err);
+            }
+        };
+
+        // Render Kanban board and calculate metrics dynamically
+        const renderKanban = (apps) => {
+            const lists = {
+                saved: document.getElementById('list-saved'),
+                applied: document.getElementById('list-applied'),
+                interview: document.getElementById('list-interview'),
+                offer: document.getElementById('list-offer')
+            };
+
+            const counts = { saved: 0, applied: 0, interview: 0, offer: 0 };
+            
+            Object.values(lists).forEach(el => el.innerHTML = '');
+
+            apps.forEach(app => {
+                const st = app.status in lists ? app.status : 'saved';
+                counts[st]++;
+
+                const card = document.createElement('div');
+                card.className = 'app-card';
+                if (st === 'interview') card.style.borderLeft = '4px solid #2563eb';
+                if (st === 'offer') card.style.borderLeft = '4px solid #16a34a';
+
+                card.innerHTML = `
+                    <button class="btn-delete-card" onclick="deleteApp('${app.id}')" title="Delete Application">✕</button>
+                    <div class="app-role">${app.role_title}</div>
+                    <div class="app-company">${app.company_name}</div>
+                    <div class="app-details">
+                        <span>${st.toUpperCase()}</span>
+                        <span class="app-salary">${app.salary || ''}</span>
+                    </div>
+                `;
+                lists[st].appendChild(card);
+            });
+
+            // Update column counts
+            document.getElementById('count-saved').textContent = counts.saved;
+            document.getElementById('count-applied').textContent = counts.applied;
+            document.getElementById('count-interview').textContent = counts.interview;
+            document.getElementById('count-offer').textContent = counts.offer;
+
+            // Compute real metric metrics
+            const total = apps.length;
+            const rate = total > 0 ? Math.round((counts.interview / total) * 100) : 0;
+
+            document.getElementById('metricTotal').textContent = total;
+            document.getElementById('metricInterviews').textContent = counts.interview;
+            document.getElementById('metricOffers').textContent = counts.offer;
+            document.getElementById('metricRate').textContent = rate + '%';
+        };
+
+        // Submit new application to backend DB
+        addAppForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            alert('{{ t_modular("alert_app_saved", "Application saved to your tracker dashboard!") }}');
-            modal.classList.remove('active');
+            const payload = {
+                company_name: document.getElementById('companyInput').value,
+                role_title: document.getElementById('roleInput').value,
+                salary: document.getElementById('salaryInput').value,
+                status: document.getElementById('statusSelect').value
+            };
+
+            try {
+                const res = await fetch('/api/v1/tracker', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    modal.classList.remove('active');
+                    addAppForm.reset();
+                    fetchApplications();
+                } else {
+                    alert(data.error || 'Failed to save application.');
+                }
+            } catch (err) {
+                alert('Error connecting to server.');
+            }
         });
+
+        // Delete application handler
+        window.deleteApp = async (id) => {
+            if (!confirm('Are you sure you want to delete this application?')) return;
+            try {
+                const res = await fetch(`/api/v1/tracker/${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (data.success) {
+                    fetchApplications();
+                }
+            } catch (err) {
+                alert('Error deleting application.');
+            }
+        };
+
+        // Initial load
+        fetchApplications();
     });
 </script>
 {% endblock %}
