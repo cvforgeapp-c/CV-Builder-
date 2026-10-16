@@ -1538,6 +1538,7 @@ def analyze_ats():
 
     cv_text = ""
     resume_obj = None
+    original_content = {}
 
     dashboard_resume_id = data.get("resume_id") or data.get("saved_resume_id")
     uploaded_file = request.files.get("cv_file") if not request.is_json else None
@@ -1545,7 +1546,9 @@ def analyze_ats():
     if dashboard_resume_id:
         resume_obj = Resume.query.filter_by(id=dashboard_resume_id, user_id=current_user.id).first()
         if resume_obj:
-            cv_text = json.dumps(resume_obj.content_json, ensure_ascii=False)
+            if isinstance(resume_obj.content_json, dict):
+                original_content = dict(resume_obj.content_json)
+            cv_text = json.dumps(original_content, ensure_ascii=False)
     
     if not cv_text and uploaded_file and uploaded_file.filename:
         filename = secure_filename(uploaded_file.filename)
@@ -1571,8 +1574,13 @@ def analyze_ats():
     preferred_language = get_user_preferred_language(current_user)
 
     prompt = f"""
-You are an expert ATS Optimization Engine. Analyze the candidate's CV against the target job description.
-CRITICAL REQUIREMENT: Write all analysis text, reports, and optimized content strictly in {preferred_language}.
+You are an expert ATS Optimization Engine. Analyze the candidate's CV against the target job description and optimize ONLY the summary, bullet points, and skills.
+
+CRITICAL IDENTITY & TRUTH CONSTRAINTS:
+1. DO NOT CHANGE, FABRICATE, OR OMIT the candidate's real Full Name, Job Title, Contact Details, Company Names, or Dates.
+2. DO NOT create dummy persona names like "Jordan Taylor" or imaginary job titles.
+3. Write all feedback, recommendations, and rewritten content strictly in {preferred_language}.
+4. Optimize bullet points and summaries by enriching them with missing high-value ATS keywords from the job description while staying truthful to the original experience.
 
 Candidate CV Data:
 {cv_text}
@@ -1586,13 +1594,11 @@ Provide your response as a valid JSON object with the following structure:
   "matched_keywords": ["Keyword1", "Keyword2"],
   "missing_keywords": ["MissingKeyword1", "MissingKeyword2"],
   "summary_feedback": "Detailed ATS match overview and strategy...",
-  "optimized_cv": {{
-    "full_name": "Candidate Name",
-    "target_role": "Target Job Title",
-    "summary": "Rewritten ATS-optimized professional summary incorporating missing keywords naturally.",
-    "experience_bullets": "- Rewritten experience bullet point 1\\n- Rewritten bullet point 2",
-    "skills_tech": "Comma-separated technical skills aligned with job post",
-    "skills_soft": "Comma-separated soft skills aligned with job post"
+  "optimized_sections": {{
+    "summary": "Rewritten ATS-optimized professional summary using the candidate's real experience plus target keywords.",
+    "experience_bullets": "- Rewritten experience bullet point 1 incorporating missing ATS keywords\\n- Rewritten experience bullet point 2 with strong action verbs.",
+    "skills_tech": "Comma-separated technical skills aligned with target job",
+    "skills_soft": "Comma-separated soft skills aligned with target job"
   }}
 }}
 Return ONLY valid JSON without markdown wrapping.
@@ -1614,25 +1620,47 @@ Return ONLY valid JSON without markdown wrapping.
             clean_json_str = clean_json_str[:-3]
 
         parsed_data = json.loads(clean_json_str.strip())
+        opt_sections = parsed_data.get("optimized_sections", {})
 
+        # MERGE STRATEGY: Strictly preserve 100% of original contact details, titles, & work history
+        merged_content = dict(original_content) if original_content else {}
+        
+        # 1. Contact Details Preservation
+        merged_content["full_name"] = original_content.get("full_name") or getattr(current_user, "full_name", "") or "Your Name"
+        merged_content["email"] = original_content.get("email") or getattr(current_user, "email", "")
+        merged_content["phone"] = original_content.get("phone", "")
+        merged_content["location"] = original_content.get("location", "")
+        merged_content["linkedin"] = original_content.get("linkedin", "")
+        merged_content["portfolio"] = original_content.get("portfolio", "")
+
+        # 2. Structural Experience & Title Preservation
+        merged_content["job_title"] = original_content.get("job_title", "")
+        merged_content["target_role"] = original_content.get("target_role") or original_content.get("job_title", "")
+        merged_content["company"] = original_content.get("company", "")
+        merged_content["job_location"] = original_content.get("job_location", "")
+        merged_content["job_dates"] = original_content.get("job_dates", "")
+        merged_content["education_degree"] = original_content.get("education_degree", "")
+        merged_content["education_school"] = original_content.get("education_school", "")
+        merged_content["education_dates"] = original_content.get("education_dates", "")
+        merged_content["education_honors"] = original_content.get("education_honors", "")
+        merged_content["certifications"] = original_content.get("certifications", "")
+        merged_content["projects"] = original_content.get("projects", "")
+        merged_content["languages"] = original_content.get("languages", "")
+
+        # 3. Update ONLY the AI-optimized phrasing
+        merged_content["summary"] = opt_sections.get("summary") or original_content.get("summary", "")
+        merged_content["experience_bullets"] = opt_sections.get("experience_bullets") or original_content.get("experience_bullets", "")
+        merged_content["skills_tech"] = opt_sections.get("skills_tech") or original_content.get("skills_tech", "")
+        merged_content["skills_soft"] = opt_sections.get("skills_soft") or original_content.get("skills_soft", "")
+
+        # Save new optimized resume entry
         new_resume_id = str(uuid.uuid4())
-        optimized_content = parsed_data.get("optimized_cv", {})
-
-        if resume_obj and isinstance(resume_obj.content_json, dict):
-            merged_content = dict(resume_obj.content_json)
-            merged_content.update({
-                "summary": optimized_content.get("summary", merged_content.get("summary", "")),
-                "experience_bullets": optimized_content.get("experience_bullets", merged_content.get("experience_bullets", "")),
-                "skills_tech": optimized_content.get("skills_tech", merged_content.get("skills_tech", "")),
-                "skills_soft": optimized_content.get("skills_soft", merged_content.get("skills_soft", ""))
-            })
-        else:
-            merged_content = optimized_content
-
+        base_title = resume_obj.title if resume_obj else "CV"
+        
         new_resume = Resume(
             id=new_resume_id,
             user_id=current_user.id,
-            title=f"Optimized - {resume_obj.title if resume_obj else 'New CV'}",
+            title=f"ATS Optimized - {base_title}",
             content_json=merged_content,
             template_used="ats",
             updated_at=datetime.utcnow()
