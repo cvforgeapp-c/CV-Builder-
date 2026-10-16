@@ -1,7 +1,3 @@
-"""Job Application Tracker translations for all 17 supported languages.
-Namespaced with 'trk_' prefix to avoid collisions.
-"""
-
 TRACKER_LOCALES = {
     "English (US / UK)": {
         "trk_page_title": "Job Application Tracker — CVForge Pro",
@@ -29,6 +25,12 @@ TRACKER_LOCALES = {
         "trk_placeholder_company": "e.g. OpenAI",
         "trk_placeholder_role": "e.g. Full Stack Developer",
         "trk_placeholder_salary": "e.g. $140,000 - $160,000",
+        "trk_guide_title": "Pipeline Stage Benefits & Explanations",
+        "trk_label_stage_purpose": "Stage Benefit",
+        "trk_benefit_saved": "Roles or postings you find interesting but haven't formally submitted yet. Storing them here allows the system to save the job description so you don't lose it if the posting gets taken down.",
+        "trk_benefit_applied": "Positions where you have formally submitted your CV and cover letter.",
+        "trk_benefit_interview": "Roles where a recruiter or hiring manager has reached out to schedule a screening call, technical assessment, or panel interview.",
+        "trk_benefit_offer": "Positions where you have received a formal offer and are reviewing terms or negotiating.",
     },
 
     "Mandarin Chinese": {
@@ -57,6 +59,12 @@ TRACKER_LOCALES = {
         "trk_placeholder_company": "例如：OpenAI",
         "trk_placeholder_role": "例如：全栈工程师",
         "trk_placeholder_salary": "例如：$140,000 - $160,000",
+        "trk_guide_title": "管道阶段优势与说明",
+        "trk_label_stage_purpose": "阶段优势",
+        "trk_benefit_saved": "您感兴趣但尚未正式提交的职位或岗位。将它们储存在这里可以让系统保存职位描述，以免职位下架后丢失。",
+        "trk_benefit_applied": "您已正式提交简历和求职信的职位。",
+        "trk_benefit_interview": "招聘人员或招聘经理已联系您安排筛选通话、技术评估或小组面试的职位。",
+        "trk_benefit_offer": "您已收到正式录用通知并正在审阅条款或进行谈判的职位。",
     },
 
     "Spanish": {
@@ -85,6 +93,12 @@ TRACKER_LOCALES = {
         "trk_placeholder_company": "ej. OpenAI",
         "trk_placeholder_role": "ej. Desarrollador Full Stack",
         "trk_placeholder_salary": "ej. $140,000 - $160,000",
+        "trk_guide_title": "Beneficios y Explicaciones de las Etapas del Pipeline",
+        "trk_label_stage_purpose": "Beneficio de la Etapa",
+        "trk_benefit_saved": "Roles o publicaciones que te interesan pero a los que Aún no te has postulado formalmente. Almacenarlos aquí permite que el sistema guarde la descripción del puesto para que no la pierdas si la oferta se elimina.",
+        "trk_benefit_applied": "Posiciones en las que has enviado formalmente tu CV y carta de presentación.",
+        "trk_benefit_interview": "Roles en los que un reclutador o gerente de contratación se ha comunicado para programar una llamada de evaluación, prueba técnica o entrevista en panel.",
+        "trk_benefit_offer": "Posiciones en las que has recibido una oferta formal y estás revisando las condiciones o negociando.",
     },
 
     "Hindi": {
@@ -113,6 +127,12 @@ TRACKER_LOCALES = {
         "trk_placeholder_company": "जैसे OpenAI",
         "trk_placeholder_role": "जैसे फुल स्टैक डेवलपर",
         "trk_placeholder_salary": "जैसे $140,000 - $160,000",
+        "trk_guide_title": "पाइपलाइन चरण के लाभ और स्पष्टीकरण",
+        "trk_label_stage_purpose": "चरण लाभ",
+        "trk_benefit_saved": "ऐसी भूमिकाएँ या पोस्टिंग जिनमें आपकी रुचि है लेकिन आपने अभी तक औपचारिक रूप से आवेदन नहीं किया है। इन्हें यहाँ संग्रहीत करने से सिस्टम जॉब विवरण को सहेज सकता है ताकि पोस्टिंग हटाए जाने पर भी आप इसे न खोएँ।",
+        "trk_benefit_applied": "वे पद जिनके लिए आपने औपचारिक रूप से अपना सीवी और कवर लेटर जमा कर दिया है।",
+        "trk_benefit_interview": "ऐसी भूमिकाएँ जहाँ किसी रिक्रूटर या हायरिंग मैनेजर ने स्क्रीनिंग कॉल, तकनीकी मूल्यांकन या पैनल साक्षात्कार शेड्यूल करने के लिए संपर्क किया है।",
+        "trk_benefit_offer": "वे पद जिनके लिए आपको औपचारिक प्रस्ताव मिल गया है और आप शर्तों की समीक्षा कर रहे हैं या बातचीत कर रहे हैं।",
     },
 
     "Arabic": {
@@ -141,6 +161,12 @@ TRACKER_LOCALES = {
         "trk_placeholder_company": "مثال: OpenAI",
         "trk_placeholder_role": "مثال: مطور ويب شامل",
         "trk_placeholder_salary": "مثال: $140,000 - $160,000",
+        "trk_guide_title": "فوائد وتوضيحات مراحل المسار",
+        "trk_label_stage_purpose": "ميزة المرحلة",
+        "trk_benefit_saved": "الأدوار أو الإعلانات التي تثير اهتمامك ولكنك لم تقدم عليها رسمياً بعد. يتيح لك تخزينها هنا للنظام حفظ الوصف الوظيفي حتى لا تفقده إذا تم حذف الإعلان.",
+        "trk_benefit_applied": "المناصب التي قمت بتقديم السيرة الذاتية وخطاب الغلاف لها رسمياً.",
+        "trk_benefit_interview": "الأدوار التي تواصل فيها مسقط الرأس أو مدير التوظيف لجدولة مكالمة تقييم، أو اختبار تقني، أو مقابلة لجنة.",
+        "trk_benefit_offer": "المناصب التي تلقيت فيها عرضاً رسمياً وتعمل على مراجعة الشروط أو التفاوض بشأنها.",
     },
 
     "French": {
@@ -169,6 +195,12 @@ TRACKER_LOCALES = {
         "trk_placeholder_company": "ex. OpenAI",
         "trk_placeholder_role": "ex. Développeur Full Stack",
         "trk_placeholder_salary": "ex. 140 000 $ - 160 000 $",
+        "trk_guide_title": "Avantages et Explications des Étapes du Pipeline",
+        "trk_label_stage_purpose": "Avantage de l'étape",
+        "trk_benefit_saved": "Rôles ou offres qui vous intéressent mais auxquels vous n'avez pas encore postulé formellement. Les stocker ici permet au système de sauvegarder la description du poste pour éviter de la perdre si l'annonce est retirée.",
+        "trk_benefit_applied": "Postes pour lesquels vous avez officiellement soumis votre CV et votre lettre de motivation.",
+        "trk_benefit_interview": "Rôles où un recruteur ou un responsable du recrutement a pris contact pour planifier un appel de qualification, une évaluation technique ou un entretien.",
+        "trk_benefit_offer": "Postes pour lesquels vous avez reçu une offre officielle et examinez les conditions ou négociez.",
     },
 
     "Portuguese": {
@@ -197,6 +229,12 @@ TRACKER_LOCALES = {
         "trk_placeholder_company": "ex. OpenAI",
         "trk_placeholder_role": "ex. Desenvolvedor Full Stack",
         "trk_placeholder_salary": "ex. $140.000 - $160.000",
+        "trk_guide_title": "Benefícios e Explicações das Etapas do Pipeline",
+        "trk_label_stage_purpose": "Benefício da Etapa",
+        "trk_benefit_saved": "Cargos ou vagas do seu interesse, mas aos quais você ainda não se candidatou formalmente. Armazená-los aqui permite que o sistema salve a descrição da vaga para que você não a perca caso o anúncio seja removido.",
+        "trk_benefit_applied": "Posições para as quais você enviou formalmente seu currículo e carta de apresentação.",
+        "trk_benefit_interview": "Cargos em que um recrutador ou gestor de contratação entrou em contato para agendar uma chamada de triagem, avaliação técnica ou entrevista em painel.",
+        "trk_benefit_offer": "Posições em que você recebeu uma oferta formal e está revisando os termos ou negociando.",
     },
 
     "Russian": {
@@ -225,6 +263,12 @@ TRACKER_LOCALES = {
         "trk_placeholder_company": "например, OpenAI",
         "trk_placeholder_role": "например, Full Stack разработчик",
         "trk_placeholder_salary": "например, $140,000 - $160,000",
+        "trk_guide_title": "Преимущества и пояснения этапов воронки",
+        "trk_label_stage_purpose": "Преимущество этапа",
+        "trk_benefit_saved": "Роли или вакансии, которые вам интересны, но на которые вы еще официально не подали заявку. Хранение их здесь позволяет системе сохранить описание вакансии, чтобы вы не потеряли его, если объявление будет удалено.",
+        "trk_benefit_applied": "Позиции, на которые вы официально отправили свое резюме и сопроводительное письмо.",
+        "trk_benefit_interview": "Вакансии, по которым рекрутер или нанимающий менеджер связался с вами для назначения вводного звонка, технического тестирования или собеседования.",
+        "trk_benefit_offer": "Позиции, по которым вы получили официальное предложение и рассматриваете условия или ведете переговоры.",
     },
 
     "German": {
@@ -253,6 +297,12 @@ TRACKER_LOCALES = {
         "trk_placeholder_company": "z. B. OpenAI",
         "trk_placeholder_role": "z. B. Full-Stack-Entwickler",
         "trk_placeholder_salary": "z. B. 140.000 $ - 160.000 $",
+        "trk_guide_title": "Vorteile und Erklärungen der Pipeline-Phasen",
+        "trk_label_stage_purpose": "Phasen-Vorteil",
+        "trk_benefit_saved": "Rollen oder Stellenanzeigen, die Sie interessieren, auf die Sie sich aber noch nicht formal beworben haben. Wenn Sie sie hier speichern, kann das System die Stellenbeschreibung sichern, damit sie nicht verloren geht, falls die Anzeige gelöscht wird.",
+        "trk_benefit_applied": "Positionen, für die Sie Ihren Lebenslauf und Ihr Anschreiben offiziell eingereicht haben.",
+        "trk_benefit_interview": "Rollen, bei denen ein Recruiter oder Hiring Manager Kontakt aufgenommen hat, um ein Kennenlernen, einen technischen Test oder ein Interview zu vereinbaren.",
+        "trk_benefit_offer": "Positionen, für die Sie ein offizielles Angebot erhalten haben und die Bedingungen prüfen oder verhandeln.",
     },
 
     "Japanese": {
@@ -281,6 +331,12 @@ TRACKER_LOCALES = {
         "trk_placeholder_company": "例: OpenAI",
         "trk_placeholder_role": "例: フルスタックエンジニア",
         "trk_placeholder_salary": "例: $140,000 - $160,000",
+        "trk_guide_title": "パイプライン各ステージのメリットと説明",
+        "trk_label_stage_purpose": "ステージのメリット",
+        "trk_benefit_saved": "興味はあるが、まだ正式に応募していない求人やポジション。ここに保存しておけば、募集が削除されても求人内容が失われません。",
+        "trk_benefit_applied": "履歴書とカバーレターを正式に提出したポジション。",
+        "trk_benefit_interview": "リクルーターや採用マネージャーから連絡があり、スクリーニング面談、技術テスト、面接の予定が入ったポジション。",
+        "trk_benefit_offer": "正式な内定通知を受け取り、条件の確認や交渉を行っているポジション。",
     },
 
     "Korean": {
@@ -309,6 +365,12 @@ TRACKER_LOCALES = {
         "trk_placeholder_company": "예: OpenAI",
         "trk_placeholder_role": "예: 풀스택 개발자",
         "trk_placeholder_salary": "예: $140,000 - $160,000",
+        "trk_guide_title": "파이프라인 단계별 이점 및 설명",
+        "trk_label_stage_purpose": "단계별 이점",
+        "trk_benefit_saved": "관심은 있지만 아직 정식으로 지원하지 않은 채용 공고 또는 포지션입니다. 여기에 저장하면 공고가 내려가더라도 시스템이 직무 설명을 보존해 줍니다.",
+        "trk_benefit_applied": "이력서와 자기소개서를 정식으로 제출한 포지션입니다.",
+        "trk_benefit_interview": "리쿠르터나 채용 담당자가 연락하여 스크리닝 통화, 기술 평가 또는 대면/화상 면접을 예약한 포지션입니다.",
+        "trk_benefit_offer": "최종 합격(오퍼)을 받고 조건을 검토하거나 협상 중인 포지션입니다.",
     },
 
     "Italian": {
@@ -337,6 +399,12 @@ TRACKER_LOCALES = {
         "trk_placeholder_company": "es. OpenAI",
         "trk_placeholder_role": "es. Sviluppatore Full Stack",
         "trk_placeholder_salary": "es. $140.000 - $160.000",
+        "trk_guide_title": "Vantaggi e Spiegazioni delle Fasi della Pipeline",
+        "trk_label_stage_purpose": "Vantaggio della Fase",
+        "trk_benefit_saved": "Ruoli o annunci di tuo interesse a cui non hai ancora formalmente candidato. Salvandoli qui, il sistema memorizza la descrizione del lavoro per evitare di perderla se l'annuncio viene rimosso.",
+        "trk_benefit_applied": "Posizioni per le quali hai inviato formalmente il tuo CV e la lettera di presentazione.",
+        "trk_benefit_interview": "Ruoli in cui un recruiter o un hiring manager ti ha contattato per programmare una chiamata conoscitiva, una prova tecnica o un colloquio.",
+        "trk_benefit_offer": "Posizioni per le quali hai ricevuto un'offerta formale e stai esaminando i termini o negoziando.",
     },
 
     "Turkish": {
@@ -365,6 +433,12 @@ TRACKER_LOCALES = {
         "trk_placeholder_company": "örn. OpenAI",
         "trk_placeholder_role": "örn. Full Stack Geliştirici",
         "trk_placeholder_salary": "örn. $140,000 - $160,000",
+        "trk_guide_title": "Süreç Aşaması Faydaları ve Açıklamaları",
+        "trk_label_stage_purpose": "Aşama Faydası",
+        "trk_benefit_saved": "İlgilendiğiniz ancak henüz resmi olarak başvurmadığınız roller veya ilanlar. Bunları buraya kaydetmek, ilan yayından kaldırılsa bile sistemin iş tanımını saklamasına olanak tanır.",
+        "trk_benefit_applied": "CV'nizi ve ön yazı autónom olarak resmi şekilde gönderdiğiniz pozisyonlar.",
+        "trk_benefit_interview": "Bir işe alım uzmanının veya yöneticinin ön görüşme, teknik değerlendirme veya mülakat planlamak için ulaştığı roller.",
+        "trk_benefit_offer": "Resmi bir teklif aldığınız ve şartları incelediğiniz veya müzakere ettiğiniz pozisyonlar.",
     },
 
     "Dutch": {
@@ -393,6 +467,12 @@ TRACKER_LOCALES = {
         "trk_placeholder_company": "bijv. OpenAI",
         "trk_placeholder_role": "bijv. Full Stack Ontwikkelaar",
         "trk_placeholder_salary": "bijv. $140.000 - $160.000",
+        "trk_guide_title": "Pipeline Fase Voordelen & Uitleg",
+        "trk_label_stage_purpose": "Fase Voordeel",
+        "trk_benefit_saved": "Rollen of vacatures die je interessant vindt maar waarop je nog niet formeel hebt gesolliciteerd. Door ze hier op te slagen, bewaart het systeem de functiebeschrijving zodat je deze niet kwijtraakt als de vacature offline wordt gehaald.",
+        "trk_benefit_applied": "Functies waarvoor je je cv en begeleidende brief formeel hebt ingediend.",
+        "trk_benefit_interview": "Functies waarbij een recruiter of hiring manager contact heeft opgenomen om een screeninggesprek, technische beoordeling of panelinterview in te plannen.",
+        "trk_benefit_offer": "Functies waarvoor je een formeel aanbod hebt ontvangen en de voorwaarden aan het beoordelen of onderhandelen bent.",
     },
 
     "Polish": {
@@ -421,6 +501,12 @@ TRACKER_LOCALES = {
         "trk_placeholder_company": "np. OpenAI",
         "trk_placeholder_role": "np. Full Stack Developer",
         "trk_placeholder_salary": "np. $140,000 - $160,000",
+        "trk_guide_title": "Korzyści i Objaśnienia Etapów Rekrutacji",
+        "trk_label_stage_purpose": "Korzyść Etapu",
+        "trk_benefit_saved": "Role lub oferty, które Cię interesują, ale jeszcze na nie nie aplikowałeś. Zapisanie ich tutaj pozwala systemowi zachować opis stanowiska, dzięki czemu go nie stracisz, jeśli oferta zniknie.",
+        "trk_benefit_applied": "Stanowiska, na które oficjalnie przesłałeś swoje CV i list motywacyjny.",
+        "trk_benefit_interview": "Role, w których rekruter lub hiring manager skontaktował się z Tobą w celu umówienia rozmowy wstępnej, testu technicznego lub panelu.",
+        "trk_benefit_offer": "Stanowiska, na które otrzymałeś oficjalną ofertę i analizujesz warunki lub negocjujesz.",
     },
 
     "Swedish": {
@@ -449,6 +535,12 @@ TRACKER_LOCALES = {
         "trk_placeholder_company": "t.ex. OpenAI",
         "trk_placeholder_role": "t.ex. Fullstack-utvecklare",
         "trk_placeholder_salary": "t.ex. $140 000 - $160 000",
+        "trk_guide_title": "Fördelar och Förklaringar för Pipeline-steg",
+        "trk_label_stage_purpose": "Stegfördel",
+        "trk_benefit_saved": "Roller eller annonser som du tycker är intressanta men inte har sökt formellt ännu. Genom att spara dem här kan systemet behålla jobbeskrivningen så att du inte förlorar den om annonsen tas bort.",
+        "trk_benefit_applied": "Tjänster där du formellt har skickat in ditt CV och personliga brev.",
+        "trk_benefit_interview": "Roller där en rekryterare eller rekryteringsansvarig har hört av sig för att boka in ett avstämningssamtal, tekniskt test eller intervju.",
+        "trk_benefit_offer": "Tjänster där du har fått ett formellt erbjudande och går igenom villkor eller förhandlar.",
     },
 
     "Swahili": {
@@ -477,6 +569,12 @@ TRACKER_LOCALES = {
         "trk_placeholder_company": "mfl. OpenAI",
         "trk_placeholder_role": "mfl. Msanidi Programu wa Full Stack",
         "trk_placeholder_salary": "mfl. $140,000 - $160,000",
+        "trk_guide_title": "Faida na Ufafanuzi wa Hatua za Mfumo",
+        "trk_label_stage_purpose": "Faida ya Hatua",
+        "trk_benefit_saved": "Nafasi au matangazo ya kazi unayopenda lakini bado hujatuma maombi rasmi. Kuzihifadhi hapa kunaruhusu mfumo kuokoa maelezo ya kazi ili usipoteze ikiwa tangazo litaondolewa.",
+        "trk_benefit_applied": "Nafasi ambazo umetuma wasifu wako (CV) na barua ya maombi rasmi.",
+        "trk_benefit_interview": "Nafasi ambazo msajili au meneja wa ajira amewasiliana nawe ili kupanga simu ya usaili, mtihani wa kitaalamu, au mahojiano.",
+        "trk_benefit_offer": "Nafasi ambazo umepokea ofa rasmi na unakagua masharti au unajadiliana.",
     },
 
     "Amharic": {
@@ -505,6 +603,12 @@ TRACKER_LOCALES = {
         "trk_placeholder_company": "ምሳሌ፦ OpenAI",
         "trk_placeholder_role": "ምሳሌ፦ Full Stack የሶፍትዌር መሐንዲስ",
         "trk_placeholder_salary": "ምሳሌ፦ $140,000 - $160,000",
+        "trk_guide_title": "የሂደት ደረጃዎች ጥቅሞችና ማብራሪያዎች",
+        "trk_label_stage_purpose": "የደረጃው ጥቅም",
+        "trk_benefit_saved": "ሊያስገቡዋቸው ያሰቡቧቸው ወይም የሚስቡዎ የሥራ ዕድሎች። እዚህ ማስቀመጥዎ ማስታወቂያው ቢጠፋም ሥርዓቱ የሥራውን ዝርዝር መግለጫ እንዲይዝልዎ ያደርጋል።",
+        "trk_benefit_applied": "ሲቪዎን እና የሽፋን ደብዳቤዎን በይፋ የላኩባቸው የሥራ መደቦች።",
+        "trk_benefit_interview": "ቀጣሪዎች ወይም የሥራ ኃላፊዎች የመጀመሪያ ቃለ-መጠይቅ፣ የቴክኒክ ፈተና ወይም የምርጫ ውይይት ለማድረግ ያነጋገሩዎት መደቦች።",
+        "trk_benefit_offer": "ይፋዊ የሥራ ጥሪ (ኦፌር) የተቀበሉባቸው እና ሐሳቦችን እየገመገሙ ወይም ድርድር ላይ ያሉባቸው መደቦች።",
     },
 
     "Afaan Oromoo": {
@@ -533,5 +637,11 @@ TRACKER_LOCALES = {
         "trk_placeholder_company": "fk. OpenAI",
         "trk_placeholder_role": "fk. Full Stack Developer",
         "trk_placeholder_salary": "fk. $140,000 - $160,000",
+        "trk_guide_title": "Bu'aalee fi Ibsa Sadarkaa Paayippaayinii",
+        "trk_label_stage_purpose": "Bu'aa Sadarkichaa",
+        "trk_benefit_saved": "Gahee hojii ykn beeksisa dantaa siif qabu garuu ammatti hin-galchine. Asitti kuusuun kun beeksisni yoo haqameyyuu sirnichi ibsa hojichaa akka qabatu godha.",
+        "trk_benefit_applied": "Bakkee hojii CV keessanii fi barruu ibsaa sirnaan itti ergitan.",
+        "trk_benefit_interview": "Bakkee hojii qaamni qacaru bilbila qormaataa, qormaata teeknikaa, ykn af-gaaffii qopheessuuf isin qunname.",
+        "trk_benefit_offer": "Bakkee hojii affeerraa hojii (offer) argattan fi haalawwan ilaalaa ykn mari'achaa jirtan.",
     }
 }
