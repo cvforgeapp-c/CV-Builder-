@@ -75,9 +75,9 @@ if PROJECT_ROOT not in sys.path:
 # ============================================================
 
 try:
-    from models import db, User, Resume, JobApplication
+    from models import db, User, Resume, JobApplication, CoverLetter
 except ImportError:
-    from ..models import db, User, Resume, JobApplication
+    from ..models import db, User, Resume, JobApplication, CoverLetter
 
 # 1. LEGACY CORE PATHWAY (translations.py) - 100% UNTOUCHED
 try:
@@ -688,7 +688,14 @@ def ats_optimizer():
 @login_required
 def cover_letter():
     resumes = Resume.query.filter_by(user_id=current_user.id).all()
-    return render_template("dashboard/cover_letter.html", resumes=resumes, user=current_user)
+    saved_cover_letters = CoverLetter.query.filter_by(user_id=current_user.id)\
+        .order_by(CoverLetter.created_at.desc()).all()
+    return render_template(
+        "dashboard/cover_letter.html",
+        resumes=resumes,
+        cover_letters=saved_cover_letters,
+        user=current_user
+    )
 
 
 @premium_app.route("/interview")
@@ -1433,6 +1440,7 @@ def delete_user_account():
     try:
         JobApplication.query.filter_by(user_id=current_user.id).delete()
         Resume.query.filter_by(user_id=current_user.id).delete()
+        CoverLetter.query.filter_by(user_id=current_user.id).delete()
         db.session.delete(current_user)
         db.session.commit()
         logout_user()
@@ -1669,16 +1677,95 @@ Formatting & Content Requirements:
 
     try:
         generated_letter = generate_ai_text(prompt, max_tokens=1500)
+
+        # SAVE DIRECTLY TO DATABASE
+        new_letter = CoverLetter(
+            id=str(uuid.uuid4()),
+            user_id=current_user.id,
+            resume_id=resume_id if resume_id != "demo" else None,
+            company_name=company_name,
+            job_title=job_title,
+            tone=tone,
+            job_description=job_description,
+            content=generated_letter,
+            created_at=datetime.utcnow()
+        )
+        db.session.add(new_letter)
+        db.session.commit()
+
         return jsonify({
             "status": "success",
+            "letter_id": new_letter.id,
             "cover_letter_text": generated_letter
         }), 200
 
     except Exception as exc:
+        db.session.rollback()
         premium_app.logger.error("Cover letter generation failed: %s", type(exc).__name__)
         return jsonify({
             "error": "Failed to generate cover letter. Please try again in a moment."
         }), 500
+
+
+@premium_bp.route("/save-cover-letter-pdf", methods=["POST"])
+@login_required
+def save_cover_letter_pdf():
+    data = request.get_json(silent=True) or {}
+    content = data.get("content", "").strip()
+    company_name = data.get("company_name", "Target_Company").strip()
+    
+    if not content:
+        return jsonify({"error": "No cover letter content provided."}), 400
+
+    try:
+        from reportlab.lib.pagesizes import letter
+        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.lib import colors
+
+        buffer = io.BytesIO()
+        doc = SimpleDocTemplate(
+            buffer,
+            pagesize=letter,
+            rightMargin=54,
+            leftMargin=54,
+            topMargin=54,
+            bottomMargin=54
+        )
+        
+        styles = getSampleStyleSheet()
+        body_style = ParagraphStyle(
+            'CoverLetterBody',
+            parent=styles['Normal'],
+            fontName='Helvetica',
+            fontSize=11,
+            leading=16,
+            textColor=colors.HexColor('#0f172a')
+        )
+
+        story = []
+        for paragraph in content.split('\n'):
+            if paragraph.strip():
+                story.append(Paragraph(paragraph.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;'), body_style))
+                story.append(Spacer(1, 10))
+            else:
+                story.append(Spacer(1, 10))
+
+        doc.build(story)
+        buffer.seek(0)
+        
+        safe_filename = re.sub(r'[^\w\s-]', '', company_name).strip().replace(' ', '_')
+        download_name = f"Cover_Letter_{safe_filename or 'Document'}.pdf"
+
+        return send_file(
+            buffer,
+            mimetype='application/pdf',
+            as_attachment=True,
+            download_name=download_name
+        )
+    except Exception as exc:
+        premium_app.logger.error("PDF generation failed: %s", type(exc).__name__)
+        return jsonify({"error": "Failed to generate PDF document."}), 500
 
 
 @premium_bp.route("/user-status", methods=["GET"])
