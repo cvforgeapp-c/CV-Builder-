@@ -372,7 +372,7 @@ FLEXIBLE & FACTUAL GUIDELINES:
 """
 
 
-def generate_with_gemini(prompt, api_key=None):
+def generate_with_gemini(prompt, api_key=None, max_tokens=2048):
     api_key = api_key or get_gemini_api_key()
 
     if not api_key:
@@ -389,9 +389,12 @@ def generate_with_gemini(prompt, api_key=None):
 
     client = genai.Client(api_key=api_key)
 
+    config = types.GenerateContentConfig(max_output_tokens=max_tokens) if types else None
+
     response = client.models.generate_content(
         model="gemini-3.8-flash",
         contents=full_prompt,
+        config=config,
     )
 
     generated_text = getattr(response, "text", None)
@@ -400,14 +403,14 @@ def generate_with_gemini(prompt, api_key=None):
 
     raise RuntimeError("Gemini returned an empty response.")
 
-def generate_ai_text(prompt):
+def generate_ai_text(prompt, max_tokens=2048):
     gemini_key = get_gemini_api_key()
 
     if not gemini_key:
         raise RuntimeError("GEMINI_API_KEY environment variable is missing.")
 
     try:
-        result = generate_with_gemini(prompt, gemini_key)
+        result = generate_with_gemini(prompt, gemini_key, max_tokens=max_tokens)
         print("SUCCESS: Generated using Gemini.")
         return result
     except Exception as exc:
@@ -1009,7 +1012,7 @@ def generate_ai_field():
         prompt = f"""Organize and format the candidate's professional and technical skills tailored to the target role ({target_role}).\n\n{lang_directive}\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Group or list clean, industry-standard skills in {preferred_language}.\n- Return a comma-separated list or clean categorized text without introductory text."""
 
     try:
-        generated_text = generate_ai_text(prompt)
+        generated_text = generate_ai_text(prompt, max_tokens=1024)
     except Exception as exc:
         err_msg = str(exc).lower()
         print(f"CRITICAL AI ERROR LOG: {type(exc).__name__}: {err_msg}")
@@ -1558,7 +1561,7 @@ def scrape_job_url():
             if match:
                 job_id = match.group(1)
                 guest_api_url = f"https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/{job_id}"
-                with httpx.Client(timeout=10.0, follow_redirects=True) as client:
+                with httpx.Client(timeout=8.0, follow_redirects=True) as client:
                     response = client.get(guest_api_url, headers=HEADERS)
                     
                     if response.status_code == 429:
@@ -1575,7 +1578,7 @@ def scrape_job_url():
                                 'job_description': trimmed_description
                             })
 
-        with httpx.Client(timeout=10.0, follow_redirects=True) as client:
+        with httpx.Client(timeout=8.0, follow_redirects=True) as client:
             response = client.get(job_url, headers=HEADERS)
             
             if response.status_code == 429:
@@ -1793,7 +1796,7 @@ Return ONLY a JSON object matching this structure:
         return jsonify({"error": "ATS analysis service is temporarily unavailable. Please try again shortly."}), 503
 
     try:
-        raw_response = generate_ai_text(prompt)
+        raw_response = generate_ai_text(prompt, max_tokens=2048)
         
         clean_json_str = raw_response.strip()
         if clean_json_str.startswith("```json"):
