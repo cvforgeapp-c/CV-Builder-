@@ -600,65 +600,54 @@
             });
         });
 
-        // 5. Client-Side Print-to-PDF Export Handler
-        btnSavePdf.addEventListener('click', () => {
-            const content = clOutputText.value;
-            const company = document.getElementById('targetCompany').value || 'Company';
-            const role = document.getElementById('targetRole').value || 'Position';
+        // 5. Server-Side Direct PDF Export Handler (Mobile & Desktop Compatible)
+        btnSavePdf.addEventListener('click', async () => {
+            const content = clOutputText.value.trim();
+            const company = document.getElementById('targetCompany').value.trim() || 'Company';
 
             if (!content) {
                 showToast('No content to export!', '⚠️');
                 return;
             }
 
-            const printWindow = window.open('', '_blank');
-            if (!printWindow) {
-                showToast('Please allow popups to export PDF', '⚠️');
-                return;
+            btnSavePdf.disabled = true;
+            btnSavePdfText.textContent = 'Generating PDF...';
+
+            try {
+                const response = await fetch('/api/v1/premium/save-cover-letter-pdf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        content: content,
+                        company_name: company
+                    })
+                });
+
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({}));
+                    throw new Error(errData.error || 'Failed to generate PDF.');
+                }
+
+                // Stream back and trigger automatic browser file download
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                const safeCompany = company.replace(/[^a-zA-Z0-9_-]/g, '_');
+                
+                a.href = url;
+                a.download = `Cover_Letter_${safeCompany}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+
+                showToast('Cover letter PDF downloaded successfully!');
+            } catch (err) {
+                showToast(err.message || 'Error generating PDF file.', '❌');
+            } finally {
+                btnSavePdf.disabled = false;
+                btnSavePdfText.textContent = '{{ t_modular("btn_save_pdf", "Save & Export PDF") }}';
             }
-
-            const safeContent = content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
-            printWindow.document.write(`
-                <!DOCTYPE html>
-                <html>
-                    <head>
-                        <title>Cover Letter - ${company}</title>
-                        <style>
-                            @page {
-                                size: letter;
-                                margin: 20mm;
-                            }
-                            body {
-                                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                                color: #0f172a;
-                                line-height: 1.6;
-                                font-size: 14px;
-                                margin: 0;
-                                padding: 20px;
-                            }
-                            .letter-content {
-                                white-space: pre-wrap;
-                                word-wrap: break-word;
-                                font-family: inherit;
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="letter-content">${safeContent}</div>
-                        <script>
-                            window.onload = function() {
-                                window.print();
-                                setTimeout(function() {
-                                    window.close();
-                                }, 500);
-                            };
-                        <\/script>
-                    </body>
-                </html>
-            `);
-            printWindow.document.close();
-            showToast('{{ t_modular("cl_alert_saved_pdf", "Export window opened! Choose Save as PDF.") }}');
         });
     });
 </script>
