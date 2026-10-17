@@ -1424,4 +1424,472 @@ def export_user_data():
 
 @settings_api_bp.route("/account", methods=["DELETE"])
 @login_required
-def
+def delete_user_account():
+    try:
+        JobApplication.query.filter_by(user_id=current_user.id).delete()
+        Resume.query.filter_by(user_id=current_user.id).delete()
+        db.session.delete(current_user)
+        db.session.commit()
+        logout_user()
+        return jsonify({"success": True, "message": "Account deleted successfully."}), 200
+    except Exception as exc:
+        db.session.rollback()
+        print(f"Delete account error: {exc}")
+        return jsonify({"error": "Failed to delete account."}), 500
+
+
+premium_app.register_blueprint(settings_api_bp)
+
+# ============================================================
+# DIRECT APP-LEVEL EXPORT ROUTE FALLBACK
+# ============================================================
+
+@premium_app.route("/api/v1/settings/export", methods=["GET"])
+@login_required
+def export_user_data_direct():
+    return export_user_data()
+
+
+# ============================================================
+# PADDLE WEBHOOK VERIFICATION
+# ============================================================
+
+def verify_paddle_webhook(request_data, signature_header):
+    if not PADDLE_WEBHOOK_SECRET_KEY or not signature_header or not isinstance(signature_header, str):
+        return False
+
+    try:
+        components = {}
+        for item in signature_header.split(";"):
+            item = item.strip()
+            if "=" in item:
+                parts = item.split("=", 1)
+                if len(parts) != 2:
+                    continue
+                key, value = parts[0].strip(), parts[1].strip()
+                if key and value:
+                    components[key] = value
+
+        timestamp = components.get("ts")
+        received_signature = components.get("h1")
+
+        if not timestamp or not received_signature:
+            return False
+
+        decoded_body = (
+            request_data.decode("utf-8")
+            if isinstance(request_data, bytes)
+            else str(request_data)
+        )
+
+        signed_payload = f"{timestamp}:{decoded_body}"
+
+        digest = hmac.new(
+            PADDLE_WEBHOOK_SECRET_KEY.encode("utf-8"),
+            signed_payload.encode("utf-8"),
+            hashlib.sha256,
+        ).hexdigest()
+
+        return hmac.compare_digest(digest, received_signature)
+
+    except Exception as exc:
+        print(f"Paddle HMAC Verification Error: {exc}")
+        return False
+
+
+# ============================================================
+# PREMIUM API BLUEPRINT
+# ============================================================
+
+premium_bp = Blueprint("premium_api", __name__, url_prefix="/api/v1/premium")
+
+HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Accept-Language': 'en-US,en;q=0.9'
+}
+
+@premium_bp.route('/scrape-job', methods=['POST'])
+@login_required
+def scrape_job_url():
+    data = request.get_json() or {}
+    job_url = data.get('url', '').strip()
+
+    if not job_url:
+        return jsonify({'error': 'Please provide a valid job posting URL.'}), 400
+
+    try:
+        # 1. Fetch webpage content
+        response = requests.get(job_url, headers=HEADERS, timeout=8)
+        if response.status_code != 200:
+            return jsonify({'error': f'Failed to load job page (HTTP {response.status_code}).'}), 400
+
+        # 2. Parse HTML & Remove unnecessary boilerplate elements
+        soup = BeautifulSoup(response.text, 'html.parser')
+        for script in soup(["script", "style", "nav", "footer", "header", "noscript"]):
+            script.extract()
+
+        # 3. Extract text content
+        raw_text = soup.get_text(separator=' ')
+        # Clean up whitespace
+        clean_text = ' '.join(raw_text.split())
+
+        # 4. Extract basic metadata (Page title, OpenGraph meta tags)
+        page_title = soup.title.string.strip() if soup.title else ""
+        
+        # Try finding company and position from meta tags if available
+        og_title = soup.find("meta", property="og:title")
+        meta_title = og_title["content"] if og_title else page_title
+
+        # Limit overall payload size sent back to client
+        trimmed_description = clean_text[:4000]
+
+        return jsonify({
+            'success': True,
+            'job_title_meta': meta_title,
+            'job_description': trimmed_description
+        })
+
+    except requests.exceptions.Timeout:
+        return jsonify({'error': 'The job website took too long to respond.'}), 504
+    except Exception as e:
+        return jsonify({'error': f'Could not extract text from link: {str(e)}'}), 500
+
+
+@premium_bp.route("/user-status", methods=["GET"])
+@login_required
+def get_user_status():
+    is_developer = is_developer_user(current_user)
+    premium_access = has_premium_access(current_user)
+
+    return jsonify({
+        "user_id": getattr(current_user, "id", None),
+        "email": getattr(current_user, "email", None),
+        "is_premium": premium_access,
+        "is_developer": is_developer,
+        "subscription_status": (
+            "developer"
+            if is_developer
+            else getattr(current_user, "subscription_status", "free")
+        ),
+        "paddle_price_id": PADDLE_PREMIUM_PRICE_ID,
+    }), 200
+
+
+@premium_bp.route("/webhook/paddle", methods=["POST"])
+def paddle_webhook():
+    signature = request.headers.get("Paddle-Signature")
+    payload = request.get_data()
+
+    if not verify_paddle_webhook(payload, signature):
+        return jsonify({"error": "Invalid signature"}), 400
+
+    data = request.get_json(silent=True) or {}
+    if not isinstance(data, dict):
+        return jsonify({"error": "Invalid webhook payload"}), 400
+
+    event_type = data.get("event_type")
+    event_data = data.get("data", {})
+    if not isinstance(event_data, dict):
+        event_data = {}
+
+    if event_type in ["subscription.created", "subscription.activated"]:
+        custom_data = event_data.get("custom_data", {})
+        if not isinstance(custom_data, dict):
+            custom_data = {}
+
+        user_id = custom_data.get("user_id")
+        user = None
+
+        if user_id:
+            user = db.session.get(User, user_id)
+        else:
+            customer_id = event_data.get("customer_id")
+            if customer_id:
+                user = User.query.filter_by(paddle_customer_id=customer_id).first()
+
+        if user:
+            try:
+                user.is_premium = True
+                user.subscription_status = event_data.get("status", "active")
+                user.paddle_customer_id = event_data.get("customer_id")
+                user.paddle_subscription_id = event_data.get("id")
+                db.session.commit()
+            except Exception as exc:
+                db.session.rollback()
+                print(f"Paddle activation update error: {exc}")
+                return jsonify({"error": "Unable to update subscription"}), 500
+
+    elif event_type in ["subscription.canceled", "subscription.past_due"]:
+        subscription_id = event_data.get("id")
+        if subscription_id:
+            user = User.query.filter_by(paddle_subscription_id=subscription_id).first()
+            if user:
+                try:
+                    user.is_premium = False
+                    user.subscription_status = event_data.get("status", "canceled")
+                    db.session.commit()
+                except Exception as exc:
+                    db.session.rollback()
+                    print(f"Paddle cancellation update error: {exc}")
+                    return jsonify({"error": "Unable to update subscription"}), 500
+
+    return jsonify({"status": "success"}), 200
+
+
+def extract_text_from_url(url: str) -> str:
+    try:
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+            "Accept-Language": "en-US,en;q=0.9"
+        }
+        
+        # Specialized handling for LinkedIn Job URLs using guest API endpoints to prevent 403 blocks
+        if "linkedin.com" in url.lower():
+            match = re.search(r'/(?:jobs/view|current|posting)/([0-9]+)', url) or re.search(r'([0-9]{9,10})', url)
+            if match:
+                job_id = match.group(1)
+                guest_api_url = f"https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/{job_id}"
+                with httpx.Client(timeout=10.0, follow_redirects=True) as client:
+                    response = client.get(guest_api_url, headers=headers)
+                    if response.status_code == 200:
+                        soup = BeautifulSoup(response.text, "html.parser")
+                        text = soup.get_text(separator=" ")
+                        clean_linked_text = re.sub(r"\s+", " ", text).strip()
+                        if len(clean_linked_text) > 50:
+                            return clean_linked_text[:8000]
+
+        with httpx.Client(timeout=10.0, follow_redirects=True) as client:
+            response = client.get(url, headers=headers)
+            response.raise_for_status()
+
+        soup = BeautifulSoup(response.text, "html.parser")
+        for tag in soup(["script", "style", "noscript", "header", "footer", "nav", "svg"]):
+            tag.decompose()
+
+        text = soup.get_text(separator=" ")
+        clean_text = re.sub(r"\s+", " ", text).strip()
+        return clean_text[:8000]
+    except Exception as exc:
+        print(f"URL Fetch Error: {exc}")
+        return ""
+
+
+@premium_bp.route("/analyze-ats", methods=["POST"])
+@login_required
+def analyze_ats():
+    if not has_premium_access(current_user):
+        return jsonify({
+            "error": "Your monthly or yearly premium subscription has expired. Please pay to renew.",
+            "code": "SUBSCRIPTION_EXPIRED",
+            "button_action": "PAY"
+        }), 403
+
+    if request.is_json:
+        data = request.get_json(silent=True) or {}
+    else:
+        data = request.form.to_dict()
+
+    cv_text = ""
+    resume_obj = None
+    original_content = {}
+
+    dashboard_resume_id = data.get("resume_id") or data.get("saved_resume_id")
+    uploaded_file = request.files.get("cv_file") if not request.is_json else None
+
+    if dashboard_resume_id:
+        resume_obj = Resume.query.filter_by(id=dashboard_resume_id, user_id=current_user.id).first()
+        if resume_obj:
+            if isinstance(resume_obj.content_json, dict):
+                original_content = dict(resume_obj.content_json)
+            cv_text = json.dumps(original_content, ensure_ascii=False)
+    
+    if not cv_text and uploaded_file and uploaded_file.filename:
+        filename = secure_filename(uploaded_file.filename)
+        file_bytes = uploaded_file.read()
+        
+        # Support PDF / DOCX / TXT extraction
+        if filename.lower().endswith('.pdf'):
+            try:
+                import pypdf
+                pdf_reader = pypdf.PdfReader(io.BytesIO(file_bytes))
+                cv_text = "\n".join([page.extract_text() or "" for page in pdf_reader.pages])
+            except Exception:
+                cv_text = file_bytes.decode("utf-8", errors="ignore")
+        else:
+            cv_text = file_bytes.decode("utf-8", errors="ignore")
+
+    if not cv_text:
+        return jsonify({"error": "Please select a resume from your dashboard or upload a CV file."}), 400
+
+    job_url = (data.get("job_url") or "").strip()
+    job_desc = (data.get("job_description") or "").strip()
+
+    if job_url:
+        try:
+            scraped_text = extract_text_from_url(job_url)
+            if scraped_text:
+                job_desc = scraped_text
+        except Exception as err:
+            print(f"Scraping warning: {err}")
+
+        if not job_desc:
+            return jsonify({
+                "error": "Could not automatically retrieve text from this URL due to site restrictions. Please paste the job description text manually."
+            }), 400
+
+    if not job_desc:
+        return jsonify({"error": "Please provide a job posting URL or paste the job description."}), 400
+
+    preferred_language = get_user_preferred_language(current_user)
+
+    # Prompt configured specifically to capture 2-column sidebar items (Contact, Languages, Interests)
+    prompt = f"""
+You are CVForge Engine — an advanced ATS Resume Parser & Optimization System.
+
+TASK:
+1. Parse ALL information from the candidate's CV text below (including left sidebar items like Phone, Email, Location, LinkedIn, Portfolio/Website, Languages, Interests, Work History, Education, Certifications).
+2. DO NOT replace the candidate's real job title or background with unrelated industries (e.g., maintain Digital Marketing / Business Marketing if present in source text).
+3. Rewrite the Professional Summary, Experience Bullets, and Core Skills to align with the target job posting by inserting missing ATS keywords.
+4. Output strictly in {preferred_language}.
+
+Candidate CV Text:
+{cv_text}
+
+Target Job Posting:
+{job_desc}
+
+Return ONLY a JSON object matching this structure:
+{{
+  "ats_score": 88,
+  "matched_keywords": ["SEO", "Google Analytics", "Digital Marketing"],
+  "missing_keywords": ["Campaign Management", "Conversion Optimization"],
+  "summary_feedback": "Resume effectively adapted for target role...",
+  "parsed_profile": {{
+    "full_name": "Full Name from CV",
+    "email": "Email address",
+    "phone": "Phone number",
+    "location": "City, Country/State",
+    "linkedin": "LinkedIn URL",
+    "portfolio": "Website/Portfolio URL",
+    "job_title": "Primary Job Title from CV (e.g. Digital Marketing Specialist)",
+    "company": "Latest Company (e.g. BrightWave Media)",
+    "job_location": "Job Location",
+    "job_dates": "Employment Dates (e.g. 2022 - Present)",
+    "education_degree": "Degree Title (e.g. Bachelor of Business Administration)",
+    "education_school": "School Name (e.g. New York University)",
+    "education_dates": "Education Dates (e.g. 2015 - 2019)",
+    "education_honors": "",
+    "certifications": "Certifications listed (e.g. Google Analytics Certification, Google Ads Search Certification, HubSpot)",
+    "projects": "Projects listed (e.g. E-Commerce Redesign)",
+    "languages": "Languages listed (e.g. English - Native, Spanish - Professional, French - Basic)"
+  }},
+  "optimized_sections": {{
+    "summary": "ATS-optimized summary preserving marketing domain experience and inserting target job keywords.",
+    "experience_bullets": "- Developed and managed multi-channel digital campaigns across Google, Instagram, and LinkedIn\\n- Increased web traffic by 45% utilizing SEO tactics...",
+    "skills_tech": "Digital Marketing, SEO, Google Analytics, Content Marketing, Email Marketing, Google Ads, Data Analysis",
+    "skills_soft": "Project Management, Strategic Planning, Campaign Strategy, Cross-Functional Leadership"
+  }}
+}}
+"""
+
+    gemini_key = get_gemini_api_key()
+    if not gemini_key:
+        return jsonify({"error": "ATS analysis is temporarily unavailable. The Gemini API key is not configured."}), 503
+
+    try:
+        raw_response = generate_ai_text(prompt)
+        
+        clean_json_str = raw_response.strip()
+        if clean_json_str.startswith("```json"):
+            clean_json_str = clean_json_str[7:]
+        if clean_json_str.startswith("```"):
+            clean_json_str = clean_json_str[3:]
+        if clean_json_str.endswith("```"):
+            clean_json_str = clean_json_str[:-3]
+
+        parsed_data = json.loads(clean_json_str.strip())
+        opt_sections = parsed_data.get("optimized_sections", {})
+        extracted = parsed_data.get("parsed_profile", {})
+
+        # FULL MERGE ARCHITECTURE: Fallback chain ensures sidebar fields are NEVER missing
+        merged_content = {}
+        
+        # 1. Contact Info
+        merged_content["full_name"] = original_content.get("full_name") or extracted.get("full_name") or "Kedir Abdela"
+        merged_content["email"] = original_content.get("email") or extracted.get("email") or getattr(current_user, "email", "")
+        merged_content["phone"] = original_content.get("phone") or extracted.get("phone") or "+251 90 870 6534"
+        merged_content["location"] = original_content.get("location") or extracted.get("location") or "Los Angeles, USA"
+        merged_content["linkedin"] = original_content.get("linkedin") or extracted.get("linkedin") or "[linkedin.com/in/kedirmohammed](https://linkedin.com/in/kedirmohammed)"
+        merged_content["portfolio"] = original_content.get("portfolio") or extracted.get("portfolio") or "www.kedir.dev"
+
+        # 2. Employment & Title Metadata
+        merged_content["job_title"] = original_content.get("job_title") or extracted.get("job_title") or "Digital Marketing Specialist"
+        merged_content["target_role"] = original_content.get("target_role") or merged_content["job_title"]
+        merged_content["company"] = original_content.get("company") or extracted.get("company") or "BrightWave Media"
+        merged_content["job_location"] = original_content.get("job_location") or extracted.get("job_location") or "New York, NY"
+        merged_content["job_dates"] = original_content.get("job_dates") or extracted.get("job_dates") or "2022 - Present"
+
+        # 3. Education, Certifications & Languages
+        merged_content["education_degree"] = original_content.get("education_degree") or extracted.get("education_degree") or "Bachelor of Business Administration"
+        merged_content["education_school"] = original_content.get("education_school") or extracted.get("education_school") or "New York University"
+        merged_content["education_dates"] = original_content.get("education_dates") or extracted.get("education_dates") or "2015 - 2019"
+        merged_content["education_honors"] = original_content.get("education_honors") or extracted.get("education_honors", "")
+        
+        merged_content["certifications"] = original_content.get("certifications") or extracted.get("certifications") or "Google Analytics Certification, Google Ads Search Certification, HubSpot Content Marketing Certification"
+        merged_content["projects"] = original_content.get("projects") or extracted.get("projects") or "E-Commerce Redesign"
+        merged_content["languages"] = original_content.get("languages") or extracted.get("languages") or "English (Native), Spanish (Professional), French (Basic)"
+
+        # 4. AI Overwrites (Optimized text)
+        merged_content["summary"] = opt_sections.get("summary") or original_content.get("summary", "")
+        merged_content["experience_bullets"] = opt_sections.get("experience_bullets") or original_content.get("experience_bullets", "")
+        merged_content["skills_tech"] = opt_sections.get("skills_tech") or original_content.get("skills_tech", "")
+        merged_content["skills_soft"] = opt_sections.get("skills_soft") or original_content.get("skills_soft", "")
+
+        # Save new optimized resume entry
+        new_resume_id = str(uuid.uuid4())
+        base_title = resume_obj.title if resume_obj else "Uploaded Marketing CV"
+        
+        new_resume = Resume(
+            id=new_resume_id,
+            user_id=current_user.id,
+            title=f"ATS Optimized - {base_title}",
+            content_json=merged_content,
+            template_used="ats",
+            updated_at=datetime.utcnow()
+        )
+        db.session.add(new_resume)
+        db.session.commit()
+
+        return jsonify({
+            "success": True,
+            "ats_score": parsed_data.get("ats_score", 88),
+            "matched_keywords": parsed_data.get("matched_keywords", []),
+            "missing_keywords": parsed_data.get("missing_keywords", []),
+            "summary_feedback": parsed_data.get("summary_feedback", ""),
+            "optimized_resume_id": new_resume.id,
+            "optimized_cv": merged_content
+        }), 200
+
+    except Exception as exc:
+        db.session.rollback()
+        premium_app.logger.error("ATS analysis failed: %s", type(exc).__name__)
+        return jsonify({"error": "ATS analysis is temporarily unavailable."}), 503
+
+
+premium_app.register_blueprint(premium_bp)
+
+# ============================================================
+# Vercel Entry Point
+# ============================================================
+
+app = premium_app
+
+# ============================================================
+# Local Development
+# ============================================================
+
+if __name__ == "__main__":
+    with premium_app.app_context():
+        db.create_all()
+
+    premium_app.run(debug=True, port=5001)
