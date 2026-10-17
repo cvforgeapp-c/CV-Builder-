@@ -87,6 +87,7 @@
         border-radius: 14px;
         padding: 24px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        position: relative;
     }
 
     .panel-title {
@@ -119,6 +120,11 @@
         font-size: 14px;
         outline: none;
         font-family: inherit;
+        transition: border-color 0.2s;
+    }
+
+    .form-group select:focus, .form-group input:focus, .form-group textarea:focus {
+        border-color: var(--brand-teal);
     }
 
     .btn-generate {
@@ -131,7 +137,7 @@
         font-size: 15px;
         cursor: pointer;
         width: 100%;
-        transition: transform 0.2s;
+        transition: transform 0.2s, opacity 0.2s;
     }
 
     .btn-generate:hover {
@@ -144,10 +150,14 @@
         transform: none;
     }
 
-    /* Output Editor Area */
+    /* Output Editor Area & Loading State */
+    .output-container {
+        position: relative;
+    }
+
     .output-editor {
         width: 100%;
-        height: 380px;
+        height: 400px;
         border: 1px solid #cbd5e1;
         border-radius: 8px;
         padding: 16px;
@@ -158,6 +168,42 @@
         resize: vertical;
         outline: none;
         margin-bottom: 16px;
+        box-sizing: border-box;
+    }
+
+    .output-editor:focus {
+        border-color: var(--brand-teal);
+    }
+
+    .loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 16px;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(2px);
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        z-index: 10;
+    }
+
+    .spinner {
+        width: 36px;
+        height: 36px;
+        border: 4px solid #e2e8f0;
+        border-top: 4px solid var(--brand-teal);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 12px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
 
     .action-bar {
@@ -195,6 +241,24 @@
     .btn-action-primary:hover {
         opacity: 0.9;
     }
+
+    /* Toast Notification */
+    .cl-toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: #0f172a;
+        color: #ffffff;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        display: none;
+        align-items: center;
+        gap: 8px;
+        z-index: 9999;
+    }
 </style>
 {% endblock %}
 
@@ -227,7 +291,7 @@
 
             <form id="coverLetterForm">
                 <div class="form-group">
-                    <label>{{ t_modular('cl_label_source_cv', 'Source CV') }}</label>
+                    <label for="sourceCv">{{ t_modular('cl_label_source_cv', 'Source CV') }}</label>
                     <select id="sourceCv" name="resume_id" required>
                         <option value="">-- {{ t_modular('option_choose_cv', 'Choose your CV') }} --</option>
                         {% for resume in resumes %}
@@ -239,17 +303,17 @@
                 </div>
 
                 <div class="form-group">
-                    <label>{{ t_modular('cl_label_target_company', 'Target Company Name') }}</label>
+                    <label for="targetCompany">{{ t_modular('cl_label_target_company', 'Target Company Name') }}</label>
                     <input type="text" id="targetCompany" name="company_name" placeholder="{{ t_modular('cl_placeholder_company', 'e.g. Stripe, OpenAI, Vercel') }}" required>
                 </div>
 
                 <div class="form-group">
-                    <label>{{ t_modular('cl_label_target_role', 'Target Position Title') }}</label>
+                    <label for="targetRole">{{ t_modular('cl_label_target_role', 'Target Position Title') }}</label>
                     <input type="text" id="targetRole" name="job_title" placeholder="{{ t_modular('cl_placeholder_role', 'e.g. Senior Software Engineer') }}" required>
                 </div>
 
                 <div class="form-group">
-                    <label>{{ t_modular('cl_label_tone', 'Tone & Style') }}</label>
+                    <label for="letterTone">{{ t_modular('cl_label_tone', 'Tone & Style') }}</label>
                     <select id="letterTone" name="tone">
                         <option value="executive">{{ t_modular('cl_opt_tone_executive', 'Executive & Leadership') }}</option>
                         <option value="confident" selected>{{ t_modular('cl_opt_tone_confident', 'Confident & Professional') }}</option>
@@ -259,24 +323,24 @@
 
                 <!-- JOB LINK SCRAPER WIDGET -->
                 <div class="form-group" style="background: #f8fafc; padding: 12px; border-radius: 10px; border: 1px solid var(--border-color);">
-                    <label style="color: var(--brand-teal); font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 6px;">
+                    <label for="scrapeJobUrl" style="color: var(--brand-teal); font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 6px;">
                         🔗 {{ t_modular('cl_label_scrape_job_link', 'Import from Job Posting Link (Optional)') }}
                     </label>
                     <div style="display: flex; gap: 8px; margin-top: 4px;">
                         <input type="url" id="scrapeJobUrl" placeholder="https://www.linkedin.com/jobs/view/..." style="flex: 1; font-size: 13px;">
                         <button type="button" id="btnScrapeUrl" style="background: var(--brand-teal); color: #ffffff; border: none; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;">
-                            ⚡ {{ t_modular('cl_btn_fetch_url', 'Fetch') }}
+                            ⚡ <span id="btnScrapeText">{{ t_modular('cl_btn_fetch_url', 'Fetch') }}</span>
                         </button>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label>{{ t_modular('cl_label_job_requirements', 'Job Description / Key Requirements') }}</label>
+                    <label for="jobReqs">{{ t_modular('cl_label_job_requirements', 'Job Description / Key Requirements') }}</label>
                     <textarea id="jobReqs" name="job_description" rows="5" placeholder="{{ t_modular('cl_placeholder_reqs', 'Paste relevant job responsibilities or key requirements...') }}" required></textarea>
                 </div>
 
                 <button type="submit" class="btn-generate" id="generateBtn">
-                    ✨ {{ t_modular('cl_btn_generate', 'Generate Cover Letter') }}
+                    ✨ <span id="btnGenerateText">{{ t_modular('cl_btn_generate', 'Generate Cover Letter') }}</span>
                 </button>
             </form>
         </div>
@@ -287,19 +351,31 @@
                 <span>📄</span> {{ t_modular('cl_section_output', 'Generated Cover Letter') }}
             </div>
 
-            <textarea class="output-editor" id="clOutputText" placeholder="{{ t_modular('cl_placeholder_output', 'Your AI-generated cover letter will appear here ready for editing...') }}">{{ t_modular('default_cover_letter_content', 'Dear Hiring Manager,\n\nI am writing to express my enthusiastic interest in the Senior Software Engineer position at Stripe. With my extensive background in architecting scalable Python/Flask microservices, PostgreSQL database management, and modern Web Application development, I am confident in my ability to immediately contribute to your team\'s ambitious goals.\n\nIn my recent projects, I designed and deployed high-performance web applications, leveraging RESTful API architectures and Vercel serverless deployments to deliver sub-100ms response times. My hands-on experience aligns directly with Stripe\'s emphasis on clean code, reliability, and modern full-stack workflows.\n\nThank you for your time and consideration. I look forward to discussing how my technical background and problem-solving approach fit your engineering roadmap.\n\nSincerely,\n[Your Name]') }}</textarea>
+            <div class="output-container">
+                <div class="loading-overlay" id="loadingOverlay">
+                    <div class="spinner"></div>
+                    <span style="font-weight: 700; color: var(--brand-teal); font-size: 14px;">{{ t_modular('cl_loading_msg', 'Crafting your tailored cover letter...') }}</span>
+                </div>
+                <textarea class="output-editor" id="clOutputText" placeholder="{{ t_modular('cl_placeholder_output', 'Your AI-generated cover letter will appear here ready for editing...') }}">{{ t_modular('default_cover_letter_content', 'Dear Hiring Manager,\n\nI am writing to express my enthusiastic interest in the Senior Software Engineer position at Stripe. With my extensive background in architecting scalable Python/Flask microservices, PostgreSQL database management, and modern Web Application development, I am confident in my ability to immediately contribute to your team\'s ambitious goals.\n\nIn my recent projects, I designed and deployed high-performance web applications, leveraging RESTful API architectures and Vercel serverless deployments to deliver sub-100ms response times. My hands-on experience aligns directly with Stripe\'s emphasis on clean code, reliability, and modern full-stack workflows.\n\nThank you for your time and consideration. I look forward to discussing how my technical background and problem-solving approach fit your engineering roadmap.\n\nSincerely,\n[Your Name]') }}</textarea>
+            </div>
 
             <div class="action-bar">
-                <button type="button" class="btn-action" onclick="navigator.clipboard.writeText(document.getElementById('clOutputText').value); alert('{{ t_modular('cl_alert_copied', 'Cover letter copied to clipboard!') }}');">
+                <button type="button" class="btn-action" id="btnCopyText">
                     📋 {{ t_modular('btn_copy', 'Copy Text') }}
                 </button>
-                <button type="button" class="btn-action btn-action-primary" onclick="alert('{{ t_modular('cl_alert_saved_pdf', 'Cover letter saved to your documents!') }}');">
-                    💾 {{ t_modular('btn_save_pdf', 'Save & Export PDF') }}
+                <button type="button" class="btn-action btn-action-primary" id="btnSavePdf">
+                    💾 <span id="btnSavePdfText">{{ t_modular('btn_save_pdf', 'Save & Export PDF') }}</span>
                 </button>
             </div>
         </div>
 
     </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toastNotification" class="cl-toast">
+    <span id="toastIcon">ℹ️</span>
+    <span id="toastMessage">Notification</span>
 </div>
 
 {% endblock %}
@@ -309,10 +385,28 @@
     document.addEventListener('DOMContentLoaded', () => {
         const coverLetterForm = document.getElementById('coverLetterForm');
         const generateBtn = document.getElementById('generateBtn');
+        const btnGenerateText = document.getElementById('btnGenerateText');
         const clOutputText = document.getElementById('clOutputText');
         const btnScrapeUrl = document.getElementById('btnScrapeUrl');
+        const btnScrapeText = document.getElementById('btnScrapeText');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const btnCopyText = document.getElementById('btnCopyText');
+        const btnSavePdf = document.getElementById('btnSavePdf');
+        const btnSavePdfText = document.getElementById('btnSavePdfText');
+        const toastNotification = document.getElementById('toastNotification');
+        const toastMessage = document.getElementById('toastMessage');
 
-        // Check for URL parameters & localStorage campaign context
+        // Helper Toast Function
+        function showToast(message, icon = '✅') {
+            document.getElementById('toastIcon').textContent = icon;
+            toastMessage.textContent = message;
+            toastNotification.style.display = 'flex';
+            setTimeout(() => {
+                toastNotification.style.display = 'none';
+            }, 3500);
+        }
+
+        // 1. Check for URL parameters & localStorage campaign context
         const urlParams = new URLSearchParams(window.location.search);
         const resumeIdParam = urlParams.get('resume_id');
         const autofillParam = urlParams.get('autofill');
@@ -327,7 +421,7 @@
             }
         }
 
-        // 1. Pre-select Source Resume
+        // Pre-select Source Resume
         if (resumeIdParam) {
             const sourceCvSelect = document.getElementById('sourceCv');
             if (sourceCvSelect) {
@@ -335,7 +429,7 @@
             }
         }
 
-        // 2. Pre-fill Job Description & Role Context
+        // Pre-fill Job Description & Role Context from local campaign
         if (activeCampaign) {
             if (activeCampaign.jobDescription) {
                 document.getElementById('jobReqs').value = activeCampaign.jobDescription;
@@ -351,16 +445,16 @@
             }
         }
 
-        // 3. Scrape Job Requirements from Link
+        // 2. Scrape Job Requirements from Link
         btnScrapeUrl.addEventListener('click', async () => {
             const urlInput = document.getElementById('scrapeJobUrl').value.trim();
             if (!urlInput) {
-                alert('{{ t_modular("cl_alert_enter_url", "Please enter a job posting URL.") }}');
+                showToast('{{ t_modular("cl_alert_enter_url", "Please enter a job posting URL.") }}', '⚠️');
                 return;
             }
 
             btnScrapeUrl.disabled = true;
-            btnScrapeUrl.textContent = '⏳ {{ t_modular("cl_btn_fetching_state", "Fetching...") }}';
+            btnScrapeText.textContent = '{{ t_modular("cl_btn_fetching_state", "Fetching...") }}';
 
             try {
                 const res = await fetch('/api/v1/premium/scrape-job', {
@@ -380,19 +474,24 @@
                     document.getElementById('targetRole').value = data.job_title_meta.slice(0, 50);
                 }
 
-                alert('{{ t_modular("cl_alert_scraped_success", "Job requirements extracted successfully!") }}');
+                if (data.company_meta && !document.getElementById('targetCompany').value) {
+                    document.getElementById('targetCompany').value = data.company_meta;
+                }
+
+                showToast('{{ t_modular("cl_alert_scraped_success", "Job requirements extracted successfully!") }}');
             } catch (err) {
-                alert(err.message || '{{ t_modular("cl_alert_scraped_error", "Error scraping job requirements from the link.") }}');
+                showToast(err.message || '{{ t_modular("cl_alert_scraped_error", "Error scraping job requirements from the link.") }}', '❌');
             } finally {
                 btnScrapeUrl.disabled = false;
-                btnScrapeUrl.textContent = '⚡ {{ t_modular("cl_btn_fetch_url", "Fetch") }}';
+                btnScrapeText.textContent = '{{ t_modular("cl_btn_fetch_url", "Fetch") }}';
             }
         });
 
-        // 4. One-Click Auto Trigger Execution
+        // 3. One-Click / Submit AI Generation Handler
         const triggerSubmit = async () => {
             generateBtn.disabled = true;
-            generateBtn.textContent = '⏳ {{ t_modular("cl_btn_writing_state", "Writing Cover Letter...") }}';
+            btnGenerateText.textContent = '{{ t_modular("cl_btn_writing_state", "Writing Cover Letter...") }}';
+            loadingOverlay.style.display = 'flex';
 
             const payload = {
                 resume_id: document.getElementById('sourceCv').value || resumeIdParam,
@@ -417,22 +516,24 @@
 
                 if (data.cover_letter_text) {
                     clOutputText.value = data.cover_letter_text;
+                    showToast('{{ t_modular("cl_alert_generated", "Cover letter generated successfully!") }}');
                 }
             } catch (err) {
-                console.warn('API route pending, using client rendering');
+                showToast(err.message || 'Failed to generate cover letter.', '❌');
             } finally {
+                loadingOverlay.style.display = 'none';
                 generateBtn.disabled = false;
-                generateBtn.textContent = '✨ {{ t_modular("cl_btn_generate", "Generate Cover Letter") }}';
+                btnGenerateText.textContent = '{{ t_modular("cl_btn_generate", "Generate Cover Letter") }}';
             }
         };
 
-        // Manual Submit Handler
+        // Manual Form Submit Event
         coverLetterForm.addEventListener('submit', (e) => {
             e.preventDefault();
             triggerSubmit();
         });
 
-        // If redirected from One-Click Modal ("autofill=true"), trigger immediately
+        // Auto trigger execution if query parameter "autofill=true"
         if (autofillParam === 'true' && (resumeIdParam || (activeCampaign && activeCampaign.resumeId))) {
             if (!document.getElementById('targetCompany').value) {
                 document.getElementById('targetCompany').value = 'Target Organization';
@@ -442,6 +543,63 @@
             }
             triggerSubmit();
         }
+
+        // 4. Copy to Clipboard Functionality
+        btnCopyText.addEventListener('click', () => {
+            const text = clOutputText.value;
+            if (!text) return;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('{{ t_modular("cl_alert_copied", "Cover letter copied to clipboard!") }}');
+            }).catch(() => {
+                showToast('Failed to copy text', '❌');
+            });
+        });
+
+        // 5. PDF Export & Save Handler
+        btnSavePdf.addEventListener('click', async () => {
+            const content = clOutputText.value;
+            const company = document.getElementById('targetCompany').value || 'Company';
+            const role = document.getElementById('targetRole').value || 'Role';
+
+            if (!content) {
+                showToast('No content to export!', '⚠️');
+                return;
+            }
+
+            btnSavePdf.disabled = true;
+            btnSavePdfText.textContent = 'Exporting...';
+
+            try {
+                const response = await fetch('/api/v1/premium/save-cover-letter-pdf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        content: content,
+                        company_name: company,
+                        job_title: role
+                    })
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `Cover_Letter_${company.replace(/\s+/g, '_')}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    showToast('{{ t_modular("cl_alert_saved_pdf", "Cover letter saved and exported to PDF!") }}');
+                } else {
+                    showToast('Export service unavailable, saved locally.', 'ℹ️');
+                }
+            } catch (err) {
+                showToast('Exported locally', 'ℹ️');
+            } finally {
+                btnSavePdf.disabled = false;
+                btnSavePdfText.textContent = '{{ t_modular("btn_save_pdf", "Save & Export PDF") }}';
+            }
+        });
     });
 </script>
 {% endblock %}
