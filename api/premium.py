@@ -475,15 +475,15 @@ def register():
         password = request.form.get("password") or ""
 
         if not email or not password:
-            flash("Email and password are required.", "error")
+            flash("Please enter both an email address and a password.", "error")
             return redirect(url_for("auth.register"))
 
         if len(password) < 8:
-            flash("Password must contain at least 8 characters.", "error")
+            flash("Your password must be at least 8 characters long.", "error")
             return redirect(url_for("auth.register"))
 
         if User.query.filter_by(email=email).first():
-            flash("Email already registered. Please log in.", "error")
+            flash("An account with this email address already exists. Please log in.", "error")
             return redirect(url_for("auth.register"))
 
         try:
@@ -509,7 +509,7 @@ def register():
         except Exception as exc:
             db.session.rollback()
             print(f"Registration DB Error: {exc}")
-            flash("Registration failed due to a server error. Please try again.", "error")
+            flash("We encountered an issue creating your account. Please try again in a few moments.", "error")
             return redirect(url_for("auth.register"))
 
     return render_template("auth/register.html")
@@ -527,7 +527,7 @@ def login():
             login_user(user)
             return redirect("/dashboard")
 
-        flash("Invalid email or password.", "error")
+        flash("Incorrect email address or password. Please verify your credentials and try again.", "error")
         return redirect(url_for("auth.login"))
 
     return render_template("auth/login.html")
@@ -542,17 +542,17 @@ def forgot_password():
     email = (data.get("email") or "").strip().lower()
 
     if not email:
-        return jsonify({"error": "Email address is required."}), 400
+        return jsonify({"error": "Please enter your email address to proceed."}), 400
 
     user = User.query.filter_by(email=email).first()
     if not user:
-        return jsonify({"message": "If an account exists, verification code has been sent."}), 200
+        return jsonify({"message": "If an account exists with this email, a verification code has been generated."}), 200
 
     code = f"{random.randint(100000, 999999)}"
     verification_codes[email] = code
 
     return jsonify({
-        "message": "Verification code generated successfully.",
+        "message": "A verification code has been generated successfully.",
         "code": code
     }), 200
 
@@ -565,28 +565,28 @@ def reset_password():
     new_password = data.get("newPassword") or ""
 
     if not email or not code or not new_password:
-        return jsonify({"error": "Missing required fields."}), 400
+        return jsonify({"error": "Please fill in all required fields."}), 400
 
     saved_code = verification_codes.get(email)
     if not saved_code or saved_code != code:
-        return jsonify({"error": "Invalid or expired verification code."}), 400
+        return jsonify({"error": "The verification code provided is invalid or has expired."}), 400
 
     if len(new_password) < 8:
-        return jsonify({"error": "Password must contain at least 8 characters."}), 400
+        return jsonify({"error": "Your new password must be at least 8 characters long."}), 400
 
     user = User.query.filter_by(email=email).first()
     if not user:
-        return jsonify({"error": "User account not found."}), 404
+        return jsonify({"error": "Account not found. Please verify your email address."}), 404
 
     try:
         user.password_hash = generate_password_hash(new_password)
         db.session.commit()
         verification_codes.pop(email, None)
-        return jsonify({"message": "Password updated successfully!"}), 200
+        return jsonify({"message": "Your password has been updated successfully."}), 200
     except Exception as exc:
         db.session.rollback()
         print(f"Reset password DB error: {exc}")
-        return jsonify({"error": "Failed to reset password. Please try again."}), 500
+        return jsonify({"error": "Unable to reset password at this time. Please try again shortly."}), 500
 
 
 @auth_bp.route("/logout")
@@ -739,7 +739,7 @@ def save_resume():
         data = request.form.to_dict()
 
     if not isinstance(data, dict):
-        return jsonify({"error": "Invalid resume data."}), 400
+        return jsonify({"error": "Invalid resume data structure."}), 400
 
     title = (data.get("title") or "My CV").strip() or "My CV"
 
@@ -778,7 +778,7 @@ def save_resume():
         resume.updated_at = datetime.utcnow()
     else:
         if resume:
-            return jsonify({"error": "You do not have permission to update this resume."}), 403
+            return jsonify({"error": "You do not have permission to modify this document."}), 403
 
         resume = Resume(
             id=resume_id,
@@ -810,9 +810,9 @@ def save_resume():
         db.session.rollback()
         print(f"Save Resume Error: {exc}")
         if request.is_json:
-            return jsonify({"error": "Failed to save resume."}), 500
+            return jsonify({"error": "Unable to save resume changes. Please try again."}), 500
 
-        flash("Failed to save resume.", "error")
+        flash("Unable to save resume changes. Please try again.", "error")
         return redirect(f"/editor?id={resume_id}")
 
 
@@ -821,7 +821,7 @@ def save_resume():
 def delete_resume(resume_id):
     resume = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first()
     if not resume:
-        return jsonify({"error": "Resume not found or unauthorized access."}), 404
+        return jsonify({"error": "Resume document not found or access denied."}), 404
 
     try:
         db.session.delete(resume)
@@ -830,7 +830,7 @@ def delete_resume(resume_id):
     except Exception as exc:
         db.session.rollback()
         print(f"Error deleting resume: {exc}")
-        return jsonify({"error": "Failed to delete resume."}), 500
+        return jsonify({"error": "Unable to delete resume at this time."}), 500
 
 
 # ============================================================
@@ -861,7 +861,7 @@ def get_job_applications():
         }), 200
     except Exception as exc:
         print(f"Error fetching tracker apps: {exc}")
-        return jsonify({"error": "Failed to fetch applications."}), 500
+        return jsonify({"error": "Unable to fetch job application records."}), 500
 
 
 @tracker_api_bp.route("", methods=["POST"])
@@ -872,8 +872,6 @@ def create_job_application():
     role_title = (data.get("role_title") or "").strip()
     salary = (data.get("salary") or "").strip()
     status = (data.get("status") or "saved").strip()
-    
-    # Safely handle job_url since it is optional/absent in the form modal
     job_url = (data.get("job_url") or "").strip()
 
     if not company_name or not role_title:
@@ -892,11 +890,11 @@ def create_job_application():
         )
         db.session.add(new_app)
         db.session.commit()
-        return jsonify({"success": True, "message": "Application saved successfully!", "id": new_app.id}), 201
+        return jsonify({"success": True, "message": "Application tracked successfully!", "id": new_app.id}), 201
     except Exception as exc:
         db.session.rollback()
         print(f"CRITICAL DB Error creating job application: {type(exc).__name__}: {exc}")
-        return jsonify({"success": False, "error": f"Database error: {str(exc)}"}), 500
+        return jsonify({"success": False, "error": "Unable to save job tracking information."}), 500
 
 
 @tracker_api_bp.route("/<app_id>", methods=["DELETE"])
@@ -905,14 +903,14 @@ def delete_job_application(app_id):
     try:
         app = JobApplication.query.filter_by(id=app_id, user_id=current_user.id).first()
         if not app:
-            return jsonify({"error": "Application not found."}), 404
+            return jsonify({"error": "Application record not found."}), 404
         db.session.delete(app)
         db.session.commit()
-        return jsonify({"success": True, "message": "Application deleted."}), 200
+        return jsonify({"success": True, "message": "Application removed from tracker."}), 200
     except Exception as exc:
         db.session.rollback()
         print(f"Error deleting application: {exc}")
-        return jsonify({"error": "Failed to delete application."}), 500
+        return jsonify({"error": "Unable to delete application record."}), 500
 
 premium_app.register_blueprint(tracker_api_bp)
 
@@ -952,21 +950,21 @@ def generate_ai_field():
 
     if not is_premium_user and credits_remaining <= 0:
         return jsonify({
-            "error": "No AI credits remaining. Please refill your credits to continue generating AI content.",
+            "error": "You have used all available AI generation credits. Please upgrade or refill credits to continue.",
             "code": "CREDIT_INSUFFICIENCY",
             "button_action": "REFILL_CREDIT"
         }), 403
 
     data = request.get_json(silent=True)
     if not isinstance(data, dict):
-        return jsonify({"error": "A valid JSON request is required."}), 400
+        return jsonify({"error": "A valid JSON request payload is required."}), 400
 
     field_type = (data.get("field_type") or "summary").strip().lower()
     supported_fields = {"summary", "experience", "project", "skills"}
 
     if field_type not in supported_fields:
         return jsonify({
-            "error": "Unsupported field type.",
+            "error": "Unsupported resume section specified.",
             "supported_fields": sorted(supported_fields),
         }), 400
 
@@ -981,7 +979,7 @@ def generate_ai_field():
     has_candidate_content = any([full_name, skills, current_input, source_cv, target_role])
     if not has_candidate_content:
         return jsonify({
-            "error": "Please provide your target role or CV details before generating this field.",
+            "error": "Please specify a target role or provide basic CV details before generating AI content.",
             "code": "MISSING_DETAILS",
             "button_action": "FILL_DETAILS"
         }), 400
@@ -1024,7 +1022,7 @@ def generate_ai_field():
             "insufficient_quota",
         ]):
             return jsonify({
-                "error": "The AI service has reached its current usage limit. Please try again later.",
+                "error": "The AI service is experiencing high request volume. Please wait a moment and try again.",
                 "code": "AI_PROVIDER_QUOTA_EXCEEDED",
                 "button_action": "TRY_AGAIN",
             }), 503
@@ -1037,13 +1035,13 @@ def generate_ai_field():
             "unreachable",
         ]):
             return jsonify({
-                "error": "The AI service could not be reached. Please try again shortly.",
+                "error": "A network connection error occurred while contacting AI Assist. Please check your connection and try again.",
                 "code": "NETWORK_ERROR",
                 "button_action": "TRY_AGAIN",
             }), 503
 
         return jsonify({
-            "error": "AI Assist is temporarily unavailable. Please try again in a moment.",
+            "error": "AI Assist is temporarily unavailable. Please try again shortly.",
             "code": "AI_SERVICE_UNAVAILABLE",
             "button_action": "TRY_AGAIN",
         }), 503
@@ -1053,7 +1051,7 @@ def generate_ai_field():
             current_credits = int(getattr(current_user, "ai_credits_remaining", 0) or 0)
             if current_credits <= 0:
                 return jsonify({
-                    "error": "No AI credits remaining. Please refill your credits.",
+                    "error": "No AI generation credits remaining. Please upgrade or top up.",
                     "code": "CREDIT_INSUFFICIENCY",
                     "button_action": "REFILL_CREDIT"
                 }), 403
@@ -1065,7 +1063,7 @@ def generate_ai_field():
             db.session.rollback()
             print(f"AI credit deduction error: {exc}")
             return jsonify({
-                "error": "Credit update error encountered. Please check your account.",
+                "error": "Unable to update generation credits. Please check your account status.",
                 "result": generated_text,
             }), 500
     else:
@@ -1116,25 +1114,25 @@ def account():
         if new_email and new_email != getattr(current_user, "email", None):
             existing_user = User.query.filter_by(email=new_email).first()
             if existing_user:
-                flash("This email is already in use.", "error")
+                flash("This email address is already registered.", "error")
             else:
                 current_user.email = new_email
-                flash("Email updated successfully.", "success")
+                flash("Your email address has been updated successfully.", "success")
 
         if new_password:
             if len(new_password) < 8:
-                flash("Password must contain at least 8 characters.", "error")
+                flash("Your new password must be at least 8 characters long.", "error")
                 return redirect(url_for("dashboard.account"))
 
             current_user.password_hash = generate_password_hash(new_password)
-            flash("Password updated successfully.", "success")
+            flash("Your password has been updated successfully.", "success")
 
         try:
             db.session.commit()
         except Exception as exc:
             db.session.rollback()
             print(f"Account update error: {exc}")
-            flash("Account changes could not be saved.", "error")
+            flash("Account updates could not be saved at this time.", "error")
 
         return redirect(url_for("dashboard.account"))
 
@@ -1198,7 +1196,7 @@ def update_settings_section(section):
             data = {"language": data}
         else:
             return jsonify({
-                "error": "A valid JSON object is required."
+                "error": "A valid configuration payload is required."
             }), 400
 
     existing_preferences = (
@@ -1233,7 +1231,7 @@ def update_settings_section(section):
 
         if not isinstance(selected_language, str):
             return jsonify({
-                "error": "The selected language must be a string.",
+                "error": "Language selection must be provided as text.",
                 "supported_languages": SUPPORTED_LANGUAGES,
             }), 400
 
@@ -1241,13 +1239,13 @@ def update_settings_section(section):
 
         if not selected_language:
             return jsonify({
-                "error": "Please select a language.",
+                "error": "Please select a language preference.",
                 "supported_languages": SUPPORTED_LANGUAGES,
             }), 400
 
         if selected_language not in SUPPORTED_LANGUAGES:
             return jsonify({
-                "error": "This language is not supported.",
+                "error": "The selected language is not supported.",
                 "supported_languages": SUPPORTED_LANGUAGES,
             }), 400
 
@@ -1278,7 +1276,7 @@ def update_settings_section(section):
                 or selected_language not in SUPPORTED_LANGUAGES
             ):
                 return jsonify({
-                    "error": "This language is not supported.",
+                    "error": "The selected language is not supported.",
                     "supported_languages": SUPPORTED_LANGUAGES,
                 }), 400
 
@@ -1298,7 +1296,7 @@ def update_settings_section(section):
 
     else:
         return jsonify({
-            "error": "Invalid settings section."
+            "error": "Invalid settings section specified."
         }), 400
 
     current_user.preferences_json = prefs
@@ -1317,7 +1315,7 @@ def update_settings_section(section):
 
         return jsonify({
             "success": True,
-            "message": f"{section.capitalize()} updated successfully!",
+            "message": f"{section.capitalize()} settings updated successfully.",
             "language": saved_language,
             "language_code": LANGUAGE_CODES.get(
                 saved_language,
@@ -1335,7 +1333,7 @@ def update_settings_section(section):
         )
 
         return jsonify({
-            "error": "Failed to save settings."
+            "error": "Unable to save setting changes. Please try again."
         }), 500
 
 
@@ -1343,11 +1341,11 @@ def update_settings_section(section):
 @login_required
 def upload_avatar():
     if 'avatar' not in request.files:
-        return jsonify({"error": "No image file provided"}), 400
+        return jsonify({"error": "Please select an image file to upload."}), 400
     
     file = request.files['avatar']
     if not file.filename:
-        return jsonify({"error": "No selected file"}), 400
+        return jsonify({"error": "No file was selected for upload."}), 400
 
     try:
         file_bytes = file.read()
@@ -1363,7 +1361,7 @@ def upload_avatar():
     except Exception as exc:
         db.session.rollback()
         print(f"Avatar upload error: {exc}")
-        return jsonify({"error": "Failed to process avatar upload"}), 500
+        return jsonify({"error": "Unable to process profile image. Please try a different image file."}), 500
 
 
 @settings_api_bp.route("/password", methods=["PUT"])
@@ -1374,52 +1372,56 @@ def update_user_password():
     new_pass = data.get("newPassword", "")
 
     if not check_password_hash(current_user.password_hash, curr_pass):
-        return jsonify({"error": "Current password is incorrect."}), 400
+        return jsonify({"error": "The current password provided is incorrect."}), 400
 
     if len(new_pass) < 8:
-        return jsonify({"error": "New password must contain at least 8 characters."}), 400
+        return jsonify({"error": "Your new password must be at least 8 characters long."}), 400
 
     current_user.password_hash = generate_password_hash(new_pass)
     try:
         db.session.commit()
-        return jsonify({"success": True, "message": "Password updated successfully!"}), 200
+        return jsonify({"success": True, "message": "Password updated successfully."}), 200
     except Exception as exc:
         db.session.rollback()
-        return jsonify({"error": "Failed to update password."}), 500
+        return jsonify({"error": "Unable to update password. Please try again."}), 500
 
 
 @settings_api_bp.route("/export", methods=["GET"])
 @login_required
 def export_user_data():
-    user_resumes = Resume.query.filter_by(user_id=current_user.id).all()
-    
-    clean_prefs = dict(current_user.preferences_json or {})
-    if "profile" in clean_prefs and isinstance(clean_prefs["profile"], dict):
-        clean_prefs["profile"].pop("avatarImage", None)
+    try:
+        user_resumes = Resume.query.filter_by(user_id=current_user.id).all()
+        
+        clean_prefs = dict(current_user.preferences_json or {})
+        if "profile" in clean_prefs and isinstance(clean_prefs["profile"], dict):
+            clean_prefs["profile"].pop("avatarImage", None)
 
-    user_data = {
-        "email": current_user.email,
-        "full_name": getattr(current_user, "full_name", ""),
-        "avatar_url": getattr(current_user, "avatar_url", ""),
-        "preferences": clean_prefs,
-        "resumes": [
-            {
-                "id": r.id,
-                "title": r.title,
-                "template_used": r.template_used,
-                "updated_at": r.updated_at.isoformat() if r.updated_at else None,
-                "content": r.content_json or {}
-            }
-            for r in user_resumes
-        ]
-    }
-    buffer = io.BytesIO(json.dumps(user_data, indent=2).encode('utf-8'))
-    return send_file(
-        buffer,
-        mimetype='application/json',
-        as_attachment=True,
-        download_name='CVForge_Data_Export.json'
-    )
+        user_data = {
+            "email": current_user.email,
+            "full_name": getattr(current_user, "full_name", ""),
+            "avatar_url": getattr(current_user, "avatar_url", ""),
+            "preferences": clean_prefs,
+            "resumes": [
+                {
+                    "id": r.id,
+                    "title": r.title,
+                    "template_used": r.template_used,
+                    "updated_at": r.updated_at.isoformat() if r.updated_at else None,
+                    "content": r.content_json or {}
+                }
+                for r in user_resumes
+            ]
+        }
+        buffer = io.BytesIO(json.dumps(user_data, indent=2).encode('utf-8'))
+        return send_file(
+            buffer,
+            mimetype='application/json',
+            as_attachment=True,
+            download_name='CVForge_Data_Export.json'
+        )
+    except Exception as exc:
+        print(f"Data export error: {exc}")
+        return jsonify({"error": "Unable to export account data at this time."}), 500
 
 
 @settings_api_bp.route("/account", methods=["DELETE"])
@@ -1431,11 +1433,11 @@ def delete_user_account():
         db.session.delete(current_user)
         db.session.commit()
         logout_user()
-        return jsonify({"success": True, "message": "Account deleted successfully."}), 200
+        return jsonify({"success": True, "message": "Your account has been deleted successfully."}), 200
     except Exception as exc:
         db.session.rollback()
         print(f"Delete account error: {exc}")
-        return jsonify({"error": "Failed to delete account."}), 500
+        return jsonify({"error": "Unable to delete account at this time. Please contact support."}), 500
 
 
 premium_app.register_blueprint(settings_api_bp)
@@ -1558,6 +1560,12 @@ def scrape_job_url():
                 guest_api_url = f"https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/{job_id}"
                 with httpx.Client(timeout=10.0, follow_redirects=True) as client:
                     response = client.get(guest_api_url, headers=HEADERS)
+                    
+                    if response.status_code == 429:
+                        return jsonify({
+                            'error': 'The job portal is currently limiting automated requests. Please copy and paste the job description text directly below.'
+                        }), 429
+                        
                     if response.status_code == 200:
                         trimmed_description = extract_targeted_job_description(response.text)
                         if len(trimmed_description) > 50:
@@ -1569,6 +1577,12 @@ def scrape_job_url():
 
         with httpx.Client(timeout=10.0, follow_redirects=True) as client:
             response = client.get(job_url, headers=HEADERS)
+            
+            if response.status_code == 429:
+                return jsonify({
+                    'error': 'The target website is limiting automated access. Please copy and paste the job description text directly below.'
+                }), 429
+                
             response.raise_for_status()
 
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -1585,9 +1599,9 @@ def scrape_job_url():
         })
 
     except requests.exceptions.Timeout:
-        return jsonify({'error': 'The job website took too long to respond.'}), 504
+        return jsonify({'error': 'The job website took too long to respond. Please copy and paste the description text directly.'}), 504
     except Exception as e:
-        return jsonify({'error': f'Could not extract text from link: {str(e)}'}), 500
+        return jsonify({'error': 'Unable to extract text from this link due to security protections. Please copy and paste the job description text directly.'}), 500
 
 
 @premium_bp.route("/user-status", methods=["GET"])
@@ -1616,11 +1630,11 @@ def paddle_webhook():
     payload = request.get_data()
 
     if not verify_paddle_webhook(payload, signature):
-        return jsonify({"error": "Invalid signature"}), 400
+        return jsonify({"error": "Invalid webhook signature."}), 400
 
     data = request.get_json(silent=True) or {}
     if not isinstance(data, dict):
-        return jsonify({"error": "Invalid webhook payload"}), 400
+        return jsonify({"error": "Invalid webhook payload structure."}), 400
 
     event_type = data.get("event_type")
     event_data = data.get("data", {})
@@ -1652,7 +1666,7 @@ def paddle_webhook():
             except Exception as exc:
                 db.session.rollback()
                 print(f"Paddle activation update error: {exc}")
-                return jsonify({"error": "Unable to update subscription"}), 500
+                return jsonify({"error": "Unable to update subscription status."}), 500
 
     elif event_type in ["subscription.canceled", "subscription.past_due"]:
         subscription_id = event_data.get("id")
@@ -1666,7 +1680,7 @@ def paddle_webhook():
                 except Exception as exc:
                     db.session.rollback()
                     print(f"Paddle cancellation update error: {exc}")
-                    return jsonify({"error": "Unable to update subscription"}), 500
+                    return jsonify({"error": "Unable to update subscription status."}), 500
 
     return jsonify({"status": "success"}), 200
 
@@ -1676,7 +1690,7 @@ def paddle_webhook():
 def analyze_ats():
     if not has_premium_access(current_user):
         return jsonify({
-            "error": "Your monthly or yearly premium subscription has expired. Please pay to renew.",
+            "error": "Your premium subscription has expired. Please renew your subscription to access ATS optimization features.",
             "code": "SUBSCRIPTION_EXPIRED",
             "button_action": "PAY"
         }), 403
@@ -1715,13 +1729,13 @@ def analyze_ats():
             cv_text = file_bytes.decode("utf-8", errors="ignore")
 
     if not cv_text:
-        return jsonify({"error": "Please select a resume from your dashboard or upload a CV file."}), 400
+        return jsonify({"error": "Please select a resume from your dashboard or upload a valid CV document."}), 400
 
     # STRICT: Analysis and optimization rely EXCLUSIVELY on the provided job description text, ignoring any raw URL parameters.
     job_desc = (data.get("job_description") or "").strip()
 
     if not job_desc:
-        return jsonify({"error": "Please provide a valid job description."}), 400
+        return jsonify({"error": "Please provide a valid job description before running the optimization."}), 400
 
     preferred_language = get_user_preferred_language(current_user)
 
@@ -1776,7 +1790,7 @@ Return ONLY a JSON object matching this structure:
 
     gemini_key = get_gemini_api_key()
     if not gemini_key:
-        return jsonify({"error": "ATS analysis is temporarily unavailable. The Gemini API key is not configured."}), 503
+        return jsonify({"error": "ATS analysis service is temporarily unavailable. Please try again shortly."}), 503
 
     try:
         raw_response = generate_ai_text(prompt)
@@ -1850,7 +1864,7 @@ Return ONLY a JSON object matching this structure:
     except Exception as exc:
         db.session.rollback()
         premium_app.logger.error("ATS analysis failed: %s", type(exc).__name__)
-        return jsonify({"error": "ATS analysis is temporarily unavailable."}), 503
+        return jsonify({"error": "ATS analysis is temporarily unavailable. Please try again shortly."}), 503
 
 
 premium_app.register_blueprint(premium_bp)
