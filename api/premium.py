@@ -1830,7 +1830,7 @@ Return ONLY valid JSON without markdown wrapping.
         }), 503
 
 
-premium_bp.register_blueprint(premium_bp)
+premium_app.register_blueprint(premium_bp)
 
 # ============================================================
 # Vercel Entry Point
