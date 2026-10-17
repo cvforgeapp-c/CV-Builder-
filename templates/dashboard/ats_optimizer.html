@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 
 {% block title %}{{ t_modular('ats_page_title', 'AI ATS Optimization Engine — CVForge Pro') }}{% endblock %}
@@ -158,6 +157,32 @@
     .form-group textarea:focus {
         border-color: var(--brand-teal);
         box-shadow: 0 0 0 3px rgba(2, 53, 60, 0.08);
+    }
+
+    .url-input-group {
+        display: flex;
+        gap: 8px;
+    }
+
+    .url-input-group input {
+        flex: 1;
+    }
+
+    .btn-fetch-url {
+        background: var(--brand-teal);
+        color: #ffffff;
+        border: none;
+        padding: 0 16px;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 12px;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .btn-fetch-url:hover {
+        background: var(--brand-teal-light);
     }
 
     .file-input-wrapper {
@@ -426,14 +451,17 @@
                 <!-- 2. TARGET JOB SPEC SOURCE -->
                 <div class="form-group">
                     <label>{{ t_modular('ats_label_job_url', '2. Target Job Posting Link (URL)') }}</label>
-                    <input type="url" id="jobUrlInput" name="job_url" placeholder="https://www.linkedin.com/jobs/view/..." />
+                    <div class="url-input-group">
+                        <input type="url" id="job_url_input" name="job_url" placeholder="https://www.linkedin.com/jobs/view/..." />
+                        <button type="button" class="btn-fetch-url" onclick="fetchJobFromUrl()">Fetch URL</button>
+                    </div>
                 </div>
 
                 <div class="divider-or">{{ t_modular('ats_divider_or_paste', 'or paste description text') }}</div>
 
                 <div class="form-group">
                     <label>{{ t_modular('ats_label_job_desc', 'Target Job Description') }}</label>
-                    <textarea id="jobDescInput" name="job_description" rows="5" placeholder="{{ t_modular('ats_placeholder_job_desc', 'Paste full job requirements or posting text here...') }}"></textarea>
+                    <textarea id="job_description_textarea" name="job_description" rows="5" placeholder="{{ t_modular('ats_placeholder_job_desc', 'Paste full job requirements or posting text here...') }}"></textarea>
                 </div>
 
                 <button type="submit" class="btn-analyze" id="analyzeBtn">
@@ -512,6 +540,36 @@
 
 {% block extra_js %}
 <script>
+    async function fetchJobFromUrl() {
+        const urlInput = document.getElementById("job_url_input").value.trim();
+        const textArea = document.getElementById("job_description_textarea");
+
+        if (!urlInput) {
+            alert("Please paste a job URL first.");
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/v1/premium/scrape-job', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: urlInput })
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.job_description) {
+                // Automatically insert scraped text into text area
+                textArea.value = data.job_description;
+                alert("Job description extracted successfully!");
+            } else {
+                alert(data.error || "Could not fetch details automatically. Please copy & paste the text manually.");
+            }
+        } catch (err) {
+            alert("Failed to reach server. Please paste the job description text manually.");
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         const atsForm = document.getElementById('atsForm');
         const analyzeBtn = document.getElementById('analyzeBtn');
@@ -525,8 +583,8 @@
             // Validate inputs
             const resumeId = document.getElementById('resumeSelect').value;
             const cvFile = document.getElementById('cvFileInput').files[0];
-            const jobUrl = document.getElementById('jobUrlInput').value.trim();
-            const jobDesc = document.getElementById('jobDescInput').value.trim();
+            const jobUrl = document.getElementById('job_url_input').value.trim();
+            const jobDesc = document.getElementById('job_description_textarea').value.trim();
 
             if (!resumeId && !cvFile) {
                 alert('Please select a saved resume from your dashboard or upload a CV document.');
