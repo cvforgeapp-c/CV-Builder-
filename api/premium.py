@@ -1639,8 +1639,25 @@ def paddle_webhook():
 def extract_text_from_url(url: str) -> str:
     try:
         headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+            "Accept-Language": "en-US,en;q=0.9"
         }
+        
+        # Specialized handling for LinkedIn Job URLs using guest API endpoints to prevent 403 blocks
+        if "linkedin.com" in url.lower():
+            match = re.search(r'/(?:jobs/view|current|posting)/([0-9]+)', url) or re.search(r'([0-9]{9,10})', url)
+            if match:
+                job_id = match.group(1)
+                guest_api_url = f"https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/{job_id}"
+                with httpx.Client(timeout=10.0, follow_redirects=True) as client:
+                    response = client.get(guest_api_url, headers=headers)
+                    if response.status_code == 200:
+                        soup = BeautifulSoup(response.text, "html.parser")
+                        text = soup.get_text(separator=" ")
+                        clean_linked_text = re.sub(r"\s+", " ", text).strip()
+                        if len(clean_linked_text) > 50:
+                            return clean_linked_text[:8000]
+
         with httpx.Client(timeout=10.0, follow_redirects=True) as client:
             response = client.get(url, headers=headers)
             response.raise_for_status()
@@ -1698,11 +1715,17 @@ def analyze_ats():
     job_desc = (data.get("job_description") or "").strip()
 
     if job_url:
-        scraped_text = extract_text_from_url(job_url)
-        if scraped_text:
-            job_desc = scraped_text
-        elif not job_desc:
-            return jsonify({"error": "Could not extract content from the provided job URL. Please paste the job description text."}), 400
+        try:
+            scraped_text = extract_text_from_url(job_url)
+            if scraped_text:
+                job_desc = scraped_text
+        except Exception as err:
+            print(f"Scraping warning: {err}")
+
+        if not job_desc:
+            return jsonify({
+                "error": "Could not automatically retrieve text from this URL due to site restrictions. Please paste the job description text manually."
+            }), 400
 
     if not job_desc:
         return jsonify({"error": "Please provide a job posting URL or paste the job description."}), 400
