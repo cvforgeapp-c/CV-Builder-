@@ -30,6 +30,7 @@ class User(UserMixin, db.Model):
     
     resumes = db.relationship('Resume', backref='owner', lazy=True)
     applications = db.relationship('JobApplication', backref='owner', lazy=True)
+    cover_letters = db.relationship('CoverLetter', backref='owner', lazy=True)
 
 
 class Resume(db.Model):
@@ -59,4 +60,19 @@ class JobApplication(db.Model):
     job_url = db.Column("job_url", db.Text, nullable=True)
     ats_score = db.Column("ats_score", db.Integer, nullable=True)
     applied_date = db.Column("applied_date", db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column("updated_at", db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class CoverLetter(db.Model):
+    __tablename__ = 'cover_letters'
+    
+    id = db.Column(db.String(36), primary_key=True)
+    user_id = db.Column("user_id", db.String(36), db.ForeignKey('users.id'), nullable=False)
+    resume_id = db.Column("resume_id", db.String(36), db.ForeignKey('resumes.id'), nullable=True)
+    company_name = db.Column("company_name", db.String(255), nullable=False)
+    job_title = db.Column("job_title", db.String(255), nullable=False)
+    tone = db.Column("tone", db.String(50), default="confident")
+    job_description = db.Column("job_description", db.Text, nullable=True, default="")
+    content = db.Column("content", db.Text, nullable=False)
+    created_at = db.Column("created_at", db.DateTime, default=datetime.utcnow)
     updated_at = db.Column("updated_at", db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
