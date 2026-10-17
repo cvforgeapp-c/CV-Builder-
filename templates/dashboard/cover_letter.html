@@ -370,6 +370,34 @@
         </div>
 
     </div>
+
+    <!-- SAVED COVER LETTERS HISTORY PANEL -->
+    {% if cover_letters %}
+    <div class="panel-card" style="margin-top: 28px;">
+        <div class="panel-title">
+            <span>📚</span> {{ t_modular('cl_saved_history_title', 'Saved Cover Letters') }}
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;">
+            {% for letter in cover_letters %}
+            <div style="border: 1px solid var(--border-color); padding: 16px; border-radius: 10px; background: #f8fafc; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <h4 style="margin: 0 0 4px 0; font-size: 15px; color: var(--brand-teal);">{{ letter.job_title }}</h4>
+                    <p style="margin: 0 0 12px 0; font-size: 13px; color: var(--text-secondary); font-weight: 600;">@ {{ letter.company_name }}</p>
+                    <small style="color: #94a3b8; font-size: 11px;">Created: {{ letter.created_at.strftime('%b %d, %Y') }}</small>
+                </div>
+                
+                <button type="button" 
+                        onclick="loadCoverLetter('{{ letter.company_name|e }}', '{{ letter.job_title|e }}', `{{ letter.content|e }}`)" 
+                        class="btn-action" 
+                        style="margin-top: 14px; width: 100%; font-size: 12px;">
+                    📂 Load into Editor
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
 </div>
 
 <!-- Toast Container -->
@@ -382,6 +410,23 @@
 
 {% block extra_js %}
 <script>
+    // Global helper to load saved cover letters into editor
+    function loadCoverLetter(company, role, content) {
+        document.getElementById('targetCompany').value = company;
+        document.getElementById('targetRole').value = role;
+        document.getElementById('clOutputText').value = content;
+        
+        const toast = document.getElementById('toastNotification');
+        document.getElementById('toastIcon').textContent = '📂';
+        document.getElementById('toastMessage').textContent = 'Cover letter loaded into editor!';
+        toast.style.display = 'flex';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3500);
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         const coverLetterForm = document.getElementById('coverLetterForm');
         const generateBtn = document.getElementById('generateBtn');
@@ -516,7 +561,7 @@
 
                 if (data.cover_letter_text) {
                     clOutputText.value = data.cover_letter_text;
-                    showToast('{{ t_modular("cl_alert_generated", "Cover letter generated successfully!") }}');
+                    showToast('{{ t_modular("cl_alert_generated", "Cover letter generated successfully & saved to history!") }}');
                 }
             } catch (err) {
                 showToast(err.message || 'Failed to generate cover letter.', '❌');
