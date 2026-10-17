@@ -688,8 +688,14 @@ def ats_optimizer():
 @login_required
 def cover_letter():
     resumes = Resume.query.filter_by(user_id=current_user.id).all()
-    saved_cover_letters = CoverLetter.query.filter_by(user_id=current_user.id)\
-        .order_by(CoverLetter.created_at.desc()).all()
+    try:
+        saved_cover_letters = CoverLetter.query.filter_by(user_id=current_user.id)\
+            .order_by(CoverLetter.created_at.desc()).all()
+    except Exception as exc:
+        db.session.rollback()
+        premium_app.logger.warning("CoverLetter table query failed (table may not exist yet): %s", exc)
+        saved_cover_letters = []
+
     return render_template(
         "dashboard/cover_letter.html",
         resumes=resumes,
@@ -1440,7 +1446,10 @@ def delete_user_account():
     try:
         JobApplication.query.filter_by(user_id=current_user.id).delete()
         Resume.query.filter_by(user_id=current_user.id).delete()
-        CoverLetter.query.filter_by(user_id=current_user.id).delete()
+        try:
+            CoverLetter.query.filter_by(user_id=current_user.id).delete()
+        except Exception:
+            db.session.rollback()
         db.session.delete(current_user)
         db.session.commit()
         logout_user()
@@ -1679,23 +1688,29 @@ Formatting & Content Requirements:
         generated_letter = generate_ai_text(prompt, max_tokens=1500)
 
         # SAVE DIRECTLY TO DATABASE
-        new_letter = CoverLetter(
-            id=str(uuid.uuid4()),
-            user_id=current_user.id,
-            resume_id=resume_id if resume_id != "demo" else None,
-            company_name=company_name,
-            job_title=job_title,
-            tone=tone,
-            job_description=job_description,
-            content=generated_letter,
-            created_at=datetime.utcnow()
-        )
-        db.session.add(new_letter)
-        db.session.commit()
+        try:
+            new_letter = CoverLetter(
+                id=str(uuid.uuid4()),
+                user_id=current_user.id,
+                resume_id=resume_id if resume_id != "demo" else None,
+                company_name=company_name,
+                job_title=job_title,
+                tone=tone,
+                job_description=job_description,
+                content=generated_letter,
+                created_at=datetime.utcnow()
+            )
+            db.session.add(new_letter)
+            db.session.commit()
+            letter_id = new_letter.id
+        except Exception as db_exc:
+            db.session.rollback()
+            premium_app.logger.warning("Failed to save cover letter to DB (table may not exist): %s", db_exc)
+            letter_id = None
 
         return jsonify({
             "status": "success",
-            "letter_id": new_letter.id,
+            "letter_id": letter_id,
             "cover_letter_text": generated_letter
         }), 200
 
