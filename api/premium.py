@@ -1748,7 +1748,7 @@ You are CVForge Engine — an advanced ATS Resume Parser & Optimization System.
 
 TASK:
 1. Parse ALL information from the candidate's CV text below (including left sidebar items like Phone, Email, Location, LinkedIn, Portfolio/Website, Languages, Interests, Work History, Education, Certifications).
-2. DO NOT replace the candidate's real job title or background with unrelated industries (e.g., maintain Digital Marketing / Business Marketing if present in source text).
+2. DO NOT replace the candidate's real job title or background with unrelated industries. Keep the candidate's actual domain and career history accurately reflected in the parsed data.
 3. Rewrite the Professional Summary, Experience Bullets, and Core Skills to align with the target job posting by inserting missing ATS keywords.
 4. Output strictly in {preferred_language}.
 
@@ -1760,9 +1760,9 @@ Target Job Posting:
 
 Return ONLY a JSON object matching this structure:
 {{
-  "ats_score": 88,
-  "matched_keywords": ["SEO", "Google Analytics", "Digital Marketing"],
-  "missing_keywords": ["Campaign Management", "Conversion Optimization"],
+  "ats_score": 85,
+  "matched_keywords": [],
+  "missing_keywords": [],
   "summary_feedback": "Resume effectively adapted for target role...",
   "parsed_profile": {{
     "full_name": "Full Name from CV",
@@ -1771,23 +1771,23 @@ Return ONLY a JSON object matching this structure:
     "location": "City, Country/State",
     "linkedin": "LinkedIn URL",
     "portfolio": "Website/Portfolio URL",
-    "job_title": "Primary Job Title from CV (e.g. Digital Marketing Specialist)",
-    "company": "Latest Company (e.g. BrightWave Media)",
+    "job_title": "Primary Job Title from CV",
+    "company": "Latest Company",
     "job_location": "Job Location",
-    "job_dates": "Employment Dates (e.g. 2022 - Present)",
-    "education_degree": "Degree Title (e.g. Bachelor of Business Administration)",
-    "education_school": "School Name (e.g. New York University)",
-    "education_dates": "Education Dates (e.g. 2015 - 2019)",
+    "job_dates": "Employment Dates",
+    "education_degree": "Degree Title",
+    "education_school": "School Name",
+    "education_dates": "Education Dates",
     "education_honors": "",
-    "certifications": "Certifications listed (e.g. Google Analytics Certification, Google Ads Search Certification, HubSpot)",
-    "projects": "Projects listed (e.g. E-Commerce Redesign)",
-    "languages": "Languages listed (e.g. English - Native, Spanish - Professional, French - Basic)"
+    "certifications": "Certifications listed",
+    "projects": "Projects listed",
+    "languages": "Languages listed"
   }},
   "optimized_sections": {{
-    "summary": "ATS-optimized summary preserving marketing domain experience and inserting target job keywords.",
-    "experience_bullets": "- Developed and managed multi-channel digital campaigns across Google, Instagram, and LinkedIn\\n- Increased web traffic by 45% utilizing SEO tactics...",
-    "skills_tech": "Digital Marketing, SEO, Google Analytics, Content Marketing, Email Marketing, Google Ads, Data Analysis",
-    "skills_soft": "Project Management, Strategic Planning, Campaign Strategy, Cross-Functional Leadership"
+    "summary": "ATS-optimized summary preserving domain experience and inserting target job keywords.",
+    "experience_bullets": "- Professional experience bullet 1\\n- Professional experience bullet 2",
+    "skills_tech": "Extracted technical skills",
+    "skills_soft": "Extracted soft skills"
   }}
 }}
 """
@@ -1811,33 +1811,33 @@ Return ONLY a JSON object matching this structure:
         opt_sections = parsed_data.get("optimized_sections", {})
         extracted = parsed_data.get("parsed_profile", {})
 
-        # FULL MERGE ARCHITECTURE: Fallback chain ensures sidebar fields are NEVER missing
+        # DYNAMIC MERGE ARCHITECTURE: Fallbacks prioritize original content, extracted AI data, and user profile data without hardcoded placeholders
         merged_content = {}
         
         # 1. Contact Info
-        merged_content["full_name"] = original_content.get("full_name") or extracted.get("full_name") or "Kedir Abdela"
+        merged_content["full_name"] = original_content.get("full_name") or extracted.get("full_name") or getattr(current_user, "full_name", "")
         merged_content["email"] = original_content.get("email") or extracted.get("email") or getattr(current_user, "email", "")
-        merged_content["phone"] = original_content.get("phone") or extracted.get("phone") or "+251 90 870 6534"
-        merged_content["location"] = original_content.get("location") or extracted.get("location") or "Los Angeles, USA"
-        merged_content["linkedin"] = original_content.get("linkedin") or extracted.get("linkedin") or "[linkedin.com/in/kedirmohammed](https://linkedin.com/in/kedirmohammed)"
-        merged_content["portfolio"] = original_content.get("portfolio") or extracted.get("portfolio") or "www.kedir.dev"
+        merged_content["phone"] = original_content.get("phone") or extracted.get("phone") or ""
+        merged_content["location"] = original_content.get("location") or extracted.get("location") or ""
+        merged_content["linkedin"] = original_content.get("linkedin") or extracted.get("linkedin") or ""
+        merged_content["portfolio"] = original_content.get("portfolio") or extracted.get("portfolio") or ""
 
         # 2. Employment & Title Metadata
-        merged_content["job_title"] = original_content.get("job_title") or extracted.get("job_title") or "Digital Marketing Specialist"
+        merged_content["job_title"] = original_content.get("job_title") or extracted.get("job_title") or ""
         merged_content["target_role"] = original_content.get("target_role") or merged_content["job_title"]
-        merged_content["company"] = original_content.get("company") or extracted.get("company") or "BrightWave Media"
-        merged_content["job_location"] = original_content.get("job_location") or extracted.get("job_location") or "New York, NY"
-        merged_content["job_dates"] = original_content.get("job_dates") or extracted.get("job_dates") or "2022 - Present"
+        merged_content["company"] = original_content.get("company") or extracted.get("company") or ""
+        merged_content["job_location"] = original_content.get("job_location") or extracted.get("job_location") or ""
+        merged_content["job_dates"] = original_content.get("job_dates") or extracted.get("job_dates") or ""
 
         # 3. Education, Certifications & Languages
-        merged_content["education_degree"] = original_content.get("education_degree") or extracted.get("education_degree") or "Bachelor of Business Administration"
-        merged_content["education_school"] = original_content.get("education_school") or extracted.get("education_school") or "New York University"
-        merged_content["education_dates"] = original_content.get("education_dates") or extracted.get("education_dates") or "2015 - 2019"
+        merged_content["education_degree"] = original_content.get("education_degree") or extracted.get("education_degree") or ""
+        merged_content["education_school"] = original_content.get("education_school") or extracted.get("education_school") or ""
+        merged_content["education_dates"] = original_content.get("education_dates") or extracted.get("education_dates") or ""
         merged_content["education_honors"] = original_content.get("education_honors") or extracted.get("education_honors", "")
         
-        merged_content["certifications"] = original_content.get("certifications") or extracted.get("certifications") or "Google Analytics Certification, Google Ads Search Certification, HubSpot Content Marketing Certification"
-        merged_content["projects"] = original_content.get("projects") or extracted.get("projects") or "E-Commerce Redesign"
-        merged_content["languages"] = original_content.get("languages") or extracted.get("languages") or "English (Native), Spanish (Professional), French (Basic)"
+        merged_content["certifications"] = original_content.get("certifications") or extracted.get("certifications") or ""
+        merged_content["projects"] = original_content.get("projects") or extracted.get("projects") or ""
+        merged_content["languages"] = original_content.get("languages") or extracted.get("languages") or ""
 
         # 4. AI Overwrites (Optimized text)
         merged_content["summary"] = opt_sections.get("summary") or original_content.get("summary", "")
@@ -1847,7 +1847,7 @@ Return ONLY a JSON object matching this structure:
 
         # Save new optimized resume entry
         new_resume_id = str(uuid.uuid4())
-        base_title = resume_obj.title if resume_obj else "Uploaded Marketing CV"
+        base_title = resume_obj.title if resume_obj else "Optimized CV"
         
         new_resume = Resume(
             id=new_resume_id,
@@ -1862,7 +1862,7 @@ Return ONLY a JSON object matching this structure:
 
         return jsonify({
             "success": True,
-            "ats_score": parsed_data.get("ats_score", 88),
+            "ats_score": parsed_data.get("ats_score", 80),
             "matched_keywords": parsed_data.get("matched_keywords", []),
             "missing_keywords": parsed_data.get("missing_keywords", []),
             "summary_feedback": parsed_data.get("summary_feedback", ""),
