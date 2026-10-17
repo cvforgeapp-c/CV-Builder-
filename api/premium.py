@@ -1717,10 +1717,11 @@ def analyze_ats():
     if not cv_text:
         return jsonify({"error": "Please select a resume from your dashboard or upload a CV file."}), 400
 
+    # STRICT: Analysis and optimization rely EXCLUSIVELY on the provided job description text, ignoring any raw URL parameters.
     job_desc = (data.get("job_description") or "").strip()
 
     if not job_desc:
-        return jsonify({"error": "Please provide a job description or scrape a job URL first."}), 400
+        return jsonify({"error": "Please provide a valid job description."}), 400
 
     preferred_language = get_user_preferred_language(current_user)
 
