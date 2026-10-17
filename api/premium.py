@@ -1508,6 +1508,39 @@ HEADERS = {
     'Accept-Language': 'en-US,en;q=0.9'
 }
 
+def extract_targeted_job_description(html_content: str) -> str:
+    """
+    Intelligently parses HTML to extract strictly the job description block,
+    ignoring site navigation, headers, footers, and sidebars.
+    """
+    soup = BeautifulSoup(html_content, 'html.parser')
+    
+    for tag in soup(["script", "style", "noscript", "header", "footer", "nav", "aside", "form", "iframe"]):
+        tag.decompose()
+
+    selectors = [
+        "article", 
+        ".job-description", 
+        "#job-description", 
+        ".description", 
+        ".posting-description", 
+        "#job-details", 
+        ".job-details",
+        "main"
+    ]
+    
+    target_container = None
+    for selector in selectors:
+        target_container = soup.select_one(selector)
+        if target_container:
+            break
+            
+    content_source = target_container if target_container else soup.body or soup
+    
+    text = content_source.get_text(separator=" ")
+    clean_text = re.sub(r"\s+", " ", text).strip()
+    return clean_text[:8000]
+
 @premium_bp.route('/scrape-job', methods=['POST'])
 @login_required
 def scrape_job_url():
@@ -1518,30 +1551,32 @@ def scrape_job_url():
         return jsonify({'error': 'Please provide a valid job posting URL.'}), 400
 
     try:
-        # 1. Fetch webpage content
-        response = requests.get(job_url, headers=HEADERS, timeout=8)
-        if response.status_code != 200:
-            return jsonify({'error': f'Failed to load job page (HTTP {response.status_code}).'}), 400
+        if "linkedin.com" in job_url.lower():
+            match = re.search(r'/(?:jobs/view|current|posting)/([0-9]+)', job_url) or re.search(r'([0-9]{9,10})', job_url)
+            if match:
+                job_id = match.group(1)
+                guest_api_url = f"https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/{job_id}"
+                with httpx.Client(timeout=10.0, follow_redirects=True) as client:
+                    response = client.get(guest_api_url, headers=HEADERS)
+                    if response.status_code == 200:
+                        trimmed_description = extract_targeted_job_description(response.text)
+                        if len(trimmed_description) > 50:
+                            return jsonify({
+                                'success': True,
+                                'job_title_meta': "Job Listing",
+                                'job_description': trimmed_description
+                            })
 
-        # 2. Parse HTML & Remove unnecessary boilerplate elements
+        with httpx.Client(timeout=10.0, follow_redirects=True) as client:
+            response = client.get(job_url, headers=HEADERS)
+            response.raise_for_status()
+
         soup = BeautifulSoup(response.text, 'html.parser')
-        for script in soup(["script", "style", "nav", "footer", "header", "noscript"]):
-            script.extract()
-
-        # 3. Extract text content
-        raw_text = soup.get_text(separator=' ')
-        # Clean up whitespace
-        clean_text = ' '.join(raw_text.split())
-
-        # 4. Extract basic metadata (Page title, OpenGraph meta tags)
-        page_title = soup.title.string.strip() if soup.title else ""
+        trimmed_description = extract_targeted_job_description(response.text)
         
-        # Try finding company and position from meta tags if available
+        page_title = soup.title.string.strip() if soup.title else ""
         og_title = soup.find("meta", property="og:title")
-        meta_title = og_title["content"] if og_title else page_title
-
-        # Limit overall payload size sent back to client
-        trimmed_description = clean_text[:4000]
+        meta_title = og_title["content"] if og_title and og_title.get("content") else page_title
 
         return jsonify({
             'success': True,
@@ -1636,44 +1671,6 @@ def paddle_webhook():
     return jsonify({"status": "success"}), 200
 
 
-def extract_text_from_url(url: str) -> str:
-    try:
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-            "Accept-Language": "en-US,en;q=0.9"
-        }
-        
-        # Specialized handling for LinkedIn Job URLs using guest API endpoints to prevent 403 blocks
-        if "linkedin.com" in url.lower():
-            match = re.search(r'/(?:jobs/view|current|posting)/([0-9]+)', url) or re.search(r'([0-9]{9,10})', url)
-            if match:
-                job_id = match.group(1)
-                guest_api_url = f"https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/{job_id}"
-                with httpx.Client(timeout=10.0, follow_redirects=True) as client:
-                    response = client.get(guest_api_url, headers=headers)
-                    if response.status_code == 200:
-                        soup = BeautifulSoup(response.text, "html.parser")
-                        text = soup.get_text(separator=" ")
-                        clean_linked_text = re.sub(r"\s+", " ", text).strip()
-                        if len(clean_linked_text) > 50:
-                            return clean_linked_text[:8000]
-
-        with httpx.Client(timeout=10.0, follow_redirects=True) as client:
-            response = client.get(url, headers=headers)
-            response.raise_for_status()
-
-        soup = BeautifulSoup(response.text, "html.parser")
-        for tag in soup(["script", "style", "noscript", "header", "footer", "nav", "svg"]):
-            tag.decompose()
-
-        text = soup.get_text(separator=" ")
-        clean_text = re.sub(r"\s+", " ", text).strip()
-        return clean_text[:8000]
-    except Exception as exc:
-        print(f"URL Fetch Error: {exc}")
-        return ""
-
-
 @premium_bp.route("/analyze-ats", methods=["POST"])
 @login_required
 def analyze_ats():
@@ -1707,7 +1704,6 @@ def analyze_ats():
         filename = secure_filename(uploaded_file.filename)
         file_bytes = uploaded_file.read()
         
-        # Support PDF / DOCX / TXT extraction
         if filename.lower().endswith('.pdf'):
             try:
                 import pypdf
@@ -1721,41 +1717,26 @@ def analyze_ats():
     if not cv_text:
         return jsonify({"error": "Please select a resume from your dashboard or upload a CV file."}), 400
 
-    job_url = (data.get("job_url") or "").strip()
     job_desc = (data.get("job_description") or "").strip()
 
-    if job_url:
-        try:
-            scraped_text = extract_text_from_url(job_url)
-            if scraped_text:
-                job_desc = scraped_text
-        except Exception as err:
-            print(f"Scraping warning: {err}")
-
-        if not job_desc:
-            return jsonify({
-                "error": "Could not automatically retrieve text from this URL due to site restrictions. Please paste the job description text manually."
-            }), 400
-
     if not job_desc:
-        return jsonify({"error": "Please provide a job posting URL or paste the job description."}), 400
+        return jsonify({"error": "Please provide a job description or scrape a job URL first."}), 400
 
     preferred_language = get_user_preferred_language(current_user)
 
-    # Prompt configured specifically to capture sidebar items and ensure strict adherence to candidate's actual text
     prompt = f"""
 You are CVForge Engine — an advanced ATS Resume Parser & Optimization System.
 
 TASK:
 1. Parse ALL information from the candidate's CV text below (including left sidebar items like Phone, Email, Location, LinkedIn, Portfolio/Website, Languages, Interests, Work History, Education, Certifications).
 2. STICK STRICTLY TO THE PROVIDED CANDIDATE CV TEXT. Do not substitute the candidate's name, contact details, or background with any generic placeholder names or unrelated profiles.
-3. Rewrite the Professional Summary, Experience Bullets, and Core Skills to align with the target job posting by inserting missing ATS keywords.
+3. Rewrite the Professional Summary, Experience Bullets, and Core Skills to align strictly with the provided Target Job Description by inserting missing ATS keywords.
 4. Output strictly in {preferred_language}.
 
 Candidate CV Text:
 {cv_text}
 
-Target Job Posting:
+Target Job Description:
 {job_desc}
 
 Return ONLY a JSON object matching this structure:
@@ -1814,7 +1795,6 @@ Return ONLY a JSON object matching this structure:
         # STRICT PRIORITY MERGE ARCHITECTURE: Original content takes absolute priority to prevent AI hallucinations/mock profiles
         merged_content = {}
         
-        # 1. Contact Info & Identity (Prioritizes original content JSON, then user account profile, then AI extraction)
         merged_content["full_name"] = original_content.get("full_name") or getattr(current_user, "full_name", "") or extracted.get("full_name", "")
         merged_content["email"] = original_content.get("email") or getattr(current_user, "email", "") or extracted.get("email", "")
         merged_content["phone"] = original_content.get("phone") or extracted.get("phone", "")
@@ -1822,14 +1802,12 @@ Return ONLY a JSON object matching this structure:
         merged_content["linkedin"] = original_content.get("linkedin") or extracted.get("linkedin", "")
         merged_content["portfolio"] = original_content.get("portfolio") or extracted.get("portfolio", "")
 
-        # 2. Employment & Title Metadata
         merged_content["job_title"] = original_content.get("job_title") or extracted.get("job_title", "")
         merged_content["target_role"] = original_content.get("target_role") or merged_content["job_title"]
         merged_content["company"] = original_content.get("company") or extracted.get("company", "")
         merged_content["job_location"] = original_content.get("job_location") or extracted.get("job_location", "")
         merged_content["job_dates"] = original_content.get("job_dates") or extracted.get("job_dates", "")
 
-        # 3. Education, Certifications & Languages
         merged_content["education_degree"] = original_content.get("education_degree") or extracted.get("education_degree", "")
         merged_content["education_school"] = original_content.get("education_school") or extracted.get("education_school", "")
         merged_content["education_dates"] = original_content.get("education_dates") or extracted.get("education_dates", "")
@@ -1839,13 +1817,11 @@ Return ONLY a JSON object matching this structure:
         merged_content["projects"] = original_content.get("projects") or extracted.get("projects", "")
         merged_content["languages"] = original_content.get("languages") or extracted.get("languages", "")
 
-        # 4. AI Overwrites (Optimized text)
         merged_content["summary"] = opt_sections.get("summary") or original_content.get("summary", "")
         merged_content["experience_bullets"] = opt_sections.get("experience_bullets") or original_content.get("experience_bullets", "")
         merged_content["skills_tech"] = opt_sections.get("skills_tech") or original_content.get("skills_tech", "")
         merged_content["skills_soft"] = opt_sections.get("skills_soft") or original_content.get("skills_soft", "")
 
-        # Save new optimized resume entry
         new_resume_id = str(uuid.uuid4())
         base_title = resume_obj.title if resume_obj else "Optimized CV"
         
