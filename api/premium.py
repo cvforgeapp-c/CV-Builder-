@@ -1607,6 +1607,80 @@ def scrape_job_url():
         return jsonify({'error': 'Unable to extract text from this link due to security protections. Please copy and paste the job description text directly.'}), 500
 
 
+@premium_bp.route("/generate-cover-letter", methods=["POST"])
+@login_required
+def generate_cover_letter():
+    data = request.get_json(silent=True) or {}
+    
+    resume_id = data.get("resume_id")
+    company_name = (data.get("company_name") or "Hiring Organization").strip()
+    job_title = (data.get("job_title") or "Target Position").strip()
+    tone = (data.get("tone") or "confident").strip()
+    job_description = (data.get("job_description") or "").strip()
+
+    resume_content = {}
+    if resume_id:
+        resume_obj = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first()
+        if resume_obj and isinstance(resume_obj.content_json, dict):
+            resume_content = resume_obj.content_json
+
+    user_name = (
+        resume_content.get("full_name")
+        or getattr(current_user, "full_name", "")
+        or "Applicant"
+    )
+    user_email = (
+        resume_content.get("email")
+        or getattr(current_user, "email", "")
+    )
+    user_summary = resume_content.get("summary", "")
+    user_experience = resume_content.get("experience_bullets", "")
+    user_skills = f"{resume_content.get('skills_tech', '')} {resume_content.get('skills_soft', '')}".strip()
+
+    preferred_language = get_user_preferred_language(current_user)
+
+    prompt = f"""
+You are CVForge AI, an expert executive career strategist and professional cover letter writer.
+
+Task: Write a highly targeted, persuasive, and custom cover letter for {user_name}.
+
+Target Company: {company_name}
+Target Position: {job_title}
+Desired Tone/Style: {tone}
+Preferred Output Language: {preferred_language}
+
+Candidate Profile Details:
+- Name: {user_name}
+- Professional Summary: {user_summary}
+- Core Skills: {user_skills}
+- Key Experience Details: {user_experience}
+
+Target Job Requirements / Description:
+{job_description or 'Align with industry standard expectations for this position.'}
+
+Formatting & Content Requirements:
+1. Write the cover letter strictly in {preferred_language}.
+2. Maintain a {tone} tone.
+3. Express strong enthusiasm for joining {company_name} in the {job_title} role.
+4. Directly connect candidate experience to key requirements.
+5. Include formal letter structure (salutation, body paragraphs, and professional sign-off).
+6. Return strictly the cover letter text without introductory conversation or meta notes.
+"""
+
+    try:
+        generated_letter = generate_ai_text(prompt, max_tokens=1500)
+        return jsonify({
+            "status": "success",
+            "cover_letter_text": generated_letter
+        }), 200
+
+    except Exception as exc:
+        premium_app.logger.error("Cover letter generation failed: %s", type(exc).__name__)
+        return jsonify({
+            "error": "Failed to generate cover letter. Please try again in a moment."
+        }), 500
+
+
 @premium_bp.route("/user-status", methods=["GET"])
 @login_required
 def get_user_status():
