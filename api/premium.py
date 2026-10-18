@@ -1,4 +1,3 @@
-
 import base64
 from datetime import datetime
 import hashlib
@@ -779,6 +778,13 @@ def keyword_matcher():
   return render_template(
       'dashboard/keyword_matcher.html', resumes=resumes, user=current_user
   )
+
+
+@premium_app.route('/outreach')
+@login_required
+def cold_outreach():
+  resumes = Resume.query.filter_by(user_id=current_user.id).all()
+  return render_template('outreach.html', resumes=resumes, user=current_user)
 
 
 @premium_app.route('/linkedin')
@@ -2151,6 +2157,101 @@ Formatting & Content Requirements:
         jsonify({
             'error': (
                 'Failed to generate cover letter. Please try again in a moment.'
+            )
+        }),
+        500,
+    )
+
+
+@premium_bp.route('/generate-outreach', methods=['POST'])
+@login_required
+def generate_outreach_campaign():
+  data = request.get_json(silent=True) or {}
+
+  resume_id = data.get('resume_id')
+  target_company = (data.get('target_company') or 'Target Company').strip()
+  recipient_role = (data.get('recipient_role') or 'Hiring Manager').strip()
+  recipient_name = (data.get('recipient_name') or '').strip()
+  tone = (data.get('tone') or 'Confident & Professional').strip()
+  job_context = (data.get('job_context') or '').strip()
+
+  resume_content = {}
+  if resume_id:
+    resume_obj = Resume.query.filter_by(
+        id=resume_id, user_id=current_user.id
+    ).first()
+    if resume_obj and isinstance(resume_obj.content_json, dict):
+      resume_content = resume_obj.content_json
+
+  user_name = (
+      resume_content.get('full_name')
+      or getattr(current_user, 'full_name', '')
+      or 'Applicant'
+  )
+  target_role = resume_content.get('target_role') or resume_content.get('job_title', 'Professional')
+  user_summary = resume_content.get('summary', '')
+  user_skills = (
+      f"{resume_content.get('skills_tech', '')}"
+      f" {resume_content.get('skills_soft', '')}"
+  ).strip()
+
+  preferred_language = get_user_preferred_language(current_user)
+
+  prompt = f"""
+You are CVForge AI, an elite career networking strategist and executive communication assistant.
+
+Task: Generate a multi-channel direct cold outreach campaign for {user_name} targeting {target_company}.
+
+Target Company: {target_company}
+Recipient Role: {recipient_role}
+Recipient Name: {recipient_name or 'Hiring Team'}
+Candidate Target Title: {target_role}
+Tone/Style: {tone}
+Preferred Output Language: {preferred_language}
+
+Candidate Background Context:
+- Summary: {user_summary}
+- Core Skills: {user_skills}
+
+Job Details / Context:
+{job_context or 'Targeting positions at ' + target_company}
+
+REQUIREMENTS:
+1. "linkedin_note": A direct, engaging connection request note MUST be under 300 characters strictly.
+2. "email_subject": A high-converting subject line for cold emailing a recruiter or decision-maker.
+3. "email_body": A structured 3-paragraph cold email (Hook, Value Proposition from Candidate Context, Low-friction Call To Action).
+4. "referral_request": A polite, friendly message to send to a peer or alumni asking for an internal referral or advice.
+5. All outputs MUST be strictly in {preferred_language}.
+
+Output MUST be strictly valid JSON matching this schema:
+{{
+  "linkedin_note": "Connection message...",
+  "email_subject": "Subject line...",
+  "email_body": "Full email body text...",
+  "referral_request": "Referral message text..."
+}}
+"""
+
+  try:
+    raw_response = generate_ai_text(prompt, max_tokens=1500)
+
+    clean_json_str = raw_response.strip()
+    if clean_json_str.startswith('```json'):
+      clean_json_str = clean_json_str[7:]
+    if clean_json_str.startswith('```'):
+      clean_json_str = clean_json_str[3:]
+    if clean_json_str.endswith('```'):
+      clean_json_str = clean_json_str[:-3]
+
+    result = json.loads(clean_json_str.strip())
+    return jsonify(result), 200
+
+  except Exception as exc:
+    premium_app.logger.error('Outreach generation error: %s', exc)
+    return (
+        jsonify({
+            'error': (
+                'Unable to generate outreach campaign. Please try again shortly.'
             )
         }),
         500,
