@@ -481,6 +481,50 @@
             sourceCvSelect.value = resumeIdParam;
         }
 
+        // 2. Scrape Job Requirements from Link (Fixed with e.preventDefault())
+        btnScrapeUrl.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            const urlInput = document.getElementById('scrapeJobUrl').value.trim();
+            if (!urlInput) {
+                showToast('{{ t_modular("cl_alert_enter_url", "Please enter a job posting URL.") }}', '⚠️');
+                return;
+            }
+
+            btnScrapeUrl.disabled = true;
+            btnScrapeText.textContent = '{{ t_modular("cl_btn_fetching_state", "Fetching...") }}';
+
+            try {
+                const res = await fetch('/api/v1/premium/scrape-job', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: urlInput })
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Failed to fetch page.');
+
+                if (data.job_description) {
+                    document.getElementById('jobReqs').value = data.job_description;
+                }
+
+                if (data.job_title_meta && !document.getElementById('targetRole').value) {
+                    document.getElementById('targetRole').value = data.job_title_meta.slice(0, 50);
+                }
+
+                if (data.company_meta && !document.getElementById('targetCompany').value) {
+                    document.getElementById('targetCompany').value = data.company_meta;
+                }
+
+                showToast('{{ t_modular("cl_alert_scraped_success", "Job requirements extracted successfully!") }}');
+            } catch (err) {
+                showToast(err.message || '{{ t_modular("cl_alert_scraped_error", "Error scraping job requirements from the link.") }}', '❌');
+            } finally {
+                btnScrapeUrl.disabled = false;
+                btnScrapeText.textContent = '{{ t_modular("cl_btn_fetch_url", "Fetch") }}';
+            }
+        });
+
         // 3. Submit Handler supports both saved resumes & uploaded local files
         const triggerSubmit = async () => {
             const hasUploadedFile = resumeFileInput.files.length > 0;
@@ -498,7 +542,6 @@
             let requestConfig = {};
 
             if (hasUploadedFile) {
-                // Send standard Multipart FormData when uploading a local phone/desktop file
                 const formData = new FormData();
                 formData.append('resume_file', resumeFileInput.files[0]);
                 formData.append('company_name', document.getElementById('targetCompany').value || 'Hiring Company');
@@ -511,7 +554,6 @@
                     body: formData
                 };
             } else {
-                // Send JSON payload when picking existing CV
                 const payload = {
                     resume_id: selectedCv,
                     company_name: document.getElementById('targetCompany').value || 'Hiring Company',
@@ -553,7 +595,7 @@
             triggerSubmit();
         });
 
-        // 4. Copy & Export handlers remain identical
+        // 4. Copy & Export handlers
         btnCopyText.addEventListener('click', () => {
             const text = clOutputText.value;
             if (!text) return;
