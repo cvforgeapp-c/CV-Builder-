@@ -419,7 +419,7 @@ def generate_with_gemini(prompt, api_key=None, max_tokens=2048):
   )
 
   response = client.models.generate_content(
-      model='gemini-3.8-flash',
+      model='gemini-2.5-flash',
       contents=full_prompt,
       config=config,
   )
@@ -935,16 +935,10 @@ Output MUST be strictly valid JSON matching this schema:
     return jsonify(result), 200
 
   except Exception as exc:
-    premium_app.logger.error('Interview evaluation error: %s', exc)
-    return (
-        jsonify({
-            'error': (
-                'Unable to evaluate answer at this time. Please check your AI'
-                ' service configuration.'
-            )
-        }),
-        500,
-    )
+    premium_app.logger.error("Interview evaluation critical error: %s", type(exc).__name__, exc_info=True)
+    return jsonify({
+        'error': f'Evaluation error: {str(exc)}'
+    }), 500
 
 
 # ============================================================
