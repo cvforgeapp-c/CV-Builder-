@@ -289,112 +289,6 @@
         100% { opacity: 1; }
     }
 
-    /* AI Video Explanation Player Styles */
-    .ai-video-coach-card {
-        background: #0f172a;
-        border-radius: 12px;
-        overflow: hidden;
-        margin-top: 14px;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-    }
-
-    .coach-screen-viewport {
-        position: relative;
-        width: 100%;
-        height: 220px;
-        background: linear-gradient(135deg, #02353C 0%, #05535E 100%);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        color: #ffffff;
-    }
-
-    .coach-avatar-head {
-        position: relative;
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--brand-gold), #d99321);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 42px;
-        box-shadow: 0 0 24px rgba(229,168,59,0.4);
-        transition: transform 0.2s ease;
-    }
-
-    .coach-avatar-head.talking {
-        animation: avatarPulse 0.4s infinite alternate ease-in-out;
-    }
-
-    @keyframes avatarPulse {
-        0% { transform: scale(1); box-shadow: 0 0 15px rgba(229,168,59,0.4); }
-        100% { transform: scale(1.08); box-shadow: 0 0 32px rgba(229,168,59,0.8); }
-    }
-
-    .mouth-indicator {
-        position: absolute;
-        bottom: 12px;
-        width: 20px;
-        height: 4px;
-        background: #02353C;
-        border-radius: 4px;
-        transition: height 0.1s ease;
-    }
-
-    .coach-avatar-head.talking .mouth-indicator {
-        animation: mouthTalk 0.2s infinite alternate;
-    }
-
-    @keyframes mouthTalk {
-        0% { height: 4px; }
-        100% { height: 12px; border-radius: 50%; }
-    }
-
-    .coach-screen-badge {
-        position: absolute;
-        top: 12px;
-        left: 12px;
-        background: rgba(0,0,0,0.6);
-        backdrop-filter: blur(4px);
-        padding: 4px 10px;
-        border-radius: 16px;
-        font-size: 11px;
-        font-weight: 700;
-        color: #e2e8f0;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .coach-control-bar {
-        padding: 12px 16px;
-        background: #090d16;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .btn-play-video-coach {
-        background: linear-gradient(135deg, var(--brand-gold), #d99321);
-        color: #ffffff;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 6px;
-        font-weight: 700;
-        font-size: 12px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        transition: opacity 0.2s;
-    }
-
-    .btn-play-video-coach:hover {
-        opacity: 0.9;
-    }
-
     /* Coaching Feedback Box */
     .ai-coaching-feedback {
         background: #f0fdf4;
@@ -770,8 +664,8 @@
         clearInterval(timerInterval);
     }
 
-    // Play Voice & Animate Video Coach Avatar
-    function speakFeedback(strength, improvement, rewrite, btn, avatarHead) {
+    // Voice Coaching Audio Playback
+    function speakFeedback(strength, improvement, rewrite, btn) {
         if (!('speechSynthesis' in window)) return;
 
         window.speechSynthesis.cancel();
@@ -787,39 +681,18 @@
         currentUtterance.lang = 'en-US';
 
         currentUtterance.onstart = () => {
-            if (btn) btn.innerHTML = '⏹️ Stop Video Coach';
-            if (avatarHead) avatarHead.classList.add('talking');
+            if (btn) btn.innerHTML = '⏹️ Stop Audio Playback';
         };
 
         currentUtterance.onend = () => {
-            if (btn) btn.innerHTML = '🎬 Watch AI Video Explanation';
-            if (avatarHead) avatarHead.classList.remove('talking');
+            if (btn) btn.innerHTML = '▶️ Play Voice Coaching';
         };
 
         currentUtterance.onerror = () => {
-            if (btn) btn.innerHTML = '🎬 Watch AI Video Explanation';
-            if (avatarHead) avatarHead.classList.remove('talking');
+            if (btn) btn.innerHTML = '▶️ Play Voice Coaching';
         };
 
         window.speechSynthesis.speak(currentUtterance);
-    }
-
-    function toggleVideoCoachPlayer(btn, strength, improvement, rewrite) {
-        if (!('speechSynthesis' in window)) {
-            showClientToast('Text-to-Speech is not supported on this browser.', 'warning');
-            return;
-        }
-
-        const card = btn.closest('.question-card');
-        const avatarHead = card.querySelector('.coach-avatar-head');
-
-        if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
-            window.speechSynthesis.cancel();
-            btn.innerHTML = '🎬 Watch AI Video Explanation';
-            if (avatarHead) avatarHead.classList.remove('talking');
-        } else {
-            speakFeedback(strength, improvement, rewrite, btn, avatarHead);
-        }
     }
 
     function toggleAudioPlayback(btn, strength, improvement, rewrite) {
@@ -832,7 +705,7 @@
             window.speechSynthesis.cancel();
             btn.innerHTML = '▶️ Play Voice Coaching';
         } else {
-            speakFeedback(strength, improvement, rewrite, btn, null);
+            speakFeedback(strength, improvement, rewrite, btn);
         }
     }
 
@@ -883,28 +756,7 @@
             const safeRewrite = rewriteText.replace(/'/g, "\\'");
             
             feedbackBody.innerHTML = `
-                <!-- AI VIDEO EXPLANATION PLAYER -->
-                <div class="ai-video-coach-card">
-                    <div class="coach-screen-viewport">
-                        <div class="coach-screen-badge">
-                            <span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></span>
-                            AI Executive Coach
-                        </div>
-                        <div class="coach-avatar-head">
-                            👨‍💼
-                            <div class="mouth-indicator"></div>
-                        </div>
-                        <div style="font-size: 13px; font-weight: 700; margin-top: 12px;">Interactive Executive Feedback</div>
-                    </div>
-                    <div class="coach-control-bar">
-                        <button type="button" class="btn-play-video-coach" onclick="toggleVideoCoachPlayer(this, '${safeStrength}', '${safeImprovement}', '${safeRewrite}')">
-                            🎬 Watch AI Video Explanation
-                        </button>
-                        <span style="color: #64748b; font-size: 11px; font-weight: 600;">Powered by Gemini</span>
-                    </div>
-                </div>
-
-                <div style="margin-top: 14px; margin-bottom: 8px;">
+                <div style="margin-bottom: 10px;">
                     <strong>Strength:</strong> ${strengthText}<br>
                     <strong>Improvement Tip:</strong> ${improvementText}
                 </div>
@@ -920,11 +772,10 @@
             `;
             feedbackBox.style.display = 'block';
 
-            // Auto-trigger video coach speech in Voice mode
+            // Auto-trigger audio speech in Voice mode
             if (currentMode === 'voice') {
-                const videoCoachBtn = feedbackBody.querySelector('.btn-play-video-coach');
-                const avatarHead = feedbackBody.querySelector('.coach-avatar-head');
-                speakFeedback(strengthText, improvementText, rewriteText, videoCoachBtn, avatarHead);
+                const audioBtn = feedbackBody.querySelector('.btn-audio-control');
+                speakFeedback(strengthText, improvementText, rewriteText, audioBtn);
             }
 
         } catch (e) {
