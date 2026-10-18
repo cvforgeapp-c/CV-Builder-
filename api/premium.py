@@ -1,3 +1,4 @@
+
 import base64
 from datetime import datetime
 import hashlib
@@ -71,39 +72,23 @@ try:
 except ImportError:
   from ..models import CoverLetter, JobApplication, Resume, User, db
 
-# 1. NEW MODULAR LOCALES PATHWAY (locales/__init__.py) - NOW CORE PATHWAY
+# 1. LEGACY CORE PATHWAY (translations.py) - 100% UNTOUCHED
 try:
-  from locales import (
-      MODULAR_SUPPORTED_LANGUAGES as SUPPORTED_LANGUAGES,
-  )
-  from locales import (
-      MODULAR_TRANSLATIONS as TRANSLATIONS,
-  )
-  from locales import (
-      get_modular_language_code as get_language_code,
-  )
-  from locales import (
-      get_modular_supported_languages as get_supported_languages,
-  )
-  from locales import (
-      t as t,
+  from translations import (
+      TRANSLATIONS,
+      SUPPORTED_LANGUAGES,
+      get_language_code,
+      get_supported_languages,
+      t,
   )
 except ImportError:
   try:
-    from ..locales import (
-        MODULAR_SUPPORTED_LANGUAGES as SUPPORTED_LANGUAGES,
-    )
-    from ..locales import (
-        MODULAR_TRANSLATIONS as TRANSLATIONS,
-    )
-    from ..locales import (
-        get_modular_language_code as get_language_code,
-    )
-    from ..locales import (
-        get_modular_supported_languages as get_supported_languages,
-    )
-    from ..locales import (
-        t as t,
+    from ..translations import (
+        TRANSLATIONS,
+        SUPPORTED_LANGUAGES,
+        get_language_code,
+        get_supported_languages,
+        t,
     )
   except ImportError:
     SUPPORTED_LANGUAGES = [
@@ -137,21 +122,54 @@ except ImportError:
 
     TRANSLATIONS = {}
 
-# 2. LEGACY CORE PATHWAY (translations.py) - KEPT AS BACKUP FALLBACK
+# 2. NEW MODULAR LOCALES PATHWAY (locales/__init__.py) - STRUCTURED IDENTICALLY TO translations.py
 try:
-  from translations import (
-      TRANSLATIONS as LEGACY_TRANSLATIONS,
-      SUPPORTED_LANGUAGES as LEGACY_SUPPORTED_LANGUAGES,
+  from locales import (
+      MODULAR_SUPPORTED_LANGUAGES as MODULAR_SUPPORTED_LANGUAGES,
+  )
+  from locales import (
+      MODULAR_TRANSLATIONS as MODULAR_TRANSLATIONS,
+  )
+  from locales import (
+      get_modular_language_code as get_modular_language_code,
+  )
+  from locales import (
+      get_modular_supported_languages as get_modular_supported_languages,
+  )
+  from locales import (
+      t as modular_t,
   )
 except ImportError:
   try:
-    from ..translations import (
-        TRANSLATIONS as LEGACY_TRANSLATIONS,
-        SUPPORTED_LANGUAGES as LEGACY_SUPPORTED_LANGUAGES,
+    from ..locales import (
+        MODULAR_SUPPORTED_LANGUAGES as MODULAR_SUPPORTED_LANGUAGES,
+    )
+    from ..locales import (
+        MODULAR_TRANSLATIONS as MODULAR_TRANSLATIONS,
+    )
+    from ..locales import (
+        get_modular_language_code as get_modular_language_code,
+    )
+    from ..locales import (
+        get_modular_supported_languages as get_modular_supported_languages,
+    )
+    from ..locales import (
+        t as modular_t,
     )
   except ImportError:
-    LEGACY_TRANSLATIONS = {}
-    LEGACY_SUPPORTED_LANGUAGES = []
+
+    def modular_t(key, lang='English (US / UK)', default=None):
+      return str(key)
+
+    MODULAR_SUPPORTED_LANGUAGES = SUPPORTED_LANGUAGES.copy()
+
+    def get_modular_supported_languages():
+      return MODULAR_SUPPORTED_LANGUAGES.copy()
+
+    def get_modular_language_code(lang='English (US / UK)'):
+      return 'en'
+
+    MODULAR_TRANSLATIONS = {}
 
 # ============================================================
 # USER LANGUAGE PREFERENCE HELPER
@@ -308,14 +326,37 @@ def inject_global_translations():
 
     except Exception as exc:
       premium_app.logger.warning(
-          'Core translation failed for key %r: %s',
+          'Legacy translation failed for key %r: %s',
           key,
           type(exc).__name__,
       )
       return default if default is not None else str(key)
 
   def translate_modular(key, default=None):
-    return translate(key, default=default)
+    if not isinstance(key, str):
+      return str(key)
+
+    try:
+      val = modular_t(key, lang=user_language)
+      if val != key:
+        return val
+
+      english_dict = MODULAR_TRANSLATIONS.get(DEFAULT_LANGUAGE, {})
+      if key in english_dict:
+        return english_dict[key]
+
+      if default is not None:
+        return default
+
+      return key
+
+    except Exception as exc:
+      premium_app.logger.warning(
+          'Modular translation failed for key %r: %s',
+          key,
+          type(exc).__name__,
+      )
+      return default if default is not None else str(key)
 
   try:
     active_dictionary = TRANSLATIONS.get(user_language, {})
