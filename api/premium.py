@@ -198,14 +198,6 @@ LANGUAGE_CODES = {
 
 
 def get_user_preferred_language(user):
-  """Return the user's active application language.
-
-  Preference priority:
-  1. session["language"] (URL query param ?lang= or manual toggle)
-  2. preferences_json["language"] (Saved DB preference)
-  3. preferences_json["aiPreferences"]["aiLanguage"]
-  4. English fallback
-  """
   if session.get('language') in SUPPORTED_LANGUAGES:
     return session['language']
 
@@ -419,7 +411,7 @@ def generate_with_gemini(prompt, api_key=None, max_tokens=2048):
   )
 
   response = client.models.generate_content(
-      model='gemini-3.8-flash',
+      model='gemini-2.5-flash',
       contents=full_prompt,
       config=config,
   )
