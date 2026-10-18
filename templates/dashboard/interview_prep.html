@@ -602,14 +602,43 @@
         clearInterval(timerInterval);
     }
 
-    function speakFeedback(text) {
+    // Text-to-Speech playback helper including AI Executive Rewrite
+    function speakFeedback(strength, improvement, rewrite) {
         if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 1.0;
+            window.speechSynthesis.cancel(); // Stop any active audio before playing
+
+            let scriptText = '';
+            if (strength) scriptText += `Strength: ${strength}. `;
+            if (improvement) scriptText += `Improvement tip: ${improvement}. `;
+            if (rewrite) scriptText += `Here is an executive rewrite of your response: ${rewrite}`;
+
+            const utterance = new SpeechSynthesisUtterance(scriptText);
+            utterance.rate = 0.95; // Natural conversational pace
             utterance.pitch = 1.0;
             utterance.lang = 'en-US';
             window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    function toggleAudioPlayback(btn, strength, improvement, rewrite) {
+        if (!('speechSynthesis' in window)) {
+            alert('Text-to-Speech is not supported on this browser.');
+            return;
+        }
+
+        if (window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+            btn.textContent = '🔊 Play Voice Coaching';
+        } else {
+            speakFeedback(strength, improvement, rewrite);
+            btn.textContent = '⏹️ Stop Voice Playback';
+
+            const checkSpeaking = setInterval(() => {
+                if (!window.speechSynthesis.speaking) {
+                    btn.textContent = '🔊 Play Voice Coaching';
+                    clearInterval(checkSpeaking);
+                }
+            }, 500);
         }
     }
 
@@ -650,26 +679,37 @@
             }
 
             const data = await response.json();
+            const strengthText = data.strength || 'Good response structure.';
+            const improvementText = data.improvement || 'No specific improvements noted.';
+            const rewriteText = data.rewrite || '';
+
+            const safeStrength = strengthText.replace(/'/g, "\\'");
+            const safeImprovement = improvementText.replace(/'/g, "\\'");
+            const safeRewrite = rewriteText.replace(/'/g, "\\'");
             
             feedbackBody.innerHTML = `
-                <strong>Strength:</strong> ${data.strength || 'Good response.'}<br>
-                <strong>Improvement Tip:</strong> ${data.improvement || 'No specific improvements noted.'}
-                ${data.rewrite ? `
+                <div style="margin-bottom: 8px;">
+                    <strong>Strength:</strong> ${strengthText}<br>
+                    <strong>Improvement Tip:</strong> ${improvementText}
+                </div>
+                <button type="button" class="btn-audio-control" style="background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; margin-top: 6px; margin-bottom: 8px;" onclick="toggleAudioPlayback(this, '${safeStrength}', '${safeImprovement}', '${safeRewrite}')">
+                    🔊 Play Voice Coaching
+                </button>
+                ${rewriteText ? `
                     <div class="rewrite-comparison">
-                        <div class="rewrite-header">✨ AI Executive Rewrite</div>
-                        <em>"${data.rewrite}"</em>
+                        <div class="rewrite-header">✨ AI EXECUTIVE REWRITE</div>
+                        <em>"${rewriteText}"</em>
                     </div>
                 ` : ''}
             `;
             feedbackBox.style.display = 'block';
 
+            // Auto-trigger voiceover including the rewrite when Voice Mode is active
             if (currentMode === 'voice') {
-                const spokenText = `Strength: ${data.strength || ''}. Improvement Tip: ${data.improvement || ''}`;
-                speakFeedback(spokenText);
+                speakFeedback(strengthText, improvementText, rewriteText);
             }
 
         } catch (e) {
-            // Transparent authentic error reporting without fake fallback mock data
             feedbackBody.innerHTML = `
                 <div style="color: var(--danger-red); font-weight: 700;">
                     ⚠️ Failed to evaluate answer. Please verify your backend server connection or API configuration.
