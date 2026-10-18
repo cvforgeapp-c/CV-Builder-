@@ -165,8 +165,8 @@
         flex: 1;
         border: none;
         background: transparent;
-        padding: 6px 8px;
-        font-size: 11px;
+        padding: 6px 12px;
+        font-size: 12px;
         font-weight: 700;
         color: var(--text-secondary);
         border-radius: 6px;
@@ -236,7 +236,7 @@
 
     .answer-box {
         width: 100%;
-        min-height: 100px;
+        min-height: 120px;
         border: 1px solid #cbd5e1;
         border-radius: 8px;
         padding: 12px;
@@ -249,34 +249,16 @@
         box-sizing: border-box;
     }
 
-    /* Voice & Video Panels */
-    .voice-recording-panel, .video-recording-panel {
+    /* Voice Recording Styles */
+    .voice-recording-panel {
         display: flex;
-        flex-direction: column;
-        gap: 10px;
+        align-items: center;
+        gap: 12px;
         background: #ffffff;
         border: 1px solid var(--border-color);
         border-radius: 8px;
         padding: 12px;
         margin-bottom: 12px;
-    }
-
-    .video-preview-container {
-        width: 100%;
-        background: #000000;
-        border-radius: 6px;
-        overflow: hidden;
-        aspect-ratio: 16/9;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-    }
-
-    video.cam-feed {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
     }
 
     .btn-record {
@@ -288,10 +270,9 @@
         font-size: 12px;
         font-weight: 700;
         cursor: pointer;
-        display: inline-flex;
+        display: flex;
         align-items: center;
         gap: 6px;
-        width: fit-content;
     }
 
     .recording-pulse {
@@ -306,6 +287,112 @@
         0% { opacity: 1; }
         50% { opacity: 0.3; }
         100% { opacity: 1; }
+    }
+
+    /* AI Video Explanation Player Styles */
+    .ai-video-coach-card {
+        background: #0f172a;
+        border-radius: 12px;
+        overflow: hidden;
+        margin-top: 14px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+
+    .coach-screen-viewport {
+        position: relative;
+        width: 100%;
+        height: 220px;
+        background: linear-gradient(135deg, #02353C 0%, #05535E 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+    }
+
+    .coach-avatar-head {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--brand-gold), #d99321);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 42px;
+        box-shadow: 0 0 24px rgba(229,168,59,0.4);
+        transition: transform 0.2s ease;
+    }
+
+    .coach-avatar-head.talking {
+        animation: avatarPulse 0.4s infinite alternate ease-in-out;
+    }
+
+    @keyframes avatarPulse {
+        0% { transform: scale(1); box-shadow: 0 0 15px rgba(229,168,59,0.4); }
+        100% { transform: scale(1.08); box-shadow: 0 0 32px rgba(229,168,59,0.8); }
+    }
+
+    .mouth-indicator {
+        position: absolute;
+        bottom: 12px;
+        width: 20px;
+        height: 4px;
+        background: #02353C;
+        border-radius: 4px;
+        transition: height 0.1s ease;
+    }
+
+    .coach-avatar-head.talking .mouth-indicator {
+        animation: mouthTalk 0.2s infinite alternate;
+    }
+
+    @keyframes mouthTalk {
+        0% { height: 4px; }
+        100% { height: 12px; border-radius: 50%; }
+    }
+
+    .coach-screen-badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(4px);
+        padding: 4px 10px;
+        border-radius: 16px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #e2e8f0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .coach-control-bar {
+        padding: 12px 16px;
+        background: #090d16;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn-play-video-coach {
+        background: linear-gradient(135deg, var(--brand-gold), #d99321);
+        color: #ffffff;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: opacity 0.2s;
+    }
+
+    .btn-play-video-coach:hover {
+        opacity: 0.9;
     }
 
     /* Coaching Feedback Box */
@@ -438,7 +525,6 @@
                     <div class="mode-toggle">
                         <button type="button" class="mode-btn active" onclick="switchInputMode(this, 'text')">✍️ Text Mode</button>
                         <button type="button" class="mode-btn" onclick="switchInputMode(this, 'voice')">🎙️ Voice Mode</button>
-                        <button type="button" class="mode-btn" onclick="switchInputMode(this, 'video')">📹 Video Mode</button>
                     </div>
 
                     <!-- TEXT ANSWER BOX -->
@@ -453,20 +539,6 @@
                             <span class="record-text">🎤 Start Recording</span>
                         </button>
                         <span class="recording-timer" style="font-size: 12px; color: var(--text-secondary);">00:00</span>
-                    </div>
-
-                    <!-- VIDEO RECORDING PANEL -->
-                    <div class="video-recording-panel" style="display: none;">
-                        <div class="video-preview-container">
-                            <video class="cam-feed" autoplay muted playsinline></video>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <button type="button" class="btn-record" onclick="toggleVideoRecording(this)">
-                                <span class="recording-pulse" style="display: none;"></span>
-                                <span class="video-record-text">📹 Start Video Recording</span>
-                            </button>
-                            <span class="video-timer" style="font-size: 12px; color: var(--text-secondary);">00:00</span>
-                        </div>
                     </div>
 
                     <button class="btn-prep" style="font-size: 13px; padding: 10px 16px; width: auto; margin-top: 10px;" onclick="submitAnswerForCoaching(this)">
@@ -493,12 +565,7 @@
     let recognition = null;
     let isRecording = false;
     let timerInterval = null;
-
-    let mediaRecorder = null;
-    let recordedChunks = [];
-    let isVideoRecording = false;
-    let videoTimerInterval = null;
-    let activeStream = null;
+    let currentUtterance = null;
 
     document.addEventListener('DOMContentLoaded', () => {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -562,112 +629,14 @@
 
         const textPanel = card.querySelector('.text-input-panel');
         const voicePanel = card.querySelector('.voice-recording-panel');
-        const videoPanel = card.querySelector('.video-recording-panel');
-
-        if (mode !== 'video') {
-            stopVideoFeed(card);
-        }
 
         if (mode === 'text') {
             textPanel.style.display = 'block';
             voicePanel.style.display = 'none';
-            videoPanel.style.display = 'none';
-        } else if (mode === 'voice') {
+        } else {
             textPanel.style.display = 'block';
             voicePanel.style.display = 'flex';
-            videoPanel.style.display = 'none';
-        } else if (mode === 'video') {
-            textPanel.style.display = 'block';
-            voicePanel.style.display = 'none';
-            videoPanel.style.display = 'flex';
-            initVideoFeed(card);
         }
-    }
-
-    async function initVideoFeed(card) {
-        const videoEl = card.querySelector('video.cam-feed');
-        try {
-            activeStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            videoEl.srcObject = activeStream;
-        } catch (err) {
-            console.error('Camera access error:', err);
-            alert('⚠️ Unable to access camera and microphone. Please verify browser permissions.');
-        }
-    }
-
-    function stopVideoFeed(card) {
-        if (isVideoRecording) {
-            stopActiveVideoRecording(card);
-        }
-        if (activeStream) {
-            activeStream.getTracks().forEach(track => track.stop());
-            activeStream = null;
-        }
-    }
-
-    async function toggleVideoRecording(btn) {
-        const card = btn.closest('.question-card');
-        const pulse = card.querySelector('.recording-pulse');
-        const recordText = card.querySelector('.video-record-text');
-        const timer = card.querySelector('.video-timer');
-        const textarea = card.querySelector('.answer-box');
-
-        if (!activeStream) {
-            await initVideoFeed(card);
-            if (!activeStream) return;
-        }
-
-        if (isVideoRecording) {
-            stopActiveVideoRecording(card);
-        } else {
-            recordedChunks = [];
-            try {
-                mediaRecorder = new MediaRecorder(activeStream, { mimeType: 'video/webm;codecs=vp8,opus' });
-            } catch (e) {
-                try {
-                    mediaRecorder = new MediaRecorder(activeStream);
-                } catch (err) {
-                    alert('Video recording is not supported on this browser.');
-                    return;
-                }
-            }
-
-            mediaRecorder.ondataavailable = (event) => {
-                if (event.data && event.data.size > 0) {
-                    recordedChunks.push(event.data);
-                }
-            };
-
-            mediaRecorder.onstop = () => {
-                const blob = new Blob(recordedChunks, { type: 'video/webm' });
-                textarea.value = `[Video Mock Interview Recording Attached - Size: ${(blob.size / 1024 / 1024).toFixed(2)} MB. AI will evaluate delivery, structure, and content.]`;
-            };
-
-            mediaRecorder.start();
-            isVideoRecording = true;
-            pulse.style.display = 'inline-block';
-            recordText.textContent = '⏹️ Stop Video Recording';
-
-            let seconds = 0;
-            videoTimerInterval = setInterval(() => {
-                seconds++;
-                const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
-                const secs = String(seconds % 60).padStart(2, '0');
-                timer.textContent = `${mins}:${secs}`;
-            }, 1000);
-        }
-    }
-
-    function stopActiveVideoRecording(card) {
-        if (mediaRecorder && isVideoRecording) {
-            mediaRecorder.stop();
-        }
-        isVideoRecording = false;
-        const pulse = card.querySelector('.recording-pulse');
-        const recordText = card.querySelector('.video-record-text');
-        if (pulse) pulse.style.display = 'none';
-        if (recordText) recordText.textContent = '📹 Start Video Recording';
-        clearInterval(videoTimerInterval);
     }
 
     function toggleAudioRecording(btn) {
@@ -740,21 +709,55 @@
         clearInterval(timerInterval);
     }
 
-    // Text-to-Speech playback helper including AI Executive Rewrite
-    function speakFeedback(strength, improvement, rewrite) {
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel(); // Stop any active audio before playing
+    // Play Voice & Animate Video Coach Avatar
+    function speakFeedback(strength, improvement, rewrite, btn, avatarHead) {
+        if (!('speechSynthesis' in window)) return;
 
-            let scriptText = '';
-            if (strength) scriptText += `Strength: ${strength}. `;
-            if (improvement) scriptText += `Improvement tip: ${improvement}. `;
-            if (rewrite) scriptText += `Here is an executive rewrite of your response: ${rewrite}`;
+        window.speechSynthesis.cancel();
 
-            const utterance = new SpeechSynthesisUtterance(scriptText);
-            utterance.rate = 0.95; // Natural conversational pace
-            utterance.pitch = 1.0;
-            utterance.lang = 'en-US';
-            window.speechSynthesis.speak(utterance);
+        let scriptText = '';
+        if (strength) scriptText += `Strength: ${strength}. `;
+        if (improvement) scriptText += `Improvement tip: ${improvement}. `;
+        if (rewrite) scriptText += `Here is an executive rewrite of your response: ${rewrite}`;
+
+        currentUtterance = new SpeechSynthesisUtterance(scriptText);
+        currentUtterance.rate = 0.95;
+        currentUtterance.pitch = 1.0;
+        currentUtterance.lang = 'en-US';
+
+        currentUtterance.onstart = () => {
+            if (btn) btn.innerHTML = '⏹️ Stop Video Coach';
+            if (avatarHead) avatarHead.classList.add('talking');
+        };
+
+        currentUtterance.onend = () => {
+            if (btn) btn.innerHTML = '🎬 Watch AI Video Explanation';
+            if (avatarHead) avatarHead.classList.remove('talking');
+        };
+
+        currentUtterance.onerror = () => {
+            if (btn) btn.innerHTML = '🎬 Watch AI Video Explanation';
+            if (avatarHead) avatarHead.classList.remove('talking');
+        };
+
+        window.speechSynthesis.speak(currentUtterance);
+    }
+
+    function toggleVideoCoachPlayer(btn, strength, improvement, rewrite) {
+        if (!('speechSynthesis' in window)) {
+            alert('Text-to-Speech is not supported on this browser.');
+            return;
+        }
+
+        const card = btn.closest('.question-card');
+        const avatarHead = card.querySelector('.coach-avatar-head');
+
+        if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+            window.speechSynthesis.cancel();
+            btn.innerHTML = '🎬 Watch AI Video Explanation';
+            if (avatarHead) avatarHead.classList.remove('talking');
+        } else {
+            speakFeedback(strength, improvement, rewrite, btn, avatarHead);
         }
     }
 
@@ -764,19 +767,11 @@
             return;
         }
 
-        if (window.speechSynthesis.speaking) {
+        if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
             window.speechSynthesis.cancel();
-            btn.textContent = '🔊 Play Voice Coaching';
+            btn.innerHTML = '▶️ Play Voice Coaching';
         } else {
-            speakFeedback(strength, improvement, rewrite);
-            btn.textContent = '⏹️ Stop Voice Playback';
-
-            const checkSpeaking = setInterval(() => {
-                if (!window.speechSynthesis.speaking) {
-                    btn.textContent = '🔊 Play Voice Coaching';
-                    clearInterval(checkSpeaking);
-                }
-            }, 500);
+            speakFeedback(strength, improvement, rewrite, btn, null);
         }
     }
 
@@ -789,17 +784,13 @@
             stopActiveRecording(recordBtn);
             await new Promise(resolve => setTimeout(resolve, 350));
         }
-        if (isVideoRecording) {
-            stopActiveVideoRecording(card);
-            await new Promise(resolve => setTimeout(resolve, 350));
-        }
 
         const answerText = card.querySelector('.answer-box').value;
         const feedbackBox = card.querySelector('.ai-coaching-feedback');
         const feedbackBody = card.querySelector('.feedback-body');
 
         if (!answerText || !answerText.trim()) {
-            alert('Please provide an answer (type, record voice, or record video) before requesting feedback.');
+            alert('Please type or speak an answer before requesting feedback.');
             return;
         }
 
@@ -830,12 +821,33 @@
             const safeRewrite = rewriteText.replace(/'/g, "\\'");
             
             feedbackBody.innerHTML = `
-                <div style="margin-bottom: 8px;">
+                <!-- AI VIDEO EXPLANATION PLAYER -->
+                <div class="ai-video-coach-card">
+                    <div class="coach-screen-viewport">
+                        <div class="coach-screen-badge">
+                            <span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></span>
+                            AI Executive Coach
+                        </div>
+                        <div class="coach-avatar-head">
+                            👨‍💼
+                            <div class="mouth-indicator"></div>
+                        </div>
+                        <div style="font-size: 13px; font-weight: 700; margin-top: 12px;">Interactive Executive Feedback</div>
+                    </div>
+                    <div class="coach-control-bar">
+                        <button type="button" class="btn-play-video-coach" onclick="toggleVideoCoachPlayer(this, '${safeStrength}', '${safeImprovement}', '${safeRewrite}')">
+                            🎬 Watch AI Video Explanation
+                        </button>
+                        <span style="color: #64748b; font-size: 11px; font-weight: 600;">Powered by Gemini</span>
+                    </div>
+                </div>
+
+                <div style="margin-top: 14px; margin-bottom: 8px;">
                     <strong>Strength:</strong> ${strengthText}<br>
                     <strong>Improvement Tip:</strong> ${improvementText}
                 </div>
-                <button type="button" class="btn-audio-control" style="background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; margin-top: 6px; margin-bottom: 8px;" onclick="toggleAudioPlayback(this, '${safeStrength}', '${safeImprovement}', '${safeRewrite}')">
-                    🔊 Play Voice Coaching
+                <button type="button" class="btn-audio-control" style="background: #10b981; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; margin-top: 6px; margin-bottom: 8px;" onclick="toggleAudioPlayback(this, '${safeStrength}', '${safeImprovement}', '${safeRewrite}')">
+                    ▶️ Play Voice Coaching
                 </button>
                 ${rewriteText ? `
                     <div class="rewrite-comparison">
@@ -846,9 +858,11 @@
             `;
             feedbackBox.style.display = 'block';
 
-            // Auto-trigger voiceover including the rewrite when Voice or Video Mode is active
-            if (currentMode === 'voice' || currentMode === 'video') {
-                speakFeedback(strengthText, improvementText, rewriteText);
+            // Auto-trigger video coach speech in Voice mode
+            if (currentMode === 'voice') {
+                const videoCoachBtn = feedbackBody.querySelector('.btn-play-video-coach');
+                const avatarHead = feedbackBody.querySelector('.coach-avatar-head');
+                speakFeedback(strengthText, improvementText, rewriteText, videoCoachBtn, avatarHead);
             }
 
         } catch (e) {
@@ -886,7 +900,6 @@
                 <div class="mode-toggle">
                     <button type="button" class="mode-btn active" onclick="switchInputMode(this, 'text')">✍️ Text Mode</button>
                     <button type="button" class="mode-btn" onclick="switchInputMode(this, 'voice')">🎙️ Voice Mode</button>
-                    <button type="button" class="mode-btn" onclick="switchInputMode(this, 'video')">📹 Video Mode</button>
                 </div>
 
                 <div class="text-input-panel">
@@ -899,19 +912,6 @@
                         <span class="record-text">🎤 Start Recording</span>
                     </button>
                     <span class="recording-timer" style="font-size: 12px; color: var(--text-secondary);">00:00</span>
-                </div>
-
-                <div class="video-recording-panel" style="display: none;">
-                    <div class="video-preview-container">
-                        <video class="cam-feed" autoplay muted playsinline></video>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <button type="button" class="btn-record" onclick="toggleVideoRecording(this)">
-                            <span class="recording-pulse" style="display: none;"></span>
-                            <span class="video-record-text">📹 Start Video Recording</span>
-                        </button>
-                        <span class="video-timer" style="font-size: 12px; color: var(--text-secondary);">00:00</span>
-                    </div>
                 </div>
 
                 <button class="btn-prep" style="font-size: 13px; padding: 10px 16px; width: auto; margin-top: 10px;" onclick="submitAnswerForCoaching(this)">
