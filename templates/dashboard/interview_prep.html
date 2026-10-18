@@ -378,7 +378,7 @@
 <header class="prep-header">
     <div style="display: flex; align-items: center;">
         <a href="/" class="brand-title">CVForge</a>
-        <span class="badge-pro">PRO FEATURE</span>
+        <span class="badge-pro">{{ t_modular('badge_pro', 'PRO FEATURE') }}</span>
     </div>
     <div>
         <a href="/dashboard" style="text-decoration: none; color: var(--text-secondary); font-size: 14px; font-weight: 600;">{{ t_modular('btn_back_dashboard', '← Back to Dashboard') }}</a>
@@ -406,7 +406,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>{{ t_modular('label_interviewer_persona', 'Interviewer Persona') }}</label>
+                    <label>{{ t_modular('prep_label_persona', 'Interviewer Persona') }}</label>
                     <select id="interviewerPersona">
                         <option value="tech_lead" selected>{{ t_modular('opt_persona_tech_lead', 'Technical Lead (Architecture & Code Depth)') }}</option>
                         <option value="hiring_manager">{{ t_modular('opt_persona_manager', 'Hiring Manager (Leadership & Ownership)') }}</option>
@@ -455,8 +455,8 @@
 
                     <!-- MODE TOGGLE -->
                     <div class="mode-toggle">
-                        <button type="button" class="mode-btn active" onclick="switchInputMode(this, 'text')">✍️ {{ t_modular('mode_text', 'Text Mode') }}</button>
-                        <button type="button" class="mode-btn" onclick="switchInputMode(this, 'voice')">🎙️ {{ t_modular('mode_voice', 'Voice Mode') }}</button>
+                        <button type="button" class="mode-btn active" onclick="switchInputMode(this, 'text')">✍️ {{ t_modular('prep_mode_text', 'Text Mode') }}</button>
+                        <button type="button" class="mode-btn" onclick="switchInputMode(this, 'voice')">🎙️ {{ t_modular('prep_mode_voice', 'Voice Mode') }}</button>
                     </div>
 
                     <!-- TEXT ANSWER BOX -->
@@ -509,8 +509,8 @@
         btnStopRecording: "{{ t_modular('btn_stop_recording', 'Stop Recording') }}",
         btnPlayVoice: "{{ t_modular('btn_play_voice', 'Play Voice Coaching') }}",
         btnStopVoice: "{{ t_modular('btn_stop_voice', 'Stop Audio Playback') }}",
-        modeText: "{{ t_modular('mode_text', 'Text Mode') }}",
-        modeVoice: "{{ t_modular('mode_voice', 'Voice Mode') }}",
+        modeText: "{{ t_modular('prep_mode_text', 'Text Mode') }}",
+        modeVoice: "{{ t_modular('prep_mode_voice', 'Voice Mode') }}",
         star1: "{{ t_modular('prep_star_situation', '1. Situation') }}",
         star2: "{{ t_modular('prep_star_task', '2. Task') }}",
         star3: "{{ t_modular('prep_star_action', '3. Action') }}",
@@ -519,7 +519,12 @@
         labelImprovement: "{{ t_modular('label_improvement', 'Improvement Tip:') }}",
         headerRewrite: "{{ t_modular('header_rewrite', '✨ AI EXECUTIVE REWRITE') }}",
         busyTitle: "{{ t_modular('busy_title', '⚡ AI Coach is temporarily busy') }}",
-        busyDesc: "{{ t_modular('busy_desc', 'We couldn\'t analyze your answer right now. Please hold on a moment and tap Get AI Coaching Feedback to try again.') }}"
+        busyDesc: "{{ t_modular('busy_desc', 'We couldn\'t analyze your answer right now. Please hold on a moment and tap Get AI Coaching Feedback to try again.') }}",
+        analyzingResponse: "{{ t_modular('analyzing_response_state', '⏳ Analyzing Response...') }}",
+        sampleFeedbackTitle: "{{ t_modular('sample_feedback_title', 'AI Performance Analysis') }}",
+        practiceQuestionDefault: "{{ t_modular('label_practice_question', 'PRACTICE QUESTION') }}",
+        questionLabelPrefix: "{{ t_modular('label_question_num', 'QUESTION') }}",
+        placeholderAnswer: "{{ t_modular('prep_placeholder_answer', 'Type or speak your response using the STAR framework...') }}"
     };
 
     let recognition = null;
@@ -757,7 +762,7 @@
         }
 
         btn.disabled = true;
-        btn.textContent = '⏳ Analyzing Response...';
+        btn.textContent = I18N.analyzingResponse;
 
         try {
             const response = await fetch('/api/interview/evaluate', {
@@ -830,7 +835,7 @@
             card.className = 'question-card';
             card.dataset.mode = 'text';
             card.innerHTML = `
-                <span class="question-type">${q.category || 'PRACTICE QUESTION'} • QUESTION ${index + 1}</span>
+                <span class="question-type">${q.category || I18N.practiceQuestionDefault} • ${I18N.questionLabelPrefix} ${index + 1}</span>
                 <div class="question-text">"${q.question_text}"</div>
                 
                 <div class="star-guide">
@@ -846,7 +851,7 @@
                 </div>
 
                 <div class="text-input-panel">
-                    <textarea class="answer-box" placeholder="${I18N.placeholderAnswer || 'Type or speak your response using the STAR framework...'}"></textarea>
+                    <textarea class="answer-box" placeholder="${I18N.placeholderAnswer}"></textarea>
                 </div>
 
                 <div class="voice-recording-panel" style="display: none;">
@@ -862,7 +867,7 @@
                 </button>
 
                 <div class="ai-coaching-feedback" style="display: none;">
-                    <div class="feedback-title">✅ {{ t_modular('sample_feedback_title', 'AI Performance Analysis') }}</div>
+                    <div class="feedback-title">✅ ${I18N.sampleFeedbackTitle}</div>
                     <div class="feedback-body"></div>
                 </div>
             `;
