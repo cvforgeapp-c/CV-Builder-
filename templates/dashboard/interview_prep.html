@@ -437,6 +437,44 @@
         letter-spacing: 0.5px;
         margin-bottom: 4px;
     }
+
+    /* CLIENT-FRIENDLY TOAST NOTIFICATIONS */
+    .toast-notification {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: #0f172a;
+        color: #ffffff;
+        padding: 14px 20px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        z-index: 9999;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .toast-notification.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .toast-notification.warning {
+        border-left: 4px solid #E5A83B;
+    }
+
+    .toast-notification.error {
+        border-left: 4px solid #ef4444;
+    }
+
+    .toast-notification.success {
+        border-left: 4px solid #10b981;
+    }
 </style>
 {% endblock %}
 
@@ -603,9 +641,10 @@
                     
                     if (data.questions && data.questions.length > 0) {
                         renderGeneratedQuestions(data.questions);
+                        showClientToast('✨ Practice questions generated successfully!', 'success');
                     }
                 } catch (err) {
-                    alert('⚠️ Unable to generate questions. Please ensure your backend server is running and try again.');
+                    showClientToast('⚡ Unable to generate questions right now. Please try again shortly.', 'warning');
                 } finally {
                     btn.disabled = false;
                     btn.textContent = '🎙️ {{ t_modular("btn_generate_questions", "Generate Practice Questions") }}';
@@ -613,6 +652,28 @@
             });
         }
     });
+
+    // Client-Friendly Toast Notification Helper
+    function showClientToast(message, type = 'warning') {
+        let container = document.getElementById('toastContainer');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'toastContainer';
+            document.body.appendChild(container);
+        }
+
+        const toast = document.createElement('div');
+        toast.className = `toast-notification ${type}`;
+        toast.innerHTML = `<span>${message}</span>`;
+        container.appendChild(toast);
+
+        setTimeout(() => toast.classList.add('show'), 50);
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
 
     function appendStarTemplate(pillEl, prefix) {
         const card = pillEl.closest('.question-card');
@@ -647,7 +708,7 @@
         const timer = card.querySelector('.recording-timer');
 
         if (!recognition) {
-            alert('Speech Recognition is not supported on this browser. Please use Chrome/Safari or type your response.');
+            showClientToast('🎙️ Speech Recognition is not supported on this browser. Please type your response.', 'warning');
             return;
         }
 
@@ -745,7 +806,7 @@
 
     function toggleVideoCoachPlayer(btn, strength, improvement, rewrite) {
         if (!('speechSynthesis' in window)) {
-            alert('Text-to-Speech is not supported on this browser.');
+            showClientToast('Text-to-Speech is not supported on this browser.', 'warning');
             return;
         }
 
@@ -763,7 +824,7 @@
 
     function toggleAudioPlayback(btn, strength, improvement, rewrite) {
         if (!('speechSynthesis' in window)) {
-            alert('Text-to-Speech is not supported on this browser.');
+            showClientToast('Text-to-Speech is not supported on this browser.', 'warning');
             return;
         }
 
@@ -790,7 +851,7 @@
         const feedbackBody = card.querySelector('.feedback-body');
 
         if (!answerText || !answerText.trim()) {
-            alert('Please type or speak an answer before requesting feedback.');
+            showClientToast('📝 Please type or record your response before requesting AI feedback.', 'warning');
             return;
         }
 
@@ -807,11 +868,12 @@
                 })
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
-                throw new Error('API server returned error status');
+                throw new Error(data.error || 'Evaluation server error');
             }
 
-            const data = await response.json();
             const strengthText = data.strength || 'Good response structure.';
             const improvementText = data.improvement || 'No specific improvements noted.';
             const rewriteText = data.rewrite || '';
@@ -867,11 +929,13 @@
 
         } catch (e) {
             feedbackBody.innerHTML = `
-                <div style="color: var(--danger-red); font-weight: 700;">
-                    ⚠️ Failed to evaluate answer. Please verify your backend server connection or API configuration.
+                <div style="background: #fef2f2; border: 1px solid #fca5a5; border-radius: 8px; padding: 14px; color: #991b1b; font-size: 13px; line-height: 1.5;">
+                    <div style="font-weight: 700; margin-bottom: 4px;">⚡ AI Coach is temporarily busy</div>
+                    <div>We couldn't analyze your answer right now. Please hold on a moment and tap <strong>"Get AI Coaching Feedback"</strong> to try again.</div>
                 </div>
             `;
             feedbackBox.style.display = 'block';
+            showClientToast('⚡ AI Coach is momentarily busy. Please try tapping feedback again.', 'error');
         } finally {
             btn.disabled = false;
             btn.textContent = '🤖 {{ t_modular("btn_get_ai_feedback", "Get AI Coaching Feedback") }}';
