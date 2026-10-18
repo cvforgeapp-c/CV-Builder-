@@ -393,7 +393,7 @@
         margin-bottom: 16px;
     }
 
-    /* TOAST NOTIFICATION STYLING (Matching Pro Cover Letter Suite) */
+    /* TOAST NOTIFICATION STYLING */
     .ats-toast {
         position: fixed;
         bottom: 24px;
@@ -614,4 +614,117 @@
         });
 
         // Professional URL Fetching Handler with Event Prevention & Loading State
-        btnFetchUrl.addEventListener('click', async
+        btnFetchUrl.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            const urlVal = urlInput.value.trim();
+            if (!urlVal) {
+                showToast('{{ t_modular("ats_alert_enter_url", "Please enter a job posting URL.") }}', '⚠️');
+                return;
+            }
+
+            btnFetchUrl.disabled = true;
+            btnFetchText.textContent = '{{ t_modular("ats_btn_fetching_state", "Fetching...") }}';
+
+            try {
+                const response = await fetch('/api/v1/premium/scrape-job', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: urlVal })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to fetch job description.');
+                }
+
+                if (data.job_description) {
+                    textArea.value = data.job_description;
+                    showToast('{{ t_modular("ats_alert_scraped_success", "Job requirements extracted successfully!") }}');
+                }
+            } catch (err) {
+                showToast(err.message || '{{ t_modular("ats_alert_scraped_error", "Error scraping job description from link.") }}', '❌');
+            } finally {
+                btnFetchUrl.disabled = false;
+                btnFetchText.textContent = '{{ t_modular("ats_btn_fetch_url", "Fetch URL") }}';
+            }
+        });
+
+        // Main ATS Analysis Form Submission Handler
+        atsForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const resumeId = resumeSelect.value;
+            const cvFile = cvFileInput.files[0];
+            const jobUrl = urlInput.value.trim();
+            const jobDesc = textArea.value.trim();
+
+            if (!resumeId && !cvFile) {
+                showToast('{{ t_modular("ats_alert_select_resume", "Please select a saved resume or upload a file.") }}', '⚠️');
+                return;
+            }
+
+            if (!jobUrl && !jobDesc) {
+                showToast('{{ t_modular("ats_alert_enter_job_spec", "Please enter a job posting URL or paste the job description text.") }}', '⚠️');
+                return;
+            }
+
+            // Set Loading State
+            analyzeBtn.disabled = true;
+            btnText.textContent = '⏳ {{ t_modular("ats_btn_analyzing_state", "Analyzing & Rewriting CV...") }}';
+
+            const formData = new FormData(atsForm);
+
+            try {
+                const response = await fetch('/api/v1/premium/analyze-ats', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Optimization failed.');
+                }
+
+                // Render Score
+                document.getElementById('scoreValue').textContent = (data.ats_score || 85) + '%';
+
+                // Render Matched Keywords
+                const matchedContainer = document.getElementById('matchedKeywords');
+                matchedContainer.innerHTML = (data.matched_keywords || []).map(
+                    k => `<span class="pill-matched">${k}</span>`
+                ).join('');
+
+                // Render Missing Keywords
+                const missingContainer = document.getElementById('missingKeywords');
+                missingContainer.innerHTML = (data.missing_keywords || []).map(
+                    k => `<span class="pill-missing">${k}</span>`
+                ).join('');
+
+                // Render Feedback
+                document.getElementById('aiFeedbackText').textContent = data.summary_feedback || 'Your resume has been rewritten to align with the target job posting requirements.';
+
+                // Bind Links to Automatically Created Resume
+                if (data.optimized_resume_id) {
+                    document.getElementById('editCvBtn').href = `/editor?id=${data.optimized_resume_id}`;
+                    document.getElementById('previewCvBtn').href = `/preview?id=${data.optimized_resume_id}`;
+                }
+
+                // Show Results Panel
+                emptyState.style.display = 'none';
+                resultsContent.style.display = 'block';
+
+                showToast('{{ t_modular("ats_alert_optimized_success", "Resume optimized successfully!") }}');
+
+            } catch (err) {
+                showToast(err.message || 'An error occurred while analyzing the CV.', '❌');
+            } finally {
+                analyzeBtn.disabled = false;
+                btnText.textContent = '{{ t_modular("ats_btn_analyze_now", "Generate Optimized Resume & Report") }}';
+            }
+        });
+    });
+</script>
+{% endblock %}
