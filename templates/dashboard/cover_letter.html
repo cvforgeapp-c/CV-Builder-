@@ -356,7 +356,8 @@
                     <div class="spinner"></div>
                     <span style="font-weight: 700; color: var(--brand-teal); font-size: 14px;">{{ t_modular('cl_loading_msg', 'Crafting your tailored cover letter...') }}</span>
                 </div>
-                <textarea class="output-editor" id="clOutputText" placeholder="{{ t_modular('cl_placeholder_output', 'Your AI-generated cover letter will appear here ready for editing...') }}">{{ t_modular('default_cover_letter_content', 'Dear Hiring Manager,\n\nI am writing to express my enthusiastic interest in the Senior Software Engineer position at Stripe. With my extensive background in architecting scalable Python/Flask microservices, PostgreSQL database management, and modern Web Application development, I am confident in my ability to immediately contribute to your team\'s ambitious goals.\n\nIn my recent projects, I designed and deployed high-performance web applications, leveraging RESTful API architectures and Vercel serverless deployments to deliver sub-100ms response times. My hands-on experience aligns directly with Stripe\'s emphasis on clean code, reliability, and modern full-stack workflows.\n\nThank you for your time and consideration. I look forward to discussing how my technical background and problem-solving approach fit your engineering roadmap.\n\nSincerely,\n[Your Name]') }}</textarea>
+                <!-- Cleared out prefilled content to prevent false generation look -->
+                <textarea class="output-editor" id="clOutputText" placeholder="{{ t_modular('cl_placeholder_output', 'Your AI-generated cover letter will appear here ready for editing...') }}"></textarea>
             </div>
 
             <div class="action-bar">
