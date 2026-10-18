@@ -539,18 +539,15 @@
         const timer = card.querySelector('.recording-timer');
 
         if (!recognition) {
-            alert('Speech Recognition is not supported on this browser. Please use Chrome, Edge, or Safari, or type your answer.');
+            alert('Speech Recognition is not supported on this mobile browser. Please use Chrome/Safari or type your response.');
             return;
         }
 
         if (isRecording) {
-            recognition.stop();
-            isRecording = false;
-            pulse.style.display = 'none';
-            recordText.textContent = '🎤 Start Recording';
-            clearInterval(timerInterval);
+            stopActiveRecording(btn);
         } else {
             try {
+                textarea.value = '';
                 recognition.start();
                 isRecording = true;
                 pulse.style.display = 'inline-block';
@@ -574,20 +571,46 @@
 
                 recognition.onerror = (event) => {
                     console.error('Speech recognition error:', event.error);
-                    recognition.stop();
-                    isRecording = false;
-                    pulse.style.display = 'none';
-                    recordText.textContent = '🎤 Start Recording';
-                    clearInterval(timerInterval);
+                    stopActiveRecording(btn);
+                };
+
+                recognition.onend = () => {
+                    if (isRecording) {
+                        stopActiveRecording(btn);
+                    }
                 };
             } catch (e) {
                 console.error('Failed to start recording:', e);
+                stopActiveRecording(btn);
             }
         }
     }
 
+    function stopActiveRecording(btn) {
+        const card = btn ? btn.closest('.question-card') : document.querySelector('.question-card');
+        if (!card) return;
+        const pulse = card.querySelector('.recording-pulse');
+        const recordText = card.querySelector('.record-text');
+
+        if (recognition && isRecording) {
+            try { recognition.stop(); } catch(e) {}
+        }
+        isRecording = false;
+        if (pulse) pulse.style.display = 'none';
+        if (recordText) recordText.textContent = '🎤 Start Recording';
+        clearInterval(timerInterval);
+    }
+
     async function submitAnswerForCoaching(btn) {
         const card = btn.closest('.question-card');
+        const recordBtn = card.querySelector('.btn-record');
+
+        // Automatically stop active speech session before evaluating
+        if (isRecording) {
+            stopActiveRecording(recordBtn);
+            await new Promise(resolve => setTimeout(resolve, 350));
+        }
+
         const answerText = card.querySelector('.answer-box').value;
         const feedbackBox = card.querySelector('.ai-coaching-feedback');
         const feedbackBody = card.querySelector('.feedback-body');
