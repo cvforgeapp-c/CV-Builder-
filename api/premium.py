@@ -694,7 +694,14 @@ def cover_letter():
     except Exception as exc:
         db.session.rollback()
         premium_app.logger.warning("CoverLetter table query failed (table may not exist yet): %s", exc)
-        saved_cover_letters = []
+        # Automatically create the missing tables on the fly
+        try:
+            db.create_all()
+            saved_cover_letters = CoverLetter.query.filter_by(user_id=current_user.id)\
+                .order_by(CoverLetter.created_at.desc()).all()
+        except Exception as inner_exc:
+            premium_app.logger.warning("Failed to auto-create CoverLetter table: %s", inner_exc)
+            saved_cover_letters = []
 
     return render_template(
         "dashboard/cover_letter.html",
