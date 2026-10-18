@@ -404,7 +404,7 @@
 
             <div id="questionsContainer">
                 <!-- DEFAULT SAMPLE QUESTION -->
-                <div class="question-card" data-question-id="1">
+                <div class="question-card" data-question-id="1" data-mode="text">
                     <span class="question-type">{{ t_modular('sample_question_type', 'BEHAVIORAL • SYSTEM SCALABILITY') }}</span>
                     <div class="question-text">{{ t_modular('sample_question_text', '"Tell me about a time you encountered a severe performance bottleneck in production. How did you diagnose and resolve it?"') }}</div>
                     
@@ -491,14 +491,14 @@
                         body: JSON.stringify(payload)
                     });
                     
-                    if (!response.ok) throw new Error('API Error');
+                    if (!response.ok) throw new Error('API request failed');
                     const data = await response.json();
                     
                     if (data.questions && data.questions.length > 0) {
                         renderGeneratedQuestions(data.questions);
                     }
                 } catch (err) {
-                    console.warn('Backend API unattached; maintaining interactive demo state.');
+                    alert('⚠️ Unable to generate questions. Please ensure your backend server is running and try again.');
                 } finally {
                     btn.disabled = false;
                     btn.textContent = '🎙️ {{ t_modular("btn_generate_questions", "Generate Practice Questions") }}';
@@ -518,6 +518,7 @@
         const card = btn.closest('.question-card');
         card.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        card.dataset.mode = mode;
 
         const textPanel = card.querySelector('.text-input-panel');
         const voicePanel = card.querySelector('.voice-recording-panel');
@@ -534,12 +535,12 @@
     function toggleAudioRecording(btn) {
         const card = btn.closest('.question-card');
         const textarea = card.querySelector('.answer-box');
-        const pulse = btn.querySelector('.recording-pulse');
-        const recordText = btn.querySelector('.record-text');
+        const pulse = card.querySelector('.recording-pulse');
+        const recordText = card.querySelector('.record-text');
         const timer = card.querySelector('.recording-timer');
 
         if (!recognition) {
-            alert('Speech Recognition is not supported on this mobile browser. Please use Chrome/Safari or type your response.');
+            alert('Speech Recognition is not supported on this browser. Please use Chrome/Safari or type your response.');
             return;
         }
 
@@ -601,11 +602,22 @@
         clearInterval(timerInterval);
     }
 
+    function speakFeedback(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            utterance.lang = 'en-US';
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+
     async function submitAnswerForCoaching(btn) {
         const card = btn.closest('.question-card');
         const recordBtn = card.querySelector('.btn-record');
+        const currentMode = card.dataset.mode || 'text';
 
-        // Automatically stop active speech session before evaluating
         if (isRecording) {
             stopActiveRecording(recordBtn);
             await new Promise(resolve => setTimeout(resolve, 350));
@@ -633,30 +645,38 @@
                 })
             });
 
-            if (response.ok) {
-                const data = await response.json();
-                feedbackBody.innerHTML = `
-                    <strong>Strength:</strong> ${data.strength || 'Good clarity and flow.'}<br>
-                    <strong>Improvement Tip:</strong> ${data.improvement || 'Consider adding more quantitative metrics.'}
+            if (!response.ok) {
+                throw new Error('API server returned error status');
+            }
+
+            const data = await response.json();
+            
+            feedbackBody.innerHTML = `
+                <strong>Strength:</strong> ${data.strength || 'Good response.'}<br>
+                <strong>Improvement Tip:</strong> ${data.improvement || 'No specific improvements noted.'}
+                ${data.rewrite ? `
                     <div class="rewrite-comparison">
                         <div class="rewrite-header">✨ AI Executive Rewrite</div>
-                        <em>"${data.rewrite || answerText}"</em>
+                        <em>"${data.rewrite}"</em>
                     </div>
-                `;
-            } else {
-                throw new Error('API server returned error');
+                ` : ''}
+            `;
+            feedbackBox.style.display = 'block';
+
+            if (currentMode === 'voice') {
+                const spokenText = `Strength: ${data.strength || ''}. Improvement Tip: ${data.improvement || ''}`;
+                speakFeedback(spokenText);
             }
+
         } catch (e) {
+            // Transparent authentic error reporting without fake fallback mock data
             feedbackBody.innerHTML = `
-                <strong>Strength:</strong> Clear structured approach identifying key technical/behavioral steps.<br>
-                <strong>Improvement Tip:</strong> Emphasize quantitative metrics during the <strong>Result</strong> phase (e.g., "restored operational uptime to 99.9%").
-                <div class="rewrite-comparison">
-                    <div class="rewrite-header">✨ AI Executive Rewrite</div>
-                    <em>"When facing this critical situation, I structured my approach around diagnostic tools, executed targeted fixes, and successfully improved throughput by 40%."</em>
+                <div style="color: var(--danger-red); font-weight: 700;">
+                    ⚠️ Failed to evaluate answer. Please verify your backend server connection or API configuration.
                 </div>
             `;
-        } finally {
             feedbackBox.style.display = 'block';
+        } finally {
             btn.disabled = false;
             btn.textContent = '🤖 {{ t_modular("btn_get_ai_feedback", "Get AI Coaching Feedback") }}';
         }
@@ -669,6 +689,7 @@
         questions.forEach((q, index) => {
             const card = document.createElement('div');
             card.className = 'question-card';
+            card.dataset.mode = 'text';
             card.innerHTML = `
                 <span class="question-type">${q.category || 'PRACTICE QUESTION'} • QUESTION ${index + 1}</span>
                 <div class="question-text">"${q.question_text}"</div>
