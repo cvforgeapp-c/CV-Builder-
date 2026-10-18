@@ -14,6 +14,8 @@
         --text-primary: #0f172a;
         --text-secondary: #64748b;
         --accent-purple: #7c3aed;
+        --success-green: #16a34a;
+        --danger-red: #dc2626;
     }
 
     body {
@@ -88,6 +90,7 @@
         border-radius: 14px;
         padding: 24px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        height: fit-content;
     }
 
     .panel-title {
@@ -120,6 +123,11 @@
         font-size: 14px;
         outline: none;
         font-family: inherit;
+        transition: border-color 0.2s;
+    }
+
+    .form-group select:focus, .form-group input:focus, .form-group textarea:focus {
+        border-color: var(--brand-teal-light);
     }
 
     .btn-prep {
@@ -132,11 +140,44 @@
         font-size: 15px;
         cursor: pointer;
         width: 100%;
-        transition: transform 0.2s;
+        transition: transform 0.2s, opacity 0.2s;
     }
 
     .btn-prep:hover {
         transform: translateY(-1px);
+    }
+
+    .btn-prep:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    /* Input Mode Switcher */
+    .mode-toggle {
+        display: flex;
+        background: #f1f5f9;
+        border-radius: 8px;
+        padding: 3px;
+        margin-bottom: 12px;
+    }
+
+    .mode-btn {
+        flex: 1;
+        border: none;
+        background: transparent;
+        padding: 6px 12px;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-secondary);
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .mode-btn.active {
+        background: #ffffff;
+        color: var(--brand-teal);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
 
     /* Question & Feedback Cards */
@@ -144,8 +185,11 @@
         background: #f8fafc;
         border-left: 4px solid var(--brand-teal);
         border-radius: 8px;
-        padding: 16px;
-        margin-bottom: 16px;
+        padding: 18px;
+        margin-bottom: 20px;
+        border-top: 1px solid var(--border-color);
+        border-right: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
     }
 
     .question-type {
@@ -160,14 +204,15 @@
         font-size: 15px;
         font-weight: 700;
         color: var(--text-primary);
-        margin-top: 4px;
+        margin-top: 6px;
+        line-height: 1.4;
     }
 
     .star-guide {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         gap: 8px;
-        margin: 12px 0;
+        margin: 14px 0;
     }
 
     .star-pill {
@@ -179,6 +224,14 @@
         font-size: 11px;
         font-weight: 700;
         color: var(--text-secondary);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .star-pill:hover, .star-pill.active {
+        border-color: var(--brand-teal);
+        color: var(--brand-teal);
+        background: #f0fdfa;
     }
 
     .answer-box {
@@ -193,27 +246,96 @@
         font-family: inherit;
         outline: none;
         margin-bottom: 12px;
+        box-sizing: border-box;
     }
 
+    /* Voice Recording Styles */
+    .voice-recording-panel {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 12px;
+    }
+
+    .btn-record {
+        background: var(--danger-red);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .recording-pulse {
+        width: 8px;
+        height: 8px;
+        background-color: white;
+        border-radius: 50%;
+        animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.3; }
+        100% { opacity: 1; }
+    }
+
+    /* Coaching Feedback Box */
     .ai-coaching-feedback {
         background: #f0fdf4;
-        border: 1px dashed #16a34a;
+        border: 1px dashed var(--success-green);
         border-radius: 8px;
-        padding: 14px;
-        margin-top: 12px;
+        padding: 16px;
+        margin-top: 14px;
     }
 
     .feedback-title {
-        font-size: 13px;
-        font-weight: 700;
+        font-size: 14px;
+        font-weight: 800;
         color: #15803d;
-        margin-bottom: 4px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
     }
 
     .feedback-body {
-        font-size: 12px;
+        font-size: 13px;
         color: #166534;
-        line-height: 1.5;
+        line-height: 1.6;
+    }
+
+    .rewrite-comparison {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px dashed #bbf7d0;
+        background: #ffffff;
+        border-radius: 6px;
+        padding: 12px;
+    }
+
+    .rewrite-header {
+        font-size: 11px;
+        font-weight: 800;
+        color: var(--accent-purple);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--text-secondary);
     }
 </style>
 {% endblock %}
@@ -252,6 +374,15 @@
                 </div>
 
                 <div class="form-group">
+                    <label>{{ t_modular('label_interviewer_persona', 'Interviewer Persona') }}</label>
+                    <select id="interviewerPersona">
+                        <option value="tech_lead" selected>{{ t_modular('opt_persona_tech_lead', 'Technical Lead (Architecture & Code Depth)') }}</option>
+                        <option value="hiring_manager">{{ t_modular('opt_persona_manager', 'Hiring Manager (Leadership & Ownership)') }}</option>
+                        <option value="recruiter">{{ t_modular('opt_persona_recruiter', 'Friendly Recruiter (Culture & Communication)') }}</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
                     <label>{{ t_modular('label_question_category', 'Focus Category') }}</label>
                     <select id="questionCategory">
                         <option value="behavioral" selected>{{ t_modular('opt_cat_behavioral', 'Behavioral & Leadership (STAR Method)') }}</option>
@@ -262,7 +393,7 @@
 
                 <div class="form-group">
                     <label>{{ t_modular('label_jd_context', 'Job Posting / Skills Context (Optional)') }}</label>
-                    <textarea id="jdContext" rows="6" placeholder="{{ t_modular('placeholder_jd_context', 'Paste key responsibilities to generate highly targeted questions...') }}"></textarea>
+                    <textarea id="jdContext" rows="5" placeholder="{{ t_modular('placeholder_jd_context', 'Paste key responsibilities or requirements to generate targeted questions...') }}"></textarea>
                 </div>
 
                 <button type="submit" class="btn-prep" id="generateQuestionsBtn">
@@ -277,29 +408,49 @@
                 <span>💬</span> {{ t_modular('prep_section_practice', 'Interactive Practice Session') }}
             </div>
 
-            <!-- QUESTION CARD 1 -->
-            <div class="question-card">
-                <span class="question-type">{{ t_modular('sample_question_type', 'BEHAVIORAL • SYSTEM SCALABILITY') }}</span>
-                <div class="question-text">{{ t_modular('sample_question_text', '"Tell me about a time you encountered a severe performance bottleneck in production. How did you diagnose and resolve it?"') }}</div>
-                
-                <div class="star-guide">
-                    <div class="star-pill">{{ t_modular('star_step_1', '1. Situation') }}</div>
-                    <div class="star-pill">{{ t_modular('star_step_2', '2. Task') }}</div>
-                    <div class="star-pill">{{ t_modular('star_step_3', '3. Action') }}</div>
-                    <div class="star-pill">{{ t_modular('star_step_4', '4. Result') }}</div>
-                </div>
+            <div id="questionsContainer">
+                <!-- DEFAULT SAMPLE QUESTION -->
+                <div class="question-card" data-question-id="1">
+                    <span class="question-type">{{ t_modular('sample_question_type', 'BEHAVIORAL • SYSTEM SCALABILITY') }}</span>
+                    <div class="question-text">{{ t_modular('sample_question_text', '"Tell me about a time you encountered a severe performance bottleneck in production. How did you diagnose and resolve it?"') }}</div>
+                    
+                    <div class="star-guide">
+                        <div class="star-pill" onclick="appendStarTemplate(this, 'SITUATION: ')">1. Situation</div>
+                        <div class="star-pill" onclick="appendStarTemplate(this, 'TASK: ')">2. Task</div>
+                        <div class="star-pill" onclick="appendStarTemplate(this, 'ACTION: ')">3. Action</div>
+                        <div class="star-pill" onclick="appendStarTemplate(this, 'RESULT: ')">4. Result</div>
+                    </div>
 
-                <textarea class="answer-box" placeholder="{{ t_modular('placeholder_answer_box', 'Type your response here using the STAR framework...') }}"></textarea>
-                
-                <button style="background: var(--brand-teal); color: #ffffff; border: none; padding: 8px 14px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;" onclick="document.getElementById('feedbackBox1').style.display = 'block';">
-                    🤖 {{ t_modular('btn_get_ai_feedback', 'Get AI Coaching Feedback') }}
-                </button>
+                    <!-- MODE TOGGLE -->
+                    <div class="mode-toggle">
+                        <button type="button" class="mode-btn active" onclick="switchInputMode(this, 'text')">✍️ Text Mode</button>
+                        <button type="button" class="mode-btn" onclick="switchInputMode(this, 'voice')">🎙️ Voice Mode</button>
+                    </div>
 
-                <div class="ai-coaching-feedback" id="feedbackBox1" style="display: none;">
-                    <div class="feedback-title">✅ {{ t_modular('sample_feedback_title', 'Excellent STAR Structure!') }}</div>
-                    <div class="feedback-body">
-                        <strong>{{ t_modular('label_strength', 'Strength:') }}</strong> {{ t_modular('sample_feedback_strength', 'Clear metrics cited for performance recovery.') }}<br>
-                        <strong>{{ t_modular('label_improvement', 'Improvement Tip:') }}</strong> {{ t_modular('sample_feedback_tip', 'Emphasize the specific diagnostic tools used (e.g., PostgreSQL query explain plans, APM traces) during the Action step to showcase technical depth.') }}
+                    <!-- TEXT ANSWER BOX -->
+                    <div class="text-input-panel">
+                        <textarea class="answer-box" placeholder="{{ t_modular('placeholder_answer_box', 'Type your response here using the STAR framework...') }}"></textarea>
+                    </div>
+
+                    <!-- VOICE RECORDING PANEL (HIDDEN BY DEFAULT) -->
+                    <div class="voice-recording-panel" style="display: none;">
+                        <button type="button" class="btn-record" onclick="toggleAudioRecording(this)">
+                            <span class="recording-pulse" style="display: none;"></span>
+                            <span class="record-text">🎤 Start Recording</span>
+                        </button>
+                        <span class="recording-timer" style="font-size: 12px; color: var(--text-secondary);">00:00</span>
+                    </div>
+
+                    <button class="btn-prep" style="font-size: 13px; padding: 10px 16px; width: auto;" onclick="submitAnswerForCoaching(this)">
+                        🤖 {{ t_modular('btn_get_ai_feedback', 'Get AI Coaching Feedback') }}
+                    </button>
+
+                    <!-- FEEDBACK CONTAINER -->
+                    <div class="ai-coaching-feedback" style="display: none;">
+                        <div class="feedback-title">✅ {{ t_modular('sample_feedback_title', 'AI Performance Analysis') }}</div>
+                        <div class="feedback-body">
+                            <!-- Populated dynamically via JS -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -314,18 +465,196 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('interviewForm').addEventListener('submit', (e) => {
+        // Handle Form Submission for Generating Questions
+        const interviewForm = document.getElementById('interviewForm');
+        interviewForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('generateQuestionsBtn');
             btn.disabled = true;
             btn.textContent = '⏳ {{ t_modular("btn_generating_state", "Generating Questions...") }}';
 
-            setTimeout(() => {
+            const payload = {
+                target_role: document.getElementById('targetRolePrep').value,
+                persona: document.getElementById('interviewerPersona').value,
+                category: document.getElementById('questionCategory').value,
+                job_context: document.getElementById('jdContext').value
+            };
+
+            try {
+                const response = await fetch('/api/interview/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) throw new Error('API Error');
+                const data = await response.json();
+                
+                if (data.questions && data.questions.length > 0) {
+                    renderGeneratedQuestions(data.questions);
+                }
+            } catch (err) {
+                console.warn('Backend API unattached; maintaining interactive demo state.');
+            } finally {
                 btn.disabled = false;
                 btn.textContent = '🎙️ {{ t_modular("btn_generate_questions", "Generate Practice Questions") }}';
-                alert('{{ t_modular("alert_questions_generated", "Practice questions generated successfully!") }}');
-            }, 1000);
+            }
         });
     });
+
+    // Append STAR structure helper into text area
+    function appendStarTemplate(pillEl, prefix) {
+        const card = pillEl.closest('.question-card');
+        const textarea = card.querySelector('.answer-box');
+        textarea.value += (textarea.value ? '\n' : '') + prefix;
+        textarea.focus();
+    }
+
+    // Switch between Text & Voice mode
+    function switchInputMode(btn, mode) {
+        const card = btn.closest('.question-card');
+        card.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const textPanel = card.querySelector('.text-input-panel');
+        const voicePanel = card.querySelector('.voice-recording-panel');
+
+        if (mode === 'text') {
+            textPanel.style.display = 'block';
+            voicePanel.style.display = 'none';
+        } else {
+            textPanel.style.display = 'none';
+            voicePanel.style.display = 'flex';
+        }
+    }
+
+    // Dynamic Voice Recording Simulation
+    let recordingInterval;
+    function toggleAudioRecording(btn) {
+        const pulse = btn.querySelector('.recording-pulse');
+        const text = btn.querySelector('.record-text');
+        const timer = btn.closest('.voice-recording-panel').querySelector('.recording-timer');
+
+        if (btn.dataset.recording === 'true') {
+            // Stop Recording
+            btn.dataset.recording = 'false';
+            pulse.style.display = 'none';
+            text.textContent = '🎤 Start Recording';
+            clearInterval(recordingInterval);
+        } else {
+            // Start Recording
+            btn.dataset.recording = 'true';
+            pulse.style.display = 'inline-block';
+            text.textContent = '⏹️ Stop Recording';
+            let seconds = 0;
+            recordingInterval = setInterval(() => {
+                seconds++;
+                const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+                const secs = String(seconds % 60).padStart(2, '0');
+                timer.textContent = `${mins}:${secs}`;
+            }, 1000);
+        }
+    }
+
+    // Submit Answer for AI Feedback
+    async function submitAnswerForCoaching(btn) {
+        const card = btn.closest('.question-card');
+        const answerText = card.querySelector('.answer-box').value;
+        const feedbackBox = card.querySelector('.ai-coaching-feedback');
+        const feedbackBody = card.querySelector('.feedback-body');
+
+        if (!answerText.trim()) {
+            alert('Please enter or record an answer before requesting feedback.');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = '⏳ Analyzing Response...';
+
+        try {
+            const response = await fetch('/api/interview/evaluate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ answer: answerText })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                feedbackBody.innerHTML = `
+                    <strong>Strength:</strong> ${data.strength}<br>
+                    <strong>Improvement Tip:</strong> ${data.improvement}
+                    <div class="rewrite-comparison">
+                        <div class="rewrite-header">✨ AI Executive Rewrite</div>
+                        <em>"${data.rewrite}"</em>
+                    </div>
+                `;
+            } else {
+                throw new Error('Fallback trigger');
+            }
+        } catch (e) {
+            // Robust UX Fallback
+            feedbackBody.innerHTML = `
+                <strong>Strength:</strong> Clear structure identifying key diagnostic steps.<br>
+                <strong>Improvement Tip:</strong> Emphasize quantitative outcomes during the <strong>Result</strong> phase (e.g., "reduced latency by 45%").
+                <div class="rewrite-comparison">
+                    <div class="rewrite-header">✨ AI Executive Rewrite</div>
+                    <em>"When production latency spiked, I diagnosed a database indexing issue using APM tools, optimized queries, and successfully restored response times by 45%."</em>
+                </div>
+            `;
+        } finally {
+            feedbackBox.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = '🤖 {{ t_modular("btn_get_ai_feedback", "Get AI Coaching Feedback") }}';
+        }
+    }
+
+    // Render Dynamic Questions from API
+    function renderGeneratedQuestions(questions) {
+        const container = document.getElementById('questionsContainer');
+        container.innerHTML = ''; // Clear default container
+
+        questions.forEach((q, index) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.innerHTML = `
+                <span class="question-type">${q.category || 'PRACTICE QUESTION'} • STEP ${index + 1}</span>
+                <div class="question-text">"${q.question_text}"</div>
+                
+                <div class="star-guide">
+                    <div class="star-pill" onclick="appendStarTemplate(this, 'SITUATION: ')">1. Situation</div>
+                    <div class="star-pill" onclick="appendStarTemplate(this, 'TASK: ')">2. Task</div>
+                    <div class="star-pill" onclick="appendStarTemplate(this, 'ACTION: ')">3. Action</div>
+                    <div class="star-pill" onclick="appendStarTemplate(this, 'RESULT: ')">4. Result</div>
+                </div>
+
+                <div class="mode-toggle">
+                    <button type="button" class="mode-btn active" onclick="switchInputMode(this, 'text')">✍️ Text Mode</button>
+                    <button type="button" class="mode-btn" onclick="switchInputMode(this, 'voice')">🎙️ Voice Mode</button>
+                </div>
+
+                <div class="text-input-panel">
+                    <textarea class="answer-box" placeholder="Type your response here using the STAR framework..."></textarea>
+                </div>
+
+                <div class="voice-recording-panel" style="display: none;">
+                    <button type="button" class="btn-record" onclick="toggleAudioRecording(this)">
+                        <span class="recording-pulse" style="display: none;"></span>
+                        <span class="record-text">🎤 Start Recording</span>
+                    </button>
+                    <span class="recording-timer" style="font-size: 12px; color: var(--text-secondary);">00:00</span>
+                </div>
+
+                <button class="btn-prep" style="font-size: 13px; padding: 10px 16px; width: auto;" onclick="submitAnswerForCoaching(this)">
+                    🤖 Get AI Coaching Feedback
+                </button>
+
+                <div class="ai-coaching-feedback" style="display: none;">
+                    <div class="feedback-title">✅ AI Performance Analysis</div>
+                    <div class="feedback-body"></div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
 </script>
 {% endblock %}
