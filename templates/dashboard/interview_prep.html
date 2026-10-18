@@ -459,6 +459,9 @@
     let recognition = null;
     let isRecording = false;
     let timerInterval = null;
+    let currentUtterance = null;
+    let activeAudioBtn = null;
+    let speechCheckInterval = null;
 
     document.addEventListener('DOMContentLoaded', () => {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -602,22 +605,46 @@
         clearInterval(timerInterval);
     }
 
-    // Text-to-Speech playback helper including AI Executive Rewrite
-    function speakFeedback(strength, improvement, rewrite) {
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel(); // Stop any active audio before playing
+    // Speech Synthesis with True Pause / Resume Capability
+    function speakFeedback(strength, improvement, rewrite, btn) {
+        if (!('speechSynthesis' in window)) return;
 
-            let scriptText = '';
-            if (strength) scriptText += `Strength: ${strength}. `;
-            if (improvement) scriptText += `Improvement tip: ${improvement}. `;
-            if (rewrite) scriptText += `Here is an executive rewrite of your response: ${rewrite}`;
+        window.speechSynthesis.cancel(); // Reset any active speech queue
+        clearInterval(speechCheckInterval);
 
-            const utterance = new SpeechSynthesisUtterance(scriptText);
-            utterance.rate = 0.95; // Natural conversational pace
-            utterance.pitch = 1.0;
-            utterance.lang = 'en-US';
-            window.speechSynthesis.speak(utterance);
+        let scriptText = '';
+        if (strength) scriptText += `Strength: ${strength}. `;
+        if (improvement) scriptText += `Improvement tip: ${improvement}. `;
+        if (rewrite) scriptText += `Here is an executive rewrite of your response: ${rewrite}`;
+
+        currentUtterance = new SpeechSynthesisUtterance(scriptText);
+        currentUtterance.rate = 0.95;
+        currentUtterance.pitch = 1.0;
+        currentUtterance.lang = 'en-US';
+
+        currentUtterance.onend = () => {
+            if (btn) btn.textContent = '🔊 Play Voice Coaching';
+            clearInterval(speechCheckInterval);
+        };
+
+        currentUtterance.onerror = () => {
+            if (btn) btn.textContent = '🔊 Play Voice Coaching';
+            clearInterval(speechCheckInterval);
+        };
+
+        window.speechSynthesis.speak(currentUtterance);
+
+        if (btn) {
+            btn.textContent = '⏸️ Pause Voice Coaching';
+            activeAudioBtn = btn;
         }
+
+        speechCheckInterval = setInterval(() => {
+            if (!window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+                if (btn) btn.textContent = '🔊 Play Voice Coaching';
+                clearInterval(speechCheckInterval);
+            }
+        }, 500);
     }
 
     function toggleAudioPlayback(btn, strength, improvement, rewrite) {
@@ -626,20 +653,22 @@
             return;
         }
 
-        if (window.speechSynthesis.speaking) {
-            window.speechSynthesis.cancel();
-            btn.textContent = '🔊 Play Voice Coaching';
-        } else {
-            speakFeedback(strength, improvement, rewrite);
-            btn.textContent = '⏹️ Stop Voice Playback';
-
-            const checkSpeaking = setInterval(() => {
-                if (!window.speechSynthesis.speaking) {
-                    btn.textContent = '🔊 Play Voice Coaching';
-                    clearInterval(checkSpeaking);
-                }
-            }, 500);
+        // Case 1: Audio is currently speaking -> PAUSE it
+        if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+            window.speechSynthesis.pause();
+            btn.textContent = '▶️ Resume Voice Coaching';
+            return;
         }
+
+        // Case 2: Audio is currently PAUSED -> RESUME from stopped position
+        if (window.speechSynthesis.paused) {
+            window.speechSynthesis.resume();
+            btn.textContent = '⏸️ Pause Voice Coaching';
+            return;
+        }
+
+        // Case 3: Audio is stopped -> START fresh playback
+        speakFeedback(strength, improvement, rewrite, btn);
     }
 
     async function submitAnswerForCoaching(btn) {
@@ -704,9 +733,10 @@
             `;
             feedbackBox.style.display = 'block';
 
-            // Auto-trigger voiceover including the rewrite when Voice Mode is active
+            // Auto voiceover on Voice Mode
             if (currentMode === 'voice') {
-                speakFeedback(strengthText, improvementText, rewriteText);
+                const audioBtn = feedbackBody.querySelector('.btn-audio-control');
+                speakFeedback(strengthText, improvementText, rewriteText, audioBtn);
             }
 
         } catch (e) {
