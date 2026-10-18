@@ -1,0 +1,531 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t_modular('outreach_page_title', 'AI Cold Outreach & Networking Generator — CVForge Pro') }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --brand-teal: #02353C;
+        --brand-teal-light: #05535E;
+        --brand-gold: #E5A83B;
+        --brand-gold-hover: #D99321;
+        --bg-slate: #f8fafc;
+        --card-bg: #ffffff;
+        --border-color: #e2e8f0;
+        --text-primary: #0f172a;
+        --text-secondary: #64748b;
+    }
+
+    body {
+        background-color: var(--bg-slate);
+        color: var(--text-primary);
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    /* HEADER */
+    .outreach-header {
+        background: #ffffff;
+        border-bottom: 1px solid var(--border-color);
+        padding: 16px 5%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+
+    .brand-title {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--brand-teal);
+        text-decoration: none;
+        letter-spacing: -0.5px;
+    }
+
+    .badge-pro {
+        background: linear-gradient(135deg, var(--brand-gold), var(--brand-gold-hover));
+        color: #ffffff;
+        font-size: 10px;
+        font-weight: 800;
+        padding: 4px 10px;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        margin-left: 10px;
+        box-shadow: 0 2px 6px rgba(229, 168, 59, 0.3);
+    }
+
+    /* LAYOUT */
+    .outreach-container {
+        padding: 36px 5%;
+        max-width: 1320px;
+        margin: 0 auto;
+    }
+
+    .page-heading h1 {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--brand-teal);
+        letter-spacing: -0.5px;
+    }
+
+    .page-heading p {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin-top: 6px;
+        margin-bottom: 28px;
+        max-width: 720px;
+        line-height: 1.5;
+    }
+
+    .outreach-workspace {
+        display: grid;
+        grid-template-columns: 1fr 1.15fr;
+        gap: 28px;
+        align-items: start;
+    }
+
+    @media (max-width: 992px) {
+        .outreach-workspace {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* CARDS */
+    .panel-card {
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 26px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    }
+
+    .panel-title {
+        font-size: 16px;
+        font-weight: 800;
+        color: var(--brand-teal);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .step-badge {
+        background: rgba(2, 53, 60, 0.08);
+        color: var(--brand-teal);
+        font-size: 11px;
+        font-weight: 800;
+        padding: 2px 8px;
+        border-radius: 6px;
+    }
+
+    /* FORM INPUTS */
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 18px;
+    }
+
+    .form-group label {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-group select, 
+    .form-group input, 
+    .form-group textarea {
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: 1px solid #cbd5e1;
+        font-size: 13px;
+        outline: none;
+        font-family: inherit;
+        background-color: #ffffff;
+        transition: all 0.2s ease;
+    }
+
+    .form-group select:focus, 
+    .form-group input:focus, 
+    .form-group textarea:focus {
+        border-color: var(--brand-teal);
+        box-shadow: 0 0 0 3px rgba(2, 53, 60, 0.08);
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .btn-generate {
+        background: linear-gradient(135deg, var(--brand-teal) 0%, var(--brand-teal-light) 100%);
+        color: #ffffff;
+        border: none;
+        padding: 16px 24px;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 14px;
+        cursor: pointer;
+        width: 100%;
+        transition: all 0.25s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        box-shadow: 0 4px 14px rgba(2, 53, 60, 0.2);
+    }
+
+    .btn-generate:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(2, 53, 60, 0.3);
+    }
+
+    .btn-generate:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* TABS NAV */
+    .tab-nav {
+        display: flex;
+        background: #f1f5f9;
+        padding: 4px;
+        border-radius: 10px;
+        gap: 4px;
+        margin-bottom: 20px;
+    }
+
+    .tab-btn {
+        flex: 1;
+        padding: 10px;
+        font-size: 12px;
+        font-weight: 700;
+        border: none;
+        background: transparent;
+        color: var(--text-secondary);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .tab-btn.active {
+        background: #ffffff;
+        color: var(--brand-teal);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    /* OUTPUT BOXES */
+    .output-box {
+        background: #f8fafc;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 16px;
+        position: relative;
+    }
+
+    .output-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+    .output-title {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--brand-teal);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-copy {
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-copy:hover {
+        border-color: var(--brand-teal);
+        color: var(--brand-teal);
+    }
+
+    .output-text {
+        font-size: 13px;
+        line-height: 1.6;
+        color: var(--text-primary);
+        white-space: pre-line;
+        min-height: 120px;
+    }
+
+    .char-count {
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--text-secondary);
+        margin-top: 8px;
+        text-align: right;
+    }
+
+    /* TOAST */
+    .ats-toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: #0f172a;
+        color: #ffffff;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        display: none;
+        align-items: center;
+        gap: 8px;
+        z-index: 9999;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HEADER -->
+<header class="outreach-header">
+    <div style="display: flex; align-items: center;">
+        <a href="/" class="brand-title">CVForge</a>
+        <span class="badge-pro">PRO SUITE</span>
+    </div>
+    <div>
+        <a href="/dashboard" style="text-decoration: none; color: var(--text-secondary); font-size: 13px; font-weight: 700;">
+            ← Back to Dashboard
+        </a>
+    </div>
+</header>
+
+<div class="outreach-container">
+    <div class="page-heading">
+        <h1>Direct Cold Outreach & Networking Generator</h1>
+        <p>Bypass the job portal black hole. Generate hyper-personalized LinkedIn connection notes, cold emails to hiring managers, and referral request templates.</p>
+    </div>
+
+    <div class="outreach-workspace">
+        
+        <!-- LEFT PANEL: INPUT FORM -->
+        <div class="panel-card">
+            <div class="panel-title">
+                <span class="step-badge">TARGET SETUP</span>
+                <span>🎯</span> Outreach Parameters
+            </div>
+
+            <form id="outreachForm">
+                
+                <div class="form-group">
+                    <label>1. Select Base Resume Profile</label>
+                    <select id="resumeSelect" name="resume_id" required>
+                        <option value="">-- Select Resume --</option>
+                        {% for resume in resumes %}
+                            <option value="{{ resume.id }}">{{ resume.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Target Company</label>
+                        <input type="text" id="targetCompany" name="target_company" placeholder="e.g. Stripe, Google" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Recipient Role</label>
+                        <select id="recipientRole" name="recipient_role">
+                            <option value="Hiring Manager">Hiring Manager</option>
+                            <option value="Technical Recruiter">Technical Recruiter</option>
+                            <option value="Team Peer / Engineer">Team Peer / Staff</option>
+                            <option value="Company Alumni">Alumni / Connection</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Recipient Name (Optional)</label>
+                        <input type="text" id="recipientName" name="recipient_name" placeholder="e.g. Sarah Jenkins" />
+                    </div>
+                    <div class="form-group">
+                        <label>Communication Tone</label>
+                        <select id="outreachTone" name="tone">
+                            <option value="Confident & Professional">Confident & Professional</option>
+                            <option value="Direct & Concise">Direct & Concise</option>
+                            <option value="Casual & Conversational">Casual & Conversational</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Target Role or Job Description (Optional)</label>
+                    <textarea id="jobContext" name="job_context" rows="4" placeholder="Paste target position title or key details to align messaging..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-generate" id="generateBtn">
+                    <span>🚀</span>
+                    <span id="btnText">Generate Outreach Campaign</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- RIGHT PANEL: GENERATED MESSAGES -->
+        <div class="panel-card">
+            <div class="panel-title">
+                <span class="step-badge">LIVE CAMPAIGN</span>
+                <span>📬</span> Tailored Messages
+            </div>
+
+            <!-- TAB NAVIGATION -->
+            <div class="tab-nav">
+                <button type="button" class="tab-btn active" onclick="switchTab('linkedin')">
+                    🔗 LinkedIn Note
+                </button>
+                <button type="button" class="tab-btn" onclick="switchTab('email')">
+                    ✉️ Cold Email
+                </button>
+                <button type="button" class="tab-btn" onclick="switchTab('referral')">
+                    🤝 Referral Request
+                </button>
+            </div>
+
+            <!-- LINKEDIN TAB -->
+            <div id="tab-linkedin" class="tab-content">
+                <div class="output-box">
+                    <div class="output-header">
+                        <span class="output-title">LinkedIn Connection Note (< 300 chars)</span>
+                        <button class="btn-copy" onclick="copyText('linkedinText')">📋 Copy</button>
+                    </div>
+                    <div class="output-text" id="linkedinText">Select your settings and click generate to build your campaign...</div>
+                    <div class="char-count" id="linkedinCharCount">0 / 300 chars</div>
+                </div>
+            </div>
+
+            <!-- COLD EMAIL TAB -->
+            <div id="tab-email" class="tab-content" style="display: none;">
+                <div class="output-box" style="margin-bottom: 12px;">
+                    <div class="output-header">
+                        <span class="output-title">Subject Line Options</span>
+                        <button class="btn-copy" onclick="copyText('emailSubject')">📋 Copy</button>
+                    </div>
+                    <div class="output-text" id="emailSubject" style="min-height: auto; font-weight: 700;">-</div>
+                </div>
+                <div class="output-box">
+                    <div class="output-header">
+                        <span class="output-title">Email Body</span>
+                        <button class="btn-copy" onclick="copyText('emailBody')">📋 Copy</button>
+                    </div>
+                    <div class="output-text" id="emailBody">-</div>
+                </div>
+            </div>
+
+            <!-- REFERRAL REQUEST TAB -->
+            <div id="tab-referral" class="tab-content" style="display: none;">
+                <div class="output-box">
+                    <div class="output-header">
+                        <span class="output-title">Alumni / Peer Referral Pitch</span>
+                        <button class="btn-copy" onclick="copyText('referralText')">📋 Copy</button>
+                    </div>
+                    <div class="output-text" id="referralText">-</div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<div id="toastNotification" class="ats-toast">
+    <span id="toastIcon">ℹ️</span>
+    <span id="toastMessage">Notification</span>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function showToast(message, icon = '✅') {
+        const toast = document.getElementById('toastNotification');
+        document.getElementById('toastIcon').textContent = icon;
+        document.getElementById('toastMessage').textContent = message;
+        toast.style.display = 'flex';
+        setTimeout(() => { toast.style.display = 'none'; }, 3000);
+    }
+
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        
+        document.getElementById(`tab-${tabName}`).style.display = 'block';
+        event.currentTarget.classList.add('active');
+    }
+
+    function copyText(elementId) {
+        const text = document.getElementById(elementId).innerText;
+        if (!text || text === '-' || text.includes('Select your settings')) return;
+        navigator.clipboard.writeText(text);
+        showToast('Copied to clipboard!');
+    }
+
+    document.getElementById('outreachForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const btn = document.getElementById('generateBtn');
+        const btnText = document.getElementById('btnText');
+        
+        btn.disabled = true;
+        btnText.textContent = 'Generating Outreach...';
+
+        const formData = new FormData(e.target);
+
+        try {
+            const response = await fetch('/api/v1/premium/generate-outreach', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(Object.fromEntries(formData))
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) throw new Error(data.error || 'Generation failed');
+
+            // Render Output
+            document.getElementById('linkedinText').innerText = data.linkedin_note || '';
+            document.getElementById('linkedinCharCount').innerText = `${(data.linkedin_note || '').length} / 300 chars`;
+            
+            document.getElementById('emailSubject').innerText = data.email_subject || '';
+            document.getElementById('emailBody').innerText = data.email_body || '';
+            
+            document.getElementById('referralText').innerText = data.referral_request || '';
+
+            showToast('Outreach campaign generated!');
+
+        } catch (err) {
+            showToast(err.message || 'An error occurred', '❌');
+        } finally {
+            btn.disabled = false;
+            btnText.textContent = 'Generate Outreach Campaign';
+        }
+    });
+</script>
+{% endblock %}
