@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ t_modular('interview_title', 'Interview Question Practice — CVForge Pro') }}{% endblock %}
+{% block title %}{{ t_modular('prep_page_title', 'Interview Question Practice — CVForge Pro') }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -401,8 +401,8 @@
 
             <form id="interviewForm">
                 <div class="form-group">
-                    <label>{{ t_modular('label_target_role', 'Target Position') }}</label>
-                    <input type="text" id="targetRolePrep" placeholder="{{ t_modular('placeholder_target_role', 'e.g. Senior Full Stack Engineer') }}" required>
+                    <label>{{ t_modular('prep_label_target_role', 'Target Position') }}</label>
+                    <input type="text" id="targetRolePrep" placeholder="{{ t_modular('prep_placeholder_role', 'e.g. Senior Full Stack Engineer') }}" required>
                 </div>
 
                 <div class="form-group">
@@ -415,21 +415,21 @@
                 </div>
 
                 <div class="form-group">
-                    <label>{{ t_modular('label_question_category', 'Focus Category') }}</label>
+                    <label>{{ t_modular('prep_label_category', 'Focus Category') }}</label>
                     <select id="questionCategory">
-                        <option value="behavioral" selected>{{ t_modular('opt_cat_behavioral', 'Behavioral & Leadership (STAR Method)') }}</option>
-                        <option value="technical">{{ t_modular('opt_cat_technical', 'Technical Architecture & Stack Deep-Dive') }}</option>
-                        <option value="situational">{{ t_modular('opt_cat_situational', 'Problem Solving & Conflict Resolution') }}</option>
+                        <option value="behavioral" selected>{{ t_modular('prep_opt_cat_behavioral', 'Behavioral & Leadership (STAR Method)') }}</option>
+                        <option value="technical">{{ t_modular('prep_opt_cat_technical', 'Technical Architecture & Stack Deep-Dive') }}</option>
+                        <option value="situational">{{ t_modular('prep_opt_cat_situational', 'Problem Solving & Conflict Resolution') }}</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label>{{ t_modular('label_jd_context', 'Job Posting / Skills Context (Optional)') }}</label>
-                    <textarea id="jdContext" rows="5" placeholder="{{ t_modular('placeholder_jd_context', 'Paste key responsibilities or requirements to generate targeted questions...') }}"></textarea>
+                    <label>{{ t_modular('prep_label_context', 'Job Posting / Skills Context (Optional)') }}</label>
+                    <textarea id="jdContext" rows="5" placeholder="{{ t_modular('prep_placeholder_context', 'Paste key responsibilities to generate highly targeted questions...') }}"></textarea>
                 </div>
 
                 <button type="submit" class="btn-prep" id="generateQuestionsBtn">
-                    🎙️ {{ t_modular('btn_generate_questions', 'Generate Practice Questions') }}
+                    🎙️ {{ t_modular('prep_btn_generate', 'Generate Practice Questions') }}
                 </button>
             </form>
         </div>
@@ -447,34 +447,34 @@
                     <div class="question-text">{{ t_modular('sample_question_text', '"Tell me about a time you encountered a severe performance bottleneck in production. How did you diagnose and resolve it?"') }}</div>
                     
                     <div class="star-guide">
-                        <div class="star-pill" onclick="appendStarTemplate(this, 'SITUATION: ')">{{ t_modular('star_step_1', '1. Situation') }}</div>
-                        <div class="star-pill" onclick="appendStarTemplate(this, 'TASK: ')">{{ t_modular('star_step_2', '2. Task') }}</div>
-                        <div class="star-pill" onclick="appendStarTemplate(this, 'ACTION: ')">{{ t_modular('star_step_3', '3. Action') }}</div>
-                        <div class="star-pill" onclick="appendStarTemplate(this, 'RESULT: ')">{{ t_modular('star_step_4', '4. Result') }}</div>
+                        <div class="star-pill" onclick="appendStarTemplate(this, 'SITUATION: ')">{{ t_modular('prep_star_situation', '1. Situation') }}</div>
+                        <div class="star-pill" onclick="appendStarTemplate(this, 'TASK: ')">{{ t_modular('prep_star_task', '2. Task') }}</div>
+                        <div class="star-pill" onclick="appendStarTemplate(this, 'ACTION: ')">{{ t_modular('prep_star_action', '3. Action') }}</div>
+                        <div class="star-pill" onclick="appendStarTemplate(this, 'RESULT: ')">{{ t_modular('prep_star_result', '4. Result') }}</div>
                     </div>
 
                     <!-- MODE TOGGLE -->
                     <div class="mode-toggle">
-                        <button type="button" class="mode-btn active" onclick="switchInputMode(this, 'text')">✍️ Text Mode</button>
-                        <button type="button" class="mode-btn" onclick="switchInputMode(this, 'voice')">🎙️ Voice Mode</button>
+                        <button type="button" class="mode-btn active" onclick="switchInputMode(this, 'text')">✍️ {{ t_modular('mode_text', 'Text Mode') }}</button>
+                        <button type="button" class="mode-btn" onclick="switchInputMode(this, 'voice')">🎙️ {{ t_modular('mode_voice', 'Voice Mode') }}</button>
                     </div>
 
                     <!-- TEXT ANSWER BOX -->
                     <div class="text-input-panel">
-                        <textarea class="answer-box" placeholder="{{ t_modular('placeholder_answer_box', 'Type your response here using the STAR framework...') }}"></textarea>
+                        <textarea class="answer-box" placeholder="{{ t_modular('prep_placeholder_answer', 'Type your response here using the STAR framework...') }}"></textarea>
                     </div>
 
                     <!-- VOICE RECORDING PANEL -->
                     <div class="voice-recording-panel" style="display: none;">
                         <button type="button" class="btn-record" onclick="toggleAudioRecording(this)">
                             <span class="recording-pulse" style="display: none;"></span>
-                            <span class="record-text">🎤 Start Recording</span>
+                            <span class="record-text">🎤 {{ t_modular('btn_start_recording', 'Start Recording') }}</span>
                         </button>
                         <span class="recording-timer" style="font-size: 12px; color: var(--text-secondary);">00:00</span>
                     </div>
 
                     <button class="btn-prep" style="font-size: 13px; padding: 10px 16px; width: auto; margin-top: 10px;" onclick="submitAnswerForCoaching(this)">
-                        🤖 {{ t_modular('btn_get_ai_feedback', 'Get AI Coaching Feedback') }}
+                        🤖 {{ t_modular('prep_btn_get_feedback', 'Get AI Coaching Feedback') }}
                     </button>
 
                     <!-- FEEDBACK CONTAINER -->
@@ -494,6 +494,34 @@
 
 {% block extra_js %}
 <script>
+    // JS Translations Dictionary Object Passed from Template Context
+    const I18N = {
+        toastGenerated: "{{ t_modular('prep_toast_generated', 'Practice questions generated successfully!') }}",
+        toastGenerateError: "{{ t_modular('toast_generate_error', '⚡ Unable to generate questions right now. Please try again shortly.') }}",
+        toastNoAnswer: "{{ t_modular('toast_no_answer', '📝 Please type or record your response before requesting AI feedback.') }}",
+        toastNoSpeechRec: "{{ t_modular('toast_no_speech_rec', '🎙️ Speech Recognition is not supported on this browser. Please type your response.') }}",
+        toastNoTts: "{{ t_modular('toast_no_tts', 'Text-to-Speech is not supported on this browser.') }}",
+        toastBusyError: "{{ t_modular('toast_busy_error', '⚡ AI Coach is momentarily busy. Please try tapping feedback again.') }}",
+        btnGenerating: "{{ t_modular('btn_generating_state', 'Generating Questions...') }}",
+        btnGenerate: "{{ t_modular('prep_btn_generate', 'Generate Practice Questions') }}",
+        btnGetFeedback: "{{ t_modular('prep_btn_get_feedback', 'Get AI Coaching Feedback') }}",
+        btnStartRecording: "{{ t_modular('btn_start_recording', 'Start Recording') }}",
+        btnStopRecording: "{{ t_modular('btn_stop_recording', 'Stop Recording') }}",
+        btnPlayVoice: "{{ t_modular('btn_play_voice', 'Play Voice Coaching') }}",
+        btnStopVoice: "{{ t_modular('btn_stop_voice', 'Stop Audio Playback') }}",
+        modeText: "{{ t_modular('mode_text', 'Text Mode') }}",
+        modeVoice: "{{ t_modular('mode_voice', 'Voice Mode') }}",
+        star1: "{{ t_modular('prep_star_situation', '1. Situation') }}",
+        star2: "{{ t_modular('prep_star_task', '2. Task') }}",
+        star3: "{{ t_modular('prep_star_action', '3. Action') }}",
+        star4: "{{ t_modular('prep_star_result', '4. Result') }}",
+        labelStrength: "{{ t_modular('label_strength', 'Strength:') }}",
+        labelImprovement: "{{ t_modular('label_improvement', 'Improvement Tip:') }}",
+        headerRewrite: "{{ t_modular('header_rewrite', '✨ AI EXECUTIVE REWRITE') }}",
+        busyTitle: "{{ t_modular('busy_title', '⚡ AI Coach is temporarily busy') }}",
+        busyDesc: "{{ t_modular('busy_desc', 'We couldn\'t analyze your answer right now. Please hold on a moment and tap Get AI Coaching Feedback to try again.') }}"
+    };
+
     let recognition = null;
     let isRecording = false;
     let timerInterval = null;
@@ -514,7 +542,7 @@
                 e.preventDefault();
                 const btn = document.getElementById('generateQuestionsBtn');
                 btn.disabled = true;
-                btn.textContent = '⏳ {{ t_modular("btn_generating_state", "Generating Questions...") }}';
+                btn.textContent = `⏳ ${I18N.btnGenerating}`;
 
                 const payload = {
                     target_role: document.getElementById('targetRolePrep').value,
@@ -535,13 +563,13 @@
                     
                     if (data.questions && data.questions.length > 0) {
                         renderGeneratedQuestions(data.questions);
-                        showClientToast('✨ Practice questions generated successfully!', 'success');
+                        showClientToast(`✨ ${I18N.toastGenerated}`, 'success');
                     }
                 } catch (err) {
-                    showClientToast('⚡ Unable to generate questions right now. Please try again shortly.', 'warning');
+                    showClientToast(I18N.toastGenerateError, 'warning');
                 } finally {
                     btn.disabled = false;
-                    btn.textContent = '🎙️ {{ t_modular("btn_generate_questions", "Generate Practice Questions") }}';
+                    btn.textContent = `🎙️ ${I18N.btnGenerate}`;
                 }
             });
         }
@@ -602,7 +630,7 @@
         const timer = card.querySelector('.recording-timer');
 
         if (!recognition) {
-            showClientToast('🎙️ Speech Recognition is not supported on this browser. Please type your response.', 'warning');
+            showClientToast(I18N.toastNoSpeechRec, 'warning');
             return;
         }
 
@@ -614,7 +642,7 @@
                 recognition.start();
                 isRecording = true;
                 pulse.style.display = 'inline-block';
-                recordText.textContent = '⏹️ Stop Recording';
+                recordText.textContent = `⏹️ ${I18N.btnStopRecording}`;
 
                 let seconds = 0;
                 timerInterval = setInterval(() => {
@@ -660,7 +688,7 @@
         }
         isRecording = false;
         if (pulse) pulse.style.display = 'none';
-        if (recordText) recordText.textContent = '🎤 Start Recording';
+        if (recordText) recordText.textContent = `🎤 ${I18N.btnStartRecording}`;
         clearInterval(timerInterval);
     }
 
@@ -671,9 +699,9 @@
         window.speechSynthesis.cancel();
 
         let scriptText = '';
-        if (strength) scriptText += `Strength: ${strength}. `;
-        if (improvement) scriptText += `Improvement tip: ${improvement}. `;
-        if (rewrite) scriptText += `Here is an executive rewrite of your response: ${rewrite}`;
+        if (strength) scriptText += `${I18N.labelStrength} ${strength}. `;
+        if (improvement) scriptText += `${I18N.labelImprovement} ${improvement}. `;
+        if (rewrite) scriptText += `${rewrite}`;
 
         currentUtterance = new SpeechSynthesisUtterance(scriptText);
         currentUtterance.rate = 0.95;
@@ -681,15 +709,15 @@
         currentUtterance.lang = 'en-US';
 
         currentUtterance.onstart = () => {
-            if (btn) btn.innerHTML = '⏹️ Stop Audio Playback';
+            if (btn) btn.innerHTML = `⏹️ ${I18N.btnStopVoice}`;
         };
 
         currentUtterance.onend = () => {
-            if (btn) btn.innerHTML = '▶️ Play Voice Coaching';
+            if (btn) btn.innerHTML = `▶️ ${I18N.btnPlayVoice}`;
         };
 
         currentUtterance.onerror = () => {
-            if (btn) btn.innerHTML = '▶️ Play Voice Coaching';
+            if (btn) btn.innerHTML = `▶️ ${I18N.btnPlayVoice}`;
         };
 
         window.speechSynthesis.speak(currentUtterance);
@@ -697,13 +725,13 @@
 
     function toggleAudioPlayback(btn, strength, improvement, rewrite) {
         if (!('speechSynthesis' in window)) {
-            showClientToast('Text-to-Speech is not supported on this browser.', 'warning');
+            showClientToast(I18N.toastNoTts, 'warning');
             return;
         }
 
         if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
             window.speechSynthesis.cancel();
-            btn.innerHTML = '▶️ Play Voice Coaching';
+            btn.innerHTML = `▶️ ${I18N.btnPlayVoice}`;
         } else {
             speakFeedback(strength, improvement, rewrite, btn);
         }
@@ -724,7 +752,7 @@
         const feedbackBody = card.querySelector('.feedback-body');
 
         if (!answerText || !answerText.trim()) {
-            showClientToast('📝 Please type or record your response before requesting AI feedback.', 'warning');
+            showClientToast(I18N.toastNoAnswer, 'warning');
             return;
         }
 
@@ -757,15 +785,15 @@
             
             feedbackBody.innerHTML = `
                 <div style="margin-bottom: 10px;">
-                    <strong>Strength:</strong> ${strengthText}<br>
-                    <strong>Improvement Tip:</strong> ${improvementText}
+                    <strong>${I18N.labelStrength}</strong> ${strengthText}<br>
+                    <strong>${I18N.labelImprovement}</strong> ${improvementText}
                 </div>
                 <button type="button" class="btn-audio-control" style="background: #10b981; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; margin-top: 6px; margin-bottom: 8px;" onclick="toggleAudioPlayback(this, '${safeStrength}', '${safeImprovement}', '${safeRewrite}')">
-                    ▶️ Play Voice Coaching
+                    ▶️ ${I18N.btnPlayVoice}
                 </button>
                 ${rewriteText ? `
                     <div class="rewrite-comparison">
-                        <div class="rewrite-header">✨ AI EXECUTIVE REWRITE</div>
+                        <div class="rewrite-header">${I18N.headerRewrite}</div>
                         <em>"${rewriteText}"</em>
                     </div>
                 ` : ''}
@@ -781,15 +809,15 @@
         } catch (e) {
             feedbackBody.innerHTML = `
                 <div style="background: #fef2f2; border: 1px solid #fca5a5; border-radius: 8px; padding: 14px; color: #991b1b; font-size: 13px; line-height: 1.5;">
-                    <div style="font-weight: 700; margin-bottom: 4px;">⚡ AI Coach is temporarily busy</div>
-                    <div>We couldn't analyze your answer right now. Please hold on a moment and tap <strong>"Get AI Coaching Feedback"</strong> to try again.</div>
+                    <div style="font-weight: 700; margin-bottom: 4px;">${I18N.busyTitle}</div>
+                    <div>${I18N.busyDesc}</div>
                 </div>
             `;
             feedbackBox.style.display = 'block';
-            showClientToast('⚡ AI Coach is momentarily busy. Please try tapping feedback again.', 'error');
+            showClientToast(I18N.toastBusyError, 'error');
         } finally {
             btn.disabled = false;
-            btn.textContent = '🤖 {{ t_modular("btn_get_ai_feedback", "Get AI Coaching Feedback") }}';
+            btn.textContent = `🤖 ${I18N.btnGetFeedback}`;
         }
     }
 
@@ -806,35 +834,35 @@
                 <div class="question-text">"${q.question_text}"</div>
                 
                 <div class="star-guide">
-                    <div class="star-pill" onclick="appendStarTemplate(this, 'SITUATION: ')">1. Situation</div>
-                    <div class="star-pill" onclick="appendStarTemplate(this, 'TASK: ')">2. Task</div>
-                    <div class="star-pill" onclick="appendStarTemplate(this, 'ACTION: ')">3. Action</div>
-                    <div class="star-pill" onclick="appendStarTemplate(this, 'RESULT: ')">4. Result</div>
+                    <div class="star-pill" onclick="appendStarTemplate(this, 'SITUATION: ')">${I18N.star1}</div>
+                    <div class="star-pill" onclick="appendStarTemplate(this, 'TASK: ')">${I18N.star2}</div>
+                    <div class="star-pill" onclick="appendStarTemplate(this, 'ACTION: ')">${I18N.star3}</div>
+                    <div class="star-pill" onclick="appendStarTemplate(this, 'RESULT: ')">${I18N.star4}</div>
                 </div>
 
                 <div class="mode-toggle">
-                    <button type="button" class="mode-btn active" onclick="switchInputMode(this, 'text')">✍️ Text Mode</button>
-                    <button type="button" class="mode-btn" onclick="switchInputMode(this, 'voice')">🎙️ Voice Mode</button>
+                    <button type="button" class="mode-btn active" onclick="switchInputMode(this, 'text')">✍️ ${I18N.modeText}</button>
+                    <button type="button" class="mode-btn" onclick="switchInputMode(this, 'voice')">🎙️ ${I18N.modeVoice}</button>
                 </div>
 
                 <div class="text-input-panel">
-                    <textarea class="answer-box" placeholder="Type or speak your response using the STAR framework..."></textarea>
+                    <textarea class="answer-box" placeholder="${I18N.placeholderAnswer || 'Type or speak your response using the STAR framework...'}"></textarea>
                 </div>
 
                 <div class="voice-recording-panel" style="display: none;">
                     <button type="button" class="btn-record" onclick="toggleAudioRecording(this)">
                         <span class="recording-pulse" style="display: none;"></span>
-                        <span class="record-text">🎤 Start Recording</span>
+                        <span class="record-text">🎤 ${I18N.btnStartRecording}</span>
                     </button>
                     <span class="recording-timer" style="font-size: 12px; color: var(--text-secondary);">00:00</span>
                 </div>
 
                 <button class="btn-prep" style="font-size: 13px; padding: 10px 16px; width: auto; margin-top: 10px;" onclick="submitAnswerForCoaching(this)">
-                    🤖 Get AI Coaching Feedback
+                    🤖 ${I18N.btnGetFeedback}
                 </button>
 
                 <div class="ai-coaching-feedback" style="display: none;">
-                    <div class="feedback-title">✅ AI Performance Analysis</div>
+                    <div class="feedback-title">✅ {{ t_modular('sample_feedback_title', 'AI Performance Analysis') }}</div>
                     <div class="feedback-body"></div>
                 </div>
             `;
