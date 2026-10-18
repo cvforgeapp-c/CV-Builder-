@@ -460,8 +460,6 @@
     let isRecording = false;
     let timerInterval = null;
     let currentUtterance = null;
-    let activeAudioBtn = null;
-    let speechCheckInterval = null;
 
     document.addEventListener('DOMContentLoaded', () => {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -605,12 +603,11 @@
         clearInterval(timerInterval);
     }
 
-    // Speech Synthesis with True Pause / Resume Capability
+    // Reliable Mobile-Friendly Speech Synthesis Handler (Play & Stop / Replay)
     function speakFeedback(strength, improvement, rewrite, btn) {
         if (!('speechSynthesis' in window)) return;
 
-        window.speechSynthesis.cancel(); // Reset any active speech queue
-        clearInterval(speechCheckInterval);
+        window.speechSynthesis.cancel();
 
         let scriptText = '';
         if (strength) scriptText += `Strength: ${strength}. `;
@@ -622,29 +619,19 @@
         currentUtterance.pitch = 1.0;
         currentUtterance.lang = 'en-US';
 
+        currentUtterance.onstart = () => {
+            if (btn) btn.innerHTML = '⏹️ Stop Voice Coaching';
+        };
+
         currentUtterance.onend = () => {
-            if (btn) btn.textContent = '🔊 Play Voice Coaching';
-            clearInterval(speechCheckInterval);
+            if (btn) btn.innerHTML = '▶️ Play Voice Coaching';
         };
 
         currentUtterance.onerror = () => {
-            if (btn) btn.textContent = '🔊 Play Voice Coaching';
-            clearInterval(speechCheckInterval);
+            if (btn) btn.innerHTML = '▶️ Play Voice Coaching';
         };
 
         window.speechSynthesis.speak(currentUtterance);
-
-        if (btn) {
-            btn.textContent = '⏸️ Pause Voice Coaching';
-            activeAudioBtn = btn;
-        }
-
-        speechCheckInterval = setInterval(() => {
-            if (!window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
-                if (btn) btn.textContent = '🔊 Play Voice Coaching';
-                clearInterval(speechCheckInterval);
-            }
-        }, 500);
     }
 
     function toggleAudioPlayback(btn, strength, improvement, rewrite) {
@@ -653,22 +640,12 @@
             return;
         }
 
-        // Case 1: Audio is currently speaking -> PAUSE it
-        if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
-            window.speechSynthesis.pause();
-            btn.textContent = '▶️ Resume Voice Coaching';
-            return;
+        if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+            window.speechSynthesis.cancel();
+            btn.innerHTML = '▶️ Play Voice Coaching';
+        } else {
+            speakFeedback(strength, improvement, rewrite, btn);
         }
-
-        // Case 2: Audio is currently PAUSED -> RESUME from stopped position
-        if (window.speechSynthesis.paused) {
-            window.speechSynthesis.resume();
-            btn.textContent = '⏸️ Pause Voice Coaching';
-            return;
-        }
-
-        // Case 3: Audio is stopped -> START fresh playback
-        speakFeedback(strength, improvement, rewrite, btn);
     }
 
     async function submitAnswerForCoaching(btn) {
@@ -721,8 +698,8 @@
                     <strong>Strength:</strong> ${strengthText}<br>
                     <strong>Improvement Tip:</strong> ${improvementText}
                 </div>
-                <button type="button" class="btn-audio-control" style="background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; margin-top: 6px; margin-bottom: 8px;" onclick="toggleAudioPlayback(this, '${safeStrength}', '${safeImprovement}', '${safeRewrite}')">
-                    🔊 Play Voice Coaching
+                <button type="button" class="btn-audio-control" style="background: #10b981; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; margin-top: 6px; margin-bottom: 8px;" onclick="toggleAudioPlayback(this, '${safeStrength}', '${safeImprovement}', '${safeRewrite}')">
+                    ▶️ Play Voice Coaching
                 </button>
                 ${rewriteText ? `
                     <div class="rewrite-comparison">
