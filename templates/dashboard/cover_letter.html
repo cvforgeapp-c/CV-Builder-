@@ -452,7 +452,6 @@
         const sourceCvSelect = document.getElementById('sourceCv');
         const resumeFileInput = document.getElementById('resumeFile');
 
-        // Reset dropdown if file chosen, reset file input if dropdown selected
         resumeFileInput.addEventListener('change', () => {
             if (resumeFileInput.files.length > 0) {
                 sourceCvSelect.value = "";
@@ -481,7 +480,6 @@
             sourceCvSelect.value = resumeIdParam;
         }
 
-        // 2. Scrape Job Requirements from Link (Fixed with e.preventDefault())
         btnScrapeUrl.addEventListener('click', async (e) => {
             e.preventDefault();
 
@@ -525,7 +523,6 @@
             }
         });
 
-        // 3. Submit Handler supports both saved resumes & uploaded local files
         const triggerSubmit = async () => {
             const hasUploadedFile = resumeFileInput.files.length > 0;
             const selectedCv = sourceCvSelect.value || resumeIdParam;
@@ -580,6 +577,8 @@
                 if (data.cover_letter_text) {
                     clOutputText.value = data.cover_letter_text;
                     showToast('{{ t_modular("cl_alert_generated", "Cover letter generated successfully!") }}');
+                    // Optional: reload page after short delay so history updates automatically
+                    setTimeout(() => { window.location.reload(); }, 1500);
                 }
             } catch (err) {
                 showToast(err.message || 'Failed to generate cover letter.', '❌');
@@ -595,7 +594,6 @@
             triggerSubmit();
         });
 
-        // 4. Copy & Export handlers
         btnCopyText.addEventListener('click', () => {
             const text = clOutputText.value;
             if (!text) return;
