@@ -101,6 +101,7 @@
         border-radius: 16px;
         padding: 26px;
         box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        position: relative;
     }
 
     .panel-title {
@@ -391,6 +392,30 @@
         color: #cbd5e1;
         margin-bottom: 16px;
     }
+
+    /* TOAST NOTIFICATION STYLING (Matching Pro Cover Letter Suite) */
+    .ats-toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: #0f172a;
+        color: #ffffff;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        display: none;
+        align-items: center;
+        gap: 8px;
+        z-index: 9999;
+        animation: slideInUp 0.3s ease;
+    }
+
+    @keyframes slideInUp {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
 </style>
 {% endblock %}
 
@@ -453,7 +478,9 @@
                     <label>{{ t_modular('ats_label_job_url', '2. Target Job Posting Link (URL)') }}</label>
                     <div class="url-input-group">
                         <input type="url" id="job_url_input" name="job_url" placeholder="https://www.linkedin.com/jobs/view/..." />
-                        <button type="button" class="btn-fetch-url" onclick="fetchJobFromUrl()">{{ t_modular('ats_btn_fetch_url', 'Fetch URL') }}</button>
+                        <button type="button" id="btnFetchUrl" class="btn-fetch-url">
+                            <span id="btnFetchText">{{ t_modular('ats_btn_fetch_url', 'Fetch URL') }}</span>
+                        </button>
                     </div>
                 </div>
 
@@ -536,119 +563,55 @@
     </div>
 </div>
 
+<!-- PROFESSIONAL TOAST NOTIFICATION CONTAINER -->
+<div id="toastNotification" class="ats-toast">
+    <span id="toastIcon">ℹ️</span>
+    <span id="toastMessage">Notification</span>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    async function fetchJobFromUrl() {
-        const urlInput = document.getElementById("job_url_input").value.trim();
-        const textArea = document.getElementById("job_description_textarea");
-
-        if (!urlInput) {
-            alert("Please paste a job URL first.");
-            return;
-        }
-
-        try {
-            const response = await fetch('/api/v1/premium/scrape-job', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url: urlInput })
-            });
-
-            const data = await response.json();
-
-            if (response.ok && data.job_description) {
-                // Automatically insert scraped text into text area
-                textArea.value = data.job_description;
-                alert("Job description extracted successfully!");
-            } else {
-                alert(data.error || "Could not fetch details automatically. Please copy & paste the text manually.");
-            }
-        } catch (err) {
-            alert("Failed to reach server. Please paste the job description text manually.");
-        }
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
         const atsForm = document.getElementById('atsForm');
         const analyzeBtn = document.getElementById('analyzeBtn');
         const btnText = document.getElementById('btnText');
         const emptyState = document.getElementById('emptyState');
         const resultsContent = document.getElementById('resultsContent');
+        
+        const btnFetchUrl = document.getElementById('btnFetchUrl');
+        const btnFetchText = document.getElementById('btnFetchText');
+        const urlInput = document.getElementById("job_url_input");
+        const textArea = document.getElementById("job_description_textarea");
+        const resumeSelect = document.getElementById('resumeSelect');
+        const cvFileInput = document.getElementById('cvFileInput');
 
-        atsForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        const toastNotification = document.getElementById('toastNotification');
+        const toastIcon = document.getElementById('toastIcon');
+        const toastMessage = document.getElementById('toastMessage');
 
-            // Validate inputs
-            const resumeId = document.getElementById('resumeSelect').value;
-            const cvFile = document.getElementById('cvFileInput').files[0];
-            const jobUrl = document.getElementById('job_url_input').value.trim();
-            const jobDesc = document.getElementById('job_description_textarea').value.trim();
+        // Professional Toast Notification Helper Function
+        function showToast(message, icon = '✅') {
+            toastIcon.textContent = icon;
+            toastMessage.textContent = message;
+            toastNotification.style.display = 'flex';
+            setTimeout(() => {
+                toastNotification.style.display = 'none';
+            }, 3500);
+        }
 
-            if (!resumeId && !cvFile) {
-                alert('Please select a saved resume from your dashboard or upload a CV document.');
-                return;
-            }
-
-            if (!jobUrl && !jobDesc) {
-                alert('Please enter a job posting URL or paste the job description text.');
-                return;
-            }
-
-            // Set loading state
-            analyzeBtn.disabled = true;
-            btnText.textContent = '⏳ {{ t_modular("ats_btn_analyzing_state", "Analyzing & Rewriting CV...") }}';
-
-            const formData = new FormData(atsForm);
-
-            try {
-                const response = await fetch('/api/v1/premium/analyze-ats', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.error || 'Optimization failed.');
-                }
-
-                // Render Score
-                document.getElementById('scoreValue').textContent = (data.ats_score || 85) + '%';
-
-                // Render Matched Keywords
-                const matchedContainer = document.getElementById('matchedKeywords');
-                matchedContainer.innerHTML = (data.matched_keywords || []).map(
-                    k => `<span class="pill-matched">${k}</span>`
-                ).join('');
-
-                // Render Missing Keywords
-                const missingContainer = document.getElementById('missingKeywords');
-                missingContainer.innerHTML = (data.missing_keywords || []).map(
-                    k => `<span class="pill-missing">${k}</span>`
-                ).join('');
-
-                // Render Feedback
-                document.getElementById('aiFeedbackText').textContent = data.summary_feedback || 'Your resume has been rewritten to align with the target job posting requirements.';
-
-                // Bind Links to Automatically Created Resume
-                if (data.optimized_resume_id) {
-                    document.getElementById('editCvBtn').href = `/editor?id=${data.optimized_resume_id}`;
-                    document.getElementById('previewCvBtn').href = `/preview?id=${data.optimized_resume_id}`;
-                }
-
-                // Show Results
-                emptyState.style.display = 'none';
-                resultsContent.style.display = 'block';
-
-            } catch (err) {
-                alert(err.message || 'An error occurred while analyzing the CV.');
-            } finally {
-                analyzeBtn.disabled = false;
-                btnText.textContent = '{{ t_modular("ats_btn_analyze_now", "Generate Optimized Resume & Report") }}';
+        // Mutual exclusivity for resume sources
+        cvFileInput.addEventListener('change', () => {
+            if (cvFileInput.files.length > 0) {
+                resumeSelect.value = "";
             }
         });
-    });
-</script>
-{% endblock %}
+        resumeSelect.addEventListener('change', () => {
+            if (resumeSelect.value !== "") {
+                cvFileInput.value = "";
+            }
+        });
+
+        // Professional URL Fetching Handler with Event Prevention & Loading State
+        btnFetchUrl.addEventListener('click', async
