@@ -268,7 +268,7 @@
 <header class="cl-header">
     <div style="display: flex; align-items: center;">
         <a href="/" class="brand-title">CVForge</a>
-        <span class="badge-pro">PRO FEATURE</span>
+        <span class="badge-pro">{{ t_modular('badge_pro', 'PRO FEATURE') }}</span>
     </div>
     <div>
         <a href="/dashboard" style="text-decoration: none; color: var(--text-secondary); font-size: 14px; font-weight: 600;">{{ t_modular('btn_back_dashboard', '← Back to Dashboard') }}</a>
@@ -305,7 +305,7 @@
                     <!-- Phone / Local File Picker -->
                     <div style="margin-top: 8px; border: 1px dashed var(--border-color); padding: 10px; border-radius: 8px; background: #f8fafc; text-align: center;">
                         <span style="font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 6px; font-weight: 600;">
-                            📂 {{ t_modular('cl_upload_or_choose', 'Or upload file from phone / computer:') }}
+                            📂 {{ t_modular('cl_label_upload_cv', 'Or upload file from phone / computer:') }}
                         </span>
                         <input type="file" id="resumeFile" name="resume_file" accept=".pdf,.docx,.doc,.txt" style="font-size: 12px; width: 100%;">
                     </div>
@@ -336,7 +336,7 @@
                         🔗 {{ t_modular('cl_label_scrape_job_link', 'Import from Job Posting Link (Optional)') }}
                     </label>
                     <div style="display: flex; gap: 8px; margin-top: 4px;">
-                        <input type="url" id="scrapeJobUrl" placeholder="https://www.linkedin.com/jobs/view/..." style="flex: 1; font-size: 13px;">
+                        <input type="url" id="scrapeJobUrl" placeholder="{{ t_modular('cl_placeholder_job_url', 'https://www.linkedin.com/jobs/view/...') }}" style="flex: 1; font-size: 13px;">
                         <button type="button" id="btnScrapeUrl" style="background: var(--brand-teal); color: #ffffff; border: none; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;">
                             ⚡ <span id="btnScrapeText">{{ t_modular('cl_btn_fetch_url', 'Fetch') }}</span>
                         </button>
@@ -393,14 +393,14 @@
                 <div>
                     <h4 style="margin: 0 0 4px 0; font-size: 15px; color: var(--brand-teal);">{{ letter.job_title }}</h4>
                     <p style="margin: 0 0 12px 0; font-size: 13px; color: var(--text-secondary); font-weight: 600;">@ {{ letter.company_name }}</p>
-                    <small style="color: #94a3b8; font-size: 11px;">Created: {{ letter.created_at.strftime('%b %d, %Y') }}</small>
+                    <small style="color: #94a3b8; font-size: 11px;">{{ t_modular('cl_label_created', 'Created:') }} {{ letter.created_at.strftime('%b %d, %Y') }}</small>
                 </div>
                 
                 <button type="button" 
                         onclick="loadCoverLetter('{{ letter.company_name|e }}', '{{ letter.job_title|e }}', `{{ letter.content|e }}`)" 
                         class="btn-action" 
                         style="margin-top: 14px; width: 100%; font-size: 12px;">
-                    📂 Load into Editor
+                    📂 {{ t_modular('cl_btn_load_editor', 'Load into Editor') }}
                 </button>
             </div>
             {% endfor %}
@@ -412,7 +412,7 @@
 <!-- Toast Container -->
 <div id="toastNotification" class="cl-toast">
     <span id="toastIcon">ℹ️</span>
-    <span id="toastMessage">Notification</span>
+    <span id="toastMessage">{{ t_modular('cl_toast_notification_default', 'Notification') }}</span>
 </div>
 
 {% endblock %}
@@ -426,7 +426,7 @@
         
         const toast = document.getElementById('toastNotification');
         document.getElementById('toastIcon').textContent = '📂';
-        document.getElementById('toastMessage').textContent = 'Cover letter loaded into editor!';
+        document.getElementById('toastMessage').textContent = '{{ t_modular('cl_toast_loaded', 'Cover letter loaded into editor!') }}';
         toast.style.display = 'flex';
         setTimeout(() => {
             toast.style.display = 'none';
@@ -528,7 +528,7 @@
             const selectedCv = sourceCvSelect.value || resumeIdParam;
 
             if (!hasUploadedFile && !selectedCv) {
-                showToast('Please select a saved CV or upload a file from your phone.', '⚠️');
+                showToast('{{ t_modular("cl_alert_select_cv", "Please select a saved CV or upload a file from your phone.") }}', '⚠️');
                 return;
             }
 
@@ -541,8 +541,8 @@
             if (hasUploadedFile) {
                 const formData = new FormData();
                 formData.append('resume_file', resumeFileInput.files[0]);
-                formData.append('company_name', document.getElementById('targetCompany').value || 'Hiring Company');
-                formData.append('job_title', document.getElementById('targetRole').value || 'Target Position');
+                formData.append('company_name', document.getElementById('targetCompany').value || '{{ t_modular("cl_default_company", "Hiring Company") }}');
+                formData.append('job_title', document.getElementById('targetRole').value || '{{ t_modular("cl_default_role", "Target Position") }}');
                 formData.append('tone', document.getElementById('letterTone').value);
                 formData.append('job_description', document.getElementById('jobReqs').value);
 
@@ -553,8 +553,8 @@
             } else {
                 const payload = {
                     resume_id: selectedCv,
-                    company_name: document.getElementById('targetCompany').value || 'Hiring Company',
-                    job_title: document.getElementById('targetRole').value || 'Target Position',
+                    company_name: document.getElementById('targetCompany').value || '{{ t_modular("cl_default_company", "Hiring Company") }}',
+                    job_title: document.getElementById('targetRole').value || '{{ t_modular("cl_default_role", "Target Position") }}',
                     tone: document.getElementById('letterTone').value,
                     job_description: document.getElementById('jobReqs').value
                 };
@@ -571,17 +571,16 @@
                 const data = await response.json();
 
                 if (!response.ok) {
-                    throw new Error(data.error || 'Generation failed.');
+                    throw new Error(data.error || '{{ t_modular("cl_alert_gen_failed", "Generation failed.") }}');
                 }
 
                 if (data.cover_letter_text) {
                     clOutputText.value = data.cover_letter_text;
-                    showToast('{{ t_modular("cl_alert_generated", "Cover letter generated successfully!") }}');
-                    // Optional: reload page after short delay so history updates automatically
+                    showToast('{{ t_modular("cl_toast_generated", "Cover letter generated successfully!") }}');
                     setTimeout(() => { window.location.reload(); }, 1500);
                 }
             } catch (err) {
-                showToast(err.message || 'Failed to generate cover letter.', '❌');
+                showToast(err.message || '{{ t_modular("cl_alert_gen_error", "Failed to generate cover letter.") }}', '❌');
             } finally {
                 loadingOverlay.style.display = 'none';
                 generateBtn.disabled = false;
@@ -604,15 +603,15 @@
 
         btnSavePdf.addEventListener('click', async () => {
             const content = clOutputText.value.trim();
-            const company = document.getElementById('targetCompany').value.trim() || 'Company';
+            const company = document.getElementById('targetCompany').value.trim() || '{{ t_modular("cl_fallback_company", "Company") }}';
 
             if (!content) {
-                showToast('No content to export!', '⚠️');
+                showToast('{{ t_modular("cl_alert_no_content", "No content to export!") }}', '⚠️');
                 return;
             }
 
             btnSavePdf.disabled = true;
-            btnSavePdfText.textContent = 'Generating PDF...';
+            btnSavePdfText.textContent = '{{ t_modular("cl_btn_pdf_loading", "Generating PDF...") }}';
 
             try {
                 const response = await fetch('/api/v1/premium/save-cover-letter-pdf', {
@@ -621,7 +620,7 @@
                     body: JSON.stringify({ content, company_name: company })
                 });
 
-                if (!response.ok) throw new Error('Failed to generate PDF.');
+                if (!response.ok) throw new Error('{{ t_modular("cl_alert_pdf_fail", "Failed to generate PDF.") }}');
 
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
@@ -633,9 +632,9 @@
                 a.remove();
                 window.URL.revokeObjectURL(url);
 
-                showToast('Cover letter PDF downloaded successfully!');
+                showToast('{{ t_modular("cl_alert_pdf_success", "Cover letter PDF downloaded successfully!") }}');
             } catch (err) {
-                showToast(err.message || 'Error generating PDF file.', '❌');
+                showToast(err.message || '{{ t_modular("cl_alert_pdf_error", "Error generating PDF file.") }}', '❌');
             } finally {
                 btnSavePdf.disabled = false;
                 btnSavePdfText.textContent = '{{ t_modular("btn_save_pdf", "Save & Export PDF") }}';
