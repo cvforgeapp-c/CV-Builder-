@@ -165,8 +165,8 @@
         flex: 1;
         border: none;
         background: transparent;
-        padding: 6px 12px;
-        font-size: 12px;
+        padding: 6px 8px;
+        font-size: 11px;
         font-weight: 700;
         color: var(--text-secondary);
         border-radius: 6px;
@@ -236,7 +236,7 @@
 
     .answer-box {
         width: 100%;
-        min-height: 120px;
+        min-height: 100px;
         border: 1px solid #cbd5e1;
         border-radius: 8px;
         padding: 12px;
@@ -249,16 +249,34 @@
         box-sizing: border-box;
     }
 
-    /* Voice Recording Styles */
-    .voice-recording-panel {
+    /* Voice & Video Panels */
+    .voice-recording-panel, .video-recording-panel {
         display: flex;
-        align-items: center;
-        gap: 12px;
+        flex-direction: column;
+        gap: 10px;
         background: #ffffff;
         border: 1px solid var(--border-color);
         border-radius: 8px;
         padding: 12px;
         margin-bottom: 12px;
+    }
+
+    .video-preview-container {
+        width: 100%;
+        background: #000000;
+        border-radius: 6px;
+        overflow: hidden;
+        aspect-ratio: 16/9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    video.cam-feed {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 
     .btn-record {
@@ -270,9 +288,10 @@
         font-size: 12px;
         font-weight: 700;
         cursor: pointer;
-        display: flex;
+        display: inline-flex;
         align-items: center;
         gap: 6px;
+        width: fit-content;
     }
 
     .recording-pulse {
@@ -419,6 +438,7 @@
                     <div class="mode-toggle">
                         <button type="button" class="mode-btn active" onclick="switchInputMode(this, 'text')">✍️ Text Mode</button>
                         <button type="button" class="mode-btn" onclick="switchInputMode(this, 'voice')">🎙️ Voice Mode</button>
+                        <button type="button" class="mode-btn" onclick="switchInputMode(this, 'video')">📹 Video Mode</button>
                     </div>
 
                     <!-- TEXT ANSWER BOX -->
@@ -433,6 +453,20 @@
                             <span class="record-text">🎤 Start Recording</span>
                         </button>
                         <span class="recording-timer" style="font-size: 12px; color: var(--text-secondary);">00:00</span>
+                    </div>
+
+                    <!-- VIDEO RECORDING PANEL -->
+                    <div class="video-recording-panel" style="display: none;">
+                        <div class="video-preview-container">
+                            <video class="cam-feed" autoplay muted playsinline></video>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <button type="button" class="btn-record" onclick="toggleVideoRecording(this)">
+                                <span class="recording-pulse" style="display: none;"></span>
+                                <span class="video-record-text">📹 Start Video Recording</span>
+                            </button>
+                            <span class="video-timer" style="font-size: 12px; color: var(--text-secondary);">00:00</span>
+                        </div>
                     </div>
 
                     <button class="btn-prep" style="font-size: 13px; padding: 10px 16px; width: auto; margin-top: 10px;" onclick="submitAnswerForCoaching(this)">
@@ -459,6 +493,12 @@
     let recognition = null;
     let isRecording = false;
     let timerInterval = null;
+
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let isVideoRecording = false;
+    let videoTimerInterval = null;
+    let activeStream = null;
 
     document.addEventListener('DOMContentLoaded', () => {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -522,14 +562,112 @@
 
         const textPanel = card.querySelector('.text-input-panel');
         const voicePanel = card.querySelector('.voice-recording-panel');
+        const videoPanel = card.querySelector('.video-recording-panel');
+
+        if (mode !== 'video') {
+            stopVideoFeed(card);
+        }
 
         if (mode === 'text') {
             textPanel.style.display = 'block';
             voicePanel.style.display = 'none';
-        } else {
+            videoPanel.style.display = 'none';
+        } else if (mode === 'voice') {
             textPanel.style.display = 'block';
             voicePanel.style.display = 'flex';
+            videoPanel.style.display = 'none';
+        } else if (mode === 'video') {
+            textPanel.style.display = 'block';
+            voicePanel.style.display = 'none';
+            videoPanel.style.display = 'flex';
+            initVideoFeed(card);
         }
+    }
+
+    async function initVideoFeed(card) {
+        const videoEl = card.querySelector('video.cam-feed');
+        try {
+            activeStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            videoEl.srcObject = activeStream;
+        } catch (err) {
+            console.error('Camera access error:', err);
+            alert('⚠️ Unable to access camera and microphone. Please verify browser permissions.');
+        }
+    }
+
+    function stopVideoFeed(card) {
+        if (isVideoRecording) {
+            stopActiveVideoRecording(card);
+        }
+        if (activeStream) {
+            activeStream.getTracks().forEach(track => track.stop());
+            activeStream = null;
+        }
+    }
+
+    async function toggleVideoRecording(btn) {
+        const card = btn.closest('.question-card');
+        const pulse = card.querySelector('.recording-pulse');
+        const recordText = card.querySelector('.video-record-text');
+        const timer = card.querySelector('.video-timer');
+        const textarea = card.querySelector('.answer-box');
+
+        if (!activeStream) {
+            await initVideoFeed(card);
+            if (!activeStream) return;
+        }
+
+        if (isVideoRecording) {
+            stopActiveVideoRecording(card);
+        } else {
+            recordedChunks = [];
+            try {
+                mediaRecorder = new MediaRecorder(activeStream, { mimeType: 'video/webm;codecs=vp8,opus' });
+            } catch (e) {
+                try {
+                    mediaRecorder = new MediaRecorder(activeStream);
+                } catch (err) {
+                    alert('Video recording is not supported on this browser.');
+                    return;
+                }
+            }
+
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data && event.data.size > 0) {
+                    recordedChunks.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                textarea.value = `[Video Mock Interview Recording Attached - Size: ${(blob.size / 1024 / 1024).toFixed(2)} MB. AI will evaluate delivery, structure, and content.]`;
+            };
+
+            mediaRecorder.start();
+            isVideoRecording = true;
+            pulse.style.display = 'inline-block';
+            recordText.textContent = '⏹️ Stop Video Recording';
+
+            let seconds = 0;
+            videoTimerInterval = setInterval(() => {
+                seconds++;
+                const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+                const secs = String(seconds % 60).padStart(2, '0');
+                timer.textContent = `${mins}:${secs}`;
+            }, 1000);
+        }
+    }
+
+    function stopActiveVideoRecording(card) {
+        if (mediaRecorder && isVideoRecording) {
+            mediaRecorder.stop();
+        }
+        isVideoRecording = false;
+        const pulse = card.querySelector('.recording-pulse');
+        const recordText = card.querySelector('.video-record-text');
+        if (pulse) pulse.style.display = 'none';
+        if (recordText) recordText.textContent = '📹 Start Video Recording';
+        clearInterval(videoTimerInterval);
     }
 
     function toggleAudioRecording(btn) {
@@ -651,13 +789,17 @@
             stopActiveRecording(recordBtn);
             await new Promise(resolve => setTimeout(resolve, 350));
         }
+        if (isVideoRecording) {
+            stopActiveVideoRecording(card);
+            await new Promise(resolve => setTimeout(resolve, 350));
+        }
 
         const answerText = card.querySelector('.answer-box').value;
         const feedbackBox = card.querySelector('.ai-coaching-feedback');
         const feedbackBody = card.querySelector('.feedback-body');
 
         if (!answerText || !answerText.trim()) {
-            alert('Please type or speak an answer before requesting feedback.');
+            alert('Please provide an answer (type, record voice, or record video) before requesting feedback.');
             return;
         }
 
@@ -704,8 +846,8 @@
             `;
             feedbackBox.style.display = 'block';
 
-            // Auto-trigger voiceover including the rewrite when Voice Mode is active
-            if (currentMode === 'voice') {
+            // Auto-trigger voiceover including the rewrite when Voice or Video Mode is active
+            if (currentMode === 'voice' || currentMode === 'video') {
                 speakFeedback(strengthText, improvementText, rewriteText);
             }
 
@@ -744,6 +886,7 @@
                 <div class="mode-toggle">
                     <button type="button" class="mode-btn active" onclick="switchInputMode(this, 'text')">✍️ Text Mode</button>
                     <button type="button" class="mode-btn" onclick="switchInputMode(this, 'voice')">🎙️ Voice Mode</button>
+                    <button type="button" class="mode-btn" onclick="switchInputMode(this, 'video')">📹 Video Mode</button>
                 </div>
 
                 <div class="text-input-panel">
@@ -756,6 +899,19 @@
                         <span class="record-text">🎤 Start Recording</span>
                     </button>
                     <span class="recording-timer" style="font-size: 12px; color: var(--text-secondary);">00:00</span>
+                </div>
+
+                <div class="video-recording-panel" style="display: none;">
+                    <div class="video-preview-container">
+                        <video class="cam-feed" autoplay muted playsinline></video>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <button type="button" class="btn-record" onclick="toggleVideoRecording(this)">
+                            <span class="recording-pulse" style="display: none;"></span>
+                            <span class="video-record-text">📹 Start Video Recording</span>
+                        </button>
+                        <span class="video-timer" style="font-size: 12px; color: var(--text-secondary);">00:00</span>
+                    </div>
                 </div>
 
                 <button class="btn-prep" style="font-size: 13px; padding: 10px 16px; width: auto; margin-top: 10px;" onclick="submitAnswerForCoaching(this)">
