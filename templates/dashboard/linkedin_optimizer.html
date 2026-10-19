@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ t_modular('linkedin_title', 'LinkedIn Profile Optimizer — CVForge Pro') }}{% endblock %}
+{% block title %}{{ t_modular('li_page_title', 'LinkedIn Profile Optimizer — CVForge Pro') }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -529,12 +529,12 @@
             </svg>
             CVForge
         </a>
-        <span class="badge-pro">Pro Feature</span>
+        <span class="badge-pro">{{ t_modular('li_badge_pro', 'Pro Feature') }}</span>
     </div>
     <div>
         <a href="/dashboard" class="btn-back">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            {{ t_modular('btn_back_dashboard', 'Back to Dashboard') }}
+            {{ t_modular('li_btn_back_dashboard', 'Back to Dashboard') }}
         </a>
     </div>
 </header>
@@ -565,21 +565,21 @@
 
             <form id="linkedinForm">
                 <div class="form-group">
-                    <label>{{ t_modular('label_select_cv_source', 'Source CV File') }}</label>
+                    <label>{{ t_modular('li_label_select_cv_source', 'Source CV File') }}</label>
                     <div class="source-toggle">
                         <button type="button" class="source-toggle-btn active" id="btnModeSaved" onclick="setSourceMode('saved')">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-                            {{ t_modular('source_saved', 'Saved Resumes') }}
+                            {{ t_modular('li_source_saved', 'Saved Resumes') }}
                         </button>
                         <button type="button" class="source-toggle-btn" id="btnModeUpload" onclick="setSourceMode('upload')">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                            {{ t_modular('source_device', 'Upload from Device') }}
+                            {{ t_modular('li_source_device', 'Upload from Device') }}
                         </button>
                     </div>
 
                     <div id="savedCvContainer">
                         <select id="liSourceCv">
-                            <option value="">-- {{ t_modular('option_select_cv', 'Select Source CV') }} --</option>
+                            <option value="">-- {{ t_modular('li_option_select_cv', 'Select Source CV') }} --</option>
                             {% for resume in resumes %}
                                 <option value="{{ resume.id }}">{{ resume.title }}</option>
                             {% endfor %}
@@ -589,8 +589,12 @@
                     <div id="uploadCvContainer" style="display: none;">
                         <label class="file-upload-box" for="deviceCvInput">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="margin-bottom: 6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                            <div style="font-size: 13px; font-weight: 700; color: var(--text-primary);" id="fileUploadLabel">Click or drop CV file here</div>
-                            <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Supports PDF or DOCX (Max 10MB)</div>
+                            <div style="font-size: 13px; font-weight: 700; color: var(--text-primary);" id="fileUploadLabel">
+                                {{ t_modular('li_upload_drop_label', 'Click or drop CV file here') }}
+                            </div>
+                            <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+                                {{ t_modular('li_upload_drop_sub', 'Supports PDF or DOCX (Max 10MB)') }}
+                            </div>
                             <input type="file" id="deviceCvInput" accept=".pdf,.docx,.doc" onchange="handleFileSelected(this)">
                         </label>
                     </div>
@@ -599,32 +603,32 @@
                 <div class="form-group">
                     <div class="form-label-header">
                         <label for="targetKeywords" style="margin: 0;">
-                            {{ t_modular('label_target_keywords', 'Target Role & Keywords') }}
+                            {{ t_modular('li_label_target_keywords', 'Target Role & Keywords') }}
                         </label>
                         <button type="button" class="btn-fetch-kw" onclick="openFetchModal()">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                            {{ t_modular('btn_fetch_from_job', 'Fetch Keywords from Job URL') }}
+                            {{ t_modular('li_btn_fetch_from_job', 'Fetch Keywords from Job URL') }}
                         </button>
                     </div>
-                    <textarea id="targetKeywords" class="keyword-textarea" rows="4" placeholder="{{ t_modular('placeholder_target_keywords', 'e.g. Senior Full Stack Engineer, Staffing, Talent Acquisition, Candidate Vetting, Python, Next.js') }}" required></textarea>
-                    <span class="form-hint">{{ t_modular('hint_keywords', 'Keywords help recruiters discover your profile via LinkedIn Search.') }}</span>
+                    <textarea id="targetKeywords" class="keyword-textarea" rows="4" placeholder="{{ t_modular('li_placeholder_keywords', 'e.g. Senior Full Stack Engineer, Staffing, Talent Acquisition, Candidate Vetting, Python, Next.js') }}" required></textarea>
+                    <span class="form-hint">{{ t_modular('li_hint_keywords', 'Keywords help recruiters discover your profile via LinkedIn Search.') }}</span>
                 </div>
 
                 <div class="form-group">
                     <label for="profileGoal">
-                        {{ t_modular('label_profile_goal', 'Primary Optimization Strategy') }}
+                        {{ t_modular('li_label_profile_goal', 'Primary Optimization Strategy') }}
                     </label>
                     <select id="profileGoal">
-                        <option value="recruiter_search" selected>{{ t_modular('goal_recruiter_search', 'Maximize Recruiter Visibility (SEO & Search)') }}</option>
-                        <option value="thought_leadership">{{ t_modular('goal_thought_leadership', 'Thought Leadership & Personal Brand') }}</option>
-                        <option value="career_pivot">{{ t_modular('goal_career_pivot', 'Career Transition & Transferable Skills') }}</option>
+                        <option value="recruiter_search" selected>{{ t_modular('li_goal_recruiter_search', 'Maximize Recruiter Visibility (SEO & Search)') }}</option>
+                        <option value="thought_leadership">{{ t_modular('li_goal_thought_leadership', 'Thought Leadership & Personal Brand') }}</option>
+                        <option value="career_pivot">{{ t_modular('li_goal_career_pivot', 'Career Transition & Transferable Skills') }}</option>
                     </select>
                 </div>
 
                 <button type="submit" class="btn-optimize" id="optimizeLiBtn">
                     <span class="spinner" id="btnSpinner"></span>
                     <svg id="btnIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                    <span id="btnText">{{ t_modular('btn_generate_linkedin', 'Generate LinkedIn Assets') }}</span>
+                    <span id="btnText">{{ t_modular('li_btn_generate', 'Generate LinkedIn Assets') }}</span>
                 </button>
             </form>
         </div>
@@ -641,9 +645,9 @@
             </div>
 
             <div class="tab-bar">
-                <button class="tab-btn active" onclick="switchTab('tab-headline', this)">{{ t_modular('tab_headline', 'Headlines (3 Options)') }}</button>
-                <button class="tab-btn" onclick="switchTab('tab-about', this)">{{ t_modular('tab_about', 'About / Summary') }}</button>
-                <button class="tab-btn" onclick="switchTab('tab-experience', this)">{{ t_modular('tab_experience', 'Experience Bullets') }}</button>
+                <button class="tab-btn active" onclick="switchTab('tab-headline', this)">{{ t_modular('li_tab_headline', 'Headlines (3 Options)') }}</button>
+                <button class="tab-btn" onclick="switchTab('tab-about', this)">{{ t_modular('li_tab_about', 'About / Summary') }}</button>
+                <button class="tab-btn" onclick="switchTab('tab-experience', this)">{{ t_modular('li_tab_experience', 'Experience Bullets') }}</button>
             </div>
 
             <!-- TAB 1: HEADLINES -->
@@ -652,16 +656,16 @@
                     <div class="empty-state-icon">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     </div>
-                    <h4>{{ t_modular('empty_headline_title', 'No Headlines Generated Yet') }}</h4>
-                    <p>{{ t_modular('empty_headline_sub', 'Select your source CV and click "Generate LinkedIn Assets".') }}</p>
+                    <h4>{{ t_modular('li_empty_headline_title', 'No Headlines Generated Yet') }}</h4>
+                    <p>{{ t_modular('li_empty_headline_sub', 'Select your source CV and click "Generate LinkedIn Assets".') }}</p>
                 </div>
                 <textarea class="output-box" id="text-headline" oninput="updateCharCount(this, 'cnt-headline')"></textarea>
                 
                 <div class="output-footer">
-                    <span class="char-counter" id="cnt-headline">0 characters</span>
+                    <span class="char-counter" id="cnt-headline">0 {{ t_modular('li_char_counter', 'characters') }}</span>
                     <button class="btn-copy-tab" id="copyBtnHeadline" disabled onclick="copyContent('text-headline', this)">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                        <span>{{ t_modular('btn_copy_headlines', 'Copy Headlines') }}</span>
+                        <span>{{ t_modular('li_btn_copy_headlines', 'Copy Headlines') }}</span>
                     </button>
                 </div>
             </div>
@@ -672,16 +676,16 @@
                     <div class="empty-state-icon">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                     </div>
-                    <h4>{{ t_modular('empty_about_title', 'No About Copy Generated Yet') }}</h4>
-                    <p>{{ t_modular('empty_about_sub', 'Generated recruiter-ready About section will appear here.') }}</p>
+                    <h4>{{ t_modular('li_empty_about_title', 'No About Copy Generated Yet') }}</h4>
+                    <p>{{ t_modular('li_empty_about_sub', 'Generated recruiter-ready About section will appear here.') }}</p>
                 </div>
                 <textarea class="output-box" id="text-about" oninput="updateCharCount(this, 'cnt-about')"></textarea>
                 
                 <div class="output-footer">
-                    <span class="char-counter" id="cnt-about">0 characters</span>
+                    <span class="char-counter" id="cnt-about">0 {{ t_modular('li_char_counter', 'characters') }}</span>
                     <button class="btn-copy-tab" id="copyBtnAbout" disabled onclick="copyContent('text-about', this)">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                        <span>{{ t_modular('btn_copy_about', 'Copy About Section') }}</span>
+                        <span>{{ t_modular('li_btn_copy_about', 'Copy About Section') }}</span>
                     </button>
                 </div>
             </div>
@@ -692,16 +696,16 @@
                     <div class="empty-state-icon">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
                     </div>
-                    <h4>{{ t_modular('empty_exp_title', 'No Experience Bullets Generated Yet') }}</h4>
-                    <p>{{ t_modular('empty_exp_sub', 'High-impact bullet points will display here upon generation.') }}</p>
+                    <h4>{{ t_modular('li_empty_exp_title', 'No Experience Bullets Generated Yet') }}</h4>
+                    <p>{{ t_modular('li_empty_exp_sub', 'High-impact bullet points will display here upon generation.') }}</p>
                 </div>
                 <textarea class="output-box" id="text-experience" oninput="updateCharCount(this, 'cnt-exp')"></textarea>
 
                 <div class="output-footer">
-                    <span class="char-counter" id="cnt-exp">0 characters</span>
+                    <span class="char-counter" id="cnt-exp">0 {{ t_modular('li_char_counter', 'characters') }}</span>
                     <button class="btn-copy-tab" id="copyBtnExp" disabled onclick="copyContent('text-experience', this)">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                        <span>{{ t_modular('btn_copy_exp', 'Copy Experience Copy') }}</span>
+                        <span>{{ t_modular('li_btn_copy_exp', 'Copy Experience Copy') }}</span>
                     </button>
                 </div>
             </div>
@@ -714,15 +718,23 @@
 <!-- FETCH KEYWORDS MODAL -->
 <div class="modal-backdrop" id="fetchModal">
     <div class="modal-box">
-        <h3 style="margin-top:0; font-size:18px; font-weight:800; color:var(--brand-teal);">Fetch Keywords from Job Posting</h3>
-        <p style="font-size:13px; color:var(--text-secondary);">Paste a job posting URL to extract relevant keywords for LinkedIn indexing.</p>
+        <h3 style="margin-top:0; font-size:18px; font-weight:800; color:var(--brand-teal);">
+            {{ t_modular('li_modal_title', 'Fetch Keywords from Job Posting') }}
+        </h3>
+        <p style="font-size:13px; color:var(--text-secondary);">
+            {{ t_modular('li_modal_sub', 'Paste a job posting URL to extract relevant keywords for LinkedIn indexing.') }}
+        </p>
         <div class="error-banner" id="modalErrorBanner"></div>
         <div class="form-group" style="margin-top:16px;">
             <input type="url" id="jobUrlInput" placeholder="https://linkedin.com/jobs/view/...">
         </div>
         <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
-            <button type="button" class="btn-back" onclick="closeFetchModal()">Cancel</button>
-            <button type="button" class="btn-copy-tab" id="btnExtractKw" onclick="processFetchKeywords()">Extract Keywords</button>
+            <button type="button" class="btn-back" onclick="closeFetchModal()">
+                {{ t_modular('li_modal_cancel', 'Cancel') }}
+            </button>
+            <button type="button" class="btn-copy-tab" id="btnExtractKw" onclick="processFetchKeywords()">
+                {{ t_modular('li_modal_extract', 'Extract Keywords') }}
+            </button>
         </div>
     </div>
 </div>
@@ -732,6 +744,21 @@
 {% block extra_js %}
 <script>
     let activeSourceMode = 'saved';
+
+    // Localized strings injected for JavaScript usage
+    const JS_STRINGS = {
+        errSelectCv: "{{ t_modular('li_err_select_cv', 'Please select a source CV from your saved resumes.') }}",
+        errUploadCv: "{{ t_modular('li_err_upload_cv', 'Please upload a CV file from your device.') }}",
+        errValidUrl: "{{ t_modular('li_err_valid_url', 'Please enter a valid job URL.') }}",
+        errExtractFailed: "{{ t_modular('li_err_extract_failed', 'Failed to extract keywords from provided URL.') }}",
+        errGenFailed: "{{ t_modular('li_err_gen_failed', 'Failed to generate LinkedIn assets.') }}",
+        btnExtracting: "{{ t_modular('li_modal_extracting', 'Extracting...') }}",
+        btnExtract: "{{ t_modular('li_modal_extract', 'Extract Keywords') }}",
+        btnGenerating: "{{ t_modular('li_btn_generating', 'Generating Assets...') }}",
+        btnGenerate: "{{ t_modular('li_btn_generate', 'Generate LinkedIn Assets') }}",
+        btnCopied: "{{ t_modular('li_btn_copied', 'Copied!') }}",
+        charCounter: "{{ t_modular('li_char_counter', 'characters') }}"
+    };
 
     function showError(elementId, message) {
         const banner = document.getElementById(elementId);
@@ -788,13 +815,13 @@
         const url = urlInput.value.trim();
 
         if (!url) {
-            showError('modalErrorBanner', 'Please enter a valid job URL.');
+            showError('modalErrorBanner', JS_STRINGS.errValidUrl);
             return;
         }
 
         clearError('modalErrorBanner');
         btnExtract.disabled = true;
-        btnExtract.textContent = 'Extracting...';
+        btnExtract.textContent = JS_STRINGS.btnExtracting;
 
         try {
             const response = await fetch('/api/fetch-job-keywords', {
@@ -806,7 +833,7 @@
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || 'Failed to extract keywords from provided URL.');
+                throw new Error(data.error || JS_STRINGS.errExtractFailed);
             }
 
             if (data.keywords) {
@@ -817,7 +844,7 @@
             showError('modalErrorBanner', err.message);
         } finally {
             btnExtract.disabled = false;
-            btnExtract.textContent = 'Extract Keywords';
+            btnExtract.textContent = JS_STRINGS.btnExtract;
         }
     }
 
@@ -831,7 +858,7 @@
 
     function updateCharCount(textarea, countId) {
         const count = textarea.value.length;
-        document.getElementById(countId).innerText = `${count.toLocaleString()} characters`;
+        document.getElementById(countId).innerText = `${count.toLocaleString()} ${JS_STRINGS.charCounter}`;
     }
 
     function copyContent(elementId, btnElement) {
@@ -843,7 +870,7 @@
             btnElement.classList.add('copied');
             btnElement.innerHTML = `
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-                <span>${"{{ t_modular('btn_copied', 'Copied!') }}"}</span>
+                <span>${JS_STRINGS.btnCopied}</span>
             `;
             
             setTimeout(() => {
@@ -872,14 +899,14 @@
             if (activeSourceMode === 'saved') {
                 const cvSelect = document.getElementById('liSourceCv');
                 if (!cvSelect.value) {
-                    showError('formErrorBanner', 'Please select a source CV from your saved resumes.');
+                    showError('formErrorBanner', JS_STRINGS.errSelectCv);
                     return;
                 }
                 formData.append('resume_id', cvSelect.value);
             } else {
                 const fileInput = document.getElementById('deviceCvInput');
                 if (!fileInput.files || !fileInput.files[0]) {
-                    showError('formErrorBanner', 'Please upload a CV file from your device.');
+                    showError('formErrorBanner', JS_STRINGS.errUploadCv);
                     return;
                 }
                 formData.append('file', fileInput.files[0]);
@@ -888,7 +915,7 @@
             btn.disabled = true;
             spinner.style.display = 'block';
             btnIcon.style.display = 'none';
-            btnText.textContent = '{{ t_modular("btn_generating_state", "Generating Assets...") }}';
+            btnText.textContent = JS_STRINGS.btnGenerating;
 
             try {
                 const response = await fetch('/api/generate-linkedin', {
@@ -899,7 +926,7 @@
                 const data = await response.json();
 
                 if (!response.ok) {
-                    throw new Error(data.error || 'Failed to generate LinkedIn assets.');
+                    throw new Error(data.error || JS_STRINGS.errGenFailed);
                 }
 
                 if (data.headlines) {
@@ -935,7 +962,7 @@
                 btn.disabled = false;
                 spinner.style.display = 'none';
                 btnIcon.style.display = 'block';
-                btnText.textContent = '{{ t_modular("btn_generate_linkedin", "Generate LinkedIn Assets") }}';
+                btnText.textContent = JS_STRINGS.btnGenerate;
             }
         });
     });
