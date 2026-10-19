@@ -502,7 +502,7 @@
         <!-- TEMPLATES CATALOG -->
         <main class="template-grid" id="templateGrid">
             
-            <!-- TEMPLATE 1 -->
+            <!-- TEMPLATE 1: Executive Minimalist -->
             <div class="template-card active" onclick="selectTemplate(this)">
                 <div class="template-preview-frame">
                     <div class="mock-doc">
@@ -527,7 +527,7 @@
                 </div>
             </div>
 
-            <!-- TEMPLATE 2 -->
+            <!-- TEMPLATE 2: Tech Vanguard -->
             <div class="template-card" onclick="selectTemplate(this)">
                 <div class="template-preview-frame">
                     <div class="mock-doc">
@@ -550,7 +550,7 @@
                 </div>
             </div>
 
-            <!-- TEMPLATE 3 -->
+            <!-- TEMPLATE 3: Sidebar Executive -->
             <div class="template-card" onclick="selectTemplate(this)">
                 <div class="template-preview-frame">
                     <div class="mock-doc" style="flex-direction: row;">
@@ -575,6 +575,86 @@
                 </div>
             </div>
 
+            <!-- TEMPLATE 4: Standard Clean ATS -->
+            <div class="template-card" onclick="selectTemplate(this)">
+                <div class="template-preview-frame">
+                    <div class="mock-doc" style="align-items: center; text-align: center;">
+                        <div class="mock-line" style="width: 50%; height: 10px; background: #0f172a; margin-bottom: 2px;"></div>
+                        <div class="mock-line" style="width: 70%; height: 4px;"></div>
+                        <div style="width: 100%; height: 1px; background: var(--active-accent-color); margin: 6px 0;" class="mock-accent-border"></div>
+                        <div class="mock-section-title" style="width: 100%; height: 6px; border-bottom: 1px solid #cbd5e1; background: transparent; color: var(--active-accent-color); text-align: left;"></div>
+                        <div class="mock-line" style="width: 100%;"></div>
+                        <div class="mock-line" style="width: 90%;"></div>
+                        <div class="mock-line" style="width: 85%;"></div>
+                    </div>
+                    <div class="template-hover-overlay">
+                        <span class="btn-quick-select">{{ t_modular('btn_select', 'Select Template') }}</span>
+                    </div>
+                </div>
+                <div class="template-info">
+                    <div>
+                        <div class="template-name">{{ t_modular('tmpl_standard_ats', 'Standard Clean ATS') }}</div>
+                        <span class="badge-ats">100% ATS Safe</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TEMPLATE 5: Modern Minimalist ATS -->
+            <div class="template-card" onclick="selectTemplate(this)">
+                <div class="template-preview-frame">
+                    <div class="mock-doc">
+                        <div class="mock-line" style="width: 40%; height: 12px; background: var(--active-accent-color);" class="mock-header"></div>
+                        <div class="mock-line" style="width: 60%; height: 4px;"></div>
+                        <div class="mock-section-title" style="width: 35%; height: 7px; margin-top: 10px;"></div>
+                        <div class="mock-line" style="width: 100%;"></div>
+                        <div class="mock-line" style="width: 95%;"></div>
+                        <div class="mock-section-title" style="width: 35%; height: 7px; margin-top: 6px;"></div>
+                        <div class="mock-line" style="width: 80%;"></div>
+                    </div>
+                    <div class="template-hover-overlay">
+                        <span class="btn-quick-select">{{ t_modular('btn_select', 'Select Template') }}</span>
+                    </div>
+                </div>
+                <div class="template-info">
+                    <div>
+                        <div class="template-name">{{ t_modular('tmpl_modern_minimal_ats', 'Modern Minimalist ATS') }}</div>
+                        <span class="badge-ats">100% ATS Safe</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TEMPLATE 6: Technical Two-Column ATS -->
+            <div class="template-card" onclick="selectTemplate(this)">
+                <div class="template-preview-frame">
+                    <div class="mock-doc">
+                        <div class="mock-line" style="width: 60%; height: 10px; background: #0f172a;"></div>
+                        <div class="mock-line" style="width: 80%; height: 4px; margin-bottom: 6px;"></div>
+                        <div style="display: flex; gap: 12px; height: 100%;">
+                            <div style="width: 65%; display: flex; flex-direction: column; gap: 6px;">
+                                <div class="mock-section-title" style="width: 60%;"></div>
+                                <div class="mock-line" style="width: 100%;"></div>
+                                <div class="mock-line" style="width: 90%;"></div>
+                                <div class="mock-line" style="width: 85%;"></div>
+                            </div>
+                            <div style="width: 35%; border-left: 1px solid #e2e8f0; padding-left: 8px; display: flex; flex-direction: column; gap: 6px;">
+                                <div class="mock-section-title" style="width: 80%;"></div>
+                                <div class="mock-line" style="width: 100%;"></div>
+                                <div class="mock-line" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="template-hover-overlay">
+                        <span class="btn-quick-select">{{ t_modular('btn_select', 'Select Template') }}</span>
+                    </div>
+                </div>
+                <div class="template-info">
+                    <div>
+                        <div class="template-name">{{ t_modular('tmpl_tech_twocol_ats', 'Technical Two-Column ATS') }}</div>
+                        <span class="badge-ats">100% ATS Safe</span>
+                    </div>
+                </div>
+            </div>
+
         </main>
 
     </div>
@@ -592,9 +672,14 @@
             
             // Update preview headers dynamically
             document.querySelectorAll('.mock-header, .mock-section-title').forEach(el => {
-                el.style.background = color;
+                if (!el.classList.contains('mock-accent-border')) {
+                    el.style.background = color;
+                }
             });
             document.querySelectorAll('.mock-sidebar').forEach(el => {
+                el.style.background = color;
+            });
+            document.querySelectorAll('.mock-accent-border').forEach(el => {
                 el.style.background = color;
             });
         });
