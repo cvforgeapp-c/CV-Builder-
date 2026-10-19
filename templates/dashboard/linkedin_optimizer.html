@@ -18,6 +18,7 @@
         --linkedin-blue: #0a66c2;
         --linkedin-blue-hover: #004182;
         --linkedin-blue-light: #e8f4f9;
+        --error-red: #ef4444;
         --radius-lg: 16px;
         --radius-md: 10px;
         --radius-sm: 6px;
@@ -32,7 +33,6 @@
         -webkit-font-smoothing: antialiased;
     }
 
-    /* Top Navigation Bar */
     .li-header {
         background: rgba(255, 255, 255, 0.95);
         border-bottom: 1px solid var(--border-color);
@@ -88,7 +88,6 @@
         color: var(--text-primary);
     }
 
-    /* Container & Layout */
     .li-container {
         padding: 36px 6% 60px;
         max-width: 1320px;
@@ -130,7 +129,6 @@
         }
     }
 
-    /* Card Panels */
     .panel-card {
         background: var(--card-bg);
         border: 1px solid var(--border-color);
@@ -138,10 +136,6 @@
         padding: 28px;
         box-shadow: var(--shadow-subtle);
         transition: var(--transition);
-    }
-
-    .panel-card:hover {
-        border-color: #cbd5e1;
     }
 
     .panel-header {
@@ -173,7 +167,6 @@
         justify-content: center;
     }
 
-    /* Source Toggle Switch (Saved vs Upload) */
     .source-toggle {
         display: flex;
         background: #f1f5f9;
@@ -205,7 +198,6 @@
         box-shadow: 0 2px 4px rgba(0,0,0,0.06);
     }
 
-    /* File Upload Box */
     .file-upload-box {
         border: 2px dashed #cbd5e1;
         border-radius: var(--radius-md);
@@ -214,6 +206,7 @@
         cursor: pointer;
         background: #fafafa;
         transition: var(--transition);
+        display: block;
     }
 
     .file-upload-box:hover {
@@ -225,7 +218,6 @@
         display: none;
     }
 
-    /* Form Controls */
     .form-group {
         display: flex;
         flex-direction: column;
@@ -316,7 +308,18 @@
         transform: none;
     }
 
-    /* Tabbed Output Area */
+    .error-banner {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: var(--error-red);
+        padding: 12px 14px;
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        display: none;
+    }
+
     .tab-bar {
         display: flex;
         gap: 6px;
@@ -365,7 +368,6 @@
         to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Output Empty State & Display Box */
     .output-box {
         width: 100%;
         min-height: 250px;
@@ -460,7 +462,6 @@
         background: #10b981 !important;
     }
 
-    /* Modal for URL Fetch */
     .modal-backdrop {
         position: fixed;
         top: 0;
@@ -484,7 +485,6 @@
         box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
     }
 
-    /* Processing Spinner */
     .spinner {
         width: 18px;
         height: 18px;
@@ -545,8 +545,9 @@
                 </div>
             </div>
 
+            <div class="error-banner" id="formErrorBanner"></div>
+
             <form id="linkedinForm">
-                <!-- SUGGESTION 1: SOURCE CV FROM SAVED OR DEVICE -->
                 <div class="form-group">
                     <label>{{ t_modular('label_select_cv_source', 'Source CV File') }}</label>
                     <div class="source-toggle">
@@ -560,19 +561,15 @@
                         </button>
                     </div>
 
-                    <!-- Option A: Select Saved Resume -->
                     <div id="savedCvContainer">
                         <select id="liSourceCv">
                             <option value="">-- {{ t_modular('option_select_cv', 'Select Source CV') }} --</option>
                             {% for resume in resumes %}
                                 <option value="{{ resume.id }}">{{ resume.title }}</option>
-                            {% else %}
-                                <option value="demo">{{ t_modular('option_sample_cv', 'Sample Full Stack Developer CV') }}</option>
                             {% endfor %}
                         </select>
                     </div>
 
-                    <!-- Option B: Device Upload -->
                     <div id="uploadCvContainer" style="display: none;">
                         <label class="file-upload-box" for="deviceCvInput">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="margin-bottom: 6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -583,7 +580,6 @@
                     </div>
                 </div>
 
-                <!-- SUGGESTION 2: FETCH TARGET JOB & KEYWORDS -->
                 <div class="form-group">
                     <label for="targetKeywords">
                         <span>{{ t_modular('label_target_keywords', 'Target Role & Keywords') }}</span>
@@ -631,8 +627,6 @@
                 <button class="tab-btn" onclick="switchTab('tab-about', this)">{{ t_modular('tab_about', 'About / Summary') }}</button>
                 <button class="tab-btn" onclick="switchTab('tab-experience', this)">{{ t_modular('tab_experience', 'Experience Bullets') }}</button>
             </div>
-
-            <!-- SUGGESTION 3: REMOVED EDITABLE PLACEHOLDERS FOR CLEAN EMPTY STATES -->
 
             <!-- TAB 1: HEADLINES -->
             <div class="tab-content active" id="tab-headline">
@@ -703,13 +697,14 @@
 <div class="modal-backdrop" id="fetchModal">
     <div class="modal-box">
         <h3 style="margin-top:0; font-size:18px; font-weight:800; color:var(--brand-teal);">Fetch Keywords from Job Posting</h3>
-        <p style="font-size:13px; color:var(--text-secondary);">Paste a job posting URL or job description text to extract relevant keywords for LinkedIn indexing.</p>
+        <p style="font-size:13px; color:var(--text-secondary);">Paste a job posting URL to extract relevant keywords for LinkedIn indexing.</p>
+        <div class="error-banner" id="modalErrorBanner"></div>
         <div class="form-group" style="margin-top:16px;">
-            <input type="url" id="jobUrlInput" placeholder="https://linkedin.com/jobs/view/... or Indeed URL">
+            <input type="url" id="jobUrlInput" placeholder="https://linkedin.com/jobs/view/...">
         </div>
-        <div style="display:flex; justify-end; gap:10px; margin-top:20px;">
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
             <button type="button" class="btn-back" onclick="closeFetchModal()">Cancel</button>
-            <button type="button" class="btn-copy-tab" onclick="processFetchKeywords()">Extract Keywords</button>
+            <button type="button" class="btn-copy-tab" id="btnExtractKw" onclick="processFetchKeywords()">Extract Keywords</button>
         </div>
     </div>
 </div>
@@ -719,6 +714,18 @@
 {% block extra_js %}
 <script>
     let activeSourceMode = 'saved';
+
+    function showError(elementId, message) {
+        const banner = document.getElementById(elementId);
+        banner.textContent = message;
+        banner.style.display = 'block';
+    }
+
+    function clearError(elementId) {
+        const banner = document.getElementById(elementId);
+        banner.textContent = '';
+        banner.style.display = 'none';
+    }
 
     function setSourceMode(mode) {
         activeSourceMode = mode;
@@ -749,6 +756,7 @@
     }
 
     function openFetchModal() {
+        clearError('modalErrorBanner');
         document.getElementById('fetchModal').style.display = 'flex';
     }
 
@@ -756,11 +764,42 @@
         document.getElementById('fetchModal').style.display = 'none';
     }
 
-    function processFetchKeywords() {
-        const url = document.getElementById('jobUrlInput').value;
-        if (url) {
-            document.getElementById('targetKeywords').value = 'Senior Full Stack Engineer, Microservices, Next.js, Python, PostgreSQL, AWS';
+    async function processFetchKeywords() {
+        const urlInput = document.getElementById('jobUrlInput');
+        const btnExtract = document.getElementById('btnExtractKw');
+        const url = urlInput.value.trim();
+
+        if (!url) {
+            showError('modalErrorBanner', 'Please enter a valid job URL.');
+            return;
+        }
+
+        clearError('modalErrorBanner');
+        btnExtract.disabled = true;
+        btnExtract.textContent = 'Extracting...';
+
+        try {
+            const response = await fetch('/api/fetch-job-keywords', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: url })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to extract keywords from provided URL.');
+            }
+
+            if (data.keywords) {
+                document.getElementById('targetKeywords').value = data.keywords;
+            }
             closeFetchModal();
+        } catch (err) {
+            showError('modalErrorBanner', err.message);
+        } finally {
+            btnExtract.disabled = false;
+            btnExtract.textContent = 'Extract Keywords';
         }
     }
 
@@ -797,48 +836,89 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        // Form Submission & Simulated Result Rendering
-        document.getElementById('linkedinForm').addEventListener('submit', (e) => {
+        document.getElementById('linkedinForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            clearError('formErrorBanner');
+
             const btn = document.getElementById('optimizeLiBtn');
             const spinner = document.getElementById('btnSpinner');
             const btnIcon = document.getElementById('btnIcon');
             const btnText = document.getElementById('btnText');
+            const targetKeywords = document.getElementById('targetKeywords').value.trim();
+            const profileGoal = document.getElementById('profileGoal').value;
+
+            const formData = new FormData();
+            formData.append('target_keywords', targetKeywords);
+            formData.append('profile_goal', profileGoal);
+
+            if (activeSourceMode === 'saved') {
+                const cvSelect = document.getElementById('liSourceCv');
+                if (!cvSelect.value) {
+                    showError('formErrorBanner', 'Please select a source CV from your saved resumes.');
+                    return;
+                }
+                formData.append('resume_id', cvSelect.value);
+            } else {
+                const fileInput = document.getElementById('deviceCvInput');
+                if (!fileInput.files || !fileInput.files[0]) {
+                    showError('formErrorBanner', 'Please upload a CV file from your device.');
+                    return;
+                }
+                formData.append('file', fileInput.files[0]);
+            }
 
             btn.disabled = true;
             spinner.style.display = 'block';
             btnIcon.style.display = 'none';
             btnText.textContent = '{{ t_modular("btn_generating_state", "Generating Assets...") }}';
 
-            setTimeout(() => {
+            try {
+                const response = await fetch('/api/generate-linkedin', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to generate LinkedIn assets.');
+                }
+
+                if (data.headlines) {
+                    const headlineArea = document.getElementById('text-headline');
+                    headlineArea.value = Array.isArray(data.headlines) ? data.headlines.join('\n\n') : data.headlines;
+                    document.getElementById('empty-headline').style.display = 'none';
+                    headlineArea.style.display = 'block';
+                    document.getElementById('copyBtnHeadline').disabled = false;
+                    updateCharCount(headlineArea, 'cnt-headline');
+                }
+
+                if (data.about) {
+                    const aboutArea = document.getElementById('text-about');
+                    aboutArea.value = data.about;
+                    document.getElementById('empty-about').style.display = 'none';
+                    aboutArea.style.display = 'block';
+                    document.getElementById('copyBtnAbout').disabled = false;
+                    updateCharCount(aboutArea, 'cnt-about');
+                }
+
+                if (data.experience) {
+                    const expArea = document.getElementById('text-experience');
+                    expArea.value = Array.isArray(data.experience) ? data.experience.join('\n\n') : data.experience;
+                    document.getElementById('empty-experience').style.display = 'none';
+                    expArea.style.display = 'block';
+                    document.getElementById('copyBtnExp').disabled = false;
+                    updateCharCount(expArea, 'cnt-exp');
+                }
+
+            } catch (err) {
+                showError('formErrorBanner', err.message);
+            } finally {
                 btn.disabled = false;
                 spinner.style.display = 'none';
                 btnIcon.style.display = 'block';
                 btnText.textContent = '{{ t_modular("btn_generate_linkedin", "Generate LinkedIn Assets") }}';
-
-                // Fill textareas & hide empty states
-                const headlineArea = document.getElementById('text-headline');
-                headlineArea.value = "1. Senior Full Stack Engineer | Python, Flask, Next.js & PostgreSQL | Building High-Scale Web Applications\n\n2. Full Stack Developer Specializing in Microservices & Cloud Architectures | Vercel, Docker & REST APIs\n\n3. Lead Backend Architect | Engineering Fast, Reliable & Scalable Enterprise Software Platforms";
-                document.getElementById('empty-headline').style.display = 'none';
-                headlineArea.style.display = 'block';
-                document.getElementById('copyBtnHeadline').disabled = false;
-                updateCharCount(headlineArea, 'cnt-headline');
-
-                const aboutArea = document.getElementById('text-about');
-                aboutArea.value = "Passionate Full Stack Engineer with 5+ years of experience building scalable web applications, RESTful APIs, and cloud-native databases.\n\nCore Technical Stack:\n• Backend: Python, Flask, FastAPI, PostgreSQL, Neon DB\n• Frontend: Next.js, TypeScript, Tailwind CSS\n• Infrastructure & DevOps: Docker, Vercel Serverless, Git\n\nI thrive at the intersection of clean architecture and user-focused digital products. Always open to connecting with fellow engineers and tech leaders!";
-                document.getElementById('empty-about').style.display = 'none';
-                aboutArea.style.display = 'block';
-                document.getElementById('copyBtnAbout').disabled = false;
-                updateCharCount(aboutArea, 'cnt-about');
-
-                const expArea = document.getElementById('text-experience');
-                expArea.value = "🚀 Senior Full Stack Engineer | CVForge Platform\n• Architected end-to-end web applications serving thousands of active users, reducing API response times by 35%.\n• Engineered high-performance backend pipelines using Python Flask, PostgreSQL, and Vercel serverless functions.\n• Spearheaded ATS resume parsing and AI content tailoring modules.";
-                document.getElementById('empty-experience').style.display = 'none';
-                expArea.style.display = 'block';
-                document.getElementById('copyBtnExp').disabled = false;
-                updateCharCount(expArea, 'cnt-exp');
-
-            }, 1200);
+            }
         });
     });
 </script>
