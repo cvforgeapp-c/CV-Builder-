@@ -6,7 +6,7 @@ from .common import COMMON_LOCALES
 from .forgot_password import FORGOT_PASSWORD_LOCALES
 from .tracker import TRACKER_LOCALES
 from .ats import ATS_LOCALES
-from .matcher import MATCHER_LOCALES
+from .outreach import OUTREACH_LOCALES
 from .pdf_studio import PDF_STUDIO_LOCALES
 from .cover_letter import COVER_LETTER_LOCALES
 from .linkedin import LINKEDIN_LOCALES
@@ -68,7 +68,7 @@ MODULE_PACKAGES = [
     FORGOT_PASSWORD_LOCALES,
     TRACKER_LOCALES,
     ATS_LOCALES,
-    MATCHER_LOCALES,
+    OUTREACH_LOCALES,
     PDF_STUDIO_LOCALES,
     COVER_LETTER_LOCALES,
     LINKEDIN_LOCALES,
