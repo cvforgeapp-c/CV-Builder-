@@ -125,7 +125,7 @@
 
     .studio-layout {
         display: grid;
-        grid-template-columns: 320px 1fr;
+        grid-template-columns: 340px 1fr;
         gap: 32px;
         align-items: start;
     }
@@ -350,8 +350,10 @@
         inset: 0;
         background: rgba(2, 53, 60, 0.4);
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
+        gap: 10px;
         opacity: 0;
         transition: var(--transition-fast);
         backdrop-filter: blur(2px);
@@ -361,14 +363,24 @@
         opacity: 1;
     }
 
-    .btn-quick-select {
+    .btn-quick-action {
         background: #ffffff;
         color: var(--brand-teal);
         font-weight: 700;
         font-size: 13px;
-        padding: 8px 16px;
+        padding: 10px 18px;
         border-radius: 20px;
         box-shadow: var(--shadow-md);
+        border: none;
+        cursor: pointer;
+        width: 80%;
+        text-align: center;
+        transition: var(--transition-fast);
+    }
+
+    .btn-quick-action:hover {
+        background: var(--brand-teal);
+        color: #ffffff;
     }
 
     .template-info {
@@ -442,7 +454,7 @@
 <div class="studio-container">
     <div class="page-heading">
         <h1>{{ t_modular('pdf_studio_heading', 'Premium PDF Template Studio') }}</h1>
-        <p>{{ t_modular('pdf_studio_subheading', 'Select executive ReportLab rendering templates, adjust font pairings, and customize brand accent colors for maximum visual impact.') }}</p>
+        <p>{{ t_modular('pdf_studio_subheading', 'Select executive ReportLab rendering templates, adjust font pairings, and choose your next workflow destination.') }}</p>
     </div>
 
     <!-- MAIN FORM FOR PLATFORM SUBMISSION -->
@@ -457,7 +469,16 @@
             <aside class="controls-panel">
                 <div class="panel-title">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-                    {{ t_modular('heading_style_controls', 'Style Controls') }}
+                    {{ t_modular('heading_style_controls', 'Style & Navigation') }}
+                </div>
+
+                <!-- DESTINATION ROUTING SELECTOR -->
+                <div class="form-group">
+                    <label for="targetAction" style="color: var(--brand-teal); font-weight: 700;">{{ t_modular('label_target_action', 'Next Destination') }}</label>
+                    <select id="targetAction" name="target_action" class="form-control" style="border-color: var(--brand-teal); font-weight: 600;">
+                        <option value="editor" {% if not settings or settings.target_action == 'editor' %}selected{% endif %}>CVForge Studio (Resume Editor)</option>
+                        <option value="ats" {% if settings and settings.target_action == 'ats' %}selected{% endif %}>ATS Optimizer Engine</option>
+                    </select>
                 </div>
 
                 <!-- COLOR SWATCHES -->
@@ -493,7 +514,7 @@
 
                 <button type="submit" class="btn-apply">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    {{ t_modular('btn_save_style_prefs', 'Save Template Settings') }}
+                    {{ t_modular('btn_apply_continue', 'Apply Template & Continue') }}
                 </button>
             </aside>
 
@@ -513,7 +534,8 @@
                             <div class="mock-line" style="width: 90%;"></div>
                         </div>
                         <div class="template-hover-overlay">
-                            <span class="btn-quick-select">{{ t_modular('btn_select', 'Select Template') }}</span>
+                            <button type="button" class="btn-quick-action" onclick="submitDestination('exec_minimalist', 'editor')">Edit in CV Studio</button>
+                            <button type="button" class="btn-quick-action" onclick="submitDestination('exec_minimalist', 'ats')">Run ATS Optimizer</button>
                         </div>
                     </div>
                     <div class="template-info">
@@ -536,7 +558,8 @@
                             <div class="mock-line" style="width: 80%;"></div>
                         </div>
                         <div class="template-hover-overlay">
-                            <span class="btn-quick-select">{{ t_modular('btn_select', 'Select Template') }}</span>
+                            <button type="button" class="btn-quick-action" onclick="submitDestination('tech_vanguard', 'editor')">Edit in CV Studio</button>
+                            <button type="button" class="btn-quick-action" onclick="submitDestination('tech_vanguard', 'ats')">Run ATS Optimizer</button>
                         </div>
                     </div>
                     <div class="template-info">
@@ -560,7 +583,8 @@
                             </div>
                         </div>
                         <div class="template-hover-overlay">
-                            <span class="btn-quick-select">{{ t_modular('btn_select', 'Select Template') }}</span>
+                            <button type="button" class="btn-quick-action" onclick="submitDestination('sidebar_exec', 'editor')">Edit in CV Studio</button>
+                            <button type="button" class="btn-quick-action" onclick="submitDestination('sidebar_exec', 'ats')">Run ATS Optimizer</button>
                         </div>
                     </div>
                     <div class="template-info">
@@ -583,7 +607,8 @@
                             <div class="mock-line" style="width: 100%;"></div>
                         </div>
                         <div class="template-hover-overlay">
-                            <span class="btn-quick-select">{{ t_modular('btn_select', 'Select Template') }}</span>
+                            <button type="button" class="btn-quick-action" onclick="submitDestination('standard_ats', 'editor')">Edit in CV Studio</button>
+                            <button type="button" class="btn-quick-action" onclick="submitDestination('standard_ats', 'ats')">Run ATS Optimizer</button>
                         </div>
                     </div>
                     <div class="template-info">
@@ -605,7 +630,8 @@
                             <div class="mock-line" style="width: 100%;"></div>
                         </div>
                         <div class="template-hover-overlay">
-                            <span class="btn-quick-select">{{ t_modular('btn_select', 'Select Template') }}</span>
+                            <button type="button" class="btn-quick-action" onclick="submitDestination('modern_minimal_ats', 'editor')">Edit in CV Studio</button>
+                            <button type="button" class="btn-quick-action" onclick="submitDestination('modern_minimal_ats', 'ats')">Run ATS Optimizer</button>
                         </div>
                     </div>
                     <div class="template-info">
@@ -634,7 +660,8 @@
                             </div>
                         </div>
                         <div class="template-hover-overlay">
-                            <span class="btn-quick-select">{{ t_modular('btn_select', 'Select Template') }}</span>
+                            <button type="button" class="btn-quick-action" onclick="submitDestination('tech_twocol_ats', 'editor')">Edit in CV Studio</button>
+                            <button type="button" class="btn-quick-action" onclick="submitDestination('tech_twocol_ats', 'ats')">Run ATS Optimizer</button>
                         </div>
                     </div>
                     <div class="template-info">
@@ -663,7 +690,6 @@
             document.getElementById('inputAccentColor').value = color;
             document.documentElement.style.setProperty('--active-accent-color', color);
             
-            // Sync all mock preview elements
             document.querySelectorAll('.mock-header, .mock-section-title, .mock-sidebar, .mock-accent-border').forEach(el => {
                 el.style.background = color;
             });
@@ -690,6 +716,13 @@
             infoDiv.appendChild(selectedBadge);
         });
     });
+
+    // Helper for direct button action triggers
+    function submitDestination(templateId, destinationAction) {
+        document.getElementById('inputTemplateId').value = templateId;
+        document.getElementById('targetAction').value = destinationAction;
+        document.getElementById('studioForm').submit();
+    }
 </script>
 
 {% endblock %}
