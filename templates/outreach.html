@@ -213,12 +213,12 @@
 
     .file-badge {
         display: none;
-        margin-top: 10px;
-        padding: 6px 12px;
+        margin-top: 0px;
+        padding: 8px 12px;
         background: #ffffff;
         border: 1px solid var(--border-color);
-        border-radius: 20px;
-        font-size: 11px;
+        border-radius: var(--radius-sm);
+        font-size: 12px;
         font-weight: 700;
         color: var(--brand-teal);
         align-items: center;
@@ -230,6 +230,11 @@
         cursor: pointer;
         color: #EF4444;
         font-weight: 800;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+    .file-badge .btn-remove:hover {
+        background: rgba(239, 68, 68, 0.1);
     }
 
     /* FORM INPUTS */
@@ -540,14 +545,16 @@
                     <!-- File Upload Dropzone Container -->
                     <div id="uploadResumeContainer" style="display: none;">
                         <div class="dropzone-box" id="dropzone" onclick="document.getElementById('resumeFile').click()">
-                            <div class="dropzone-icon">📄</div>
-                            <div class="dropzone-text">Tap to select or drop resume file</div>
-                            <div class="dropzone-subtext">PDF, DOC, or DOCX (Max 10MB)</div>
+                            <div id="dropzoneContent">
+                                <div class="dropzone-icon">📄</div>
+                                <div class="dropzone-text">Tap to select or drop resume file</div>
+                                <div class="dropzone-subtext">PDF, DOC, or DOCX (Max 10MB)</div>
+                            </div>
+                            <div class="file-badge" id="fileBadge" style="display: none;">
+                                <span id="fileNameDisplay" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">file.pdf</span>
+                                <span class="btn-remove" onclick="removeFile(event)" title="Remove file">✕</span>
+                            </div>
                             <input type="file" id="resumeFile" name="resume_file" accept=".pdf,.doc,.docx" style="display: none;" onchange="handleFileSelect(this)" />
-                        </div>
-                        <div class="file-badge" id="fileBadge">
-                            <span id="fileNameDisplay">file.pdf</span>
-                            <span class="btn-remove" onclick="removeFile(event)">✕</span>
                         </div>
                     </div>
                 </div>
@@ -729,7 +736,8 @@
         if (input.files && input.files[0]) {
             const file = input.files[0];
             document.getElementById('fileNameDisplay').textContent = `${file.name} (${(file.size / (1024*1024)).toFixed(2)} MB)`;
-            document.getElementById('fileBadge').style.display = 'inline-flex';
+            document.getElementById('dropzoneContent').style.display = 'none';
+            document.getElementById('fileBadge').style.display = 'flex';
         }
     }
 
@@ -738,6 +746,7 @@
         const resumeFile = document.getElementById('resumeFile');
         resumeFile.value = '';
         document.getElementById('fileBadge').style.display = 'none';
+        document.getElementById('dropzoneContent').style.display = 'block';
     }
 
     /* FETCH JOB CONTEXT USING EXISTING BACKEND ENDPOINT */
@@ -769,7 +778,6 @@
 
             if (!response.ok) throw new Error(data.error || 'Failed to extract job content');
 
-            // Populate the Target Role / Job Context textarea with scraped description
             if (data.job_description) {
                 document.getElementById('jobContext').value = data.job_description;
             }
