@@ -772,15 +772,12 @@
 
             if (!response.ok) throw new Error(data.error || 'Failed to extract job content');
 
-            if (data.company && !document.getElementById('targetCompany').value) {
-                document.getElementById('targetCompany').value = data.company;
-            }
-
+            // Populate ONLY the Target Role / Job Context textarea
             if (data.job_context) {
                 document.getElementById('jobContext').value = data.job_context;
             }
 
-            showToast('Job details extracted!');
+            showToast('Job role & context extracted!');
 
         } catch (err) {
             showToast(err.message || 'Could not fetch job link', '❌');
