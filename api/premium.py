@@ -123,31 +123,40 @@ except ImportError:
 
 # 2. NEW MODULAR LOCALES PATHWAY (locales/__init__.py) - STRUCTURED IDENTICALLY TO translations.py
 try:
-    from locales import (
-        t as modular_t,
-        SUPPORTED_LANGUAGES as MODULAR_SUPPORTED_LANGUAGES,
-        get_supported_languages as get_modular_supported_languages,
-        get_language_code as get_modular_language_code,
-        TRANSLATIONS as MODULAR_TRANSLATIONS
-    )
+  from locales import (
+      MODULAR_SUPPORTED_LANGUAGES,
+      MODULAR_TRANSLATIONS,
+      get_modular_language_code,
+      get_modular_supported_languages,
+  )
+  from locales import (
+      t as modular_t,
+  )
 except ImportError:
-    try:
-        from ..locales import (
-            t as modular_t,
-            SUPPORTED_LANGUAGES as MODULAR_SUPPORTED_LANGUAGES,
-            get_supported_languages as get_modular_supported_languages,
-            get_language_code as get_modular_language_code,
-            TRANSLATIONS as MODULAR_TRANSLATIONS
-        )
-    except ImportError:
-        def modular_t(key, lang="English (US / UK)", default=None):
-            return str(key)
-        MODULAR_SUPPORTED_LANGUAGES = SUPPORTED_LANGUAGES.copy()
-        def get_modular_supported_languages():
-            return MODULAR_SUPPORTED_LANGUAGES.copy()
-        def get_modular_language_code(lang="English (US / UK)"):
-            return "en"
-        MODULAR_TRANSLATIONS = {}
+  try:
+    from ..locales import (
+        MODULAR_SUPPORTED_LANGUAGES,
+        MODULAR_TRANSLATIONS,
+        get_modular_language_code,
+        get_modular_supported_languages,
+    )
+    from ..locales import (
+        t as modular_t,
+    )
+  except ImportError:
+
+    def modular_t(key, lang='English (US / UK)', default=None):
+      return str(key)
+
+    MODULAR_SUPPORTED_LANGUAGES = SUPPORTED_LANGUAGES.copy()
+
+    def get_modular_supported_languages():
+      return MODULAR_SUPPORTED_LANGUAGES.copy()
+
+    def get_modular_language_code(lang='English (US / UK)'):
+      return 'en'
+
+    MODULAR_TRANSLATIONS = {}
 
 # ============================================================
 # USER LANGUAGE PREFERENCE HELPER
@@ -265,9 +274,7 @@ db.init_app(premium_app)
 login_manager = LoginManager(premium_app)
 
 login_manager.login_view = 'auth.login'
-login_manager.login_message = (
-    'Please log in to access your account settings.'
-)
+login_manager.login_message = 'Please log in to access your account settings.'
 login_manager.login_message_category = 'info'
 
 
@@ -735,9 +742,7 @@ def cover_letter():
     )
   except Exception as exc:
     db.session.rollback()
-    premium_app.logger.warning(
-        'CoverLetter table query failed: %s', exc
-    )
+    premium_app.logger.warning('CoverLetter table query failed: %s', exc)
     try:
       db.create_all()
       saved_cover_letters = (
@@ -806,6 +811,168 @@ def pdf_studio():
 @login_required
 def priority_support():
   return render_template('dashboard/priority_support.html', user=current_user)
+
+
+# ============================================================
+# LINKEDIN OPTIMIZER API ENDPOINTS
+# ============================================================
+
+
+@premium_app.route('/api/fetch-job-keywords', methods=['POST'])
+@login_required
+def fetch_job_keywords():
+  data = request.get_json(silent=True) or {}
+  job_url = (data.get('url') or '').strip()
+
+  if not job_url:
+    return jsonify({'error': 'Please provide a valid job posting URL.'}), 400
+
+  headers = {
+      'User-Agent': (
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+          ' (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      ),
+  }
+
+  try:
+    with httpx.Client(timeout=8.0, follow_redirects=True) as client:
+      response = client.get(job_url, headers=headers)
+      if response.status_code != 200:
+        return (
+            jsonify(
+                {'error': 'Unable to access the specified job URL.'}
+            ),
+            400,
+        )
+
+      soup = BeautifulSoup(response.text, 'html.parser')
+      for tag in soup(
+          ['script', 'style', 'noscript', 'header', 'footer', 'nav']
+      ):
+        tag.decompose()
+
+      raw_text = soup.get_text(separator=' ')
+      clean_text = re.sub(r'\s+', ' ', raw_text).strip()[:4000]
+
+      prompt = f"""
+Extract the top 8 to 12 critical technical and professional keywords, required skills, and core domain terms from this job description text.
+Return ONLY a concise, comma-separated list of keywords.
+
+Job Description Text:
+{clean_text}
+"""
+      extracted_keywords = generate_ai_text(prompt, max_tokens=300)
+      return jsonify({'success': True, 'keywords': extracted_keywords}), 200
+
+  except Exception as exc:
+    premium_app.logger.error('Error fetching job keywords: %s', exc)
+    return (
+        jsonify({'error': 'Failed to extract keywords from provided URL.'}),
+        500,
+    )
+
+
+@premium_app.route('/api/generate-linkedin', methods=['POST'])
+@login_required
+def generate_linkedin_assets():
+  target_keywords = (request.form.get('target_keywords') or '').strip()
+  profile_goal = (request.form.get('profile_goal') or 'recruiter_search').strip()
+  resume_id = request.form.get('resume_id')
+
+  cv_text = ''
+
+  if resume_id:
+    resume_obj = Resume.query.filter_by(
+        id=resume_id, user_id=current_user.id
+    ).first()
+    if resume_obj and isinstance(resume_obj.content_json, dict):
+      cv_text = json.dumps(resume_obj.content_json, ensure_ascii=False)
+
+  if not cv_text and 'file' in request.files:
+    file = request.files['file']
+    if file and file.filename:
+      filename = secure_filename(file.filename)
+      file_bytes = file.read()
+      if filename.lower().endswith('.pdf'):
+        try:
+          import pypdf
+
+          pdf_reader = pypdf.PdfReader(io.BytesIO(file_bytes))
+          cv_text = '\n'.join(
+              [p.extract_text() or '' for p in pdf_reader.pages]
+          )
+        except Exception:
+          cv_text = file_bytes.decode('utf-8', errors='ignore')
+      else:
+        cv_text = file_bytes.decode('utf-8', errors='ignore')
+
+  if not cv_text:
+    return (
+        jsonify({'error': 'Please provide a source CV or upload a CV file.'}),
+        400,
+    )
+
+  preferred_language = get_user_preferred_language(current_user)
+
+  prompt = f"""
+You are an executive personal branding strategist and LinkedIn SEO specialist.
+
+TASK:
+Optimize the candidate's CV for LinkedIn based on target keywords and career goals.
+
+Candidate CV Content:
+{cv_text}
+
+Target Role & Keywords:
+{target_keywords or 'High-value industry technical skills'}
+
+Optimization Goal:
+{profile_goal}
+
+Preferred Language:
+{preferred_language}
+
+REQUIREMENTS:
+1. "headlines": Provide 3 distinct, highly engaging LinkedIn profile headlines (under 220 characters each) optimized for recruiter search.
+2. "about": Write a compelling, 3 to 4 paragraph LinkedIn About section (Summary) incorporating key skills, achievements, and call to action.
+3. "experience": Write 3 impactful experience bullet points tailored for LinkedIn profile experience entries.
+
+Output MUST be strictly valid JSON matching this structure:
+{{
+  "headlines": [
+    "Headline option 1...",
+    "Headline option 2...",
+    "Headline option 3..."
+  ],
+  "about": "Full LinkedIn About section copy...",
+  "experience": [
+    "Experience bullet 1...",
+    "Experience bullet 2...",
+    "Experience bullet 3..."
+  ]
+}}
+"""
+
+  try:
+    raw_response = generate_ai_text(prompt, max_tokens=1800)
+
+    clean_json_str = raw_response.strip()
+    if clean_json_str.startswith('```json'):
+      clean_json_str = clean_json_str[7:]
+    if clean_json_str.startswith('```'):
+      clean_json_str = clean_json_str[3:]
+    if clean_json_str.endswith('```'):
+      clean_json_str = clean_json_str[:-3]
+
+    result = json.loads(clean_json_str.strip())
+    return jsonify(result), 200
+
+  except Exception as exc:
+    premium_app.logger.error('LinkedIn generation failed: %s', exc)
+    return (
+        jsonify({'error': 'Unable to generate LinkedIn assets at this time.'}),
+        500,
+    )
 
 
 # ============================================================
@@ -921,10 +1088,12 @@ Output MUST be strictly valid JSON matching this schema:
     return jsonify(result), 200
 
   except Exception as exc:
-    premium_app.logger.error("Interview evaluation critical error: %s", type(exc).__name__, exc_info=True)
-    return jsonify({
-        'error': f'Evaluation error: {str(exc)}'
-    }), 500
+    premium_app.logger.error(
+        'Interview evaluation critical error: %s',
+        type(exc).__name__,
+        exc_info=True,
+    )
+    return jsonify({'error': f'Evaluation error: {str(exc)}'}), 500
 
 
 # ============================================================
@@ -1972,8 +2141,7 @@ def scrape_job_url():
       if match:
         job_id = match.group(1)
         guest_api_url = (
-            'https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/'
-            + job_id
+            '[https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/](https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/)' + job_id
         )
         with httpx.Client(timeout=8.0, follow_redirects=True) as client:
           response = client.get(guest_api_url, headers=HEADERS)
@@ -2169,13 +2337,17 @@ def generate_outreach_campaign():
   try:
     resume_source_type = request.form.get('resume_source_type', 'saved')
     resume_id = request.form.get('resume_id')
-    target_company = (request.form.get('target_company') or 'Target Company').strip()
-    recipient_role = (request.form.get('recipient_role') or 'Hiring Manager').strip()
+    target_company = (
+        request.form.get('target_company') or 'Target Company'
+    ).strip()
+    recipient_role = (
+        request.form.get('recipient_role') or 'Hiring Manager'
+    ).strip()
     recipient_name = (request.form.get('recipient_name') or '').strip()
     tone = (request.form.get('tone') or 'Confident & Professional').strip()
     job_context = (request.form.get('job_context') or '').strip()
 
-    resume_text_content = ""
+    resume_text_content = ''
 
     if resume_source_type == 'saved':
       if resume_id:
@@ -2183,7 +2355,9 @@ def generate_outreach_campaign():
             id=resume_id, user_id=current_user.id
         ).first()
         if resume_obj and isinstance(resume_obj.content_json, dict):
-          resume_text_content = json.dumps(resume_obj.content_json, ensure_ascii=False)
+          resume_text_content = json.dumps(
+              resume_obj.content_json, ensure_ascii=False
+          )
     elif resume_source_type == 'upload':
       if 'resume_file' in request.files:
         file = request.files['resume_file']
@@ -2193,8 +2367,11 @@ def generate_outreach_campaign():
           if filename.lower().endswith('.pdf'):
             try:
               import pypdf
+
               pdf_reader = pypdf.PdfReader(io.BytesIO(file_bytes))
-              resume_text_content = '\n'.join([p.extract_text() or '' for p in pdf_reader.pages])
+              resume_text_content = '\n'.join(
+                  [p.extract_text() or '' for p in pdf_reader.pages]
+              )
             except Exception:
               resume_text_content = file_bytes.decode('utf-8', errors='ignore')
           else:
@@ -2254,7 +2431,8 @@ Output MUST be strictly valid JSON matching this schema:
     return (
         jsonify({
             'error': (
-                'Unable to generate outreach campaign. Please try again shortly.'
+                'Unable to generate outreach campaign. Please try again'
+                ' shortly.'
             )
         }),
         500,
@@ -2642,9 +2820,9 @@ Return ONLY a JSON object matching this structure:
         'languages'
     ) or extracted.get('languages', '')
 
-    merged_content['summary'] = opt_sections.get('summary') or original_content.get(
-        'summary', ''
-    )
+    merged_content['summary'] = opt_sections.get(
+        'summary'
+    ) or original_content.get('summary', '')
     merged_content['experience_bullets'] = opt_sections.get(
         'experience_bullets'
     ) or original_content.get('experience_bullets', '')
