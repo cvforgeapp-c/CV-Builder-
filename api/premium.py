@@ -2166,38 +2166,44 @@ Formatting & Content Requirements:
 @premium_bp.route('/generate-outreach', methods=['POST'])
 @login_required
 def generate_outreach_campaign():
-  data = request.get_json(silent=True) or {}
+  try:
+    resume_source_type = request.form.get('resume_source_type', 'saved')
+    resume_id = request.form.get('resume_id')
+    target_company = (request.form.get('target_company') or 'Target Company').strip()
+    recipient_role = (request.form.get('recipient_role') or 'Hiring Manager').strip()
+    recipient_name = (request.form.get('recipient_name') or '').strip()
+    tone = (request.form.get('tone') or 'Confident & Professional').strip()
+    job_context = (request.form.get('job_context') or '').strip()
 
-  resume_id = data.get('resume_id')
-  target_company = (data.get('target_company') or 'Target Company').strip()
-  recipient_role = (data.get('recipient_role') or 'Hiring Manager').strip()
-  recipient_name = (data.get('recipient_name') or '').strip()
-  tone = (data.get('tone') or 'Confident & Professional').strip()
-  job_context = (data.get('job_context') or '').strip()
+    resume_text_content = ""
 
-  resume_content = {}
-  if resume_id:
-    resume_obj = Resume.query.filter_by(
-        id=resume_id, user_id=current_user.id
-    ).first()
-    if resume_obj and isinstance(resume_obj.content_json, dict):
-      resume_content = resume_obj.content_json
+    if resume_source_type == 'saved':
+      if resume_id:
+        resume_obj = Resume.query.filter_by(
+            id=resume_id, user_id=current_user.id
+        ).first()
+        if resume_obj and isinstance(resume_obj.content_json, dict):
+          resume_text_content = json.dumps(resume_obj.content_json, ensure_ascii=False)
+    elif resume_source_type == 'upload':
+      if 'resume_file' in request.files:
+        file = request.files['resume_file']
+        if file and file.filename:
+          filename = secure_filename(file.filename)
+          file_bytes = file.read()
+          if filename.lower().endswith('.pdf'):
+            try:
+              import pypdf
+              pdf_reader = pypdf.PdfReader(io.BytesIO(file_bytes))
+              resume_text_content = '\n'.join([p.extract_text() or '' for p in pdf_reader.pages])
+            except Exception:
+              resume_text_content = file_bytes.decode('utf-8', errors='ignore')
+          else:
+            resume_text_content = file_bytes.decode('utf-8', errors='ignore')
 
-  user_name = (
-      resume_content.get('full_name')
-      or getattr(current_user, 'full_name', '')
-      or 'Applicant'
-  )
-  target_role = resume_content.get('target_role') or resume_content.get('job_title', 'Professional')
-  user_summary = resume_content.get('summary', '')
-  user_skills = (
-      f"{resume_content.get('skills_tech', '')}"
-      f" {resume_content.get('skills_soft', '')}"
-  ).strip()
+    user_name = getattr(current_user, 'full_name', '') or 'Applicant'
+    preferred_language = get_user_preferred_language(current_user)
 
-  preferred_language = get_user_preferred_language(current_user)
-
-  prompt = f"""
+    prompt = f"""
 You are CVForge AI, an elite career networking strategist and executive communication assistant.
 
 Task: Generate a multi-channel direct cold outreach campaign for {user_name} targeting {target_company}.
@@ -2205,13 +2211,11 @@ Task: Generate a multi-channel direct cold outreach campaign for {user_name} tar
 Target Company: {target_company}
 Recipient Role: {recipient_role}
 Recipient Name: {recipient_name or 'Hiring Team'}
-Candidate Target Title: {target_role}
 Tone/Style: {tone}
 Preferred Output Language: {preferred_language}
 
-Candidate Background Context:
-- Summary: {user_summary}
-- Core Skills: {user_skills}
+Candidate Background Context / Resume:
+{resume_text_content or 'Standard professional profile'}
 
 Job Details / Context:
 {job_context or 'Targeting positions at ' + target_company}
@@ -2232,7 +2236,6 @@ Output MUST be strictly valid JSON matching this schema:
 }}
 """
 
-  try:
     raw_response = generate_ai_text(prompt, max_tokens=1500)
 
     clean_json_str = raw_response.strip()
