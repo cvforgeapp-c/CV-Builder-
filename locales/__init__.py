@@ -6,12 +6,10 @@ from .common import COMMON_LOCALES
 from .forgot_password import FORGOT_PASSWORD_LOCALES
 from .tracker import TRACKER_LOCALES
 from .ats import ATS_LOCALES
-from .matcher import MATCHER_LOCALES
 from .pdf_studio import PDF_STUDIO_LOCALES
 from .cover_letter import COVER_LETTER_LOCALES
 from .linkedin import LINKEDIN_LOCALES
 from .interview import INTERVIEW_LOCALES
-from .support import SUPPORT_LOCALES
 
 # ============================================================
 # SUPPORTED LANGUAGES & ISO CODES (17 Core Global Languages)
