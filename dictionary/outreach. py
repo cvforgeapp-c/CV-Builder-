@@ -2,7 +2,7 @@
 Namespaced with 'outreach_' prefix to match CVForge Pro standards.
 """
 
-OUTREACH_LOCALES = {
+OUTREACH_DICTIONARY = {
     "English (US / UK)": {
         "outreach_page_title": "AI Cold Outreach & Networking Generator — CVForge Pro",
         "outreach_back_dashboard": "← Back to Dashboard",
