@@ -123,40 +123,31 @@ except ImportError:
 
 # 2. NEW MODULAR LOCALES PATHWAY (locales/__init__.py) - STRUCTURED IDENTICALLY TO translations.py
 try:
-  from locales import (
-      MODULAR_SUPPORTED_LANGUAGES,
-      MODULAR_TRANSLATIONS,
-      get_modular_language_code,
-      get_modular_supported_languages,
-  )
-  from locales import (
-      t as modular_t,
-  )
-except ImportError:
-  try:
-    from ..locales import (
-        MODULAR_SUPPORTED_LANGUAGES,
-        MODULAR_TRANSLATIONS,
-        get_modular_language_code,
-        get_modular_supported_languages,
-    )
-    from ..locales import (
+    from locales import (
         t as modular_t,
+        SUPPORTED_LANGUAGES as MODULAR_SUPPORTED_LANGUAGES,
+        get_supported_languages as get_modular_supported_languages,
+        get_language_code as get_modular_language_code,
+        TRANSLATIONS as MODULAR_TRANSLATIONS
     )
-  except ImportError:
-
-    def modular_t(key, lang='English (US / UK)', default=None):
-      return str(key)
-
-    MODULAR_SUPPORTED_LANGUAGES = SUPPORTED_LANGUAGES.copy()
-
-    def get_modular_supported_languages():
-      return MODULAR_SUPPORTED_LANGUAGES.copy()
-
-    def get_modular_language_code(lang='English (US / UK)'):
-      return 'en'
-
-    MODULAR_TRANSLATIONS = {}
+except ImportError:
+    try:
+        from ..locales import (
+            t as modular_t,
+            SUPPORTED_LANGUAGES as MODULAR_SUPPORTED_LANGUAGES,
+            get_supported_languages as get_modular_supported_languages,
+            get_language_code as get_modular_language_code,
+            TRANSLATIONS as MODULAR_TRANSLATIONS
+        )
+    except ImportError:
+        def modular_t(key, lang="English (US / UK)", default=None):
+            return str(key)
+        MODULAR_SUPPORTED_LANGUAGES = SUPPORTED_LANGUAGES.copy()
+        def get_modular_supported_languages():
+            return MODULAR_SUPPORTED_LANGUAGES.copy()
+        def get_modular_language_code(lang="English (US / UK)"):
+            return "en"
+        MODULAR_TRANSLATIONS = {}
 
 # ============================================================
 # USER LANGUAGE PREFERENCE HELPER
