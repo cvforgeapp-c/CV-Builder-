@@ -269,6 +269,37 @@
         box-shadow: 0 0 0 3px var(--brand-teal-subtle);
     }
 
+    /* URL FETCH GROUP */
+    .input-with-action {
+        display: flex;
+        gap: 8px;
+    }
+
+    .input-with-action input {
+        flex: 1;
+    }
+
+    .btn-action-inline {
+        background: #F1F5F9;
+        border: 1px solid var(--border-color);
+        color: var(--brand-teal);
+        padding: 0 16px;
+        border-radius: var(--radius-md);
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-action-inline:hover {
+        background: var(--brand-teal-subtle);
+        border-color: var(--brand-teal);
+    }
+
     .form-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -403,12 +434,22 @@
         text-align: right;
     }
 
-    /* SPINNER */
+    /* SPINNERS */
     .spinner {
         width: 16px;
         height: 16px;
         border: 2px solid rgba(255,255,255,0.3);
         border-top-color: #ffffff;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        display: none;
+    }
+
+    .spinner-dark {
+        width: 14px;
+        height: 14px;
+        border: 2px solid rgba(2,53,60,0.2);
+        border-top-color: var(--brand-teal);
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
         display: none;
@@ -507,6 +548,18 @@
                             <span id="fileNameDisplay">file.pdf</span>
                             <span class="btn-remove" onclick="removeFile(event)">✕</span>
                         </div>
+                    </div>
+                </div>
+
+                <!-- JOB POSTING LINK WITH FETCH ACTION -->
+                <div class="form-group">
+                    <label>Job Posting URL (Optional)</label>
+                    <div class="input-with-action">
+                        <input type="url" id="jobUrl" name="job_url" placeholder="https://www.linkedin.com/jobs/view/..." />
+                        <button type="button" class="btn-action-inline" id="fetchJobBtn" onclick="fetchJobContext()">
+                            <div class="spinner-dark" id="fetchSpinner"></div>
+                            <span id="fetchBtnText">✨ Fetch Job</span>
+                        </button>
                     </div>
                 </div>
 
@@ -688,6 +741,54 @@
         const resumeFile = document.getElementById('resumeFile');
         resumeFile.value = '';
         document.getElementById('fileBadge').style.display = 'none';
+    }
+
+    /* FETCH JOB CONTEXT FROM URL */
+    async function fetchJobContext() {
+        const urlInput = document.getElementById('jobUrl');
+        const url = urlInput.value.trim();
+
+        if (!url) {
+            showToast('Please enter a job URL first', '⚠️');
+            return;
+        }
+
+        const fetchBtn = document.getElementById('fetchJobBtn');
+        const fetchSpinner = document.getElementById('fetchSpinner');
+        const fetchBtnText = document.getElementById('fetchBtnText');
+
+        fetchBtn.disabled = true;
+        fetchSpinner.style.display = 'block';
+        fetchBtnText.textContent = 'Fetching...';
+
+        try {
+            const response = await fetch('/api/v1/jobs/scrape-context', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) throw new Error(data.error || 'Failed to extract job content');
+
+            if (data.company && !document.getElementById('targetCompany').value) {
+                document.getElementById('targetCompany').value = data.company;
+            }
+
+            if (data.job_context) {
+                document.getElementById('jobContext').value = data.job_context;
+            }
+
+            showToast('Job details extracted!');
+
+        } catch (err) {
+            showToast(err.message || 'Could not fetch job link', '❌');
+        } finally {
+            fetchBtn.disabled = false;
+            fetchSpinner.style.display = 'none';
+            fetchBtnText.textContent = '✨ Fetch Job';
+        }
     }
 
     function copyText(elementId) {
