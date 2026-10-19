@@ -120,6 +120,35 @@
         border-radius: 6px;
     }
 
+    /* TOGGLE SWITCH FOR RESUME SOURCE */
+    .source-toggle {
+        display: flex;
+        background: #f1f5f9;
+        padding: 3px;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        gap: 4px;
+    }
+
+    .source-btn {
+        flex: 1;
+        padding: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        border: none;
+        background: transparent;
+        color: var(--text-secondary);
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .source-btn.active {
+        background: #ffffff;
+        color: var(--brand-teal);
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
     /* FORM INPUTS */
     .form-group {
         display: flex;
@@ -154,6 +183,14 @@
     .form-group textarea:focus {
         border-color: var(--brand-teal);
         box-shadow: 0 0 0 3px rgba(2, 53, 60, 0.08);
+    }
+
+    .file-input-wrapper {
+        position: relative;
+    }
+
+    .file-input-wrapper input[type="file"] {
+        padding: 9px 12px;
     }
 
     .form-row {
@@ -334,16 +371,36 @@
                 <span>🎯</span> Outreach Parameters
             </div>
 
-            <form id="outreachForm">
+            <form id="outreachForm" enctype="multipart/form-data">
                 
                 <div class="form-group">
                     <label>1. Select Base Resume Profile</label>
-                    <select id="resumeSelect" name="resume_id" required>
-                        <option value="">-- Select Resume --</option>
-                        {% for resume in resumes %}
-                            <option value="{{ resume.id }}">{{ resume.title }}</option>
-                        {% endfor %}
-                    </select>
+                    <div class="source-toggle">
+                        <button type="button" class="source-btn active" id="btnSourceSaved" onclick="setResumeSource('saved')">
+                            📁 Saved Resumes
+                        </button>
+                        <button type="button" class="source-btn" id="btnSourceUpload" onclick="setResumeSource('upload')">
+                            📱 Upload File (PDF/DOCX)
+                        </button>
+                    </div>
+
+                    <!-- Hidden Input for Tracking Selection -->
+                    <input type="hidden" id="resumeSourceType" name="resume_source_type" value="saved">
+
+                    <!-- Saved Resumes Dropdown -->
+                    <div id="savedResumeContainer">
+                        <select id="resumeSelect" name="resume_id" required>
+                            <option value="">-- Select Resume --</option>
+                            {% for resume in resumes %}
+                                <option value="{{ resume.id }}">{{ resume.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- File Upload Input (Hidden by default) -->
+                    <div id="uploadResumeContainer" class="file-input-wrapper" style="display: none;">
+                        <input type="file" id="resumeFile" name="resume_file" accept=".pdf,.doc,.docx" />
+                    </div>
                 </div>
 
                 <div class="form-row">
@@ -413,7 +470,7 @@
             <div id="tab-linkedin" class="tab-content">
                 <div class="output-box">
                     <div class="output-header">
-                        <span class="output-title">LinkedIn Connection Note (< 300 chars)</span>
+                        <span class="output-title">LinkedIn Connection Note (&lt; 300 chars)</span>
                         <button class="btn-copy" onclick="copyText('linkedinText')">📋 Copy</button>
                     </div>
                     <div class="output-text" id="linkedinText">Select your settings and click generate to build your campaign...</div>
@@ -480,6 +537,37 @@
         event.currentTarget.classList.add('active');
     }
 
+    function setResumeSource(type) {
+        const savedContainer = document.getElementById('savedResumeContainer');
+        const uploadContainer = document.getElementById('uploadResumeContainer');
+        const resumeSelect = document.getElementById('resumeSelect');
+        const resumeFile = document.getElementById('resumeFile');
+        const sourceTypeInput = document.getElementById('resumeSourceType');
+
+        const btnSaved = document.getElementById('btnSourceSaved');
+        const btnUpload = document.getElementById('btnSourceUpload');
+
+        sourceTypeInput.value = type;
+
+        if (type === 'saved') {
+            savedContainer.style.display = 'block';
+            uploadContainer.style.display = 'none';
+            resumeSelect.required = true;
+            resumeFile.required = false;
+            resumeFile.value = ''; // clear uploaded file
+            btnSaved.classList.add('active');
+            btnUpload.classList.remove('active');
+        } else {
+            savedContainer.style.display = 'none';
+            uploadContainer.style.display = 'block';
+            resumeSelect.required = false;
+            resumeSelect.value = ''; // clear dropdown selection
+            resumeFile.required = true;
+            btnSaved.classList.remove('active');
+            btnUpload.classList.add('active');
+        }
+    }
+
     function copyText(elementId) {
         const text = document.getElementById(elementId).innerText;
         if (!text || text === '-' || text.includes('Select your settings')) return;
@@ -496,13 +584,13 @@
         btn.disabled = true;
         btnText.textContent = 'Generating Outreach...';
 
+        // FormData handles both JSON fields and file uploads automatically
         const formData = new FormData(e.target);
 
         try {
             const response = await fetch('/api/v1/premium/generate-outreach', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(Object.fromEntries(formData))
+                body: formData // Sends multipart/form-data
             });
 
             const data = await response.json();
