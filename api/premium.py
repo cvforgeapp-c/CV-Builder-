@@ -792,10 +792,51 @@ def linkedin_optimizer():
   )
 
 
-@premium_app.route('/pdf-studio')
+@premium_app.route('/pdf-studio', methods=['GET', 'POST'])
 @login_required
 def pdf_studio():
-  return render_template('dashboard/pdf_templates.html', user=current_user)
+  # Retrieve preferences from user's DB model with session fallbacks
+  user_prefs = getattr(current_user, 'preferences_json', None) or {}
+  if not isinstance(user_prefs, dict):
+    user_prefs = {}
+
+  pdf_settings = user_prefs.get('pdf_settings', {
+      'template_id': 'exec_minimalist',
+      'accent_color': '#02353C',
+      'font_pairing': 'helvetica',
+      'line_spacing': 'normal'
+  })
+
+  if request.method == 'POST':
+    template_id = request.form.get('template_id', 'exec_minimalist')
+    accent_color = request.form.get('accent_color', '#02353C')
+    font_pairing = request.form.get('font_pairing', 'helvetica')
+    line_spacing = request.form.get('line_spacing', 'normal')
+
+    updated_settings = {
+        'template_id': template_id,
+        'accent_color': accent_color,
+        'font_pairing': font_pairing,
+        'line_spacing': line_spacing
+    }
+
+    # Save to user model and session
+    user_prefs['pdf_settings'] = updated_settings
+    current_user.preferences_json = user_prefs
+    flag_modified(current_user, 'preferences_json')
+
+    try:
+      db.session.commit()
+      session['pdf_settings'] = updated_settings
+      flash('PDF Template settings saved successfully!', 'success')
+    except Exception as exc:
+      db.session.rollback()
+      premium_app.logger.error('Failed to save PDF template settings: %s', exc)
+      flash('Unable to save PDF template settings. Please try again.', 'error')
+
+    return redirect(url_for('pdf_studio'))
+
+  return render_template('dashboard/pdf_templates.html', settings=pdf_settings, user=current_user)
 
 
 @premium_app.route('/support')
