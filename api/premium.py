@@ -2796,81 +2796,67 @@ Return ONLY a JSON object matching this structure:
     opt_sections = parsed_data.get('optimized_sections', {})
     extracted = parsed_data.get('parsed_profile', {})
 
+    # ---------------------------------------------------------
+    # CLEAN UP "NOT SPECIFIED" STRINGS
+    # ---------------------------------------------------------
+    def clean_val(val):
+      if not val or str(val).strip().lower() in ['not specified', 'none', 'n/a', 'not provided', 'null']:
+        return ''
+      return str(val).strip()
+
     merged_content = {}
     merged_content['full_name'] = (
-        original_content.get('full_name')
-        or getattr(current_user, 'full_name', '')
-        or extracted.get('full_name', '')
+        clean_val(original_content.get('full_name'))
+        or clean_val(getattr(current_user, 'full_name', ''))
+        or clean_val(extracted.get('full_name', ''))
     )
     merged_content['email'] = (
-        original_content.get('email')
-        or getattr(current_user, 'email', '')
-        or extracted.get('email', '')
+        clean_val(original_content.get('email'))
+        or clean_val(getattr(current_user, 'email', ''))
+        or clean_val(extracted.get('email', ''))
     )
-    merged_content['phone'] = original_content.get('phone') or extracted.get(
-        'phone', ''
-    )
-    merged_content['location'] = original_content.get(
-        'location'
-    ) or extracted.get('location', '')
-    merged_content['linkedin'] = original_content.get(
-        'linkedin'
-    ) or extracted.get('linkedin', '')
-    merged_content['portfolio'] = original_content.get(
-        'portfolio'
-    ) or extracted.get('portfolio', '')
+    merged_content['phone'] = clean_val(original_content.get('phone')) or clean_val(extracted.get('phone', ''))
+    merged_content['location'] = clean_val(original_content.get('location')) or clean_val(extracted.get('location', ''))
+    merged_content['linkedin'] = clean_val(original_content.get('linkedin')) or clean_val(extracted.get('linkedin', ''))
+    merged_content['portfolio'] = clean_val(original_content.get('portfolio')) or clean_val(extracted.get('portfolio', ''))
 
-    merged_content['job_title'] = original_content.get(
-        'job_title'
-    ) or extracted.get('job_title', '')
+    merged_content['job_title'] = clean_val(original_content.get('job_title')) or clean_val(extracted.get('job_title', ''))
     merged_content['target_role'] = (
-        original_content.get('target_role') or merged_content['job_title']
+        clean_val(original_content.get('target_role')) or merged_content['job_title']
     )
-    merged_content['company'] = original_content.get(
-        'company'
-    ) or extracted.get('company', '')
-    merged_content['job_location'] = original_content.get(
-        'job_location'
-    ) or extracted.get('job_location', '')
-    merged_content['job_dates'] = original_content.get(
-        'job_dates'
-    ) or extracted.get('job_dates', '')
+    merged_content['company'] = clean_val(original_content.get('company')) or clean_val(extracted.get('company', ''))
+    merged_content['job_location'] = clean_val(original_content.get('job_location')) or clean_val(extracted.get('job_location', ''))
+    merged_content['job_dates'] = clean_val(original_content.get('job_dates')) or clean_val(extracted.get('job_dates', ''))
 
-    merged_content['education_degree'] = original_content.get(
-        'education_degree'
-    ) or extracted.get('education_degree', '')
-    merged_content['education_school'] = original_content.get(
-        'education_school'
-    ) or extracted.get('education_school', '')
-    merged_content['education_dates'] = original_content.get(
-        'education_dates'
-    ) or extracted.get('education_dates', '')
-    merged_content['education_honors'] = original_content.get(
-        'education_honors'
-    ) or extracted.get('education_honors', '')
+    merged_content['education_degree'] = clean_val(original_content.get('education_degree')) or clean_val(extracted.get('education_degree', ''))
+    merged_content['education_school'] = clean_val(original_content.get('education_school')) or clean_val(extracted.get('education_school', ''))
+    merged_content['education_dates'] = clean_val(original_content.get('education_dates')) or clean_val(extracted.get('education_dates', ''))
+    merged_content['education_honors'] = clean_val(original_content.get('education_honors')) or clean_val(extracted.get('education_honors', ''))
 
-    merged_content['certifications'] = original_content.get(
-        'certifications'
-    ) or extracted.get('certifications', '')
-    merged_content['projects'] = original_content.get(
-        'projects'
-    ) or extracted.get('projects', '')
-    merged_content['languages'] = original_content.get(
-        'languages'
-    ) or extracted.get('languages', '')
+    merged_content['certifications'] = clean_val(original_content.get('certifications')) or clean_val(extracted.get('certifications', ''))
+    merged_content['projects'] = clean_val(original_content.get('projects')) or clean_val(extracted.get('projects', ''))
+    merged_content['languages'] = clean_val(original_content.get('languages')) or clean_val(extracted.get('languages', ''))
 
-    merged_content['summary'] = opt_sections.get(
-        'summary'
-    ) or original_content.get('summary', '')
-    merged_content['experience_bullets'] = opt_sections.get(
-        'experience_bullets'
-    ) or original_content.get('experience_bullets', '')
-    merged_content['skills_tech'] = opt_sections.get(
-        'skills_tech'
-    ) or original_content.get('skills_tech', '')
-    merged_content['skills_soft'] = opt_sections.get(
-        'skills_soft'
-    ) or original_content.get('skills_soft', '')
+    merged_content['summary'] = opt_sections.get('summary') or original_content.get('summary', '')
+    merged_content['experience_bullets'] = opt_sections.get('experience_bullets') or original_content.get('experience_bullets', '')
+    merged_content['skills_tech'] = opt_sections.get('skills_tech') or original_content.get('skills_tech', '')
+    merged_content['skills_soft'] = opt_sections.get('skills_soft') or original_content.get('skills_soft', '')
+
+    # ---------------------------------------------------------
+    # TEMPLATE & STYLING RESOLUTION (Pro vs Free Fallback)
+    # ---------------------------------------------------------
+    user_prefs = getattr(current_user, 'preferences_json', None) or {}
+    pdf_settings = user_prefs.get('pdf_settings', {}) if isinstance(user_prefs, dict) else {}
+
+    is_pro = has_premium_access(current_user)
+
+    if is_pro and pdf_settings.get('template_id'):
+      chosen_template = pdf_settings.get('template_id', 'exec_minimalist')
+      chosen_accent = pdf_settings.get('accent_color', '#02353C')
+    else:
+      # Free Tier Fallback Defaults
+      chosen_template = 'standard_ats'
+      chosen_accent = '#0f172a'
 
     new_resume_id = str(uuid.uuid4())
     base_title = resume_obj.title if resume_obj else 'Optimized CV'
@@ -2880,7 +2866,8 @@ Return ONLY a JSON object matching this structure:
         user_id=current_user.id,
         title=f'ATS Optimized - {base_title}',
         content_json=merged_content,
-        template_used='ats',
+        template_used=chosen_template,
+        accent_color=chosen_accent,
         updated_at=datetime.utcnow(),
     )
     db.session.add(new_resume)
