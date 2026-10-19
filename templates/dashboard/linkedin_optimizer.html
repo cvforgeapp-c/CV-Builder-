@@ -5,121 +5,217 @@
 {% block extra_css %}
 <style>
     :root {
-        --brand-teal: #02353C;
-        --brand-teal-light: #05535E;
-        --brand-gold: #E5A83B;
+        --brand-teal: #022b32;
+        --brand-teal-light: #05535e;
+        --brand-gold: #f59e0b;
+        --brand-gold-hover: #d97706;
         --bg-slate: #f8fafc;
         --card-bg: #ffffff;
         --border-color: #e2e8f0;
+        --border-color-focus: #0a66c2;
         --text-primary: #0f172a;
-        --text-secondary: #64748b;
+        --text-secondary: #475569;
+        --text-muted: #94a3b8;
         --linkedin-blue: #0a66c2;
+        --linkedin-blue-hover: #004182;
+        --linkedin-blue-light: #e8f4f9;
+        --radius-lg: 16px;
+        --radius-md: 10px;
+        --radius-sm: 6px;
+        --shadow-subtle: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+        --shadow-hover: 0 10px 25px -5px rgba(10, 102, 194, 0.12);
+        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     body {
         background-color: var(--bg-slate);
         color: var(--text-primary);
-        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
     }
 
+    /* Top Navigation Bar */
     .li-header {
         background: #ffffff;
         border-bottom: 1px solid var(--border-color);
-        padding: 16px 5%;
+        padding: 14px 6%;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        backdrop-filter: blur(8px);
+        background-color: rgba(255, 255, 255, 0.95);
     }
 
     .brand-title {
-        font-size: 22px;
+        font-size: 20px;
         font-weight: 800;
         color: var(--brand-teal);
         text-decoration: none;
-    }
-
-    .badge-pro {
-        background: linear-gradient(135deg, var(--brand-gold), #d99321);
-        color: #ffffff;
-        font-size: 11px;
-        font-weight: 700;
-        padding: 3px 8px;
-        border-radius: 12px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-left: 8px;
-    }
-
-    .li-container {
-        padding: 30px 5%;
-        max-width: 1300px;
-        margin: 0 auto;
-    }
-
-    .page-heading h1 {
-        font-size: 26px;
-        font-weight: 800;
-        color: var(--brand-teal);
-    }
-
-    .page-heading p {
-        font-size: 14px;
-        color: var(--text-secondary);
-        margin-top: 4px;
-        margin-bottom: 24px;
-    }
-
-    .li-grid {
-        display: grid;
-        grid-template-columns: 1fr 1.2fr;
-        gap: 28px;
-    }
-
-    @media (max-width: 992px) {
-        .li-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    .panel-card {
-        background: #ffffff;
-        border: 1px solid var(--border-color);
-        border-radius: 14px;
-        padding: 24px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-    }
-
-    .panel-title {
-        font-size: 16px;
-        font-weight: 800;
-        color: var(--brand-teal);
-        margin-bottom: 16px;
+        letter-spacing: -0.5px;
         display: flex;
         align-items: center;
         gap: 8px;
     }
 
+    .badge-pro {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: #ffffff;
+        font-size: 10px;
+        font-weight: 800;
+        padding: 3px 8px;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
+    }
+
+    .btn-back {
+        text-decoration: none;
+        color: var(--text-secondary);
+        font-size: 13px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border-radius: var(--radius-sm);
+        transition: var(--transition);
+        background: #f1f5f9;
+    }
+
+    .btn-back:hover {
+        background: #e2e8f0;
+        color: var(--text-primary);
+    }
+
+    /* Container & Layout */
+    .li-container {
+        padding: 36px 6% 60px;
+        max-width: 1320px;
+        margin: 0 auto;
+    }
+
+    .page-heading {
+        margin-bottom: 32px;
+    }
+
+    .page-heading h1 {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--brand-teal);
+        letter-spacing: -0.6px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .page-heading p {
+        font-size: 15px;
+        color: var(--text-secondary);
+        margin-top: 6px;
+        max-width: 720px;
+        line-height: 1.5;
+    }
+
+    .li-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.25fr;
+        gap: 32px;
+        align-items: start;
+    }
+
+    @media (max-width: 1024px) {
+        .li-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Card Panels */
+    .panel-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 28px;
+        box-shadow: var(--shadow-subtle);
+        transition: var(--transition);
+    }
+
+    .panel-card:hover {
+        border-color: #cbd5e1;
+    }
+
+    .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 22px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .panel-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--brand-teal);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .panel-title-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: var(--linkedin-blue-light);
+        color: var(--linkedin-blue);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Form UI */
     .form-group {
         display: flex;
         flex-direction: column;
-        gap: 6px;
-        margin-bottom: 16px;
+        gap: 8px;
+        margin-bottom: 20px;
     }
 
     .form-group label {
         font-size: 13px;
         font-weight: 700;
         color: var(--text-primary);
+        display: flex;
+        justify-content: space-between;
     }
 
-    .form-group select, .form-group input, .form-group textarea {
-        padding: 12px;
-        border-radius: 8px;
+    .form-group select, 
+    .form-group input, 
+    .form-group textarea {
+        padding: 12px 14px;
+        border-radius: var(--radius-md);
         border: 1px solid #cbd5e1;
         font-size: 14px;
+        color: var(--text-primary);
+        background-color: #ffffff;
         outline: none;
         font-family: inherit;
+        transition: var(--transition);
+    }
+
+    .form-group select:focus, 
+    .form-group input:focus, 
+    .form-group textarea:focus {
+        border-color: var(--linkedin-blue);
+        box-shadow: 0 0 0 3.5px rgba(10, 102, 194, 0.15);
+    }
+
+    .form-hint {
+        font-size: 12px;
+        color: var(--text-muted);
     }
 
     .btn-optimize {
@@ -127,56 +223,88 @@
         color: #ffffff;
         border: none;
         padding: 14px 24px;
-        border-radius: 8px;
+        border-radius: var(--radius-md);
         font-weight: 700;
         font-size: 15px;
         cursor: pointer;
         width: 100%;
-        transition: transform 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: var(--transition);
+        box-shadow: 0 4px 12px rgba(10, 102, 194, 0.25);
     }
 
     .btn-optimize:hover {
-        transform: translateY(-1px);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(10, 102, 194, 0.35);
     }
 
-    /* Tabbed Output Preview */
+    .btn-optimize:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* Tabbed Output Area */
     .tab-bar {
         display: flex;
-        gap: 8px;
-        border-bottom: 2px solid var(--border-color);
-        margin-bottom: 16px;
+        gap: 6px;
+        background: #f1f5f9;
+        padding: 4px;
+        border-radius: 10px;
+        margin-bottom: 20px;
     }
 
     .tab-btn {
+        flex: 1;
         background: none;
         border: none;
-        padding: 10px 16px;
+        padding: 10px 12px;
         font-size: 13px;
-        font-weight: 700;
+        font-weight: 600;
         color: var(--text-secondary);
         cursor: pointer;
-        border-bottom: 2px solid transparent;
-        margin-bottom: -2px;
+        border-radius: 8px;
+        transition: var(--transition);
+        text-align: center;
+    }
+
+    .tab-btn:hover {
+        color: var(--text-primary);
     }
 
     .tab-btn.active {
+        background: #ffffff;
         color: var(--linkedin-blue);
-        border-bottom-color: var(--linkedin-blue);
+        font-weight: 700;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.06);
     }
 
     .tab-content {
         display: none;
+        animation: fadeIn 0.25s ease-in-out;
     }
 
     .tab-content.active {
         display: block;
     }
 
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(4px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .output-wrapper {
+        position: relative;
+    }
+
     .output-box {
         width: 100%;
-        min-height: 220px;
+        min-height: 240px;
         border: 1px solid #cbd5e1;
-        border-radius: 8px;
+        border-radius: var(--radius-md);
         padding: 16px;
         font-size: 14px;
         line-height: 1.6;
@@ -184,18 +312,66 @@
         font-family: inherit;
         resize: vertical;
         outline: none;
-        margin-bottom: 16px;
+        background: #fafafa;
+        box-sizing: border-box;
+        transition: var(--transition);
+    }
+
+    .output-box:focus {
+        background: #ffffff;
+        border-color: var(--linkedin-blue);
+    }
+
+    .output-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 14px;
+    }
+
+    .char-counter {
+        font-size: 12px;
+        color: var(--text-muted);
+        font-weight: 600;
     }
 
     .btn-copy-tab {
-        background: var(--brand-gold);
-        color: #0f172a;
+        background: var(--brand-teal);
+        color: #ffffff;
         border: none;
-        padding: 8px 16px;
-        border-radius: 6px;
-        font-size: 12px;
+        padding: 10px 18px;
+        border-radius: var(--radius-md);
+        font-size: 13px;
         font-weight: 700;
         cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: var(--transition);
+    }
+
+    .btn-copy-tab:hover {
+        background: var(--brand-teal-light);
+        transform: translateY(-1px);
+    }
+
+    .btn-copy-tab.copied {
+        background: #10b981 !important;
+    }
+
+    /* Processing Pulse Effect */
+    .spinner {
+        width: 18px;
+        height: 18px;
+        border: 2px solid #ffffff;
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        display: none;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
     }
 </style>
 {% endblock %}
@@ -204,96 +380,146 @@
 
 <!-- HEADER -->
 <header class="li-header">
-    <div style="display: flex; align-items: center;">
-        <a href="/" class="brand-title">CVForge</a>
-        <span class="badge-pro">PRO FEATURE</span>
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <a href="/" class="brand-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16 8L2 15L22 22L16 8Z" fill="var(--brand-teal)"/>
+                <path d="M16 8L8 2L2 15L16 8Z" fill="var(--brand-gold)"/>
+            </svg>
+            CVForge
+        </a>
+        <span class="badge-pro">Pro Feature</span>
     </div>
     <div>
-        <a href="/dashboard" style="text-decoration: none; color: var(--text-secondary); font-size: 14px; font-weight: 600;">{{ t_modular('btn_back_dashboard', '← Back to Dashboard') }}</a>
+        <a href="/dashboard" class="btn-back">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            {{ t_modular('btn_back_dashboard', 'Back to Dashboard') }}
+        </a>
     </div>
 </header>
 
 <div class="li-container">
     <div class="page-heading">
-        <h1>{{ t_modular('li_heading', 'LinkedIn Profile Optimizer') }}</h1>
-        <p>{{ t_modular('li_subheading', 'Transform your CV content into high-ranking LinkedIn headlines, engaging About sections, and recruiter-friendly experience summaries.') }}</p>
+        <h1>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--linkedin-blue)"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.4a1.6 1.6 0 0 0-1.6 1.6c0 .88.71 1.6 1.6 1.6s1.6-.72 1.6-1.6c0-.88-.72-1.6-1.6-1.6Z"/></svg>
+            {{ t_modular('li_heading', 'LinkedIn Profile Optimizer') }}
+        </h1>
+        <p>{{ t_modular('li_subheading', 'Transform your CV into recruiter-ready headlines, high-converting About sections, and impactful achievement bullets tailored for LinkedIn SEO.') }}</p>
     </div>
 
     <div class="li-grid">
         
-        <!-- INPUT FORM -->
+        <!-- INPUT CONFIGURATION PANEL -->
         <div class="panel-card">
-            <div class="panel-title">
-                <span style="color: var(--linkedin-blue);">💼</span> {{ t_modular('li_section_input', 'CV & Target Role Configuration') }}
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="panel-title-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                    </span>
+                    {{ t_modular('li_section_input', 'CV & Optimization Settings') }}
+                </div>
             </div>
 
             <form id="linkedinForm">
                 <div class="form-group">
-                    <label>{{ t_modular('label_select_cv', 'Source CV') }}</label>
+                    <label for="liSourceCv">
+                        {{ t_modular('label_select_cv', 'Source CV') }}
+                    </label>
                     <select id="liSourceCv" required>
-                        <option value="">-- {{ t_modular('option_select_cv', 'Select CV') }} --</option>
+                        <option value="">-- {{ t_modular('option_select_cv', 'Select Source CV') }} --</option>
                         {% for resume in resumes %}
                             <option value="{{ resume.id }}">{{ resume.title }}</option>
                         {% else %}
                             <option value="demo">{{ t_modular('option_sample_cv', 'Sample Full Stack Developer CV') }}</option>
                         {% endfor %}
                     </select>
+                    <span class="form-hint">{{ t_modular('hint_select_cv', 'Select the parsed CV you want to optimize for LinkedIn.') }}</span>
                 </div>
 
                 <div class="form-group">
-                    <label>{{ t_modular('label_target_keywords', 'Target Role & Primary Keywords') }}</label>
+                    <label for="targetKeywords">
+                        {{ t_modular('label_target_keywords', 'Target Job Title & Primary Keywords') }}
+                    </label>
                     <input type="text" id="targetKeywords" placeholder="{{ t_modular('placeholder_target_keywords', 'e.g. Senior Full Stack Engineer, Python, Next.js, Cloud Architecture') }}" required>
+                    <span class="form-hint">{{ t_modular('hint_keywords', 'Keywords help recruiters discover your profile via LinkedIn Search.') }}</span>
                 </div>
 
                 <div class="form-group">
-                    <label>{{ t_modular('label_profile_goal', 'Primary Optimization Goal') }}</label>
+                    <label for="profileGoal">
+                        {{ t_modular('label_profile_goal', 'Primary Optimization Strategy') }}
+                    </label>
                     <select id="profileGoal">
-                        <option value="recruiter_search" selected>{{ t_modular('goal_recruiter_search', 'Maximize Recruiter Search Visibility (SEO)') }}</option>
-                        <option value="thought_leadership">{{ t_modular('goal_thought_leadership', 'Thought Leadership & Brand Building') }}</option>
-                        <option value="career_pivot">{{ t_modular('goal_career_pivot', 'Career Pivot / Skill Transition') }}</option>
+                        <option value="recruiter_search" selected>{{ t_modular('goal_recruiter_search', 'Maximize Recruiter Visibility (SEO & Search)') }}</option>
+                        <option value="thought_leadership">{{ t_modular('goal_thought_leadership', 'Thought Leadership & Personal Brand') }}</option>
+                        <option value="career_pivot">{{ t_modular('goal_career_pivot', 'Career Transition & Transferable Skills') }}</option>
                     </select>
                 </div>
 
                 <button type="submit" class="btn-optimize" id="optimizeLiBtn">
-                    🚀 {{ t_modular('btn_generate_linkedin', 'Generate LinkedIn Assets') }}
+                    <span class="spinner" id="btnSpinner"></span>
+                    <svg id="btnIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    <span id="btnText">{{ t_modular('btn_generate_linkedin', 'Generate LinkedIn Assets') }}</span>
                 </button>
             </form>
         </div>
 
-        <!-- TABBED GENERATED ASSETS -->
+        <!-- GENERATED ASSETS PANEL -->
         <div class="panel-card">
-            <div class="panel-title">
-                <span>✨</span> {{ t_modular('li_section_output', 'Optimized Profile Copy') }}
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="panel-title-icon" style="background: #fef3c7; color: var(--brand-gold-hover);">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    </span>
+                    {{ t_modular('li_section_output', 'Optimized Profile Copy') }}
+                </div>
             </div>
 
             <div class="tab-bar">
-                <button class="tab-btn active" onclick="switchTab('tab-headline')">{{ t_modular('tab_headline', 'Headline (3 Options)') }}</button>
-                <button class="tab-btn" onclick="switchTab('tab-about')">{{ t_modular('tab_about', 'About / Summary') }}</button>
-                <button class="tab-btn" onclick="switchTab('tab-experience')">{{ t_modular('tab_experience', 'Experience Bullet Copy') }}</button>
+                <button class="tab-btn active" onclick="switchTab('tab-headline', this)">{{ t_modular('tab_headline', 'Headlines (3 Options)') }}</button>
+                <button class="tab-btn" onclick="switchTab('tab-about', this)">{{ t_modular('tab_about', 'About / Summary') }}</button>
+                <button class="tab-btn" onclick="switchTab('tab-experience', this)">{{ t_modular('tab_experience', 'Experience Bullets') }}</button>
             </div>
 
             <!-- TAB 1: HEADLINES -->
             <div class="tab-content active" id="tab-headline">
-                <textarea class="output-box">{{ t_modular('default_headline_copy', '1. Senior Full Stack Engineer | Python, Flask, Next.js & PostgreSQL | Building High-Scale Web Applications\n\n2. Full Stack Developer Specializing in Microservices & Cloud Architectures | Vercel, Docker & REST APIs\n\n3. Lead Backend Architect | Engineering Fast, Reliable & Scalable Enterprise Software Platforms') }}</textarea>
-                <button class="btn-copy-tab" onclick="navigator.clipboard.writeText(document.getElementById('tab-headline').querySelector('textarea').value); alert('{{ t_modular('alert_headlines_copied', 'Headlines copied!') }}');">
-                    📋 {{ t_modular('btn_copy_headlines', 'Copy Headlines') }}
-                </button>
+                <div class="output-wrapper">
+                    <textarea class="output-box" id="text-headline" oninput="updateCharCount(this, 'cnt-headline')">{{ t_modular('default_headline_copy', '1. Senior Full Stack Engineer | Python, Flask, Next.js & PostgreSQL | Building High-Scale Web Applications\n\n2. Full Stack Developer Specializing in Microservices & Cloud Architectures | Vercel, Docker & REST APIs\n\n3. Lead Backend Architect | Engineering Fast, Reliable & Scalable Enterprise Software Platforms') }}</textarea>
+                </div>
+                <div class="output-footer">
+                    <span class="char-counter" id="cnt-headline"></span>
+                    <button class="btn-copy-tab" onclick="copyContent('text-headline', this)">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        <span>{{ t_modular('btn_copy_headlines', 'Copy Headlines') }}</span>
+                    </button>
+                </div>
             </div>
 
             <!-- TAB 2: ABOUT SECTION -->
             <div class="tab-content" id="tab-about">
-                <textarea class="output-box">{{ t_modular('default_about_copy', 'Passionate Full Stack Engineer with 5+ years of experience building scalable web applications, RESTful APIs, and cloud-native databases.\n\nCore Technical Stack:\n• Backend: Python, Flask, FastAPI, PostgreSQL, Neon DB\n• Frontend: Next.js, TypeScript, Tailwind CSS\n• Infrastructure & DevOps: Docker, Vercel Serverless, Git\n\nI thrive at the intersection of clean architecture and user-focused digital products. Always open to connecting with fellow engineers and tech leaders!') }}</textarea>
-                <button class="btn-copy-tab" onclick="navigator.clipboard.writeText(document.getElementById('tab-about').querySelector('textarea').value); alert('{{ t_modular('alert_about_copied', 'About section copied!') }}');">
-                    📋 {{ t_modular('btn_copy_about', 'Copy About Section') }}
-                </button>
+                <div class="output-wrapper">
+                    <textarea class="output-box" id="text-about" oninput="updateCharCount(this, 'cnt-about')">{{ t_modular('default_about_copy', 'Passionate Full Stack Engineer with 5+ years of experience building scalable web applications, RESTful APIs, and cloud-native databases.\n\nCore Technical Stack:\n• Backend: Python, Flask, FastAPI, PostgreSQL, Neon DB\n• Frontend: Next.js, TypeScript, Tailwind CSS\n• Infrastructure & DevOps: Docker, Vercel Serverless, Git\n\nI thrive at the intersection of clean architecture and user-focused digital products. Always open to connecting with fellow engineers and tech leaders!') }}</textarea>
+                </div>
+                <div class="output-footer">
+                    <span class="char-counter" id="cnt-about"></span>
+                    <button class="btn-copy-tab" onclick="copyContent('text-about', this)">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        <span>{{ t_modular('btn_copy_about', 'Copy About Section') }}</span>
+                    </button>
+                </div>
             </div>
 
             <!-- TAB 3: EXPERIENCE -->
             <div class="tab-content" id="tab-experience">
-                <textarea class="output-box">{{ t_modular('default_experience_copy', '🚀 Senior Full Stack Engineer | CVForge Platform\n• Architected end-to-end web applications serving thousands of active users, reducing API response times by 35%.\n• Engineered high-performance backend pipelines using Python Flask, PostgreSQL, and Vercel serverless functions.\n• Spearheaded ATS resume parsing and AI content tailoring modules.') }}</textarea>
-                <button class="btn-copy-tab" onclick="navigator.clipboard.writeText(document.getElementById('tab-experience').querySelector('textarea').value); alert('{{ t_modular('alert_exp_copied', 'Experience copy copied!') }}');">
-                    📋 {{ t_modular('btn_copy_exp', 'Copy Experience Copy') }}
-                </button>
+                <div class="output-wrapper">
+                    <textarea class="output-box" id="text-experience" oninput="updateCharCount(this, 'cnt-exp')">{{ t_modular('default_experience_copy', '🚀 Senior Full Stack Engineer | CVForge Platform\n• Architected end-to-end web applications serving thousands of active users, reducing API response times by 35%.\n• Engineered high-performance backend pipelines using Python Flask, PostgreSQL, and Vercel serverless functions.\n• Spearheaded ATS resume parsing and AI content tailoring modules.') }}</textarea>
+                </div>
+                <div class="output-footer">
+                    <span class="char-counter" id="cnt-exp"></span>
+                    <button class="btn-copy-tab" onclick="copyContent('text-experience', this)">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        <span>{{ t_modular('btn_copy_exp', 'Copy Experience Copy') }}</span>
+                    </button>
+                </div>
             </div>
 
         </div>
@@ -305,26 +531,61 @@
 
 {% block extra_js %}
 <script>
-    function switchTab(tabId) {
+    function switchTab(tabId, element) {
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
         
-        event.target.classList.add('active');
+        element.classList.add('active');
         document.getElementById(tabId).classList.add('active');
     }
 
+    function updateCharCount(textarea, countId) {
+        const count = textarea.value.length;
+        document.getElementById(countId).innerText = `${count.toLocaleString()} characters`;
+    }
+
+    function copyContent(elementId, btnElement) {
+        const textarea = document.getElementById(elementId);
+        navigator.clipboard.writeText(textarea.value).then(() => {
+            const originalHTML = btnElement.innerHTML;
+            btnElement.classList.add('copied');
+            btnElement.innerHTML = `
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>${"{{ t_modular('btn_copied', 'Copied!') }}"}</span>
+            `;
+            
+            setTimeout(() => {
+                btnElement.classList.remove('copied');
+                btnElement.innerHTML = originalHTML;
+            }, 2000);
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
+        // Initialize character counts
+        updateCharCount(document.getElementById('text-headline'), 'cnt-headline');
+        updateCharCount(document.getElementById('text-about'), 'cnt-about');
+        updateCharCount(document.getElementById('text-experience'), 'cnt-exp');
+
+        // Handle Form Submission
         document.getElementById('linkedinForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const btn = document.getElementById('optimizeLiBtn');
+            const spinner = document.getElementById('btnSpinner');
+            const btnIcon = document.getElementById('btnIcon');
+            const btnText = document.getElementById('btnText');
+
             btn.disabled = true;
-            btn.textContent = '⏳ {{ t_modular("btn_generating_state", "Generating Assets...") }}';
+            spinner.style.display = 'block';
+            btnIcon.style.display = 'none';
+            btnText.textContent = '{{ t_modular("btn_generating_state", "Generating Assets...") }}';
 
             setTimeout(() => {
                 btn.disabled = false;
-                btn.textContent = '🚀 {{ t_modular("btn_generate_linkedin", "Generate LinkedIn Assets") }}';
-                alert('{{ t_modular("alert_assets_generated", "LinkedIn assets generated successfully!") }}');
-            }, 1100);
+                spinner.style.display = 'none';
+                btnIcon.style.display = 'block';
+                btnText.textContent = '{{ t_modular("btn_generate_linkedin", "Generate LinkedIn Assets") }}';
+            }, 1200);
         });
     });
 </script>
