@@ -804,7 +804,8 @@ def pdf_studio():
       'template_id': 'exec_minimalist',
       'accent_color': '#02353C',
       'font_pairing': 'helvetica',
-      'line_spacing': 'normal'
+      'line_spacing': 'normal',
+      'target_action': 'editor' # Default destination: Resume Editor Studio
   })
 
   if request.method == 'POST':
@@ -812,12 +813,14 @@ def pdf_studio():
     accent_color = request.form.get('accent_color', '#02353C')
     font_pairing = request.form.get('font_pairing', 'helvetica')
     line_spacing = request.form.get('line_spacing', 'normal')
+    target_action = request.form.get('target_action', 'editor')
 
     updated_settings = {
         'template_id': template_id,
         'accent_color': accent_color,
         'font_pairing': font_pairing,
-        'line_spacing': line_spacing
+        'line_spacing': line_spacing,
+        'target_action': target_action
     }
 
     # Save to user model and session
@@ -834,7 +837,11 @@ def pdf_studio():
       premium_app.logger.error('Failed to save PDF template settings: %s', exc)
       flash('Unable to save PDF template settings. Please try again.', 'error')
 
-    return redirect(url_for('pdf_studio'))
+    # Direct workflow routing based on selection: ATS Optimizer vs Editor
+    if target_action == 'ats':
+      return redirect(url_for('ats_optimizer', template=template_id))
+    else:
+      return redirect(url_for('editor', template=template_id))
 
   return render_template('dashboard/pdf_templates.html', settings=pdf_settings, user=current_user)
 
