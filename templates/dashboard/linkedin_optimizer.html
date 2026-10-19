@@ -234,6 +234,14 @@
         align-items: center;
     }
 
+    .form-label-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
     .form-group select, 
     .form-group input, 
     .form-group textarea {
@@ -246,6 +254,14 @@
         outline: none;
         font-family: inherit;
         transition: var(--transition);
+    }
+
+    .keyword-textarea {
+        width: 100%;
+        min-height: 80px;
+        line-height: 1.5;
+        resize: vertical;
+        box-sizing: border-box;
     }
 
     .form-group select:focus, 
@@ -581,14 +597,16 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="targetKeywords">
-                        <span>{{ t_modular('label_target_keywords', 'Target Role & Keywords') }}</span>
+                    <div class="form-label-header">
+                        <label for="targetKeywords" style="margin: 0;">
+                            {{ t_modular('label_target_keywords', 'Target Role & Keywords') }}
+                        </label>
                         <button type="button" class="btn-fetch-kw" onclick="openFetchModal()">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
                             {{ t_modular('btn_fetch_from_job', 'Fetch Keywords from Job URL') }}
                         </button>
-                    </label>
-                    <input type="text" id="targetKeywords" placeholder="{{ t_modular('placeholder_target_keywords', 'e.g. Senior Full Stack Engineer, Python, Next.js, Cloud Architecture') }}" required>
+                    </div>
+                    <textarea id="targetKeywords" class="keyword-textarea" rows="3" placeholder="{{ t_modular('placeholder_target_keywords', 'e.g. Senior Full Stack Engineer, Staffing, Talent Acquisition, Candidate Vetting, Python, Next.js') }}" required></textarea>
                     <span class="form-hint">{{ t_modular('hint_keywords', 'Keywords help recruiters discover your profile via LinkedIn Search.') }}</span>
                 </div>
 
