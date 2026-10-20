@@ -459,6 +459,9 @@
 
     <!-- MAIN FORM FOR PLATFORM SUBMISSION -->
     <form id="studioForm" action="/pdf-studio" method="POST">
+        <!-- Pass active resume_id so settings save directly onto this CV -->
+        <input type="hidden" name="resume_id" value="{{ resume_id or '' }}">
+        
         <!-- Hidden Inputs for Backend Persistence -->
         <input type="hidden" name="template_id" id="inputTemplateId" value="{{ settings.template_id if settings else 'exec_minimalist' }}">
         <input type="hidden" name="accent_color" id="inputAccentColor" value="{{ settings.accent_color if settings else '#02353C' }}">
