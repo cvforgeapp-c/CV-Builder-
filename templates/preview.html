@@ -97,9 +97,9 @@
             <div class="a4-page text-slate-900 border border-slate-200">
                 
                 {% if current_tmpl == 'sidebar_exec' %}
-                <!-- SIDEBAR EXECUTIVE TEMPLATE (STRICT 2-COLUMN SIDE-BY-SIDE LAYOUT) -->
+                <!-- SIDEBAR EXECUTIVE TEMPLATE -->
                 <div class="flex flex-row min-h-[297mm] w-full">
-                    <!-- LEFT SIDEBAR (32% FIXED WIDTH) -->
+                    <!-- LEFT SIDEBAR -->
                     <aside class="w-[32%] dynamic-accent-bg text-white p-6 space-y-6 flex-shrink-0 min-h-[297mm]">
                         <div>
                             <h1 class="text-xl font-extrabold uppercase tracking-wide leading-tight text-white">
@@ -161,9 +161,17 @@
                             </div>
                         </div>
                         {% endif %}
+
+                        <!-- LANGUAGES -->
+                        {% if resume.content_json and resume.content_json.languages %}
+                        <div class="border-t border-white/20 pt-4 space-y-1">
+                            <h2 class="text-[11px] font-bold uppercase tracking-wider text-amber-300">{{ t('languages', 'Languages') }}</h2>
+                            <p class="text-[11px] text-white/90">{{ resume.content_json.languages }}</p>
+                        </div>
+                        {% endif %}
                     </aside>
 
-                    <!-- RIGHT MAIN CONTENT (68% FLEX-GROW WIDTH) -->
+                    <!-- RIGHT MAIN CONTENT -->
                     <div class="w-[68%] p-8 space-y-6 bg-white flex-grow">
                         <!-- SUMMARY -->
                         {% if resume.content_json and resume.content_json.summary %}
@@ -251,6 +259,23 @@
                             </div>
                         </div>
                         {% endif %}
+
+                        {% if resume.content_json and (resume.content_json.projects or resume.content_json.languages or resume.content_json.certifications) %}
+                        <div>
+                            <h2 class="text-xs font-bold uppercase tracking-widest dynamic-accent-text mb-3">// {{ t('additional_info', 'Additional Information') }}</h2>
+                            <div class="space-y-2 text-xs text-slate-700">
+                                {% if resume.content_json.projects %}
+                                    <p><strong class="text-slate-900">{{ t('key_projects_research_label', 'Projects / Research:') }}</strong> {{ resume.content_json.projects }}</p>
+                                {% endif %}
+                                {% if resume.content_json.certifications %}
+                                    <p><strong class="text-slate-900">{{ t('certifications_licenses_label', 'Certifications:') }}</strong> {{ resume.content_json.certifications }}</p>
+                                {% endif %}
+                                {% if resume.content_json.languages %}
+                                    <p><strong class="text-slate-900">{{ t('languages', 'Languages:') }}</strong> {{ resume.content_json.languages }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -287,6 +312,7 @@
                         </div>
                     </div>
 
+                    <!-- SECTION 1: PROFESSIONAL SUMMARY -->
                     {% if resume.content_json and resume.content_json.summary %}
                     <div class="mb-5">
                         <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 dynamic-accent-border pb-1 mb-2">
@@ -298,6 +324,7 @@
                     </div>
                     {% endif %}
 
+                    <!-- SECTION 2: PROFESSIONAL EXPERIENCE -->
                     {% if resume.content_json and (resume.content_json.company or resume.content_json.experience_bullets) %}
                     <div class="mb-5">
                         <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 dynamic-accent-border pb-1 mb-3">
@@ -332,6 +359,7 @@
                     </div>
                     {% endif %}
 
+                    <!-- SECTION 3: EDUCATION -->
                     {% if resume.content_json and (resume.content_json.education_degree or resume.content_json.education_school) %}
                     <div class="mb-5">
                         <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 dynamic-accent-border pb-1 mb-3">
@@ -357,10 +385,11 @@
                     </div>
                     {% endif %}
 
-                    {% if resume.content_json and (resume.content_json.skills_tech or resume.content_json.certifications) %}
+                    <!-- SECTION 4: CORE SKILLS & CREDENTIALS -->
+                    {% if resume.content_json and (resume.content_json.skills_tech or resume.content_json.skills_soft or resume.content_json.certifications) %}
                     <div class="mb-5">
                         <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 dynamic-accent-border pb-1 mb-3">
-                            {{ t('skills_certs', 'Skills & Certifications') }}
+                            {{ t('skills_certs', 'Core Skills & Credentials') }}
                         </h2>
 
                         <div class="space-y-1 text-xs text-slate-700">
@@ -378,6 +407,32 @@
                         </div>
                     </div>
                     {% endif %}
+
+                    <!-- SECTION 5: ADDITIONAL INFORMATION (PROJECTS & LANGUAGES) -->
+                    {% if resume.content_json and (resume.content_json.projects or resume.content_json.languages) %}
+                    <div>
+                        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 dynamic-accent-border pb-1 mb-3">
+                            {{ t('additional_info', 'Additional Information') }}
+                        </h2>
+
+                        <div class="space-y-2 text-xs text-slate-700">
+                            {% if resume.content_json.projects %}
+                            <div>
+                                <strong class="text-slate-900">{{ t('key_projects_research_label', 'Key Projects / Research:') }}</strong>
+                                <p class="mt-0.5 leading-relaxed">{{ resume.content_json.projects }}</p>
+                            </div>
+                            {% endif %}
+
+                            {% if resume.content_json.languages %}
+                            <div>
+                                <strong class="text-slate-900">{{ t('languages', 'Languages:') }}</strong>
+                                <span class="ml-1">{{ resume.content_json.languages }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
                 </div>
                 {% endif %}
 
