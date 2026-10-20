@@ -71,7 +71,7 @@ try:
 except ImportError:
   from ..models import CoverLetter, JobApplication, Resume, User, db
 
-# 1. LEGACY CORE PATHWAY (translations.py) - 100% UNTOUCHED
+# 1. LEGACY CORE PATHWAY (translations.py)
 try:
   from translations import (
       TRANSLATIONS,
@@ -121,7 +121,7 @@ except ImportError:
 
     TRANSLATIONS = {}
 
-# 2. NEW MODULAR LOCALES PATHWAY (locales/__init__.py) - STRUCTURED IDENTICALLY TO translations.py
+# 2. NEW MODULAR LOCALES PATHWAY (locales/__init__.py)
 try:
     from locales import (
         t as modular_t,
@@ -177,14 +177,6 @@ LANGUAGE_CODES = {
 
 
 def get_user_preferred_language(user):
-  """Return the user's active application language.
-
-  Preference priority:
-  1. session["language"] (URL query param ?lang= or manual toggle)
-  2. preferences_json["language"] (Saved DB preference)
-  3. preferences_json["aiPreferences"]["aiLanguage"]
-  4. English fallback
-  """
   if session.get('language') in SUPPORTED_LANGUAGES:
     return session['language']
 
@@ -675,10 +667,32 @@ def editor():
         id=resume_id, user_id=current_user.id
     ).first()
 
+  user_prefs = getattr(current_user, 'preferences_json', None) or {}
+  pdf_settings = user_prefs.get('pdf_settings', {}) if isinstance(user_prefs, dict) else {}
+
+  active_template = request.args.get('template') or (
+      resume.template_used if resume and getattr(resume, 'template_used', None) else pdf_settings.get('template_id', 'exec_minimalist')
+  )
+  active_accent = (
+      resume.accent_color if resume and getattr(resume, 'accent_color', None) else pdf_settings.get('accent_color', '#02353C')
+  )
+
   try:
-    return render_template('editor.html', resume=resume, user=current_user)
+    return render_template(
+        'editor.html',
+        resume=resume,
+        user=current_user,
+        active_template=active_template,
+        active_accent=active_accent,
+    )
   except Exception:
-    return render_template('index.html', resume=resume, user=current_user)
+    return render_template(
+        'index.html',
+        resume=resume,
+        user=current_user,
+        active_template=active_template,
+        active_accent=active_accent,
+    )
 
 
 @premium_app.route('/builder')
@@ -704,7 +718,26 @@ def preview():
         id=resume_id, user_id=current_user.id
     ).first()
 
-  return render_template('preview.html', resume=resume, user=current_user)
+  # Retrieve User Preferences for PDF Studio Fallbacks
+  user_prefs = getattr(current_user, 'preferences_json', None) or {}
+  pdf_settings = user_prefs.get('pdf_settings', {}) if isinstance(user_prefs, dict) else {}
+
+  # Determine active template & accent color with safe fallbacks
+  active_template = request.args.get('template') or (
+      resume.template_used if resume and getattr(resume, 'template_used', None) else pdf_settings.get('template_id', 'exec_minimalist')
+  )
+  active_accent = (
+      resume.accent_color if resume and getattr(resume, 'accent_color', None) else pdf_settings.get('accent_color', '#02353C')
+  )
+
+  return render_template(
+      'preview.html',
+      resume=resume,
+      user=current_user,
+      active_template=active_template,
+      active_accent=active_accent,
+      pdf_settings=pdf_settings,
+  )
 
 
 # ============================================================
@@ -795,7 +828,6 @@ def linkedin_optimizer():
 @premium_app.route('/pdf-studio', methods=['GET', 'POST'])
 @login_required
 def pdf_studio():
-  # Retrieve preferences from user's DB model with session fallbacks
   user_prefs = getattr(current_user, 'preferences_json', None) or {}
   if not isinstance(user_prefs, dict):
     user_prefs = {}
@@ -805,7 +837,7 @@ def pdf_studio():
       'accent_color': '#02353C',
       'font_pairing': 'helvetica',
       'line_spacing': 'normal',
-      'target_action': 'editor' # Default destination: Resume Editor Studio
+      'target_action': 'editor'
   })
 
   if request.method == 'POST':
@@ -823,7 +855,6 @@ def pdf_studio():
         'target_action': target_action
     }
 
-    # Save to user model and session
     user_prefs['pdf_settings'] = updated_settings
     current_user.preferences_json = user_prefs
     flag_modified(current_user, 'preferences_json')
@@ -837,7 +868,6 @@ def pdf_studio():
       premium_app.logger.error('Failed to save PDF template settings: %s', exc)
       flash('Unable to save PDF template settings. Please try again.', 'error')
 
-    # Direct workflow routing based on selection: ATS Optimizer vs Editor
     if target_action == 'ats':
       return redirect(url_for('ats_optimizer', template=template_id))
     else:
@@ -1181,10 +1211,18 @@ def save_resume():
   resume_id = request.args.get('id') or data.get('id') or str(uuid.uuid4())
   resume = db.session.get(Resume, resume_id)
 
+  # Fetch PDF Studio settings from user preferences
+  user_prefs = getattr(current_user, 'preferences_json', None) or {}
+  pdf_settings = user_prefs.get('pdf_settings', {}) if isinstance(user_prefs, dict) else {}
+
+  chosen_template = data.get('template_id') or pdf_settings.get('template_id', 'exec_minimalist')
+  chosen_accent = data.get('accent_color') or pdf_settings.get('accent_color', '#02353C')
+
   if resume and str(resume.user_id) == str(current_user.id):
     resume.title = title
     resume.content_json = content_data
-    resume.template_used = 'ats'
+    resume.template_used = chosen_template
+    resume.accent_color = chosen_accent
     resume.updated_at = datetime.utcnow()
   else:
     if resume:
@@ -1202,9 +1240,9 @@ def save_resume():
         content_json=content_data,
         optimized_json={},
         original_text='',
-        template_used='ats',
-        accent_color='#000000',
-        sidebar_color='#000000',
+        template_used=chosen_template,
+        accent_color=chosen_accent,
+        sidebar_color=chosen_accent,
         updated_at=datetime.utcnow(),
     )
     db.session.add(resume)
@@ -2796,9 +2834,6 @@ Return ONLY a JSON object matching this structure:
     opt_sections = parsed_data.get('optimized_sections', {})
     extracted = parsed_data.get('parsed_profile', {})
 
-    # ---------------------------------------------------------
-    # CLEAN UP "NOT SPECIFIED" STRINGS
-    # ---------------------------------------------------------
     def clean_val(val):
       if not val or str(val).strip().lower() in ['not specified', 'none', 'n/a', 'not provided', 'null']:
         return ''
@@ -2842,9 +2877,6 @@ Return ONLY a JSON object matching this structure:
     merged_content['skills_tech'] = opt_sections.get('skills_tech') or original_content.get('skills_tech', '')
     merged_content['skills_soft'] = opt_sections.get('skills_soft') or original_content.get('skills_soft', '')
 
-    # ---------------------------------------------------------
-    # TEMPLATE & STYLING RESOLUTION (Pro vs Free Fallback)
-    # ---------------------------------------------------------
     user_prefs = getattr(current_user, 'preferences_json', None) or {}
     pdf_settings = user_prefs.get('pdf_settings', {}) if isinstance(user_prefs, dict) else {}
 
@@ -2854,7 +2886,6 @@ Return ONLY a JSON object matching this structure:
       chosen_template = pdf_settings.get('template_id', 'exec_minimalist')
       chosen_accent = pdf_settings.get('accent_color', '#02353C')
     else:
-      # Free Tier Fallback Defaults
       chosen_template = 'standard_ats'
       chosen_accent = '#0f172a'
 
