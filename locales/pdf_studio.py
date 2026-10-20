@@ -556,4 +556,11 @@ PDF_STUDIO_LOCALES = {
         "pdf_tpl_standard_ats": "ATS ya Kawaida Safi",
         "pdf_tpl_modern_minimal_ats": "ATS ya Kisasa Bapa",
         "pdf_tpl_tech_twocol_ats": "ATS ya Kisayansi Safu Mbili",
-        "pdf_opt_font_helvetica": "Helvetica / Arial (Kiw
+        "pdf_opt_font_helvetica": "Helvetica / Arial (Kiwango cha Kawaida)",
+        "pdf_opt_font_times": "Times New Roman (Kiolezo cha Zamani)",
+        "pdf_opt_font_georgia": "Georgia / Garamond (Muundo wa Kisasa)",
+        "pdf_opt_spacing_compact": "Iliyobanwa (Weka uzoefu mwingi kwenye ukurasa 1)",
+        "pdf_opt_spacing_normal": "Iliyowiana (Nafasi ya kawaida ya ATS)",
+        "pdf_opt_spacing_spacious": "Wazi (Mpangilio mpana wa viongozi)",
+    }
+}
