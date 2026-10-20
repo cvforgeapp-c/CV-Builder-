@@ -769,22 +769,18 @@ def cover_letter():
     )
   except Exception as exc:
     db.session.rollback()
-    premium_app.logger.warning('CoverLetter table query failed, trying flexible fallback: %s', exc)
+    premium_app.logger.warning('CoverLetter table query failed, using safe fallback query: %s', exc)
     try:
-      # Fallback query using raw SQL in case column names differ (e.g. userId / resumeId)
+      # Safe fallback selecting only core columns that exist
       sql_query = """
-          SELECT id, user_id, resume_id, company_name, job_title, tone, job_description, content, created_at, updated_at 
+          SELECT id, user_id, company_name, job_title, tone, job_description, content, created_at, updated_at 
           FROM cover_letters 
           WHERE user_id = :uid OR "userId" = :uid 
           ORDER BY created_at DESC
       """
-      result = db.session.execute(db.text(sql_query), {'uid': current_user.id})
-      saved_cover_letters = []
-      for row in result:
-        # Construct lightweight object wrapper if needed
-        saved_cover_letters.append(row)
+      saved_cover_letters = db.session.execute(db.text(sql_query), {'uid': current_user.id}).fetchall()
     except Exception as inner_exc:
-      premium_app.logger.warning('Failed flexible fallback query: %s', inner_exc)
+      premium_app.logger.warning('Failed safe fallback query: %s', inner_exc)
       saved_cover_letters = []
 
   return render_template(
@@ -793,7 +789,6 @@ def cover_letter():
       cover_letters=saved_cover_letters,
       user=current_user,
   )
-
 
 @premium_app.route('/interview')
 @login_required
