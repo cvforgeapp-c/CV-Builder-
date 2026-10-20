@@ -28,15 +28,15 @@
             /* Dynamic Spacing & Density Mapping */
             {% set active_density = active_density or (resume.density if resume and resume.density else 'normal') %}
             {% if 'compact' in active_density|lower %}
-                --doc-padding: 1.25rem;
+                --doc-padding: 1.5rem;
                 --section-space: 0.85rem;
                 --text-scale: 0.95;
             {% elif 'spacious' in active_density|lower %}
-                --doc-padding: 2.5rem;
+                --doc-padding: 2.75rem;
                 --section-space: 1.75rem;
                 --text-scale: 1.05;
             {% else %}
-                --doc-padding: 2rem;
+                --doc-padding: 2.25rem;
                 --section-space: 1.25rem;
                 --text-scale: 1;
             {% endif %}
@@ -44,7 +44,8 @@
 
         body { 
             font-family: var(--active-font); 
-            color: #111827;
+            color: #0f172a;
+            background-color: #f8fafc;
         }
 
         /* Apply dynamic scale and padding */
@@ -63,7 +64,8 @@
             min-height: 297mm;
             margin: auto;
             background: #ffffff;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 25px -5px rgba(2, 53, 60, 0.08), 0 8px 10px -6px rgba(2, 53, 60, 0.08);
+            border-radius: 4px;
             position: relative;
             overflow: hidden;
         }
@@ -99,6 +101,7 @@
                 min-height: auto !important;
                 margin: 0 !important;
                 padding: 0 !important;
+                border-radius: 0 !important;
             }
         }
     </style>
@@ -106,23 +109,23 @@
 
 {% block content %}
     <!-- ACTION HEADER BAR -->
-    <header class="no-print bg-[#02353C] text-white sticky top-0 z-50 shadow-md">
+    <header class="no-print bg-[#02353C]/95 backdrop-blur-md text-white sticky top-0 z-50 border-b border-white/10 shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <a href="/dashboard" class="flex items-center gap-2 text-sm font-semibold hover:text-amber-300 transition-colors">
+            <a href="/dashboard" class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-200 hover:text-amber-300 transition-colors">
                 <i class="fa-solid fa-arrow-left text-amber-400"></i>
                 <span>{{ t('back_to_dashboard', 'Back to Dashboard') }}</span>
             </a>
 
-            <div class="flex items-center gap-3">
-                <a href="/pdf-studio" class="bg-white/10 hover:bg-white/20 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition-all flex items-center gap-2">
+            <div class="flex items-center gap-2.5">
+                <a href="/pdf-studio" class="bg-white/10 hover:bg-white/20 text-white font-semibold text-xs px-3.5 py-2 rounded-xl transition-all flex items-center gap-2 border border-white/10">
                     <i class="fa-solid fa-palette text-amber-400"></i>
                     <span>{{ t('pdf_studio', 'PDF Studio') }}</span>
                 </a>
-                <a href="/editor?id={{ resume.id if resume else '' }}" class="bg-white/10 hover:bg-white/20 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition-all flex items-center gap-2">
+                <a href="/editor?id={{ resume.id if resume else '' }}" class="bg-white/10 hover:bg-white/20 text-white font-semibold text-xs px-3.5 py-2 rounded-xl transition-all flex items-center gap-2 border border-white/10">
                     <i class="fa-solid fa-pen-to-square text-amber-400"></i>
                     <span>{{ t('edit_cv', 'Edit CV') }}</span>
                 </a>
-                <button onclick="window.print()" class="bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-300 hover:to-amber-400 text-[#02353C] font-extrabold text-xs px-5 py-2.5 rounded-xl transition-all shadow-md flex items-center gap-2 active:scale-95">
+                <button onclick="window.print()" class="bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-300 hover:to-amber-400 text-[#02353C] font-extrabold text-xs px-4.5 py-2 rounded-xl transition-all shadow-md flex items-center gap-2 active:scale-95">
                     <i class="fa-solid fa-file-pdf text-sm"></i>
                     <span>{{ t('download_pdf_print', 'Download PDF / Print') }}</span>
                 </button>
@@ -131,7 +134,7 @@
     </header>
 
     <!-- DOCUMENT CONTAINER -->
-    <main class="flex-grow py-8 px-4 sm:px-6">
+    <main class="flex-grow py-10 px-4 sm:px-6">
         
         {% if resume %}
         
@@ -140,13 +143,13 @@
         <div class="resume-document template-{{ current_tmpl }}" 
              style="--active-accent-color: {{ active_accent or (resume.accent_color if resume and resume.accent_color else '#02353C') }};">
             
-            <div class="a4-page text-slate-900 border border-slate-200">
+            <div class="a4-page text-slate-900 border border-slate-200/80">
                 
                 {% if current_tmpl == 'sidebar_exec' %}
                 <!-- SIDEBAR EXECUTIVE TEMPLATE -->
                 <div class="flex flex-row min-h-[297mm] w-full">
                     <!-- LEFT SIDEBAR -->
-                    <aside class="w-[32%] dynamic-accent-bg text-white p-6 space-y-6 flex-shrink-0 min-h-[297mm]">
+                    <aside class="w-[32%] dynamic-accent-bg text-white p-6 space-y-6 flex-shrink-0 min-h-[297mm] shadow-inner">
                         <div>
                             <h1 class="text-xl font-extrabold uppercase tracking-wide leading-tight text-white">
                                 {{ resume.content_json.full_name if (resume.content_json and resume.content_json.full_name) else t('your_full_name', 'Your Full Name') }}
@@ -222,7 +225,7 @@
                         <!-- SUMMARY -->
                         {% if resume.content_json and resume.content_json.summary %}
                         <div class="resume-section-gap">
-                            <h2 class="text-xs font-bold uppercase tracking-widest dynamic-accent-text border-b-2 dynamic-accent-border pb-1 mb-2">
+                            <h2 class="text-xs font-bold uppercase tracking-widest dynamic-accent-text border-b-2 dynamic-accent-border pb-1.5 mb-2.5">
                                 {{ t('professional_summary', 'Professional Summary') }}
                             </h2>
                             <p class="text-xs text-slate-700 leading-relaxed">{{ resume.content_json.summary }}</p>
@@ -232,16 +235,16 @@
                         <!-- EXPERIENCE -->
                         {% if resume.content_json and (resume.content_json.company or resume.content_json.experience_bullets) %}
                         <div class="resume-section-gap">
-                            <h2 class="text-xs font-bold uppercase tracking-widest dynamic-accent-text border-b-2 dynamic-accent-border pb-1 mb-3">
+                            <h2 class="text-xs font-bold uppercase tracking-widest dynamic-accent-text border-b-2 dynamic-accent-border pb-1.5 mb-3">
                                 {{ t('professional_experience', 'Professional Experience') }}
                             </h2>
-                            <div class="space-y-3 text-xs">
+                            <div class="space-y-3.5 text-xs">
                                 <div class="flex justify-between items-baseline font-bold text-slate-900">
-                                    <span class="text-slate-900 font-bold">{{ resume.content_json.job_title }} {% if resume.content_json.company %}| {{ resume.content_json.company }}{% endif %}</span>
+                                    <span class="text-slate-900 font-bold">{{ resume.content_json.job_title }} {% if resume.content_json.company %}<span class="text-slate-500 font-normal">| {{ resume.content_json.company }}</span>{% endif %}</span>
                                     <span class="text-slate-500 font-medium text-[11px] flex-shrink-0 ml-2">{{ resume.content_json.job_dates }}</span>
                                 </div>
                                 {% if resume.content_json.job_location %}
-                                    <p class="text-[11px] text-slate-500 -mt-1">{{ resume.content_json.job_location }}</p>
+                                    <p class="text-[11px] text-slate-500 -mt-2">{{ resume.content_json.job_location }}</p>
                                 {% endif %}
                                 <div class="whitespace-pre-line text-slate-700 leading-relaxed mt-1">{{ resume.content_json.experience_bullets }}</div>
                             </div>
@@ -251,7 +254,7 @@
                         <!-- PROJECTS & CERTIFICATIONS -->
                         {% if resume.content_json and (resume.content_json.projects or resume.content_json.certifications) %}
                         <div class="resume-section-gap">
-                            <h2 class="text-xs font-bold uppercase tracking-widest dynamic-accent-text border-b-2 dynamic-accent-border pb-1 mb-3">
+                            <h2 class="text-xs font-bold uppercase tracking-widest dynamic-accent-text border-b-2 dynamic-accent-border pb-1.5 mb-3">
                                 {{ t('additional_info', 'Additional Details') }}
                             </h2>
                             <div class="space-y-2 text-xs text-slate-700">
@@ -275,7 +278,7 @@
                             <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight dynamic-accent-text">
                                 {{ resume.content_json.full_name if (resume.content_json and resume.content_json.full_name) else t('your_full_name', 'Your Full Name') }}
                             </h1>
-                            <p class="text-xs font-bold uppercase text-slate-600 mt-1">
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-600 mt-1">
                                 {{ resume.content_json.target_role }}
                             </p>
                         </div>
@@ -289,7 +292,7 @@
                         {% if resume.content_json and resume.content_json.summary %}
                         <div class="resume-section-gap">
                             <h2 class="text-xs font-bold uppercase tracking-widest dynamic-accent-text mb-2">// {{ t('professional_summary', 'Professional Summary') }}</h2>
-                            <p class="text-xs sm:text-sm text-slate-700 leading-relaxed bg-slate-50 p-4 rounded-lg border border-slate-100">{{ resume.content_json.summary }}</p>
+                            <p class="text-xs sm:text-sm text-slate-700 leading-relaxed bg-slate-50/80 p-4 rounded-xl border border-slate-100">{{ resume.content_json.summary }}</p>
                         </div>
                         {% endif %}
 
@@ -299,7 +302,7 @@
                             <div class="space-y-4">
                                 <div class="flex justify-between font-bold text-xs">
                                     <span class="text-slate-900">{{ resume.content_json.job_title }} <span class="dynamic-accent-text">@ {{ resume.content_json.company }}</span></span>
-                                    <span class="text-slate-500">{{ resume.content_json.job_dates }}</span>
+                                    <span class="text-slate-500 font-medium">{{ resume.content_json.job_dates }}</span>
                                 </div>
                                 <div class="text-xs text-slate-700 whitespace-pre-line leading-relaxed">{{ resume.content_json.experience_bullets }}</div>
                             </div>
@@ -329,7 +332,7 @@
                 <!-- TECHNICAL TWO-COLUMN ATS TEMPLATE -->
                 <div class="flex flex-row min-h-[297mm] w-full">
                     <!-- LEFT COLUMN (MAIN CONTENT) -->
-                    <div class="w-[68%] resume-content-area space-y-6 bg-white flex-grow border-r border-slate-200">
+                    <div class="w-[68%] resume-content-area space-y-6 bg-white flex-grow border-r border-slate-200/80">
                         <!-- HEADER SECTION -->
                         <div class="border-b border-slate-300 pb-4">
                             <h1 class="text-2xl font-extrabold uppercase tracking-wide dynamic-accent-text">
@@ -345,7 +348,7 @@
                         <!-- SUMMARY -->
                         {% if resume.content_json and resume.content_json.summary %}
                         <div class="resume-section-gap">
-                            <h2 class="text-xs font-bold uppercase tracking-widest dynamic-accent-text border-b-2 dynamic-accent-border pb-1 mb-2">
+                            <h2 class="text-xs font-bold uppercase tracking-widest dynamic-accent-text border-b-2 dynamic-accent-border pb-1.5 mb-2.5">
                                 {{ t('professional_summary', 'Professional Summary') }}
                             </h2>
                             <p class="text-xs text-slate-700 leading-relaxed">{{ resume.content_json.summary }}</p>
@@ -355,16 +358,16 @@
                         <!-- EXPERIENCE -->
                         {% if resume.content_json and (resume.content_json.company or resume.content_json.experience_bullets) %}
                         <div class="resume-section-gap">
-                            <h2 class="text-xs font-bold uppercase tracking-widest dynamic-accent-text border-b-2 dynamic-accent-border pb-1 mb-3">
+                            <h2 class="text-xs font-bold uppercase tracking-widest dynamic-accent-text border-b-2 dynamic-accent-border pb-1.5 mb-3">
                                 {{ t('professional_experience', 'Professional Experience') }}
                             </h2>
-                            <div class="space-y-3 text-xs">
+                            <div class="space-y-3.5 text-xs">
                                 <div class="flex justify-between items-baseline font-bold text-slate-900">
-                                    <span class="text-slate-900 font-bold">{{ resume.content_json.job_title }} {% if resume.content_json.company %}| {{ resume.content_json.company }}{% endif %}</span>
+                                    <span class="text-slate-900 font-bold">{{ resume.content_json.job_title }} {% if resume.content_json.company %}<span class="text-slate-500 font-normal">| {{ resume.content_json.company }}</span>{% endif %}</span>
                                     <span class="text-slate-500 font-medium text-[11px] flex-shrink-0 ml-2">{{ resume.content_json.job_dates }}</span>
                                 </div>
                                 {% if resume.content_json.job_location %}
-                                    <p class="text-[11px] text-slate-500 -mt-1">{{ resume.content_json.job_location }}</p>
+                                    <p class="text-[11px] text-slate-500 -mt-2">{{ resume.content_json.job_location }}</p>
                                 {% endif %}
                                 <div class="whitespace-pre-line text-slate-700 leading-relaxed mt-1">{{ resume.content_json.experience_bullets }}</div>
                             </div>
@@ -374,7 +377,7 @@
                         <!-- PROJECTS -->
                         {% if resume.content_json and resume.content_json.projects %}
                         <div class="resume-section-gap">
-                            <h2 class="text-xs font-bold uppercase tracking-widest dynamic-accent-text border-b-2 dynamic-accent-border pb-1 mb-2">
+                            <h2 class="text-xs font-bold uppercase tracking-widest dynamic-accent-text border-b-2 dynamic-accent-border pb-1.5 mb-2.5">
                                 {{ t('key_projects_research_label', 'Key Projects') }}
                             </h2>
                             <p class="text-xs text-slate-700 leading-relaxed">{{ resume.content_json.projects }}</p>
@@ -383,10 +386,10 @@
                     </div>
 
                     <!-- RIGHT SIDEBAR (CONTACT & SKILLS) -->
-                    <aside class="w-[32%] bg-slate-50 p-6 space-y-6 flex-shrink-0 min-h-[297mm]">
+                    <aside class="w-[32%] bg-slate-50/80 p-6 space-y-6 flex-shrink-0 min-h-[297mm]">
                         <!-- CONTACT DETAILS -->
                         <div class="space-y-2 text-[11px] text-slate-700 break-all">
-                            <h2 class="text-[11px] font-bold uppercase tracking-wider dynamic-accent-text mb-2">{{ t('contact', 'Contact') }}</h2>
+                            <h2 class="text-[11px] font-bold uppercase tracking-wider dynamic-accent-text mb-2.5">{{ t('contact', 'Contact') }}</h2>
                             {% if resume.content_json and resume.content_json.email %}
                                 <p class="flex items-center gap-2"><i class="fa-solid fa-envelope dynamic-accent-text w-3.5 flex-shrink-0"></i> <span>{{ resume.content_json.email }}</span></p>
                             {% endif %}
@@ -459,7 +462,7 @@
                 <!-- DEFAULT EXECUTIVE MINIMALIST LAYOUT -->
                 <div class="resume-content-area">
                     <div class="text-center border-b border-slate-300 pb-5 mb-6">
-                        <h1 class="text-2xl sm:text-3xl font-bold uppercase tracking-wide dynamic-accent-text">
+                        <h1 class="text-2xl sm:text-3xl font-extrabold uppercase tracking-wide dynamic-accent-text">
                             {{ resume.content_json.full_name if (resume.content_json and resume.content_json.full_name) else t('your_full_name', 'Your Full Name') }}
                         </h1>
                         
@@ -491,7 +494,7 @@
                     <!-- SECTION 1: PROFESSIONAL SUMMARY -->
                     {% if resume.content_json and resume.content_json.summary %}
                     <div class="resume-section-gap">
-                        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 dynamic-accent-border pb-1 mb-2">
+                        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 dynamic-accent-border pb-1.5 mb-2.5">
                             {{ t('professional_summary', 'Professional Summary') }}
                         </h2>
                         <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
@@ -503,7 +506,7 @@
                     <!-- SECTION 2: PROFESSIONAL EXPERIENCE -->
                     {% if resume.content_json and (resume.content_json.company or resume.content_json.experience_bullets) %}
                     <div class="resume-section-gap">
-                        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 dynamic-accent-border pb-1 mb-3">
+                        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 dynamic-accent-border pb-1.5 mb-3">
                             {{ t('professional_experience', 'Professional Experience') }}
                         </h2>
 
@@ -513,7 +516,7 @@
                                     <h3 class="font-bold text-slate-900 text-xs sm:text-sm">
                                         {{ resume.content_json.job_title if resume.content_json.job_title else t('role_title', 'Role Title') }}
                                         {% if resume.content_json.company %}
-                                            <span class="font-normal text-slate-700">| {{ resume.content_json.company }}</span>
+                                            <span class="font-normal text-slate-600">| {{ resume.content_json.company }}</span>
                                         {% endif %}
                                     </h3>
                                     <span class="text-xs font-medium text-slate-600">
@@ -522,7 +525,7 @@
                                 </div>
 
                                 {% if resume.content_json.job_location %}
-                                    <p class="text-xs text-slate-600 mb-1">{{ resume.content_json.job_location }}</p>
+                                    <p class="text-xs text-slate-500 mb-1">{{ resume.content_json.job_location }}</p>
                                 {% endif %}
 
                                 {% if resume.content_json.experience_bullets %}
@@ -538,7 +541,7 @@
                     <!-- SECTION 3: EDUCATION -->
                     {% if resume.content_json and (resume.content_json.education_degree or resume.content_json.education_school) %}
                     <div class="resume-section-gap">
-                        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 dynamic-accent-border pb-1 mb-3">
+                        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 dynamic-accent-border pb-1.5 mb-3">
                             {{ t('education', 'Education') }}
                         </h2>
 
@@ -547,7 +550,7 @@
                                 <h3 class="font-bold text-slate-900 text-xs sm:text-sm">
                                     {{ resume.content_json.education_degree if resume.content_json.education_degree else '' }}
                                     {% if resume.content_json.education_school %}
-                                        <span class="font-normal text-slate-700">, {{ resume.content_json.education_school }}</span>
+                                        <span class="font-normal text-slate-600">, {{ resume.content_json.education_school }}</span>
                                     {% endif %}
                                 </h3>
                                 <span class="text-xs font-medium text-slate-600">
@@ -564,11 +567,11 @@
                     <!-- SECTION 4: CORE SKILLS & CREDENTIALS -->
                     {% if resume.content_json and (resume.content_json.skills_tech or resume.content_json.skills_soft or resume.content_json.certifications) %}
                     <div class="resume-section-gap">
-                        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 dynamic-accent-border pb-1 mb-3">
+                        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 dynamic-accent-border pb-1.5 mb-3">
                             {{ t('skills_certs', 'Core Skills & Credentials') }}
                         </h2>
 
-                        <div class="space-y-1 text-xs text-slate-700">
+                        <div class="space-y-1.5 text-xs text-slate-700">
                             {% if resume.content_json.skills_tech %}
                                 <p><strong class="text-slate-900">{{ t('technical_skills_label', 'Technical Skills:') }}</strong> {{ resume.content_json.skills_tech }}</p>
                             {% endif %}
@@ -587,7 +590,7 @@
                     <!-- SECTION 5: ADDITIONAL INFORMATION (PROJECTS & LANGUAGES) -->
                     {% if resume.content_json and (resume.content_json.projects or resume.content_json.languages) %}
                     <div>
-                        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 dynamic-accent-border pb-1 mb-3">
+                        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 dynamic-accent-border pb-1.5 mb-3">
                             {{ t('additional_info', 'Additional Information') }}
                         </h2>
 
