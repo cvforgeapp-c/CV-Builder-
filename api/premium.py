@@ -761,27 +761,14 @@ def ats_optimizer():
 @login_required
 def cover_letter():
   resumes = Resume.query.filter_by(user_id=current_user.id).all()
-  try:
-    saved_cover_letters = (
-        CoverLetter.query.filter_by(user_id=current_user.id)
-        .order_by(CoverLetter.created_at.desc())
-        .all()
-    )
-  except Exception as exc:
-    db.session.rollback()
-    premium_app.logger.warning('CoverLetter table query failed, using safe fallback query: %s', exc)
-    try:
-      # Safe fallback selecting only core columns that exist
-      sql_query = """
-          SELECT id, user_id, company_name, job_title, tone, job_description, content, created_at, updated_at 
-          FROM cover_letters 
-          WHERE user_id = :uid OR "userId" = :uid 
-          ORDER BY created_at DESC
-      """
-      saved_cover_letters = db.session.execute(db.text(sql_query), {'uid': current_user.id}).fetchall()
-    except Exception as inner_exc:
-      premium_app.logger.warning('Failed safe fallback query: %s', inner_exc)
-      saved_cover_letters = []
+  
+  # Now that models.py correctly maps userId and resumeId, 
+  # this query will execute successfully without errors!
+  saved_cover_letters = (
+      CoverLetter.query.filter_by(user_id=current_user.id)
+      .order_by(CoverLetter.created_at.desc())
+      .all()
+  )
 
   return render_template(
       'dashboard/cover_letter.html',
@@ -789,6 +776,7 @@ def cover_letter():
       cover_letters=saved_cover_letters,
       user=current_user,
   )
+
 
 @premium_app.route('/interview')
 @login_required
