@@ -823,7 +823,7 @@ def cold_outreach():
 @login_required
 def salary_negotiator():
     resumes = Resume.query.filter_by(user_id=current_user.id).all()
-    return render_template('dashboard/salary_negotiator.html', resumes=resumes, user=current_user)
+    return render_template('salary_negotiator.html', resumes=resumes, user=current_user)
 
 @premium_app.route('/linkedin')
 @login_required
@@ -2608,6 +2608,13 @@ Output MUST be strictly valid JSON matching this schema:
         }), 500
 
 
+@premium_app.route('/salary-negotiator')
+@login_required
+def salary_negotiator():
+    resumes = Resume.query.filter_by(user_id=current_user.id).all()
+    return render_template('dashboard/salary_negotiator.html', resumes=resumes, user=current_user)
+
+
 @premium_bp.route('/save-cover-letter-pdf', methods=['POST'])
 @login_required
 def save_cover_letter_pdf():
@@ -3009,9 +3016,9 @@ Return ONLY a JSON object matching this structure:
         200,
     )
 
-  except Exception as exc:
+  except Exception as updated_exc:
     db.session.rollback()
-    premium_app.logger.error('ATS analysis failed: %s', exc)
+    premium_app.logger.error('ATS analysis failed: %s', updated_exc)
     return (
         jsonify({
             'error': (
