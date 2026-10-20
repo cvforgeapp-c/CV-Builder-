@@ -828,52 +828,60 @@ def linkedin_optimizer():
 @premium_app.route('/pdf-studio', methods=['GET', 'POST'])
 @login_required
 def pdf_studio():
-  user_prefs = getattr(current_user, 'preferences_json', None) or {}
-  if not isinstance(user_prefs, dict):
-    user_prefs = {}
+    # Capture resume_id from URL query or form submit
+    resume_id = request.args.get('resume_id') or request.form.get('resume_id')
 
-  pdf_settings = user_prefs.get('pdf_settings', {
-      'template_id': 'exec_minimalist',
-      'accent_color': '#02353C',
-      'font_pairing': 'helvetica',
-      'line_spacing': 'normal',
-      'target_action': 'editor'
-  })
+    user_prefs = getattr(current_user, 'preferences_json', None) or {}
+    if not isinstance(user_prefs, dict):
+        user_prefs = {}
 
-  if request.method == 'POST':
-    template_id = request.form.get('template_id', 'exec_minimalist')
-    accent_color = request.form.get('accent_color', '#02353C')
-    font_pairing = request.form.get('font_pairing', 'helvetica')
-    line_spacing = request.form.get('line_spacing', 'normal')
-    target_action = request.form.get('target_action', 'editor')
+    pdf_settings = user_prefs.get('pdf_settings', {
+        'template_id': 'exec_minimalist',
+        'accent_color': '#02353C',
+        'font_pairing': 'helvetica',
+        'line_spacing': 'normal',
+        'target_action': 'editor'
+    })
 
-    updated_settings = {
-        'template_id': template_id,
-        'accent_color': accent_color,
-        'font_pairing': font_pairing,
-        'line_spacing': line_spacing,
-        'target_action': target_action
-    }
+    if request.method == 'POST':
+        template_id = request.form.get('template_id', 'exec_minimalist')
+        accent_color = request.form.get('accent_color', '#02353C')
+        font_pairing = request.form.get('font_pairing', 'helvetica')
+        line_spacing = request.form.get('line_spacing', 'normal')
 
-    user_prefs['pdf_settings'] = updated_settings
-    current_user.preferences_json = user_prefs
-    flag_modified(current_user, 'preferences_json')
+        updated_settings = {
+            'template_id': template_id,
+            'accent_color': accent_color,
+            'font_pairing': font_pairing,
+            'line_spacing': line_spacing,
+        }
 
-    try:
-      db.session.commit()
-      session['pdf_settings'] = updated_settings
-      flash('PDF Template settings saved successfully!', 'success')
-    except Exception as exc:
-      db.session.rollback()
-      premium_app.logger.error('Failed to save PDF template settings: %s', exc)
-      flash('Unable to save PDF template settings. Please try again.', 'error')
+        user_prefs['pdf_settings'] = updated_settings
+        current_user.preferences_json = user_prefs
+        flag_modified(current_user, 'preferences_json')
 
-    if target_action == 'ats':
-      return redirect(url_for('ats_optimizer', template=template_id))
-    else:
-      return redirect(url_for('editor', template=template_id))
+        # If editing an active resume, update its template and color directly in the database
+        if resume_id:
+            resume = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first()
+            if resume:
+                resume.template_used = template_id
+                resume.accent_color = accent_color
 
-  return render_template('dashboard/pdf_templates.html', settings=pdf_settings, user=current_user)
+        try:
+            db.session.commit()
+            session['pdf_settings'] = updated_settings
+            flash('PDF Template settings saved!', 'success')
+        except Exception as exc:
+            db.session.rollback()
+            premium_app.logger.error('Failed to save settings: %s', exc)
+
+        # Automatically redirect straight back to Preview with updated template!
+        if resume_id:
+            return redirect(url_for('preview', id=resume_id, template=template_id))
+        else:
+            return redirect(url_for('editor', template=template_id))
+
+    return render_template('dashboard/pdf_templates.html', settings=pdf_settings, resume_id=resume_id, user=current_user)
 
 
 @premium_app.route('/support')
