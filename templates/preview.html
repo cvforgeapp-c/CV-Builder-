@@ -7,14 +7,54 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap');
         
         :root {
             --active-accent-color: {{ active_accent or (resume.accent_color if resume and resume.accent_color else '#02353C') }};
+            
+            /* Dynamic Typography Mapping */
+            {% set active_typo = active_typography or (resume.typography if resume and resume.typography else 'inter') %}
+            {% if 'helvetica' in active_typo|lower or 'arial' in active_typo|lower %}
+                --active-font: Arial, Helvetica, sans-serif;
+            {% elif 'serif' in active_typo|lower or 'merriweather' in active_typo|lower %}
+                --active-font: 'Merriweather', serif;
+            {% elif 'mono' in active_typo|lower or 'fira' in active_typo|lower %}
+                --active-font: 'Fira Code', monospace;
+            {% else %}
+                --active-font: 'Inter', sans-serif;
+            {% endif %}
+
+            /* Dynamic Spacing & Density Mapping */
+            {% set active_density = active_density or (resume.density if resume and resume.density else 'normal') %}
+            {% if 'compact' in active_density|lower %}
+                --doc-padding: 1.25rem;
+                --section-space: 0.85rem;
+                --text-scale: 0.95;
+            {% elif 'spacious' in active_density|lower %}
+                --doc-padding: 2.5rem;
+                --section-space: 1.75rem;
+                --text-scale: 1.05;
+            {% else %}
+                --doc-padding: 2rem;
+                --section-space: 1.25rem;
+                --text-scale: 1;
+            {% endif %}
         }
 
         body { 
-            font-family: 'Inter', sans-serif; 
+            font-family: var(--active-font); 
             color: #111827;
+        }
+
+        /* Apply dynamic scale and padding */
+        .resume-content-area {
+            padding: var(--doc-padding);
+            font-size: calc(0.75rem * var(--text-scale));
+        }
+        
+        .resume-section-gap {
+            margin-bottom: var(--section-space);
         }
 
         /* Strict A4 Single-Column Dimension for ATS Parsing & Export */
@@ -178,10 +218,10 @@
                     </aside>
 
                     <!-- RIGHT MAIN CONTENT -->
-                    <div class="w-[68%] p-8 space-y-6 bg-white flex-grow">
+                    <div class="w-[68%] resume-content-area space-y-6 bg-white flex-grow">
                         <!-- SUMMARY -->
                         {% if resume.content_json and resume.content_json.summary %}
-                        <div>
+                        <div class="resume-section-gap">
                             <h2 class="text-xs font-bold uppercase tracking-widest dynamic-accent-text border-b-2 dynamic-accent-border pb-1 mb-2">
                                 {{ t('professional_summary', 'Professional Summary') }}
                             </h2>
@@ -191,7 +231,7 @@
 
                         <!-- EXPERIENCE -->
                         {% if resume.content_json and (resume.content_json.company or resume.content_json.experience_bullets) %}
-                        <div>
+                        <div class="resume-section-gap">
                             <h2 class="text-xs font-bold uppercase tracking-widest dynamic-accent-text border-b-2 dynamic-accent-border pb-1 mb-3">
                                 {{ t('professional_experience', 'Professional Experience') }}
                             </h2>
@@ -210,7 +250,7 @@
 
                         <!-- PROJECTS & CERTIFICATIONS -->
                         {% if resume.content_json and (resume.content_json.projects or resume.content_json.certifications) %}
-                        <div>
+                        <div class="resume-section-gap">
                             <h2 class="text-xs font-bold uppercase tracking-widest dynamic-accent-text border-b-2 dynamic-accent-border pb-1 mb-3">
                                 {{ t('additional_info', 'Additional Details') }}
                             </h2>
@@ -229,7 +269,7 @@
 
                 {% elif current_tmpl == 'tech_vanguard' %}
                 <!-- TECH VANGUARD TEMPLATE -->
-                <div class="p-10 sm:p-14 border-t-8 dynamic-accent-border">
+                <div class="resume-content-area border-t-8 dynamic-accent-border">
                     <div class="flex justify-between items-baseline border-b pb-4 mb-6 dynamic-accent-border">
                         <div>
                             <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight dynamic-accent-text">
@@ -247,14 +287,14 @@
 
                     <div class="space-y-6">
                         {% if resume.content_json and resume.content_json.summary %}
-                        <div>
+                        <div class="resume-section-gap">
                             <h2 class="text-xs font-bold uppercase tracking-widest dynamic-accent-text mb-2">// {{ t('professional_summary', 'Professional Summary') }}</h2>
                             <p class="text-xs sm:text-sm text-slate-700 leading-relaxed bg-slate-50 p-4 rounded-lg border border-slate-100">{{ resume.content_json.summary }}</p>
                         </div>
                         {% endif %}
 
                         {% if resume.content_json and (resume.content_json.company or resume.content_json.experience_bullets) %}
-                        <div>
+                        <div class="resume-section-gap">
                             <h2 class="text-xs font-bold uppercase tracking-widest dynamic-accent-text mb-3">// {{ t('professional_experience', 'Professional Experience') }}</h2>
                             <div class="space-y-4">
                                 <div class="flex justify-between font-bold text-xs">
@@ -267,7 +307,7 @@
                         {% endif %}
 
                         {% if resume.content_json and (resume.content_json.projects or resume.content_json.languages or resume.content_json.certifications) %}
-                        <div>
+                        <div class="resume-section-gap">
                             <h2 class="text-xs font-bold uppercase tracking-widest dynamic-accent-text mb-3">// {{ t('additional_info', 'Additional Information') }}</h2>
                             <div class="space-y-2 text-xs text-slate-700">
                                 {% if resume.content_json.projects %}
@@ -289,7 +329,7 @@
                 <!-- TECHNICAL TWO-COLUMN ATS TEMPLATE -->
                 <div class="flex flex-row min-h-[297mm] w-full">
                     <!-- LEFT COLUMN (MAIN CONTENT) -->
-                    <div class="w-[68%] p-8 space-y-6 bg-white flex-grow border-r border-slate-200">
+                    <div class="w-[68%] resume-content-area space-y-6 bg-white flex-grow border-r border-slate-200">
                         <!-- HEADER SECTION -->
                         <div class="border-b border-slate-300 pb-4">
                             <h1 class="text-2xl font-extrabold uppercase tracking-wide dynamic-accent-text">
@@ -304,7 +344,7 @@
 
                         <!-- SUMMARY -->
                         {% if resume.content_json and resume.content_json.summary %}
-                        <div>
+                        <div class="resume-section-gap">
                             <h2 class="text-xs font-bold uppercase tracking-widest dynamic-accent-text border-b-2 dynamic-accent-border pb-1 mb-2">
                                 {{ t('professional_summary', 'Professional Summary') }}
                             </h2>
@@ -314,7 +354,7 @@
 
                         <!-- EXPERIENCE -->
                         {% if resume.content_json and (resume.content_json.company or resume.content_json.experience_bullets) %}
-                        <div>
+                        <div class="resume-section-gap">
                             <h2 class="text-xs font-bold uppercase tracking-widest dynamic-accent-text border-b-2 dynamic-accent-border pb-1 mb-3">
                                 {{ t('professional_experience', 'Professional Experience') }}
                             </h2>
@@ -333,7 +373,7 @@
 
                         <!-- PROJECTS -->
                         {% if resume.content_json and resume.content_json.projects %}
-                        <div>
+                        <div class="resume-section-gap">
                             <h2 class="text-xs font-bold uppercase tracking-widest dynamic-accent-text border-b-2 dynamic-accent-border pb-1 mb-2">
                                 {{ t('key_projects_research_label', 'Key Projects') }}
                             </h2>
@@ -417,7 +457,7 @@
 
                 {% else %}
                 <!-- DEFAULT EXECUTIVE MINIMALIST LAYOUT -->
-                <div class="p-12 sm:p-16">
+                <div class="resume-content-area">
                     <div class="text-center border-b border-slate-300 pb-5 mb-6">
                         <h1 class="text-2xl sm:text-3xl font-bold uppercase tracking-wide dynamic-accent-text">
                             {{ resume.content_json.full_name if (resume.content_json and resume.content_json.full_name) else t('your_full_name', 'Your Full Name') }}
@@ -450,7 +490,7 @@
 
                     <!-- SECTION 1: PROFESSIONAL SUMMARY -->
                     {% if resume.content_json and resume.content_json.summary %}
-                    <div class="mb-5">
+                    <div class="resume-section-gap">
                         <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 dynamic-accent-border pb-1 mb-2">
                             {{ t('professional_summary', 'Professional Summary') }}
                         </h2>
@@ -462,7 +502,7 @@
 
                     <!-- SECTION 2: PROFESSIONAL EXPERIENCE -->
                     {% if resume.content_json and (resume.content_json.company or resume.content_json.experience_bullets) %}
-                    <div class="mb-5">
+                    <div class="resume-section-gap">
                         <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 dynamic-accent-border pb-1 mb-3">
                             {{ t('professional_experience', 'Professional Experience') }}
                         </h2>
@@ -497,7 +537,7 @@
 
                     <!-- SECTION 3: EDUCATION -->
                     {% if resume.content_json and (resume.content_json.education_degree or resume.content_json.education_school) %}
-                    <div class="mb-5">
+                    <div class="resume-section-gap">
                         <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 dynamic-accent-border pb-1 mb-3">
                             {{ t('education', 'Education') }}
                         </h2>
@@ -523,7 +563,7 @@
 
                     <!-- SECTION 4: CORE SKILLS & CREDENTIALS -->
                     {% if resume.content_json and (resume.content_json.skills_tech or resume.content_json.skills_soft or resume.content_json.certifications) %}
-                    <div class="mb-5">
+                    <div class="resume-section-gap">
                         <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b-2 dynamic-accent-border pb-1 mb-3">
                             {{ t('skills_certs', 'Core Skills & Credentials') }}
                         </h2>
