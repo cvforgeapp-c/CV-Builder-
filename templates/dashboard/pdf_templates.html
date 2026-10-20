@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ t_modular('pdf_studio_title', 'Premium PDF Template Designs — CVForge Pro') }}{% endblock %}
+{% block title %}{{ t_modular('pdf_page_title', 'Premium PDF Template Designs — CVForge Pro') }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -446,15 +446,15 @@
     </div>
     <div>
         <a href="/dashboard" class="btn-back">
-            <span>←</span> {{ t_modular('btn_back_dashboard', 'Back to Dashboard') }}
+            <span>←</span> {{ t_modular('pdf_btn_back_dashboard', 'Back to Dashboard') }}
         </a>
     </div>
 </header>
 
 <div class="studio-container">
     <div class="page-heading">
-        <h1>{{ t_modular('pdf_studio_heading', 'Premium PDF Template Studio') }}</h1>
-        <p>{{ t_modular('pdf_studio_subheading', 'Select executive ReportLab rendering templates, adjust font pairings, and choose your next workflow destination.') }}</p>
+        <h1>{{ t_modular('pdf_heading', 'Premium PDF Template Studio') }}</h1>
+        <p>{{ t_modular('pdf_subheading', 'Select executive ReportLab rendering templates, adjust font pairings, and customize brand accent colors for maximum visual impact.') }}</p>
     </div>
 
     <!-- MAIN FORM FOR PLATFORM SUBMISSION -->
@@ -474,15 +474,15 @@
 
                 <!-- DESTINATION ROUTING SELECTOR -->
                 <div class="form-group">
-                    <label for="targetAction" style="color: var(--brand-teal); font-weight: 700;">{{ t_modular('label_target_action', 'Next Destination') }}</label>
+                    <label for="targetAction" style="color: var(--brand-teal); font-weight: 700;">{{ t_modular('pdf_label_target_action', 'Next Destination') }}</label>
                     <select id="targetAction" name="target_action" class="form-control" style="border-color: var(--brand-teal); font-weight: 600;">
-                        <option value="editor" {% if not settings or settings.target_action == 'editor' %}selected{% endif %}>CVForge Studio (Resume Editor)</option>
-                        <option value="ats" {% if settings and settings.target_action == 'ats' %}selected{% endif %}>ATS Optimizer Engine</option>
+                        <option value="editor" {% if not settings or settings.target_action == 'editor' %}selected{% endif %}>{{ t_modular('pdf_action_opt_editor', 'CVForge Studio (Resume Editor)') }}</option>
+                        <option value="ats" {% if settings and settings.target_action == 'ats' %}selected{% endif %}>{{ t_modular('pdf_action_opt_ats', 'ATS Optimizer Engine') }}</option>
                     </select>
                 </div>
 
                 <!-- COLOR SWATCHES -->
-                <span class="section-label">{{ t_modular('label_accent_color', 'Brand Accent Color') }}</span>
+                <span class="section-label">{{ t_modular('pdf_label_accent_color', 'Brand Accent Color') }}</span>
                 <div class="color-swatches" id="colorSwatches">
                     {% set active_color = settings.accent_color if settings else '#02353C' %}
                     <div class="swatch {% if active_color == '#02353C' %}active{% endif %}" data-color="#02353C" style="background: #02353C;"></div>
@@ -494,27 +494,27 @@
 
                 <!-- FONT PAIRING -->
                 <div class="form-group">
-                    <label for="fontPairing">{{ t_modular('label_font_pairing', 'Typography Pairing') }}</label>
+                    <label for="fontPairing">{{ t_modular('pdf_label_font_pairing', 'Typography Pairing') }}</label>
                     <select id="fontPairing" name="font_pairing" class="form-control">
-                        <option value="helvetica" {% if settings and settings.font_pairing == 'helvetica' %}selected{% endif %}>{{ t_modular('font_helvetica', 'Helvetica / Arial (Standard Executive)') }}</option>
-                        <option value="times" {% if settings and settings.font_pairing == 'times' %}selected{% endif %}>{{ t_modular('font_times', 'Times New Roman (Classic Traditional)') }}</option>
-                        <option value="georgia" {% if settings and settings.font_pairing == 'georgia' %}selected{% endif %}>{{ t_modular('font_georgia', 'Georgia / Garamond (Modern Editorial)') }}</option>
+                        <option value="helvetica" {% if settings and settings.font_pairing == 'helvetica' %}selected{% endif %}>{{ t_modular('pdf_opt_font_helvetica', 'Helvetica / Arial (Standard Executive)') }}</option>
+                        <option value="times" {% if settings and settings.font_pairing == 'times' %}selected{% endif %}>{{ t_modular('pdf_opt_font_times', 'Times New Roman (Classic Traditional)') }}</option>
+                        <option value="georgia" {% if settings and settings.font_pairing == 'georgia' %}selected{% endif %}>{{ t_modular('pdf_opt_font_georgia', 'Georgia / Garamond (Modern Editorial)') }}</option>
                     </select>
                 </div>
 
                 <!-- SPACING & DENSITY -->
                 <div class="form-group">
-                    <label for="lineSpacing">{{ t_modular('label_line_spacing', 'Layout Spacing & Density') }}</label>
+                    <label for="lineSpacing">{{ t_modular('pdf_label_line_spacing', 'Layout Spacing & Density') }}</label>
                     <select id="lineSpacing" name="line_spacing" class="form-control">
-                        <option value="compact" {% if settings and settings.line_spacing == 'compact' %}selected{% endif %}>{{ t_modular('spacing_compact', 'Compact (Fit maximum experience on 1 page)') }}</option>
-                        <option value="normal" {% if not settings or settings.line_spacing == 'normal' %}selected{% endif %}>{{ t_modular('spacing_normal', 'Balanced (Standard ATS spacing)') }}</option>
-                        <option value="spacious" {% if settings and settings.line_spacing == 'spacious' %}selected{% endif %}>{{ t_modular('spacing_spacious', 'Spacious (Clean executive layout)') }}</option>
+                        <option value="compact" {% if settings and settings.line_spacing == 'compact' %}selected{% endif %}>{{ t_modular('pdf_opt_spacing_compact', 'Compact (Fit maximum experience on 1 page)') }}</option>
+                        <option value="normal" {% if not settings or settings.line_spacing == 'normal' %}selected{% endif %}>{{ t_modular('pdf_opt_spacing_normal', 'Balanced (Standard ATS spacing)') }}</option>
+                        <option value="spacious" {% if settings and settings.line_spacing == 'spacious' %}selected{% endif %}>{{ t_modular('pdf_opt_spacing_spacious', 'Spacious (Clean executive layout)') }}</option>
                     </select>
                 </div>
 
                 <button type="submit" class="btn-apply">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    {{ t_modular('btn_apply_continue', 'Apply Template & Continue') }}
+                    {{ t_modular('pdf_btn_apply_continue', 'Apply Template & Continue') }}
                 </button>
             </aside>
 
@@ -534,16 +534,16 @@
                             <div class="mock-line" style="width: 90%;"></div>
                         </div>
                         <div class="template-hover-overlay">
-                            <button type="button" class="btn-quick-action" onclick="submitDestination('exec_minimalist', 'editor')">Edit in CV Studio</button>
-                            <button type="button" class="btn-quick-action" onclick="submitDestination('exec_minimalist', 'ats')">Run ATS Optimizer</button>
+                            <button type="button" class="btn-quick-action" onclick="submitDestination('exec_minimalist', 'editor')">{{ t_modular('pdf_btn_edit_studio', 'Edit in CV Studio') }}</button>
+                            <button type="button" class="btn-quick-action" onclick="submitDestination('exec_minimalist', 'ats')">{{ t_modular('pdf_btn_run_ats', 'Run ATS Optimizer') }}</button>
                         </div>
                     </div>
                     <div class="template-info">
                         <div>
-                            <div class="template-name">{{ t_modular('tmpl_exec_minimalist', 'Executive Minimalist') }}</div>
-                            <span class="badge-ats">100% ATS Safe</span>
+                            <div class="template-name">{{ t_modular('pdf_tpl_executive', 'Executive Minimalist') }}</div>
+                            <span class="badge-ats">{{ t_modular('pdf_badge_ats_safe', '100% ATS Safe') }}</span>
                         </div>
-                        {% if active_tmpl == 'exec_minimalist' %}<span class="status-indicator">{{ t_modular('label_selected', 'Selected') }}</span>{% endif %}
+                        {% if active_tmpl == 'exec_minimalist' %}<span class="status-indicator">{{ t_modular('pdf_status_selected', 'Selected') }}</span>{% endif %}
                     </div>
                 </div>
 
@@ -558,16 +558,16 @@
                             <div class="mock-line" style="width: 80%;"></div>
                         </div>
                         <div class="template-hover-overlay">
-                            <button type="button" class="btn-quick-action" onclick="submitDestination('tech_vanguard', 'editor')">Edit in CV Studio</button>
-                            <button type="button" class="btn-quick-action" onclick="submitDestination('tech_vanguard', 'ats')">Run ATS Optimizer</button>
+                            <button type="button" class="btn-quick-action" onclick="submitDestination('tech_vanguard', 'editor')">{{ t_modular('pdf_btn_edit_studio', 'Edit in CV Studio') }}</button>
+                            <button type="button" class="btn-quick-action" onclick="submitDestination('tech_vanguard', 'ats')">{{ t_modular('pdf_btn_run_ats', 'Run ATS Optimizer') }}</button>
                         </div>
                     </div>
                     <div class="template-info">
                         <div>
-                            <div class="template-name">{{ t_modular('tmpl_tech_vanguard', 'Tech Vanguard') }}</div>
-                            <span class="badge-ats">100% ATS Safe</span>
+                            <div class="template-name">{{ t_modular('pdf_tpl_tech', 'Tech Vanguard') }}</div>
+                            <span class="badge-ats">{{ t_modular('pdf_badge_ats_safe', '100% ATS Safe') }}</span>
                         </div>
-                        {% if active_tmpl == 'tech_vanguard' %}<span class="status-indicator">{{ t_modular('label_selected', 'Selected') }}</span>{% endif %}
+                        {% if active_tmpl == 'tech_vanguard' %}<span class="status-indicator">{{ t_modular('pdf_status_selected', 'Selected') }}</span>{% endif %}
                     </div>
                 </div>
 
@@ -583,16 +583,16 @@
                             </div>
                         </div>
                         <div class="template-hover-overlay">
-                            <button type="button" class="btn-quick-action" onclick="submitDestination('sidebar_exec', 'editor')">Edit in CV Studio</button>
-                            <button type="button" class="btn-quick-action" onclick="submitDestination('sidebar_exec', 'ats')">Run ATS Optimizer</button>
+                            <button type="button" class="btn-quick-action" onclick="submitDestination('sidebar_exec', 'editor')">{{ t_modular('pdf_btn_edit_studio', 'Edit in CV Studio') }}</button>
+                            <button type="button" class="btn-quick-action" onclick="submitDestination('sidebar_exec', 'ats')">{{ t_modular('pdf_btn_run_ats', 'Run ATS Optimizer') }}</button>
                         </div>
                     </div>
                     <div class="template-info">
                         <div>
-                            <div class="template-name">{{ t_modular('tmpl_sidebar_exec', 'Sidebar Executive') }}</div>
-                            <span class="badge-ats">100% ATS Safe</span>
+                            <div class="template-name">{{ t_modular('pdf_tpl_sidebar', 'Sidebar Executive') }}</div>
+                            <span class="badge-ats">{{ t_modular('pdf_badge_ats_safe', '100% ATS Safe') }}</span>
                         </div>
-                        {% if active_tmpl == 'sidebar_exec' %}<span class="status-indicator">{{ t_modular('label_selected', 'Selected') }}</span>{% endif %}
+                        {% if active_tmpl == 'sidebar_exec' %}<span class="status-indicator">{{ t_modular('pdf_status_selected', 'Selected') }}</span>{% endif %}
                     </div>
                 </div>
 
@@ -607,16 +607,16 @@
                             <div class="mock-line" style="width: 100%;"></div>
                         </div>
                         <div class="template-hover-overlay">
-                            <button type="button" class="btn-quick-action" onclick="submitDestination('standard_ats', 'editor')">Edit in CV Studio</button>
-                            <button type="button" class="btn-quick-action" onclick="submitDestination('standard_ats', 'ats')">Run ATS Optimizer</button>
+                            <button type="button" class="btn-quick-action" onclick="submitDestination('standard_ats', 'editor')">{{ t_modular('pdf_btn_edit_studio', 'Edit in CV Studio') }}</button>
+                            <button type="button" class="btn-quick-action" onclick="submitDestination('standard_ats', 'ats')">{{ t_modular('pdf_btn_run_ats', 'Run ATS Optimizer') }}</button>
                         </div>
                     </div>
                     <div class="template-info">
                         <div>
-                            <div class="template-name">{{ t_modular('tmpl_standard_ats', 'Standard Clean ATS') }}</div>
-                            <span class="badge-ats">100% ATS Safe</span>
+                            <div class="template-name">{{ t_modular('pdf_tpl_standard_ats', 'Standard Clean ATS') }}</div>
+                            <span class="badge-ats">{{ t_modular('pdf_badge_ats_safe', '100% ATS Safe') }}</span>
                         </div>
-                        {% if active_tmpl == 'standard_ats' %}<span class="status-indicator">{{ t_modular('label_selected', 'Selected') }}</span>{% endif %}
+                        {% if active_tmpl == 'standard_ats' %}<span class="status-indicator">{{ t_modular('pdf_status_selected', 'Selected') }}</span>{% endif %}
                     </div>
                 </div>
 
@@ -630,16 +630,16 @@
                             <div class="mock-line" style="width: 100%;"></div>
                         </div>
                         <div class="template-hover-overlay">
-                            <button type="button" class="btn-quick-action" onclick="submitDestination('modern_minimal_ats', 'editor')">Edit in CV Studio</button>
-                            <button type="button" class="btn-quick-action" onclick="submitDestination('modern_minimal_ats', 'ats')">Run ATS Optimizer</button>
+                            <button type="button" class="btn-quick-action" onclick="submitDestination('modern_minimal_ats', 'editor')">{{ t_modular('pdf_btn_edit_studio', 'Edit in CV Studio') }}</button>
+                            <button type="button" class="btn-quick-action" onclick="submitDestination('modern_minimal_ats', 'ats')">{{ t_modular('pdf_btn_run_ats', 'Run ATS Optimizer') }}</button>
                         </div>
                     </div>
                     <div class="template-info">
                         <div>
-                            <div class="template-name">{{ t_modular('tmpl_modern_minimal_ats', 'Modern Minimalist ATS') }}</div>
-                            <span class="badge-ats">100% ATS Safe</span>
+                            <div class="template-name">{{ t_modular('pdf_tpl_modern_minimal_ats', 'Modern Minimalist ATS') }}</div>
+                            <span class="badge-ats">{{ t_modular('pdf_badge_ats_safe', '100% ATS Safe') }}</span>
                         </div>
-                        {% if active_tmpl == 'modern_minimal_ats' %}<span class="status-indicator">{{ t_modular('label_selected', 'Selected') }}</span>{% endif %}
+                        {% if active_tmpl == 'modern_minimal_ats' %}<span class="status-indicator">{{ t_modular('pdf_status_selected', 'Selected') }}</span>{% endif %}
                     </div>
                 </div>
 
@@ -660,16 +660,16 @@
                             </div>
                         </div>
                         <div class="template-hover-overlay">
-                            <button type="button" class="btn-quick-action" onclick="submitDestination('tech_twocol_ats', 'editor')">Edit in CV Studio</button>
-                            <button type="button" class="btn-quick-action" onclick="submitDestination('tech_twocol_ats', 'ats')">Run ATS Optimizer</button>
+                            <button type="button" class="btn-quick-action" onclick="submitDestination('tech_twocol_ats', 'editor')">{{ t_modular('pdf_btn_edit_studio', 'Edit in CV Studio') }}</button>
+                            <button type="button" class="btn-quick-action" onclick="submitDestination('tech_twocol_ats', 'ats')">{{ t_modular('pdf_btn_run_ats', 'Run ATS Optimizer') }}</button>
                         </div>
                     </div>
                     <div class="template-info">
                         <div>
-                            <div class="template-name">{{ t_modular('tmpl_tech_twocol_ats', 'Technical Two-Column ATS') }}</div>
-                            <span class="badge-ats">100% ATS Safe</span>
+                            <div class="template-name">{{ t_modular('pdf_tpl_tech_twocol_ats', 'Technical Two-Column ATS') }}</div>
+                            <span class="badge-ats">{{ t_modular('pdf_badge_ats_safe', '100% ATS Safe') }}</span>
                         </div>
-                        {% if active_tmpl == 'tech_twocol_ats' %}<span class="status-indicator">{{ t_modular('label_selected', 'Selected') }}</span>{% endif %}
+                        {% if active_tmpl == 'tech_twocol_ats' %}<span class="status-indicator">{{ t_modular('pdf_status_selected', 'Selected') }}</span>{% endif %}
                     </div>
                 </div>
 
@@ -712,7 +712,7 @@
             const infoDiv = this.querySelector('.template-info');
             const selectedBadge = document.createElement('span');
             selectedBadge.className = 'status-indicator';
-            selectedBadge.innerText = "{{ t_modular('label_selected', 'Selected') }}";
+            selectedBadge.innerText = "{{ t_modular('pdf_status_selected', 'Selected') }}";
             infoDiv.appendChild(selectedBadge);
         });
     });
