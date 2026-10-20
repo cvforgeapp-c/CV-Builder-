@@ -820,6 +820,13 @@ def cold_outreach():
   return render_template('outreach.html', resumes=resumes, user=current_user)
 
 
+@premium_app.route('/salary-negotiator')
+@login_required
+def salary_negotiator():
+  resumes = Resume.query.filter_by(user_id=current_user.id).all()
+  return render_template('dashboard/salary_negotiator.html', resumes=resumes, user=current_user)
+
+
 @premium_app.route('/linkedin')
 @login_required
 def linkedin_optimizer():
@@ -2527,6 +2534,80 @@ Output MUST be strictly valid JSON matching this schema:
         }),
         500,
     )
+
+
+@premium_bp.route('/evaluate-offer', methods=['POST'])
+@login_required
+def evaluate_offer():
+  data = request.get_json(silent=True) or {}
+  
+  company_name = (data.get('company_name') or 'Target Company').strip()
+  job_title = (data.get('job_title') or 'Target Position').strip()
+  base_salary = (data.get('base_salary') or '').strip()
+  bonus_equity = (data.get('bonus_equity') or '').strip()
+  target_salary = (data.get('target_salary') or '').strip()
+  location_remote = (data.get('location_remote') or '').strip()
+  perks_notes = (data.get('perks_notes') or '').strip()
+  tone = (data.get('tone') or 'Professional & Firm').strip()
+
+  preferred_language = get_user_preferred_language(current_user)
+
+  prompt = f"""
+You are CVForge AI, an executive compensation consultant and salary negotiation expert.
+
+Task: Evaluate a job offer and craft a high-impact, persuasive counter-offer negotiation strategy for a candidate.
+
+Target Company: {company_name}
+Job Title: {job_title}
+Offered Base Salary: {base_salary}
+Offered Bonus / Equity / Benefits: {bonus_equity or 'Not specified'}
+Candidate Target Salary / Goal: {target_salary or 'Market maximum'}
+Location / Remote Setup: {location_remote or 'Not specified'}
+Additional Notes / Perks: {perks_notes or 'None'}
+Desired Negotiation Tone: {tone}
+Output Language: {preferred_language}
+
+REQUIREMENTS:
+1. "offer_grade": A quick assessment rating (e.g., "Competitive", "Below Market Range", "Strong Base / Low Equity").
+2. "evaluation_summary": 2-3 sentences analyzing the offer strength based on market trends for {job_title}.
+3. "strategy_points": An array of 3 actionable leverage points the candidate should emphasize (e.g., key skills, competing timelines, unique experience).
+4. "counter_email_subject": A professional subject line for replying to the recruiter or hiring manager.
+5. "counter_email_body": A structured counter-offer email requesting the target compensation or perks, maintaining a {tone} tone.
+6. Write ALL text strictly in {preferred_language}.
+
+Output MUST be strictly valid JSON matching this schema:
+{{
+  "offer_grade": "Grade/Rating",
+  "evaluation_summary": "Summary evaluation...",
+  "strategy_points": [
+    "Leverage point 1...",
+    "Leverage point 2...",
+    "Leverage point 3..."
+  ],
+  "counter_email_subject": "Subject line...",
+  "counter_email_body": "Full counter-offer email text..."
+}}
+"""
+
+  try:
+    raw_response = generate_ai_text(prompt, max_tokens=1500)
+
+    clean_json_str = raw_response.strip()
+    if clean_json_str.startswith('```json'):
+      clean_json_str = clean_json_str[7:]
+    if clean_json_str.startswith('```'):
+      clean_json_str = clean_json_str[3:]
+    if clean_json_str.endswith('```'):
+      clean_json_str = clean_json_str[:-3]
+
+    result = json.loads(clean_json_str.strip())
+    return jsonify(result), 200
+
+  except Exception as exc:
+    premium_app.logger.error('Salary negotiation evaluation error: %s', exc)
+    return jsonify({
+        'error': 'Unable to evaluate offer. Please verify your input details and try again.'
+    }), 500
 
 
 @premium_bp.route('/save-cover-letter-pdf', methods=['POST'])
