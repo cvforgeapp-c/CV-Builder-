@@ -769,18 +769,22 @@ def cover_letter():
     )
   except Exception as exc:
     db.session.rollback()
-    premium_app.logger.warning('CoverLetter table query failed: %s', exc)
+    premium_app.logger.warning('CoverLetter table query failed, trying flexible fallback: %s', exc)
     try:
-      db.create_all()
-      saved_cover_letters = (
-          CoverLetter.query.filter_by(user_id=current_user.id)
-          .order_by(CoverLetter.created_at.desc())
-          .all()
-      )
+      # Fallback query using raw SQL in case column names differ (e.g. userId / resumeId)
+      sql_query = """
+          SELECT id, user_id, resume_id, company_name, job_title, tone, job_description, content, created_at, updated_at 
+          FROM cover_letters 
+          WHERE user_id = :uid OR "userId" = :uid 
+          ORDER BY created_at DESC
+      """
+      result = db.session.execute(db.text(sql_query), {'uid': current_user.id})
+      saved_cover_letters = []
+      for row in result:
+        # Construct lightweight object wrapper if needed
+        saved_cover_letters.append(row)
     except Exception as inner_exc:
-      premium_app.logger.warning(
-          'Failed to auto-create CoverLetter table: %s', inner_exc
-      )
+      premium_app.logger.warning('Failed flexible fallback query: %s', inner_exc)
       saved_cover_letters = []
 
   return render_template(
