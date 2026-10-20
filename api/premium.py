@@ -824,7 +824,7 @@ def cold_outreach():
 @login_required
 def salary_negotiator():
   resumes = Resume.query.filter_by(user_id=current_user.id).all()
-  return render_template('dashboard/salary_negotiator.html', resumes=resumes, user=current_user)
+  return render_template('salary_negotiator.html', resumes=resumes, user=current_user)
 
 
 @premium_app.route('/linkedin')
