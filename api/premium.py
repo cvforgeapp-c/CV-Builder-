@@ -820,7 +820,7 @@ def cold_outreach():
   return render_template('outreach.html', resumes=resumes, user=current_user)
 
 
-@premium_app.route('/salary-negotiator')
+@premium_app.route('/salary_negotiator')
 @login_required
 def salary_negotiator():
   resumes = Resume.query.filter_by(user_id=current_user.id).all()
