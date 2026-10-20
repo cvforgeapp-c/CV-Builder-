@@ -720,10 +720,16 @@
         });
     });
 
-    // Helper for direct button action triggers
+    // Helper for direct button action triggers (Updated to route correctly to ATS Optimizer)
     function submitDestination(templateId, destinationAction) {
         document.getElementById('inputTemplateId').value = templateId;
         document.getElementById('targetAction').value = destinationAction;
+        
+        if (destinationAction === 'ats') {
+            window.location.href = '/ats';
+            return;
+        }
+        
         document.getElementById('studioForm').submit();
     }
 </script>
