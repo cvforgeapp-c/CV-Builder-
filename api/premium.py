@@ -670,9 +670,11 @@ def editor():
   user_prefs = getattr(current_user, 'preferences_json', None) or {}
   pdf_settings = user_prefs.get('pdf_settings', {}) if isinstance(user_prefs, dict) else {}
 
-  active_template = request.args.get('template') or (
+  raw_template = request.args.get('template') or (
       resume.template_used if resume and getattr(resume, 'template_used', None) else pdf_settings.get('template_id', 'exec_minimalist')
   )
+  active_template = raw_template.replace('-', '_')
+
   active_accent = (
       resume.accent_color if resume and getattr(resume, 'accent_color', None) else pdf_settings.get('accent_color', '#02353C')
   )
@@ -722,10 +724,12 @@ def preview():
   user_prefs = getattr(current_user, 'preferences_json', None) or {}
   pdf_settings = user_prefs.get('pdf_settings', {}) if isinstance(user_prefs, dict) else {}
 
-  # Determine active template & accent color with safe fallbacks
-  active_template = request.args.get('template') or (
+  # Determine active template & accent color with safe normalization
+  raw_template = request.args.get('template') or (
       resume.template_used if resume and getattr(resume, 'template_used', None) else pdf_settings.get('template_id', 'exec_minimalist')
   )
+  active_template = raw_template.replace('-', '_')
+
   active_accent = (
       resume.accent_color if resume and getattr(resume, 'accent_color', None) else pdf_settings.get('accent_color', '#02353C')
   )
@@ -844,7 +848,7 @@ def pdf_studio():
     })
 
     if request.method == 'POST':
-        template_id = request.form.get('template_id', 'exec_minimalist')
+        template_id = (request.form.get('template_id', 'exec_minimalist')).replace('-', '_')
         accent_color = request.form.get('accent_color', '#02353C')
         font_pairing = request.form.get('font_pairing', 'helvetica')
         line_spacing = request.form.get('line_spacing', 'normal')
@@ -1223,7 +1227,8 @@ def save_resume():
   user_prefs = getattr(current_user, 'preferences_json', None) or {}
   pdf_settings = user_prefs.get('pdf_settings', {}) if isinstance(user_prefs, dict) else {}
 
-  chosen_template = data.get('template_id') or pdf_settings.get('template_id', 'exec_minimalist')
+  raw_chosen_template = data.get('template_id') or pdf_settings.get('template_id', 'exec_minimalist')
+  chosen_template = raw_chosen_template.replace('-', '_')
   chosen_accent = data.get('accent_color') or pdf_settings.get('accent_color', '#02353C')
 
   if resume and str(resume.user_id) == str(current_user.id):
@@ -2891,7 +2896,7 @@ Return ONLY a JSON object matching this structure:
     is_pro = has_premium_access(current_user)
 
     if is_pro and pdf_settings.get('template_id'):
-      chosen_template = pdf_settings.get('template_id', 'exec_minimalist')
+      chosen_template = (pdf_settings.get('template_id', 'exec_minimalist')).replace('-', '_')
       chosen_accent = pdf_settings.get('accent_color', '#02353C')
     else:
       chosen_template = 'standard_ats'
