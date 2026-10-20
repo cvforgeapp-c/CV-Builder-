@@ -757,7 +757,6 @@ def ats_optimizer():
       'dashboard/ats_optimizer.html', resumes=resumes, user=current_user
   )
 
-
 @premium_app.route('/cover-letter')
 @login_required
 def cover_letter():
@@ -803,16 +802,6 @@ def interview_prep():
 def job_tracker():
   return render_template('dashboard/tracker.html', user=current_user)
 
-
-@premium_app.route('/matcher')
-@login_required
-def keyword_matcher():
-  resumes = Resume.query.filter_by(user_id=current_user.id).all()
-  return render_template(
-      'dashboard/keyword_matcher.html', resumes=resumes, user=current_user
-  )
-
-
 @premium_app.route('/outreach')
 @login_required
 def cold_outreach():
@@ -824,8 +813,7 @@ def cold_outreach():
 @login_required
 def salary_negotiator():
   resumes = Resume.query.filter_by(user_id=current_user.id).all()
-  return render_template('salary_negotiater', resumes=resumes, user=current_user)
-
+  return render_template('salary_negotiator.html', resumes=resumes, user=current_user)
 
 @premium_app.route('/linkedin')
 @login_required
