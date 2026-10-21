@@ -1,129 +1,195 @@
 {% extends "base.html" %}
 
-{% block title %}AI Salary Negotiator — CVForge Pro{% endblock %}
+{% block title %}AI Salary Negotiator & Compensation Suite — CVForge Pro{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
 
-    <!-- HEADER -->
-    <div class="flex items-center justify-between border-b border-slate-200 pb-4">
-        <div>
-            <h1 class="text-2xl font-extrabold text-[#02353C] tracking-tight">AI Salary Negotiator & Offer Evaluator</h1>
-            <p class="text-xs text-slate-500 mt-1">Evaluate incoming job offers, benchmark package value, and generate data-backed counter-offer emails.</p>
+    <!-- HERO HEADER -->
+    <div class="relative bg-gradient-to-r from-[#02353C] via-[#034a54] to-[#022328] rounded-2xl p-6 sm:p-8 text-white shadow-xl overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-amber-400/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div class="space-y-2 max-w-2xl">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/20 text-amber-300 text-xs font-semibold backdrop-blur-md">
+                    <i class="fa-solid fa-sack-dollar text-xs"></i>
+                    <span>Executive Compensation Intelligence</span>
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white">AI Salary Negotiator & Offer Evaluator</h1>
+                <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                    Evaluate total compensation packages, benchmark market value leverage, and draft bulletproof, data-backed counter-offer emails in seconds.
+                </p>
+            </div>
+            <a href="/dashboard" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-white transition-all backdrop-blur-md border border-white/10 self-start md:self-auto">
+                <i class="fa-solid fa-arrow-left text-xs"></i>
+                <span>{{ t('back_to_dashboard') if t('back_to_dashboard') != 'back_to_dashboard' else 'Back to Dashboard' }}</span>
+            </a>
         </div>
-        <a href="/dashboard" class="text-xs font-bold text-slate-500 hover:text-slate-800 flex items-center gap-1">
-            ← {{ t('back_to_dashboard') if t('back_to_dashboard') != 'back_to_dashboard' else 'Back to Dashboard' }}
-        </a>
     </div>
 
     <!-- MAIN WORKSPACE -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
         <!-- LEFT FORM PANEL -->
-        <div class="lg:col-span-5 bg-white rounded-xl p-5 border border-slate-200 shadow-2xs space-y-4">
-            <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
-                <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs font-bold">
-                    <i class="fa-solid fa-calculator"></i>
+        <div class="lg:col-span-5 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-700 flex items-center justify-center text-sm font-bold">
+                        <i class="fa-solid fa-sliders"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-extrabold text-slate-900">Offer Package Details</h2>
+                        <p class="text-[11px] text-slate-500">Input base details to analyze your offer.</p>
+                    </div>
                 </div>
-                <h2 class="text-sm font-bold text-slate-800">Offer Package Details</h2>
             </div>
 
-            <form id="negotiatorForm" class="space-y-3.5">
+            <form id="negotiatorForm" class="space-y-4">
                 <div>
-                    <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Company Name</label>
-                    <input type="text" name="company_name" placeholder="e.g. Stripe, Microsoft" class="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#02353C] outline-none" required />
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1.5">Company Name</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-building text-slate-400 text-xs absolute left-3.5 top-3.5"></i>
+                        <input type="text" name="company_name" placeholder="e.g. Stripe, Microsoft, OpenAI" class="w-full text-xs pl-9 pr-3 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#02353C] focus:border-transparent outline-none transition-all font-medium text-slate-800" required />
+                    </div>
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Job Title</label>
-                    <input type="text" name="job_title" placeholder="e.g. Senior Full Stack Engineer" class="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#02353C] outline-none" required />
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1.5">Job Title</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-briefcase text-slate-400 text-xs absolute left-3.5 top-3.5"></i>
+                        <input type="text" name="job_title" placeholder="e.g. Senior Full Stack Engineer" class="w-full text-xs pl-9 pr-3 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#02353C] focus:border-transparent outline-none transition-all font-medium text-slate-800" required />
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Offered Base Salary</label>
-                        <input type="text" name="base_salary" placeholder="e.g. $120,000 / yr" class="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#02353C] outline-none" required />
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1.5">Offered Base Salary</label>
+                        <div class="relative">
+                            <span class="text-slate-400 font-bold text-xs absolute left-3.5 top-3">$</span>
+                            <input type="text" id="offeredBaseInput" name="base_salary" placeholder="120,000" class="w-full text-xs pl-8 pr-3 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#02353C] focus:border-transparent outline-none transition-all font-medium text-slate-800" required />
+                        </div>
                     </div>
                     <div>
-                        <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Target Base Goal</label>
-                        <input type="text" name="target_salary" placeholder="e.g. $135,000 / yr" class="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#02353C] outline-none" />
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1.5">Target Base Goal</label>
+                        <div class="relative">
+                            <span class="text-slate-400 font-bold text-xs absolute left-3.5 top-3">$</span>
+                            <input type="text" id="targetBaseInput" name="target_salary" placeholder="135,000" class="w-full text-xs pl-8 pr-3 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#02353C] focus:border-transparent outline-none transition-all font-medium text-slate-800" />
+                        </div>
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Bonus, Equity & Signing Bonus</label>
-                    <input type="text" name="bonus_equity" placeholder="e.g. $15k sign-on, 10% annual bonus, $20k stock" class="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#02353C] outline-none" />
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1.5">Bonus, Equity & Signing Bonus</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-coins text-slate-400 text-xs absolute left-3.5 top-3.5"></i>
+                        <input type="text" name="bonus_equity" placeholder="e.g. $15k sign-on, 10% annual bonus, $20k stock" class="w-full text-xs pl-9 pr-3 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#02353C] focus:border-transparent outline-none transition-all font-medium text-slate-800" />
+                    </div>
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Negotiation Tone</label>
-                    <select name="tone" class="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#02353C] outline-none">
-                        <option value="Professional & Firm">Professional & Firm (Recommended)</option>
-                        <option value="Enthusiastic & Collaborative">Enthusiastic & Collaborative</option>
-                        <option value="Direct & High Leverage">Direct & High Leverage (Competing Offers)</option>
-                    </select>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1.5">Negotiation Tone</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-comments text-slate-400 text-xs absolute left-3.5 top-3.5 z-10"></i>
+                        <select name="tone" class="w-full text-xs pl-9 pr-8 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#02353C] focus:border-transparent outline-none transition-all font-medium text-slate-800 appearance-none cursor-pointer">
+                            <option value="Professional & Firm">Professional & Firm (Recommended)</option>
+                            <option value="Enthusiastic & Collaborative">Enthusiastic & Collaborative</option>
+                            <option value="Direct & High Leverage">Direct & High Leverage (Competing Offers)</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down text-slate-400 text-xs absolute right-3.5 top-3.5 pointer-events-none"></i>
+                    </div>
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Additional Perks or Context (Optional)</label>
-                    <textarea name="perks_notes" rows="3" placeholder="e.g. Remote setup, competing offers, health insurance details..." class="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#02353C] outline-none"></textarea>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1.5">Additional Perks or Context (Optional)</label>
+                    <textarea name="perks_notes" rows="3" placeholder="e.g. Remote setup, competing offer from Google, health coverage details..." class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#02353C] focus:border-transparent outline-none transition-all font-medium text-slate-800 resize-none"></textarea>
                 </div>
 
-                <button type="submit" id="evaluateBtn" class="w-full bg-[#02353C] hover:bg-[#034a54] text-amber-400 font-extrabold text-xs py-3 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <button type="submit" id="evaluateBtn" class="w-full bg-[#02353C] hover:bg-[#034a54] active:scale-[0.99] text-amber-300 font-black text-xs py-3.5 px-4 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2.5 cursor-pointer">
+                    <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
                     <span id="btnText">Evaluate Offer & Build Counter-Offer</span>
                 </button>
             </form>
         </div>
 
         <!-- RIGHT RESULTS PANEL -->
-        <div class="lg:col-span-7 bg-white rounded-xl p-5 border border-slate-200 shadow-2xs space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div class="flex items-center gap-2">
-                    <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xs font-bold">
-                        <i class="fa-solid fa-chart-line"></i>
+        <div class="lg:col-span-7 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-700 flex items-center justify-center text-sm font-bold">
+                        <i class="fa-solid fa-chart-pie"></i>
                     </div>
-                    <h2 class="text-sm font-bold text-slate-800">Negotiation Blueprint</h2>
+                    <div>
+                        <h2 class="text-sm font-extrabold text-slate-900">Negotiation Blueprint</h2>
+                        <p class="text-[11px] text-slate-500">AI-generated offer grade and execution strategy.</p>
+                    </div>
                 </div>
-                <span id="offerGradeBadge" class="hidden px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800">
+                <span id="offerGradeBadge" class="hidden px-3 py-1 rounded-full text-xs font-black tracking-wide border border-emerald-200 bg-emerald-50 text-emerald-800 shadow-2xs">
                     Grade: --
                 </span>
             </div>
 
             <!-- PLACEHOLDER STATE -->
-            <div id="resultPlaceholder" class="text-center py-12 space-y-3">
-                <div class="w-12 h-12 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto text-lg">
-                    <i class="fa-solid fa-handshake"></i>
+            <div id="resultPlaceholder" class="text-center py-16 px-4 space-y-4">
+                <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center mx-auto text-2xl shadow-inner">
+                    <i class="fa-solid fa-handshake-simple"></i>
                 </div>
-                <p class="text-xs text-slate-500 max-w-xs mx-auto">Fill in your offer details on the left and click submit to generate your custom negotiation strategy.</p>
+                <div class="space-y-1">
+                    <h3 class="text-sm font-bold text-slate-800">No Package Analyzed Yet</h3>
+                    <p class="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
+                        Fill in your offer details on the left and click submit to generate your strategic package evaluation and email script.
+                    </p>
+                </div>
+            </div>
+
+            <!-- SKELETON LOADER -->
+            <div id="resultSkeleton" class="hidden space-y-5 animate-pulse">
+                <div class="h-20 bg-slate-100 rounded-xl"></div>
+                <div class="space-y-2">
+                    <div class="h-4 bg-slate-100 rounded w-1/4"></div>
+                    <div class="h-10 bg-slate-100 rounded-xl"></div>
+                    <div class="h-10 bg-slate-100 rounded-xl"></div>
+                </div>
+                <div class="h-40 bg-slate-900/10 rounded-xl"></div>
             </div>
 
             <!-- RESULTS CONTENT -->
-            <div id="resultContent" class="hidden space-y-4">
+            <div id="resultContent" class="hidden space-y-5">
                 <!-- Evaluation Summary -->
-                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/80">
-                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">Market Evaluation</h3>
-                    <p id="evalSummary" class="text-xs text-slate-600 leading-relaxed"></p>
+                <div class="bg-gradient-to-br from-slate-50 to-slate-100/80 p-4 rounded-xl border border-slate-200/80 space-y-1.5">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-[#02353C] fa-magnifying-glass-chart text-xs text-[#02353C]"></i>
+                        <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-wider">Market Evaluation Summary</h3>
+                    </div>
+                    <p id="evalSummary" class="text-xs text-slate-700 leading-relaxed font-medium"></p>
                 </div>
 
                 <!-- Strategic Leverage Points -->
-                <div>
-                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">Key Leverage Points</h3>
-                    <ul id="strategyList" class="space-y-1.5 text-xs text-slate-700"></ul>
+                <div class="space-y-2.5">
+                    <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-bullseye text-emerald-600 text-xs"></i>
+                        Key Leverage Points
+                    </h3>
+                    <ul id="strategyList" class="space-y-2 text-xs text-slate-700"></ul>
                 </div>
 
-                <!-- Counter Offer Email -->
-                <div class="space-y-2">
+                <!-- Counter Offer Email Script -->
+                <div class="space-y-2.5">
                     <div class="flex items-center justify-between">
-                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Counter-Offer Email Script</h3>
-                        <button type="button" onclick="copyCounterEmail()" class="text-[11px] font-bold text-[#02353C] hover:text-emerald-700 flex items-center gap-1">
-                            <i class="fa-solid fa-copy"></i> Copy Script
+                        <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-envelope-open-text text-[#02353C] text-xs"></i>
+                            Counter-Offer Email Script
+                        </h3>
+                        <button type="button" onclick="copyCounterEmail()" id="copyBtn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[11px] font-bold transition-all border border-emerald-200/60 cursor-pointer">
+                            <i class="fa-solid fa-copy text-xs"></i>
+                            <span id="copyBtnText">Copy Script</span>
                         </button>
                     </div>
 
-                    <div class="bg-slate-900 text-slate-100 p-4 rounded-xl font-mono text-xs space-y-2 relative">
-                        <p class="text-amber-400 font-bold border-b border-slate-800 pb-1.5" id="emailSubject"></p>
-                        <p class="whitespace-pre-line text-slate-200 leading-relaxed" id="emailBody"></p>
+                    <div class="bg-slate-950 text-slate-100 p-5 rounded-2xl font-mono text-xs space-y-3 relative shadow-xl border border-slate-800">
+                        <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+                            <p class="text-amber-400 font-bold tracking-tight" id="emailSubject"></p>
+                            <span class="text-[10px] text-slate-500 font-sans uppercase font-extrabold tracking-widest">Ready to Send</span>
+                        </div>
+                        <p class="whitespace-pre-line text-slate-300 leading-relaxed font-normal" id="emailBody"></p>
                     </div>
                 </div>
             </div>
@@ -139,9 +205,16 @@
         
         const btn = document.getElementById('evaluateBtn');
         const btnText = document.getElementById('btnText');
+        const placeholder = document.getElementById('resultPlaceholder');
+        const skeleton = document.getElementById('resultSkeleton');
+        const content = document.getElementById('resultContent');
         
         btn.disabled = true;
         btnText.textContent = 'Analyzing Package...';
+
+        placeholder.classList.add('hidden');
+        content.classList.add('hidden');
+        skeleton.classList.remove('hidden');
 
         const formData = new FormData(e.target);
 
@@ -155,9 +228,8 @@
             const data = await response.json();
             if (!response.ok) throw new Error(data.error || 'Evaluation failed');
 
-            // Render Output
-            document.getElementById('resultPlaceholder').classList.add('hidden');
-            document.getElementById('resultContent').classList.remove('hidden');
+            skeleton.classList.add('hidden');
+            content.classList.remove('hidden');
 
             const badge = document.getElementById('offerGradeBadge');
             badge.textContent = `Grade: ${data.offer_grade || 'Evaluated'}`;
@@ -169,8 +241,8 @@
             list.innerHTML = '';
             (data.strategy_points || []).forEach(pt => {
                 const li = document.createElement('li');
-                li.className = 'flex items-start gap-2 bg-emerald-50/60 p-2 rounded-lg border border-emerald-100';
-                li.innerHTML = `<i class="fa-solid fa-check text-emerald-600 text-xs mt-0.5"></i> <span>${pt}</span>`;
+                li.className = 'flex items-start gap-2.5 bg-emerald-50/70 p-3 rounded-xl border border-emerald-100/80 font-medium text-slate-800';
+                li.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 text-xs mt-0.5 shrink-0"></i> <span>${pt}</span>`;
                 list.appendChild(li);
             });
 
@@ -179,6 +251,8 @@
 
         } catch (err) {
             alert(err.message);
+            skeleton.classList.add('hidden');
+            placeholder.classList.remove('hidden');
         } finally {
             btn.disabled = false;
             btnText.textContent = 'Evaluate Offer & Build Counter-Offer';
@@ -188,8 +262,14 @@
     function copyCounterEmail() {
         const subject = document.getElementById('emailSubject').textContent;
         const body = document.getElementById('emailBody').textContent;
+        const btnText = document.getElementById('copyBtnText');
+
         navigator.clipboard.writeText(`${subject}\n\n${body}`);
-        alert('Counter-offer script copied to clipboard!');
+        btnText.textContent = 'Copied!';
+
+        setTimeout(() => {
+            btnText.textContent = 'Copy Script';
+        }, 2500);
     }
 </script>
 {% endblock %}
