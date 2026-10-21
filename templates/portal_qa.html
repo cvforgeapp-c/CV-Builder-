@@ -1,0 +1,835 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t_modular('qa_page_title', 'AI Application Essay & Portal Q&A Assistant — CVForge Pro') }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --brand-teal: #022b32;
+        --brand-teal-light: #05535e;
+        --brand-gold: #f59e0b;
+        --brand-gold-hover: #d97706;
+        --bg-slate: #f8fafc;
+        --card-bg: #ffffff;
+        --border-color: #e2e8f0;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-muted: #94a3b8;
+        --accent-emerald: #10b981;
+        --accent-emerald-light: #ecfdf5;
+        --accent-emerald-border: #a7f3d0;
+        --error-red: #ef4444;
+        --radius-lg: 16px;
+        --radius-md: 10px;
+        --radius-sm: 6px;
+        --shadow-subtle: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+        background-color: var(--bg-slate);
+        color: var(--text-primary);
+        font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .qa-header {
+        background: rgba(255, 255, 255, 0.95);
+        border-bottom: 1px solid var(--border-color);
+        padding: 14px 6%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        backdrop-filter: blur(8px);
+    }
+
+    .brand-title {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--brand-teal);
+        text-decoration: none;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .badge-pro {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: #ffffff;
+        font-size: 10px;
+        font-weight: 800;
+        padding: 3px 8px;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
+    }
+
+    .btn-back {
+        text-decoration: none;
+        color: var(--text-secondary);
+        font-size: 13px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border-radius: var(--radius-sm);
+        transition: var(--transition);
+        background: #f1f5f9;
+    }
+
+    .btn-back:hover {
+        background: #e2e8f0;
+        color: var(--text-primary);
+    }
+
+    .qa-container {
+        padding: 36px 6% 60px;
+        max-width: 1320px;
+        margin: 0 auto;
+    }
+
+    .page-heading {
+        margin-bottom: 32px;
+    }
+
+    .page-heading h1 {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--brand-teal);
+        letter-spacing: -0.6px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .page-heading p {
+        font-size: 15px;
+        color: var(--text-secondary);
+        margin-top: 6px;
+        max-width: 720px;
+        line-height: 1.5;
+    }
+
+    .qa-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.25fr;
+        gap: 32px;
+        align-items: start;
+    }
+
+    @media (max-width: 1024px) {
+        .qa-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .panel-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 28px;
+        box-shadow: var(--shadow-subtle);
+        transition: var(--transition);
+    }
+
+    .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 22px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .panel-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--brand-teal);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .panel-title-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: var(--accent-emerald-light);
+        color: var(--accent-emerald);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .word-count-badge {
+        background: #ecfdf5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.3px;
+        display: none;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-primary);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .form-row-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    @media (max-width: 640px) {
+        .form-row-2 {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 14px;
+        color: var(--text-muted);
+        pointer-events: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .input-wrapper input,
+    .input-wrapper select {
+        padding-left: 48px !important;
+    }
+
+    .form-group select, 
+    .form-group input, 
+    .form-group textarea {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: var(--radius-md);
+        border: 1px solid #cbd5e1;
+        font-size: 14px;
+        color: var(--text-primary);
+        background-color: #ffffff;
+        outline: none;
+        font-family: inherit;
+        transition: var(--transition);
+        box-sizing: border-box;
+    }
+
+    .form-group select:focus, 
+    .form-group input:focus, 
+    .form-group textarea:focus {
+        border-color: var(--brand-teal);
+        box-shadow: 0 0 0 3.5px rgba(2, 43, 50, 0.12);
+    }
+
+    .form-hint {
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+
+    .btn-generate {
+        background: linear-gradient(135deg, var(--brand-teal) 0%, var(--brand-teal-light) 100%);
+        color: #ffffff;
+        border: none;
+        padding: 14px 24px;
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        font-size: 15px;
+        cursor: pointer;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: var(--transition);
+        box-shadow: 0 4px 12px rgba(2, 43, 50, 0.25);
+    }
+
+    .btn-generate:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(2, 43, 50, 0.35);
+    }
+
+    .btn-generate:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .error-banner {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: var(--error-red);
+        padding: 12px 14px;
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        display: none;
+    }
+
+    /* RESULTS VIEW STYLES */
+    .empty-state {
+        border: 2px dashed #e2e8f0;
+        border-radius: var(--radius-md);
+        padding: 48px 20px;
+        text-align: center;
+        background: #fafafa;
+    }
+
+    .empty-state-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: #f1f5f9;
+        color: var(--text-muted);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 14px;
+    }
+
+    .empty-state h4 {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0 0 6px 0;
+    }
+
+    .empty-state p {
+        font-size: 13px;
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    .star-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    @media (max-width: 640px) {
+        .star-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .star-card {
+        background: #f8fafc;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 14px;
+    }
+
+    .star-card-header {
+        font-size: 11px;
+        font-weight: 800;
+        color: var(--brand-teal);
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .star-card-body {
+        font-size: 12.5px;
+        line-height: 1.5;
+        color: var(--text-secondary);
+        margin: 0;
+    }
+
+    .section-label {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--text-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .answer-preview-container {
+        border: 1px solid #0f172a;
+        background: #090d16;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.25);
+    }
+
+    .answer-header-bar {
+        background: #1e293b;
+        padding: 12px 16px;
+        border-bottom: 1px solid #334155;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .answer-tag {
+        color: var(--brand-gold);
+        font-family: monospace;
+        font-size: 13px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .answer-body-box {
+        width: 100%;
+        min-height: 250px;
+        background: transparent;
+        color: #e2e8f0;
+        border: none;
+        padding: 18px;
+        font-family: inherit;
+        font-size: 13.5px;
+        line-height: 1.65;
+        resize: vertical;
+        outline: none;
+        box-sizing: border-box;
+    }
+
+    .output-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 14px;
+    }
+
+    .counter-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 12px;
+        color: var(--text-muted);
+        font-weight: 600;
+    }
+
+    .btn-copy-tab {
+        background: var(--brand-teal);
+        color: #ffffff;
+        border: none;
+        padding: 10px 18px;
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: var(--transition);
+    }
+
+    .btn-copy-tab:hover {
+        background: var(--brand-teal-light);
+        transform: translateY(-1px);
+    }
+
+    .btn-copy-tab:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .btn-copy-tab.copied {
+        background: #10b981 !important;
+    }
+
+    .spinner {
+        width: 18px;
+        height: 18px;
+        border: 2px solid #ffffff;
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        display: none;
+    }
+
+    .skeleton-loader {
+        display: none;
+        animation: pulse 1.5s infinite ease-in-out;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 0.3; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HEADER -->
+<header class="qa-header">
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <a href="/" class="brand-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16 8L2 15L22 22L16 8Z" fill="var(--brand-teal)"/>
+                <path d="M16 8L8 2L2 15L16 8Z" fill="var(--brand-gold)"/>
+            </svg>
+            CVForge
+        </a>
+        <span class="badge-pro">{{ t_modular('qa_badge_pro', 'Pro Feature') }}</span>
+    </div>
+    <div>
+        <a href="/dashboard" class="btn-back">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            {{ t_modular('qa_btn_back_dashboard', 'Back to Dashboard') }}
+        </a>
+    </div>
+</header>
+
+<div class="qa-container">
+    <div class="page-heading">
+        <h1>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--brand-teal)" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            {{ t_modular('qa_heading', 'AI Application Essay & Portal Q&A Assistant') }}
+        </h1>
+        <p>{{ t_modular('qa_subheading', 'Bypass application portal bottlenecks. Paste custom prompt questions and generate perfectly sized, STAR-structured responses backed by your CV.') }}</p>
+    </div>
+
+    <div class="qa-grid">
+        
+        <!-- INPUT FORM PANEL -->
+        <div class="panel-card">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="panel-title-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </span>
+                    {{ t_modular('qa_section_input', 'Portal Prompt & Limits') }}
+                </div>
+            </div>
+
+            <div class="error-banner" id="formErrorBanner"></div>
+
+            <form id="portalQaForm">
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label for="companyName">{{ t_modular('qa_label_company', 'Company Name') }}</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v8h20v-8a2 2 0 0 0-2-2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
+                            </span>
+                            <input type="text" id="companyName" name="company_name" placeholder="{{ t_modular('qa_placeholder_company', 'e.g. Stripe, Microsoft, Meta') }}" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="jobTitle">{{ t_modular('qa_label_job_title', 'Job Title') }}</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                            </span>
+                            <input type="text" id="jobTitle" name="job_title" placeholder="{{ t_modular('qa_placeholder_job_title', 'e.g. Software Engineer, Product Manager') }}" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="portalPrompt">{{ t_modular('qa_label_prompt', 'Portal Essay Question / Prompt') }}</label>
+                    <textarea id="portalPrompt" name="prompt" rows="4" placeholder="{{ t_modular('qa_placeholder_prompt', 'e.g. Describe a time you resolved a conflict within a cross-functional team, or why do you want to join our engineering division?') }}" required></textarea>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label for="maxWords">{{ t_modular('qa_label_max_words', 'Max Word Limit') }}</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
+                            </span>
+                            <input type="number" id="maxWords" name="max_words" placeholder="{{ t_modular('qa_placeholder_max_words', 'e.g. 250 (Optional)') }}" min="20" max="1500" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="responseTone">{{ t_modular('qa_label_tone', 'Response Tone') }}</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                            </span>
+                            <select id="responseTone" name="tone">
+                                <option value="Professional & Direct" selected>{{ t_modular('qa_tone_direct', 'Professional & Direct (Recommended)') }}</option>
+                                <option value="STAR Storytelling">{{ t_modular('qa_tone_star', 'STAR Storytelling') }}</option>
+                                <option value="Persuasive & Passionate">{{ t_modular('qa_tone_persuasive', 'Persuasive & Passionate') }}</option>
+                                <option value="Technical & Precise">{{ t_modular('qa_tone_technical', 'Technical & Precise') }}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="customContext">{{ t_modular('qa_label_context', 'Specific Experience / Project to Focus On') }}</label>
+                    <textarea id="customContext" name="custom_context" rows="2" placeholder="{{ t_modular('qa_placeholder_context', 'e.g. Highlight my work on the microservices database migration project or leading the student association.') }}"></textarea>
+                    <span class="form-hint">{{ t_modular('qa_hint_context', 'Optional. Leave blank to let AI select the best matching experience from your saved profile.') }}</span>
+                </div>
+
+                <button type="submit" class="btn-generate" id="generateBtn">
+                    <span class="spinner" id="btnSpinner"></span>
+                    <svg id="btnIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    <span id="btnText">{{ t_modular('qa_btn_generate', 'Generate Tailored Answer') }}</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- OUTPUT RESULTS PANEL -->
+        <div class="panel-card">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="panel-title-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                    </span>
+                    {{ t_modular('qa_section_output', 'Generated Answer & Breakdown') }}
+                </div>
+                <span id="wordCountBadge" class="word-count-badge">0 words</span>
+            </div>
+
+            <!-- EMPTY PLACEHOLDER STATE -->
+            <div class="empty-state" id="resultPlaceholder">
+                <div class="empty-state-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                </div>
+                <h4>{{ t_modular('qa_empty_title', 'No Portal Question Submitted') }}</h4>
+                <p>{{ t_modular('qa_empty_sub', 'Paste the application question on the left to generate a STAR-structured response.') }}</p>
+            </div>
+
+            <!-- SKELETON LOADING STATE -->
+            <div class="skeleton-loader" id="resultSkeleton">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                    <div style="height: 60px; background: #f1f5f9; border-radius: 8px;"></div>
+                    <div style="height: 60px; background: #f1f5f9; border-radius: 8px;"></div>
+                </div>
+                <div style="height: 250px; background: #0f172a; border-radius: 10px;"></div>
+            </div>
+
+            <!-- RESULTS CONTENT AREA -->
+            <div id="resultContent" style="display: none;">
+                
+                <!-- STAR BREAKDOWN SUMMARY -->
+                <div class="star-grid" id="starGrid">
+                    <div class="star-card">
+                        <div class="star-card-header">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"/></svg>
+                            Situation
+                        </div>
+                        <p class="star-card-body" id="starSituation">--</p>
+                    </div>
+                    <div class="star-card">
+                        <div class="star-card-header">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/></svg>
+                            Task
+                        </div>
+                        <p class="star-card-body" id="starTask">--</p>
+                    </div>
+                    <div class="star-card">
+                        <div class="star-card-header">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                            Action
+                        </div>
+                        <p class="star-card-body" id="starAction">--</p>
+                    </div>
+                    <div class="star-card">
+                        <div class="star-card-header">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                            Result
+                        </div>
+                        <p class="star-card-body" id="starResult">--</p>
+                    </div>
+                </div>
+
+                <!-- MAIN ANSWER BOX -->
+                <div class="strategy-section">
+                    <div class="section-label">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand-teal)" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        {{ t_modular('qa_answer_label', 'Application Response Text') }}
+                    </div>
+
+                    <div class="answer-preview-container">
+                        <div class="answer-header-bar">
+                            <span class="answer-tag" id="answerTag">Formatted & STAR-Optimized</span>
+                            <span style="font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Ready to Paste</span>
+                        </div>
+                        <textarea class="answer-body-box" id="answerBody" oninput="updateAnswerCounters(this)"></textarea>
+                    </div>
+
+                    <div class="output-footer">
+                        <div class="counter-group">
+                            <span id="cnt-words">0 {{ t_modular('qa_words', 'words') }}</span>
+                            <span>•</span>
+                            <span id="cnt-chars">0 {{ t_modular('qa_chars', 'characters') }}</span>
+                        </div>
+                        <button class="btn-copy-tab" id="copyBtnAnswer" onclick="copyAnswerText(this)">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                            <span>{{ t_modular('qa_btn_copy_answer', 'Copy Response') }}</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Localized JS strings
+    const JS_STRINGS = {
+        errGenFailed: "{{ t_modular('qa_err_failed', 'Failed to generate portal answer.') }}",
+        btnGenerating: "{{ t_modular('qa_btn_generating', 'Crafting Response...') }}",
+        btnGenerate: "{{ t_modular('qa_btn_generate', 'Generate Tailored Answer') }}",
+        btnCopied: "{{ t_modular('qa_btn_copied', 'Copied!') }}",
+        words: "{{ t_modular('qa_words', 'words') }}",
+        chars: "{{ t_modular('qa_chars', 'characters') }}"
+    };
+
+    function showError(elementId, message) {
+        const banner = document.getElementById(elementId);
+        banner.textContent = message;
+        banner.style.display = 'block';
+    }
+
+    function clearError(elementId) {
+        const banner = document.getElementById(elementId);
+        banner.textContent = '';
+        banner.style.display = 'none';
+    }
+
+    function updateAnswerCounters(textarea) {
+        const text = textarea.value.trim();
+        const charCount = textarea.value.length;
+        const wordCount = text ? text.split(/\s+/).length : 0;
+
+        document.getElementById('cnt-chars').innerText = `${charCount.toLocaleString()} ${JS_STRINGS.chars}`;
+        document.getElementById('cnt-words').innerText = `${wordCount.toLocaleString()} ${JS_STRINGS.words}`;
+        
+        const badge = document.getElementById('wordCountBadge');
+        badge.textContent = `${wordCount} words`;
+    }
+
+    function copyAnswerText(btnElement) {
+        const body = document.getElementById('answerBody').value;
+        if (!body) return;
+
+        navigator.clipboard.writeText(body).then(() => {
+            const originalHTML = btnElement.innerHTML;
+            btnElement.classList.add('copied');
+            btnElement.innerHTML = `
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>${JS_STRINGS.btnCopied}</span>
+            `;
+            
+            setTimeout(() => {
+                btnElement.classList.remove('copied');
+                btnElement.innerHTML = originalHTML;
+            }, 2000);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('portalQaForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearError('formErrorBanner');
+
+            const btn = document.getElementById('generateBtn');
+            const spinner = document.getElementById('btnSpinner');
+            const btnIcon = document.getElementById('btnIcon');
+            const btnText = document.getElementById('btnText');
+            
+            const placeholder = document.getElementById('resultPlaceholder');
+            const skeleton = document.getElementById('resultSkeleton');
+            const content = document.getElementById('resultContent');
+            const badge = document.getElementById('wordCountBadge');
+
+            const formData = new FormData(e.target);
+
+            btn.disabled = true;
+            spinner.style.display = 'block';
+            btnIcon.style.display = 'none';
+            btnText.textContent = JS_STRINGS.btnGenerating;
+
+            placeholder.style.display = 'none';
+            content.style.display = 'none';
+            skeleton.style.display = 'block';
+
+            try {
+                const response = await fetch('/api/v1/premium/portal-qa', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(Object.fromEntries(formData))
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || JS_STRINGS.errGenFailed);
+                }
+
+                skeleton.style.display = 'none';
+                content.style.display = 'block';
+
+                if (data.star_breakdown) {
+                    document.getElementById('starSituation').textContent = data.star_breakdown.situation || 'N/A';
+                    document.getElementById('starTask').textContent = data.star_breakdown.task || 'N/A';
+                    document.getElementById('starAction').textContent = data.star_breakdown.action || 'N/A';
+                    document.getElementById('starResult').textContent = data.star_breakdown.result || 'N/A';
+                }
+
+                const answerBodyBox = document.getElementById('answerBody');
+                answerBodyBox.value = data.answer || '';
+                updateAnswerCounters(answerBodyBox);
+
+                badge.style.display = 'inline-block';
+
+            } catch (err) {
+                skeleton.style.display = 'none';
+                placeholder.style.display = 'block';
+                showError('formErrorBanner', err.message);
+            } finally {
+                btn.disabled = false;
+                spinner.style.display = 'none';
+                btnIcon.style.display = 'block';
+                btnText.textContent = JS_STRINGS.btnGenerate;
+            }
+        });
+    });
+</script>
+{% endblock %}
