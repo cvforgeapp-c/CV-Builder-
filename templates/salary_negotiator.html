@@ -559,13 +559,48 @@
             <div class="error-banner" id="formErrorBanner"></div>
 
             <form id="negotiatorForm">
-                <div class="form-group">
-                    <label for="companyName">{{ t_modular('sal_label_company', 'Company Name') }}</label>
-                    <div class="input-wrapper">
-                        <span class="input-icon">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v8h20v-8a2 2 0 0 0-2-2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
-                        </span>
-                        <input type="text" id="companyName" name="company_name" placeholder="{{ t_modular('sal_placeholder_company', 'e.g. Stripe, Google, OpenAI') }}" required />
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label for="companyName">{{ t_modular('sal_label_company', 'Company Name') }}</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v8h20v-8a2 2 0 0 0-2-2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
+                            </span>
+                            <input type="text" id="companyName" name="company_name" placeholder="{{ t_modular('sal_placeholder_company', 'e.g. Stripe, Google, OpenAI') }}" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="currencySelect">{{ t_modular('sal_label_currency', 'Currency') }}</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                            </span>
+                            <select id="currencySelect" name="currency">
+                                <option value="USD" data-symbol="$" selected>USD ($) — United States Dollar</option>
+                                <option value="EUR" data-symbol="€">EUR (€) — Euro (France, Germany, Spain, Italy, Netherlands)</option>
+                                <option value="GBP" data-symbol="£">GBP (£) — British Pound</option>
+                                <option value="CNY" data-symbol="¥">CNY (¥) — Chinese Yuan</option>
+                                <option value="INR" data-symbol="₹">INR (₹) — Indian Rupee</option>
+                                <option value="AED" data-symbol="AED">AED — UAE Dirham</option>
+                                <option value="SAR" data-symbol="SAR">SAR — Saudi Riyal</option>
+                                <option value="EGP" data-symbol="EGP">EGP — Egyptian Pound</option>
+                                <option value="BRL" data-symbol="R$">BRL (R$) — Brazilian Real</option>
+                                <option value="MXN" data-symbol="MX$">MXN (MX$) — Mexican Peso</option>
+                                <option value="RUB" data-symbol="₽">RUB (₽) — Russian Ruble</option>
+                                <option value="JPY" data-symbol="¥">JPY (¥) — Japanese Yen</option>
+                                <option value="KRW" data-symbol="₩">KRW (₩) — South Korean Won</option>
+                                <option value="TRY" data-symbol="₺">TRY (₺) — Turkish Lira</option>
+                                <option value="PLN" data-symbol="zł">PLN (zł) — Polish Złoty</option>
+                                <option value="SEK" data-symbol="kr">SEK (kr) — Swedish Krona</option>
+                                <option value="KES" data-symbol="KSh">KES (KSh) — Kenyan Shilling</option>
+                                <option value="TZS" data-symbol="TSh">TZS (TSh) — Tanzanian Shilling</option>
+                                <option value="CAD" data-symbol="CA$">CAD (CA$) — Canadian Dollar</option>
+                                <option value="AUD" data-symbol="AU$">AUD (AU$) — Australian Dollar</option>
+                                <option value="CHF" data-symbol="CHF">CHF — Swiss Franc</option>
+                                <option value="SGD" data-symbol="S$">SGD (S$) — Singapore Dollar</option>
+                                <option value="ETB" data-symbol="Br">ETB (Br) — Ethiopian Birr</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
@@ -581,16 +616,16 @@
 
                 <div class="form-row-2">
                     <div class="form-group">
-                        <label for="baseSalary">{{ t_modular('sal_label_offered_base', 'Offered Base ($)') }}</label>
+                        <label for="baseSalary"><span id="baseSalaryLabelText">{{ t_modular('sal_label_offered_base', 'Offered Base') }}</span> (<span id="currencySymbolBase">$</span>)</label>
                         <div class="input-wrapper">
-                            <span class="input-icon" style="font-weight: 700; font-size: 14px;">$</span>
+                            <span class="input-icon" id="currencySymbolPrefix" style="font-weight: 700; font-size: 14px;">$</span>
                             <input type="text" id="baseSalary" name="base_salary" placeholder="130,000" required />
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="targetSalary">{{ t_modular('sal_label_target_base', 'Target Base ($)') }}</label>
+                        <label for="targetSalary"><span id="targetSalaryLabelText">{{ t_modular('sal_label_target_base', 'Target Base') }}</span> (<span id="currencySymbolTarget">$</span>)</label>
                         <div class="input-wrapper">
-                            <span class="input-icon" style="font-weight: 700; font-size: 14px;">$</span>
+                            <span class="input-icon" id="currencySymbolPrefixTarget" style="font-weight: 700; font-size: 14px;">$</span>
                             <input type="text" id="targetSalary" name="target_salary" placeholder="150,000" />
                         </div>
                     </div>
@@ -766,7 +801,31 @@
         });
     }
 
+    // Dynamic currency prefix updates
+    function setupCurrencySwitcher() {
+        const currencySelect = document.getElementById('currencySelect');
+        const symbolBase = document.getElementById('currencySymbolBase');
+        const symbolTarget = document.getElementById('currencySymbolTarget');
+        const symbolPrefix = document.getElementById('currencySymbolPrefix');
+        const symbolPrefixTarget = document.getElementById('currencySymbolPrefixTarget');
+
+        function updateSymbols() {
+            const selectedOption = currencySelect.options[currencySelect.selectedIndex];
+            const symbol = selectedOption.getAttribute('data-symbol') || selectedOption.value;
+            
+            symbolBase.textContent = symbol;
+            symbolTarget.textContent = symbol;
+            symbolPrefix.textContent = symbol;
+            symbolPrefixTarget.textContent = symbol;
+        }
+
+        currencySelect.addEventListener('change', updateSymbols);
+        updateSymbols(); // Initial run
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
+        setupCurrencySwitcher();
+
         document.getElementById('negotiatorForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             clearError('formErrorBanner');
