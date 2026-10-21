@@ -225,7 +225,7 @@
 
     .input-wrapper input,
     .input-wrapper select {
-        padding-left: 42px !important;
+        padding-left: 48px !important;
     }
 
     .form-group select, 
@@ -577,7 +577,7 @@
                             </span>
                             <select id="currencySelect" name="currency">
                                 <option value="USD" data-symbol="$" selected>USD ($) — United States Dollar</option>
-                                <option value="EUR" data-symbol="€">EUR (€) — Euro (France, Germany, Spain, Italy, Netherlands)</option>
+                                <option value="EUR" data-symbol="€">EUR (€) — Euro</option>
                                 <option value="GBP" data-symbol="£">GBP (£) — British Pound</option>
                                 <option value="CNY" data-symbol="¥">CNY (¥) — Chinese Yuan</option>
                                 <option value="INR" data-symbol="₹">INR (₹) — Indian Rupee</option>
@@ -616,16 +616,16 @@
 
                 <div class="form-row-2">
                     <div class="form-group">
-                        <label for="baseSalary"><span id="baseSalaryLabelText">{{ t_modular('sal_label_offered_base', 'Offered Base') }}</span> (<span id="currencySymbolBase">$</span>)</label>
+                        <label for="baseSalary">{{ t_modular('sal_label_offered_base', 'Offered Base') }}</label>
                         <div class="input-wrapper">
-                            <span class="input-icon" id="currencySymbolPrefix" style="font-weight: 700; font-size: 14px;">$</span>
+                            <span class="input-icon" id="currencySymbolPrefix" style="font-weight: 700; font-size: 13px;">$</span>
                             <input type="text" id="baseSalary" name="base_salary" placeholder="130,000" required />
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="targetSalary"><span id="targetSalaryLabelText">{{ t_modular('sal_label_target_base', 'Target Base') }}</span> (<span id="currencySymbolTarget">$</span>)</label>
+                        <label for="targetSalary">{{ t_modular('sal_label_target_base', 'Target Base') }}</label>
                         <div class="input-wrapper">
-                            <span class="input-icon" id="currencySymbolPrefixTarget" style="font-weight: 700; font-size: 14px;">$</span>
+                            <span class="input-icon" id="currencySymbolPrefixTarget" style="font-weight: 700; font-size: 13px;">$</span>
                             <input type="text" id="targetSalary" name="target_salary" placeholder="150,000" />
                         </div>
                     </div>
@@ -634,10 +634,8 @@
                 <div class="form-group">
                     <label for="bonusEquity">{{ t_modular('sal_label_bonus_equity', 'Bonus, Stock & Sign-on Options') }}</label>
                     <div class="input-wrapper">
-                        <span class="input-icon">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                        </span>
-                        <input type="text" id="bonusEquity" name="bonus_equity" placeholder="{{ t_modular('sal_placeholder_bonus', 'e.g. $15k sign-on, 10% bonus, $40k RSUs / 4 yrs') }}" />
+                        <span class="input-icon" id="currencySymbolPrefixBonus" style="font-weight: 700; font-size: 13px;">$</span>
+                        <input type="text" id="bonusEquity" name="bonus_equity" placeholder="e.g. $15k sign-on, 10% bonus, $40k RSUs / 4 yrs" />
                     </div>
                 </div>
 
@@ -657,7 +655,7 @@
 
                 <div class="form-group">
                     <label for="perksNotes">{{ t_modular('sal_label_notes', 'Additional Perks, Context, or Competing Offers') }}</label>
-                    <textarea id="perksNotes" name="perks_notes" rows="3" placeholder="{{ t_modular('sal_placeholder_notes', 'e.g. Competing offer of $155k from Competitor X, remote flexibility preferences...') }}"></textarea>
+                    <textarea id="perksNotes" name="perks_notes" rows="3" placeholder="{{ t_modular('sal_placeholder_notes', 'e.g. Competing offer from Competitor X, remote flexibility preferences...') }}"></textarea>
                     <span class="form-hint">{{ t_modular('sal_hint_notes', 'More context allows AI to formulate a much stronger counter-offer stance.') }}</span>
                 </div>
 
@@ -804,19 +802,21 @@
     // Dynamic currency prefix updates
     function setupCurrencySwitcher() {
         const currencySelect = document.getElementById('currencySelect');
-        const symbolBase = document.getElementById('currencySymbolBase');
-        const symbolTarget = document.getElementById('currencySymbolTarget');
         const symbolPrefix = document.getElementById('currencySymbolPrefix');
         const symbolPrefixTarget = document.getElementById('currencySymbolPrefixTarget');
+        const symbolPrefixBonus = document.getElementById('currencySymbolPrefixBonus');
+        const bonusInput = document.getElementById('bonusEquity');
 
         function updateSymbols() {
             const selectedOption = currencySelect.options[currencySelect.selectedIndex];
             const symbol = selectedOption.getAttribute('data-symbol') || selectedOption.value;
             
-            symbolBase.textContent = symbol;
-            symbolTarget.textContent = symbol;
             symbolPrefix.textContent = symbol;
             symbolPrefixTarget.textContent = symbol;
+            symbolPrefixBonus.textContent = symbol;
+
+            // Update bonus field placeholder dynamically with selected symbol
+            bonusInput.placeholder = `e.g. ${symbol}15k sign-on, 10% bonus, ${symbol}40k RSUs / 4 yrs`;
         }
 
         currencySelect.addEventListener('change', updateSymbols);
