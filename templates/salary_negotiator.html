@@ -616,14 +616,14 @@
 
                 <div class="form-row-2">
                     <div class="form-group">
-                        <label for="baseSalary">{{ t_modular('sal_label_offered_base', 'Offered Base') }}</label>
+                        <label for="baseSalary">Offered Base</label>
                         <div class="input-wrapper">
                             <span class="input-icon" id="currencySymbolPrefix" style="font-weight: 700; font-size: 13px;">$</span>
                             <input type="text" id="baseSalary" name="base_salary" placeholder="130,000" required />
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="targetSalary">{{ t_modular('sal_label_target_base', 'Target Base') }}</label>
+                        <label for="targetSalary">Target Base</label>
                         <div class="input-wrapper">
                             <span class="input-icon" id="currencySymbolPrefixTarget" style="font-weight: 700; font-size: 13px;">$</span>
                             <input type="text" id="targetSalary" name="target_salary" placeholder="150,000" />
@@ -805,9 +805,13 @@
         const symbolPrefix = document.getElementById('currencySymbolPrefix');
         const symbolPrefixTarget = document.getElementById('currencySymbolPrefixTarget');
         const symbolPrefixBonus = document.getElementById('currencySymbolPrefixBonus');
+        const baseInput = document.getElementById('baseSalary');
+        const targetInput = document.getElementById('targetSalary');
         const bonusInput = document.getElementById('bonusEquity');
 
         function updateSymbols() {
+            if (!currencySelect) return;
+            
             const selectedOption = currencySelect.options[currencySelect.selectedIndex];
             const symbol = selectedOption.getAttribute('data-symbol') || selectedOption.value;
             
@@ -815,6 +819,8 @@
             if (symbolPrefixTarget) symbolPrefixTarget.textContent = symbol;
             if (symbolPrefixBonus) symbolPrefixBonus.textContent = symbol;
 
+            if (baseInput) baseInput.placeholder = "130,000";
+            if (targetInput) targetInput.placeholder = "150,000";
             if (bonusInput) {
                 bonusInput.placeholder = `e.g. ${symbol}15k sign-on, 10% bonus, ${symbol}40k RSUs / 4 yrs`;
             }
