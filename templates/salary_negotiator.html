@@ -635,7 +635,7 @@
                     <label for="bonusEquity">{{ t_modular('sal_label_bonus_equity', 'Bonus, Stock & Sign-on Options') }}</label>
                     <div class="input-wrapper">
                         <span class="input-icon" id="currencySymbolPrefixBonus" style="font-weight: 700; font-size: 13px;">$</span>
-                        <input type="text" id="bonusEquity" name="bonus_equity" placeholder="e.g. $15k sign-on, 10% bonus, $40k RSUs / 4 yrs" />
+                        <input type="text" id="bonusEquity" name="bonus_equity" placeholder="e.g. 15k sign-on, 10% bonus, 40k RSUs / 4 yrs" />
                     </div>
                 </div>
 
@@ -811,12 +811,13 @@
             const selectedOption = currencySelect.options[currencySelect.selectedIndex];
             const symbol = selectedOption.getAttribute('data-symbol') || selectedOption.value;
             
-            symbolPrefix.textContent = symbol;
-            symbolPrefixTarget.textContent = symbol;
-            symbolPrefixBonus.textContent = symbol;
+            if (symbolPrefix) symbolPrefix.textContent = symbol;
+            if (symbolPrefixTarget) symbolPrefixTarget.textContent = symbol;
+            if (symbolPrefixBonus) symbolPrefixBonus.textContent = symbol;
 
-            // Update bonus field placeholder dynamically with selected symbol
-            bonusInput.placeholder = `e.g. ${symbol}15k sign-on, 10% bonus, ${symbol}40k RSUs / 4 yrs`;
+            if (bonusInput) {
+                bonusInput.placeholder = `e.g. ${symbol}15k sign-on, 10% bonus, ${symbol}40k RSUs / 4 yrs`;
+            }
         }
 
         currencySelect.addEventListener('change', updateSymbols);
