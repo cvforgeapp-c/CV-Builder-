@@ -2326,7 +2326,7 @@ def scrape_job_url():
 @login_required
 def generate_portal_qa():
     """
-    Phase 2: Evaluates portal essay prompt, cross-references candidate profile/context,
+    Evaluates portal essay prompt, cross-references selected candidate profile,
     and returns STAR structured breakdown + tailored application essay response.
     """
     try:
@@ -2341,6 +2341,21 @@ def generate_portal_qa():
         tone = data.get("tone", "Professional & Direct")
         custom_context = data.get("custom_context", "").strip()
         max_words = data.get("max_words")
+        resume_id = data.get("resume_id")
+
+        candidate_cv_summary = "Professional candidate with strong background in software development, project execution, and cross-functional team leadership."
+        if resume_id and resume_id != 'default':
+            resume_obj = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first()
+            if resume_obj and isinstance(resume_obj.content_json, dict):
+                c_json = resume_obj.content_json
+                candidate_cv_summary = f"""
+                Name: {c_json.get('full_name', '')}
+                Target Role: {c_json.get('target_role', '')}
+                Summary: {c_json.get('summary', '')}
+                Experience: {c_json.get('experience_bullets', '')}
+                Skills: {c_json.get('skills_tech', '')} {c_json.get('skills_soft', '')}
+                Projects: {c_json.get('projects', '')}
+                """
 
         word_constraint_clause = ""
         if max_words:
@@ -2349,8 +2364,6 @@ def generate_portal_qa():
                 word_constraint_clause = f"CRITICAL CONSTRAINT: The final answer MUST NOT exceed {max_w_int} words."
             except ValueError:
                 pass
-
-        candidate_cv_summary = "Professional candidate with strong background in software development, project execution, and cross-functional team leadership."
 
         system_instructions = (
             "You are an executive career coach and expert job application writer for CVForge Pro. "
