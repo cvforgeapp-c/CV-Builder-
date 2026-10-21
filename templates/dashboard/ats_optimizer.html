@@ -5,159 +5,216 @@
 {% block extra_css %}
 <style>
     :root {
-        --brand-teal: #02353C;
-        --brand-teal-light: #05535E;
-        --brand-gold: #E5A83B;
-        --brand-gold-hover: #D99321;
+        --brand-teal: #022b32;
+        --brand-teal-light: #05535e;
+        --brand-gold: #f59e0b;
+        --brand-gold-hover: #d97706;
         --bg-slate: #f8fafc;
         --card-bg: #ffffff;
         --border-color: #e2e8f0;
         --text-primary: #0f172a;
-        --text-secondary: #64748b;
-        --success-green: #16a34a;
-        --success-green-bg: #f0fdf4;
-        --danger-red: #dc2626;
-        --danger-red-bg: #fef2f2;
+        --text-secondary: #475569;
+        --text-muted: #94a3b8;
+        --accent-emerald: #10b981;
+        --accent-emerald-light: #ecfdf5;
+        --accent-emerald-border: #a7f3d0;
+        --error-red: #ef4444;
+        --radius-lg: 16px;
+        --radius-md: 10px;
+        --radius-sm: 6px;
+        --shadow-subtle: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     body {
         background-color: var(--bg-slate);
         color: var(--text-primary);
-        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
     }
 
-    /* HEADER STYLING */
     .ats-header {
-        background: #ffffff;
+        background: rgba(255, 255, 255, 0.95);
         border-bottom: 1px solid var(--border-color);
-        padding: 16px 5%;
+        padding: 14px 6%;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        backdrop-filter: blur(8px);
     }
 
     .brand-title {
-        font-size: 22px;
+        font-size: 20px;
         font-weight: 800;
         color: var(--brand-teal);
         text-decoration: none;
         letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
 
     .badge-pro {
-        background: linear-gradient(135deg, var(--brand-gold), var(--brand-gold-hover));
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
         color: #ffffff;
         font-size: 10px;
         font-weight: 800;
-        padding: 4px 10px;
+        padding: 3px 8px;
         border-radius: 20px;
         text-transform: uppercase;
         letter-spacing: 0.6px;
-        margin-left: 10px;
-        box-shadow: 0 2px 6px rgba(229, 168, 59, 0.3);
+        box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
     }
 
-    /* CONTAINER & LAYOUT */
+    .btn-back {
+        text-decoration: none;
+        color: var(--text-secondary);
+        font-size: 13px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border-radius: var(--radius-sm);
+        transition: var(--transition);
+        background: #f1f5f9;
+    }
+
+    .btn-back:hover {
+        background: #e2e8f0;
+        color: var(--text-primary);
+    }
+
     .ats-container {
-        padding: 36px 5%;
+        padding: 36px 6% 60px;
         max-width: 1320px;
         margin: 0 auto;
+    }
+
+    .page-heading {
+        margin-bottom: 32px;
     }
 
     .page-heading h1 {
         font-size: 28px;
         font-weight: 800;
         color: var(--brand-teal);
-        letter-spacing: -0.5px;
+        letter-spacing: -0.6px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
     .page-heading p {
-        font-size: 14px;
+        font-size: 15px;
         color: var(--text-secondary);
         margin-top: 6px;
-        margin-bottom: 28px;
         max-width: 720px;
         line-height: 1.5;
     }
 
     .ats-workspace {
         display: grid;
-        grid-template-columns: 1fr 1.15fr;
-        gap: 28px;
+        grid-template-columns: 1fr 1.25fr;
+        gap: 32px;
         align-items: start;
     }
 
-    @media (max-width: 992px) {
+    @media (max-width: 1024px) {
         .ats-workspace {
             grid-template-columns: 1fr;
         }
     }
 
-    /* CARDS & PANELS */
     .panel-card {
-        background: #ffffff;
+        background: var(--card-bg);
         border: 1px solid var(--border-color);
-        border-radius: 16px;
-        padding: 26px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-        position: relative;
+        border-radius: var(--radius-lg);
+        padding: 28px;
+        box-shadow: var(--shadow-subtle);
+        transition: var(--transition);
+    }
+
+    .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 22px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--border-color);
     }
 
     .panel-title {
         font-size: 16px;
-        font-weight: 800;
+        font-weight: 700;
         color: var(--brand-teal);
-        margin-bottom: 20px;
         display: flex;
         align-items: center;
         gap: 10px;
-        padding-bottom: 12px;
-        border-bottom: 1px solid var(--border-color);
+    }
+
+    .panel-title-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: var(--accent-emerald-light);
+        color: var(--accent-emerald);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .step-badge {
-        background: rgba(2, 53, 60, 0.08);
+        background: rgba(2, 43, 50, 0.08);
         color: var(--brand-teal);
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 800;
-        padding: 2px 8px;
+        padding: 3px 8px;
         border-radius: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .form-group {
         display: flex;
         flex-direction: column;
-        gap: 6px;
-        margin-bottom: 18px;
+        gap: 8px;
+        margin-bottom: 20px;
     }
 
     .form-group label {
-        font-size: 12px;
+        font-size: 13px;
         font-weight: 700;
         color: var(--text-primary);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 
     .form-group select, 
     .form-group input[type="url"], 
     .form-group textarea {
+        width: 100%;
         padding: 12px 14px;
-        border-radius: 10px;
+        border-radius: var(--radius-md);
         border: 1px solid #cbd5e1;
-        font-size: 13px;
+        font-size: 14px;
+        color: var(--text-primary);
+        background-color: #ffffff;
         outline: none;
         font-family: inherit;
-        background-color: #ffffff;
-        transition: all 0.2s ease;
+        transition: var(--transition);
+        box-sizing: border-box;
     }
 
     .form-group select:focus, 
     .form-group input[type="url"]:focus, 
     .form-group textarea:focus {
         border-color: var(--brand-teal);
-        box-shadow: 0 0 0 3px rgba(2, 53, 60, 0.08);
+        box-shadow: 0 0 0 3.5px rgba(2, 43, 50, 0.12);
     }
 
     .url-input-group {
@@ -173,13 +230,16 @@
         background: var(--brand-teal);
         color: #ffffff;
         border: none;
-        padding: 0 16px;
-        border-radius: 10px;
+        padding: 0 18px;
+        border-radius: var(--radius-md);
         font-weight: 700;
-        font-size: 12px;
+        font-size: 13px;
         cursor: pointer;
-        transition: background 0.2s ease;
+        transition: var(--transition);
         white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
     }
 
     .btn-fetch-url:hover {
@@ -188,28 +248,30 @@
 
     .file-input-wrapper {
         border: 2px dashed #cbd5e1;
-        border-radius: 10px;
-        padding: 12px;
+        border-radius: var(--radius-md);
+        padding: 20px;
         text-align: center;
-        background: #f8fafc;
-        transition: all 0.2s ease;
+        background: #fafafa;
+        transition: var(--transition);
         cursor: pointer;
+        display: block;
     }
 
     .file-input-wrapper:hover {
         border-color: var(--brand-teal);
-        background: #f1f5f9;
+        background: var(--accent-emerald-light);
     }
 
     .divider-or {
         display: flex;
         align-items: center;
         text-align: center;
-        color: var(--text-secondary);
+        color: var(--text-muted);
         font-size: 11px;
         font-weight: 700;
-        margin: 12px 0;
+        margin: 16px 0;
         text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .divider-or::before, .divider-or::after {
@@ -218,31 +280,31 @@
         border-bottom: 1px solid var(--border-color);
     }
 
-    .divider-or::before { margin-right: 10px; }
-    .divider-or::after { margin-left: 10px; }
+    .divider-or::before { margin-right: 12px; }
+    .divider-or::after { margin-left: 12px; }
 
     /* ACTION BUTTON */
     .btn-analyze {
         background: linear-gradient(135deg, var(--brand-teal) 0%, var(--brand-teal-light) 100%);
         color: #ffffff;
         border: none;
-        padding: 16px 24px;
-        border-radius: 12px;
-        font-weight: 800;
-        font-size: 14px;
+        padding: 14px 24px;
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        font-size: 15px;
         cursor: pointer;
         width: 100%;
-        transition: all 0.25s ease;
+        transition: var(--transition);
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 10px;
-        box-shadow: 0 4px 14px rgba(2, 53, 60, 0.2);
+        box-shadow: 0 4px 12px rgba(2, 43, 50, 0.25);
     }
 
     .btn-analyze:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(2, 53, 60, 0.3);
+        box-shadow: 0 6px 18px rgba(2, 43, 50, 0.35);
     }
 
     .btn-analyze:disabled {
@@ -253,43 +315,44 @@
 
     /* RESULTS DASHBOARD */
     .score-banner {
-        background: linear-gradient(135deg, #02353C 0%, #05535E 100%);
+        background: linear-gradient(135deg, var(--brand-teal) 0%, var(--brand-teal-light) 100%);
         color: #ffffff;
-        border-radius: 14px;
-        padding: 22px;
+        border-radius: var(--radius-md);
+        padding: 24px;
         display: flex;
         align-items: center;
         justify-content: space-between;
         margin-bottom: 24px;
-        box-shadow: 0 8px 24px rgba(2, 53, 60, 0.15);
+        box-shadow: 0 8px 24px rgba(2, 43, 50, 0.15);
     }
 
     .score-circle {
-        width: 86px;
-        height: 86px;
+        width: 80px;
+        height: 80px;
         border-radius: 50%;
-        border: 6px solid var(--brand-gold);
+        border: 5px solid var(--brand-gold);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 26px;
+        font-size: 24px;
         font-weight: 900;
         color: #ffffff;
         background: rgba(255,255,255,0.06);
-        box-shadow: 0 0 20px rgba(229, 168, 59, 0.25);
+        box-shadow: 0 0 20px rgba(245, 158, 11, 0.25);
+        flex-shrink: 0;
     }
 
     .keyword-pill-container {
         display: flex;
         flex-wrap: wrap;
         gap: 6px;
-        margin-top: 10px;
+        margin-top: 8px;
     }
 
     .pill-matched {
-        background: #dcfce7;
-        color: #15803d;
-        border: 1px solid #bbf7d0;
+        background: #ecfdf5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
         padding: 4px 10px;
         border-radius: 20px;
         font-size: 11px;
@@ -297,8 +360,8 @@
     }
 
     .pill-missing {
-        background: #fee2e2;
-        color: #b91c1c;
+        background: #fef2f2;
+        color: #991b1b;
         border: 1px solid #fecaca;
         padding: 4px 10px;
         border-radius: 20px;
@@ -307,26 +370,30 @@
     }
 
     .ai-feedback-box {
-        background: var(--success-green-bg);
-        border: 1px dashed var(--success-green);
-        border-radius: 12px;
+        background: #f8fafc;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
         padding: 18px;
         margin-top: 20px;
     }
 
     .ai-feedback-box h4 {
-        color: var(--success-green);
-        font-size: 13px;
+        color: var(--brand-teal);
+        font-size: 12px;
         font-weight: 800;
         margin-bottom: 8px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
     }
 
     .ai-feedback-box p {
-        font-size: 13px;
-        color: #166534;
+        font-size: 13.5px;
+        color: var(--text-secondary);
         line-height: 1.6;
+        margin: 0;
     }
 
     .action-cta-group {
@@ -342,12 +409,12 @@
         background: var(--brand-teal);
         color: #ffffff;
         text-decoration: none;
-        padding: 12px;
-        border-radius: 10px;
-        font-size: 12px;
-        font-weight: 800;
+        padding: 12px 16px;
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        font-weight: 700;
         text-align: center;
-        transition: all 0.2s ease;
+        transition: var(--transition);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -357,40 +424,50 @@
     .btn-action-primary:hover {
         background: var(--brand-teal-light);
         color: #ffffff;
+        transform: translateY(-1px);
     }
 
     .btn-action-gold {
-        background: var(--brand-gold);
+        background: linear-gradient(135deg, var(--brand-gold) 0%, var(--brand-gold-hover) 100%);
         color: #ffffff;
         text-decoration: none;
-        padding: 12px;
-        border-radius: 10px;
-        font-size: 12px;
-        font-weight: 800;
+        padding: 12px 16px;
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        font-weight: 700;
         text-align: center;
-        transition: all 0.2s ease;
+        transition: var(--transition);
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
+        box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
     }
 
     .btn-action-gold:hover {
-        background: var(--brand-gold-hover);
-        color: #ffffff;
+        opacity: 0.95;
+        transform: translateY(-1px);
     }
 
     /* EMPTY STATE PLACEHOLDER */
     .empty-results-state {
+        border: 2px dashed #e2e8f0;
+        border-radius: var(--radius-md);
+        padding: 48px 20px;
         text-align: center;
-        padding: 40px 20px;
-        color: var(--text-secondary);
+        background: #fafafa;
     }
 
-    .empty-results-state i {
-        font-size: 48px;
-        color: #cbd5e1;
-        margin-bottom: 16px;
+    .empty-results-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: #f1f5f9;
+        color: var(--text-muted);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 14px;
     }
 
     /* TOAST NOTIFICATION STYLING */
@@ -401,15 +478,29 @@
         background: #0f172a;
         color: #ffffff;
         padding: 12px 20px;
-        border-radius: 8px;
+        border-radius: var(--radius-md);
         font-size: 13px;
         font-weight: 600;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.3);
         display: none;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
         z-index: 9999;
         animation: slideInUp 0.3s ease;
+    }
+
+    .spinner {
+        width: 18px;
+        height: 18px;
+        border: 2px solid #ffffff;
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        display: none;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
     }
 
     @keyframes slideInUp {
@@ -423,20 +514,30 @@
 
 <!-- HEADER NAV -->
 <header class="ats-header">
-    <div style="display: flex; align-items: center;">
-        <a href="/" class="brand-title">CVForge</a>
-        <span class="badge-pro">PRO SUITE</span>
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <a href="/" class="brand-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16 8L2 15L22 22L16 8Z" fill="var(--brand-teal)"/>
+                <path d="M16 8L8 2L2 15L16 8Z" fill="var(--brand-gold)"/>
+            </svg>
+            CVForge
+        </a>
+        <span class="badge-pro">PRO FEATURE</span>
     </div>
     <div>
-        <a href="/dashboard" style="text-decoration: none; color: var(--text-secondary); font-size: 13px; font-weight: 700;">
-            {{ t_modular('ats_btn_back_dashboard', '← Back to Dashboard') }}
+        <a href="/dashboard" class="btn-back">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            {{ t_modular('ats_btn_back_dashboard', 'Back to Dashboard') }}
         </a>
     </div>
 </header>
 
 <div class="ats-container">
     <div class="page-heading">
-        <h1>{{ t_modular('ats_heading', 'Unlimited AI ATS Optimization Engine') }}</h1>
+        <h1>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--brand-teal)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            {{ t_modular('ats_heading', 'Unlimited AI ATS Optimization Engine') }}
+        </h1>
         <p>{{ t_modular('ats_subheading', 'Select a resume or upload a file, target any job posting URL or text, and automatically generate a high-scoring ATS-optimized CV.') }}</p>
     </div>
 
@@ -444,9 +545,14 @@
         
         <!-- LEFT PANEL: DUAL INPUT WORKSPACE -->
         <div class="panel-card">
-            <div class="panel-title">
-                <span class="step-badge">{{ t_modular('ats_step_badge', 'STEP 1 & 2') }}</span>
-                <span>⚙️</span> {{ t_modular('ats_section_input_title', 'Configure CV & Target Job') }}
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="panel-title-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    </span>
+                    {{ t_modular('ats_section_input_title', 'Configure CV & Target Job') }}
+                </div>
+                <span class="step-badge">{{ t_modular('ats_step_badge', 'Step 1 & 2') }}</span>
             </div>
 
             <form id="atsForm" enctype="multipart/form-data">
@@ -465,10 +571,17 @@
                 <div class="divider-or">{{ t_modular('ats_divider_or_upload', 'or upload local file') }}</div>
 
                 <div class="form-group">
-                    <label>{{ t_modular('ats_label_upload_cv', 'Upload CV Document (.txt, .pdf)') }}</label>
-                    <div class="file-input-wrapper">
-                        <input type="file" id="cvFileInput" name="cv_file" accept=".txt,.pdf,.docx" style="font-size: 11px; cursor: pointer;">
-                    </div>
+                    <label>{{ t_modular('ats_label_upload_cv', 'Upload CV Document (.txt, .pdf, .docx)') }}</label>
+                    <label class="file-input-wrapper" for="cvFileInput">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="margin-bottom: 6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        <div style="font-size: 13px; font-weight: 700; color: var(--text-primary);" id="fileUploadLabel">
+                            {{ t_modular('ats_upload_drop_label', 'Click or drop CV file here') }}
+                        </div>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+                            {{ t_modular('ats_upload_drop_sub', 'Supports TXT, PDF, DOCX (Max 10MB)') }}
+                        </div>
+                        <input type="file" id="cvFileInput" name="cv_file" accept=".txt,.pdf,.docx" style="display: none;" onchange="handleFileSelected(this)">
+                    </label>
                 </div>
 
                 <div style="margin: 24px 0 16px 0; border-top: 1px solid var(--border-color);"></div>
@@ -488,11 +601,12 @@
 
                 <div class="form-group">
                     <label>{{ t_modular('ats_label_job_desc', 'Target Job Description') }}</label>
-                    <textarea id="job_description_textarea" name="job_description" rows="5" placeholder="{{ t_modular('ats_placeholder_job_desc', 'Paste full job requirements or posting text here...') }}"></textarea>
+                    <textarea id="job_description_textarea" name="job_description" rows="4" placeholder="{{ t_modular('ats_placeholder_job_desc', 'Paste full job requirements or posting text here...') }}"></textarea>
                 </div>
 
                 <button type="submit" class="btn-analyze" id="analyzeBtn">
-                    <span>⚡</span>
+                    <span class="spinner" id="btnSpinner"></span>
+                    <svg id="btnIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
                     <span id="btnText">{{ t_modular('ats_btn_analyze_now', 'Generate Optimized Resume & Report') }}</span>
                 </button>
             </form>
@@ -500,18 +614,25 @@
 
         <!-- RIGHT PANEL: REAL-TIME REPORT & AUTOMATIC CV CREATION -->
         <div class="panel-card" id="resultsPanel">
-            <div class="panel-title">
-                <span class="step-badge">{{ t_modular('ats_live_badge', 'LIVE AI OUTPUT') }}</span>
-                <span>📊</span> {{ t_modular('ats_section_results_title', 'ATS Match Analysis & Optimized CV') }}
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="panel-title-icon" style="background: #fef3c7; color: #d97706;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    </span>
+                    {{ t_modular('ats_section_results_title', 'ATS Match Analysis & Optimized CV') }}
+                </div>
+                <span class="step-badge" style="background: #fef3c7; color: #92400e;">{{ t_modular('ats_live_badge', 'Live AI Output') }}</span>
             </div>
 
             <!-- INITIAL EMPTY STATE -->
             <div id="emptyState" class="empty-results-state">
-                <i class="fa-solid fa-wand-magic-sparkles"></i>
-                <h3 style="font-size: 15px; font-weight: 800; color: var(--brand-teal); margin-bottom: 6px;">
+                <div class="empty-results-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <h4 style="font-size: 15px; font-weight: 700; color: var(--text-primary); margin: 0 0 6px 0;">
                     {{ t_modular('ats_ready_title', 'Ready to Optimize') }}
-                </h3>
-                <p style="font-size: 12px; color: var(--text-secondary);">
+                </h4>
+                <p style="font-size: 13px; color: var(--text-muted); margin: 0;">
                     {{ t_modular('ats_ready_desc', 'Select a resume, paste a job URL or description, and click generate to run the ATS Engine.') }}
                 </p>
             </div>
@@ -522,37 +643,46 @@
                 <!-- SCORE BANNER -->
                 <div class="score-banner">
                     <div>
-                        <h3 style="font-size: 18px; font-weight: 800;">{{ t_modular('ats_score_title', 'ATS Match Score') }}</h3>
-                        <p style="font-size: 12px; opacity: 0.9; margin-top: 4px;">{{ t_modular('ats_score_desc', 'Keyword density, job alignment & technical terminology') }}</p>
+                        <h3 style="font-size: 16px; font-weight: 800; margin: 0 0 4px 0;">{{ t_modular('ats_score_title', 'ATS Match Score') }}</h3>
+                        <p style="font-size: 12px; opacity: 0.85; margin: 0;">{{ t_modular('ats_score_desc', 'Keyword density, job alignment & technical terminology') }}</p>
                     </div>
                     <div class="score-circle" id="scoreValue">88%</div>
                 </div>
 
                 <!-- MATCHED KEYWORDS -->
                 <div style="margin-bottom: 20px;">
-                    <h4 style="font-size: 13px; font-weight: 800; color: var(--brand-teal);">✅ {{ t_modular('ats_title_matched_keywords', 'Matched Keywords Found') }}</h4>
+                    <h4 style="font-size: 12px; font-weight: 800; color: #065f46; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+                        ✓ {{ t_modular('ats_title_matched_keywords', 'Matched Keywords Found') }}
+                    </h4>
                     <div class="keyword-pill-container" id="matchedKeywords"></div>
                 </div>
 
                 <!-- MISSING KEYWORDS INJECTED -->
                 <div style="margin-bottom: 20px;">
-                    <h4 style="font-size: 13px; font-weight: 800; color: #b91c1c;">⚠️ {{ t_modular('ats_title_missing_keywords', 'Injected Missing Keywords') }}</h4>
+                    <h4 style="font-size: 12px; font-weight: 800; color: #991b1b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+                        ⚠️ {{ t_modular('ats_title_missing_keywords', 'Injected Missing Keywords') }}
+                    </h4>
                     <div class="keyword-pill-container" id="missingKeywords"></div>
                 </div>
 
                 <!-- AI STRATEGY FEEDBACK -->
                 <div class="ai-feedback-box">
-                    <h4>🤖 {{ t_modular('ats_ai_suggestion_title', 'AI Optimization Strategy') }}</h4>
+                    <h4>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a10 10 0 1 0 10 10H12V2Z"/><path d="M12 12L2.1 9.1"/><path d="M12 12l9.9-2.9"/></svg>
+                        {{ t_modular('ats_ai_suggestion_title', 'AI Optimization Strategy') }}
+                    </h4>
                     <p id="aiFeedbackText"></p>
                 </div>
 
                 <!-- AUTOMATIC CV CREATION DIRECT CTA LINKS -->
                 <div class="action-cta-group">
                     <a id="editCvBtn" href="#" class="btn-action-gold">
-                        ✏️ {{ t_modular('ats_btn_edit_optimized', 'Edit in Editor') }}
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        <span>{{ t_modular('ats_btn_edit_optimized', 'Edit in Editor') }}</span>
                     </a>
                     <a id="previewCvBtn" href="#" class="btn-action-primary">
-                        👁️ {{ t_modular('ats_btn_preview_optimized', 'Preview & Download') }}
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        <span>{{ t_modular('ats_btn_preview_optimized', 'Preview & Download') }}</span>
                     </a>
                 </div>
 
@@ -573,9 +703,19 @@
 
 {% block extra_js %}
 <script>
+    function handleFileSelected(input) {
+        const label = document.getElementById('fileUploadLabel');
+        if (input.files && input.files[0]) {
+            label.textContent = `Attached: ${input.files[0].name}`;
+            label.style.color = 'var(--brand-teal)';
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         const atsForm = document.getElementById('atsForm');
         const analyzeBtn = document.getElementById('analyzeBtn');
+        const spinner = document.getElementById('btnSpinner');
+        const btnIcon = document.getElementById('btnIcon');
         const btnText = document.getElementById('btnText');
         const emptyState = document.getElementById('emptyState');
         const resultsContent = document.getElementById('resultsContent');
@@ -591,7 +731,6 @@
         const toastIcon = document.getElementById('toastIcon');
         const toastMessage = document.getElementById('toastMessage');
 
-        // Professional Toast Notification Helper Function
         function showToast(message, icon = '✅') {
             toastIcon.textContent = icon;
             toastMessage.textContent = message;
@@ -601,19 +740,20 @@
             }, 3500);
         }
 
-        // Mutual exclusivity for resume sources
         cvFileInput.addEventListener('change', () => {
             if (cvFileInput.files.length > 0) {
                 resumeSelect.value = "";
             }
         });
+        
         resumeSelect.addEventListener('change', () => {
             if (resumeSelect.value !== "") {
                 cvFileInput.value = "";
+                document.getElementById('fileUploadLabel').textContent = "{{ t_modular('ats_upload_drop_label', 'Click or drop CV file here') }}";
+                document.getElementById('fileUploadLabel').style.color = 'var(--text-primary)';
             }
         });
 
-        // Professional URL Fetching Handler with Event Prevention & Loading State
         btnFetchUrl.addEventListener('click', async (e) => {
             e.preventDefault();
 
@@ -651,7 +791,6 @@
             }
         });
 
-        // Main ATS Analysis Form Submission Handler
         atsForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -670,9 +809,10 @@
                 return;
             }
 
-            // Set Loading State
             analyzeBtn.disabled = true;
-            btnText.textContent = '⏳ {{ t_modular("ats_btn_analyzing_state", "Analyzing & Rewriting CV...") }}';
+            spinner.style.display = 'block';
+            btnIcon.style.display = 'none';
+            btnText.textContent = '{{ t_modular("ats_btn_analyzing_state", "Analyzing & Rewriting CV...") }}';
 
             const formData = new FormData(atsForm);
 
@@ -688,31 +828,25 @@
                     throw new Error(data.error || 'Optimization failed.');
                 }
 
-                // Render Score
                 document.getElementById('scoreValue').textContent = (data.ats_score || 85) + '%';
 
-                // Render Matched Keywords
                 const matchedContainer = document.getElementById('matchedKeywords');
                 matchedContainer.innerHTML = (data.matched_keywords || []).map(
                     k => `<span class="pill-matched">${k}</span>`
                 ).join('');
 
-                // Render Missing Keywords
                 const missingContainer = document.getElementById('missingKeywords');
                 missingContainer.innerHTML = (data.missing_keywords || []).map(
                     k => `<span class="pill-missing">${k}</span>`
                 ).join('');
 
-                // Render Feedback
                 document.getElementById('aiFeedbackText').textContent = data.summary_feedback || 'Your resume has been rewritten to align with the target job posting requirements.';
 
-                // Bind Links to Automatically Created Resume
                 if (data.optimized_resume_id) {
                     document.getElementById('editCvBtn').href = `/editor?id=${data.optimized_resume_id}`;
                     document.getElementById('previewCvBtn').href = `/preview?id=${data.optimized_resume_id}`;
                 }
 
-                // Show Results Panel
                 emptyState.style.display = 'none';
                 resultsContent.style.display = 'block';
 
@@ -722,6 +856,8 @@
                 showToast(err.message || 'An error occurred while analyzing the CV.', '❌');
             } finally {
                 analyzeBtn.disabled = false;
+                spinner.style.display = 'none';
+                btnIcon.style.display = 'block';
                 btnText.textContent = '{{ t_modular("ats_btn_analyze_now", "Generate Optimized Resume & Report") }}';
             }
         });
