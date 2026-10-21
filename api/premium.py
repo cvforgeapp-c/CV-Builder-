@@ -825,6 +825,12 @@ def salary_negotiator():
     resumes = Resume.query.filter_by(user_id=current_user.id).all()
     return render_template('salary_negotiator.html', resumes=resumes, user=current_user)
 
+@premium_app.route('/portal-qa')
+@login_required
+def portal_qa_page():
+    resumes = Resume.query.filter_by(user_id=current_user.id).all()
+    return render_template('portal_qa.html', resumes=resumes, user=current_user)
+
 @premium_app.route('/linkedin')
 @login_required
 def linkedin_optimizer():
@@ -2320,6 +2326,83 @@ def scrape_job_url():
     )
 
 
+@premium_bp.route('/portal-qa', methods=['POST'])
+@login_required
+def generate_portal_qa():
+    """
+    Phase 2: Evaluates portal essay prompt, cross-references candidate profile/context,
+    and returns STAR structured breakdown + tailored application essay response.
+    """
+    try:
+        data = request.get_json(silent=True) or {}
+
+        prompt_question = data.get("prompt", "").strip()
+        if not prompt_question:
+            return jsonify({"error": "The application portal question prompt is required."}), 400
+
+        company_name = data.get("company_name", "").strip() or "Target Company"
+        job_title = data.get("job_title", "").strip() or "Candidate Role"
+        tone = data.get("tone", "Professional & Direct")
+        custom_context = data.get("custom_context", "").strip()
+        max_words = data.get("max_words")
+
+        word_constraint_clause = ""
+        if max_words:
+            try:
+                max_w_int = int(max_words)
+                word_constraint_clause = f"CRITICAL CONSTRAINT: The final answer MUST NOT exceed {max_w_int} words."
+            except ValueError:
+                pass
+
+        candidate_cv_summary = "Professional candidate with strong background in software development, project execution, and cross-functional team leadership."
+
+        system_instructions = (
+            "You are an executive career coach and expert job application writer for CVForge Pro. "
+            "Your objective is to craft high-converting, metric-driven responses to job portal essay questions. "
+            "Always structure candidate stories using the STAR framework (Situation, Task, Action, Result). "
+            "Never use generic AI fluff or empty buzzwords. Provide clear, concrete actions and outcomes."
+        )
+
+        user_prompt = f"""
+TARGET COMPANY: {company_name}
+TARGET ROLE: {job_title}
+PREFERRED TONE: {tone}
+
+PORTAL ESSAY PROMPT / QUESTION:
+"{prompt_question}"
+
+CANDIDATE CV BACKGROUND:
+{candidate_cv_summary}
+
+SPECIFIC PROJECT / CONTEXT FOCUS:
+{custom_context if custom_context else "Select the best matching project/experience from candidate background."}
+
+{word_constraint_clause}
+
+INSTRUCTIONS:
+1. Deconstruct the response into the STAR framework (Situation, Task, Action, Result) in concise bullet summaries.
+2. Draft the complete final answer in paragraph form matching the requested tone and strict length boundaries.
+3. Output MUST adhere strictly to valid JSON with keys `star_breakdown` (object containing situation, task, action, result) and `answer` (string).
+"""
+
+        raw_response = generate_ai_text(system_instructions + "\n\n" + user_prompt, max_tokens=1500)
+
+        clean_json_str = raw_response.strip()
+        if clean_json_str.startswith('```json'):
+            clean_json_str = clean_json_str[7:]
+        if clean_json_str.startswith('```'):
+            clean_json_str = clean_json_str[3:]
+        if clean_json_str.endswith('```'):
+            clean_json_str = clean_json_str[:-3]
+
+        result = json.loads(clean_json_str.strip())
+        return jsonify(result), 200
+
+    except Exception as exc:
+        premium_app.logger.error(f"Error generating portal Q&A response: {str(exc)}", exc_info=True)
+        return jsonify({"error": "Failed to generate application response. Please try again."}), 500
+
+
 @premium_bp.route('/generate-cover-letter', methods=['POST'])
 @login_required
 def generate_cover_letter():
@@ -3000,7 +3083,7 @@ Return ONLY a JSON object matching this structure:
 
     return (
         jsonify({
-            'success': data.get('success', True), # keeping strict schema fallback compatibility
+            'success': data.get('success', True),
             'ats_score': parsed_data.get('ats_score', 80),
             'matched_keywords': parsed_data.get('matched_keywords', []),
             'missing_keywords': parsed_data.get('missing_keywords', []),
@@ -3025,7 +3108,7 @@ Return ONLY a JSON object matching this structure:
     )
 
 
-premium_app.register_blueprint(premium_bp)
+premium_bp.register_blueprint(premium_bp)
 
 # ============================================================
 # Vercel Entry Point & Local Dev
