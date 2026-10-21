@@ -843,7 +843,6 @@ def linkedin_optimizer():
 @premium_app.route('/pdf-studio', methods=['GET', 'POST'])
 @login_required
 def pdf_studio():
-    # Capture resume_id from URL query or form submit
     resume_id = request.args.get('resume_id') or request.form.get('resume_id')
 
     user_prefs = getattr(current_user, 'preferences_json', None) or {}
@@ -875,7 +874,6 @@ def pdf_studio():
         current_user.preferences_json = user_prefs
         flag_modified(current_user, 'preferences_json')
 
-        # If editing an active resume, update its template and color directly in the database
         if resume_id:
             resume = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first()
             if resume:
@@ -890,7 +888,6 @@ def pdf_studio():
             db.session.rollback()
             premium_app.logger.error('Failed to save settings: %s', exc)
 
-        # Automatically redirect straight back to Preview with updated template!
         if resume_id:
             return redirect(url_for('preview', id=resume_id, template=template_id))
         else:
@@ -1234,7 +1231,6 @@ def save_resume():
   resume_id = request.args.get('id') or data.get('id') or str(uuid.uuid4())
   resume = db.session.get(Resume, resume_id)
 
-  # Fetch PDF Studio settings from user preferences
   user_prefs = getattr(current_user, 'preferences_json', None) or {}
   pdf_settings = user_prefs.get('pdf_settings', {}) if isinstance(user_prefs, dict) else {}
 
@@ -3108,7 +3104,8 @@ Return ONLY a JSON object matching this structure:
     )
 
 
-premium_bp.register_blueprint(premium_bp)
+# Register premium blueprint onto the main Flask app instance
+premium_app.register_blueprint(premium_bp)
 
 # ============================================================
 # Vercel Entry Point & Local Dev
