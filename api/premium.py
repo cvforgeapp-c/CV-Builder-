@@ -2541,6 +2541,7 @@ def evaluate_offer():
     
     company_name = (data.get('company_name') or 'Target Company').strip()
     job_title = (data.get('job_title') or 'Target Position').strip()
+    currency = (data.get('currency') or 'USD').strip()
     base_salary = (data.get('base_salary') or '').strip()
     bonus_equity = (data.get('bonus_equity') or '').strip()
     target_salary = (data.get('target_salary') or '').strip()
@@ -2557,9 +2558,10 @@ Task: Evaluate a job offer and craft a high-impact, persuasive counter-offer neg
 
 Target Company: {company_name}
 Job Title: {job_title}
-Offered Base Salary: {base_salary}
+Currency: {currency}
+Offered Base Salary: {base_salary} {currency}
 Offered Bonus / Equity / Benefits: {bonus_equity or 'Not specified'}
-Candidate Target Salary / Goal: {target_salary or 'Market maximum'}
+Candidate Target Salary / Goal: {target_salary or 'Market maximum'} {currency if target_salary else ''}
 Location / Remote Setup: {location_remote or 'Not specified'}
 Additional Notes / Perks: {perks_notes or 'None'}
 Desired Negotiation Tone: {tone}
@@ -2567,10 +2569,10 @@ Output Language: {preferred_language}
 
 REQUIREMENTS:
 1. "offer_grade": A quick assessment rating (e.g., "Competitive", "Below Market Range", "Strong Base / Low Equity").
-2. "evaluation_summary": 2-3 sentences analyzing the offer strength based on market trends for {job_title}.
+2. "evaluation_summary": 2-3 sentences analyzing the offer strength based on market trends for {job_title} using {currency}.
 3. "strategy_points": An array of 3 actionable leverage points the candidate should emphasize (e.g., key skills, competing timelines, unique experience).
 4. "counter_email_subject": A professional subject line for replying to the recruiter or hiring manager.
-5. "counter_email_body": A structured counter-offer email requesting the target compensation or perks, maintaining a {tone} tone.
+5. "counter_email_body": A structured counter-offer email requesting the target compensation or perks in {currency}, maintaining a {tone} tone.
 6. Write ALL text strictly in {preferred_language}.
 
 Output MUST be strictly valid JSON matching this schema:
