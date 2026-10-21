@@ -3,85 +3,365 @@
 {% block title %}{{ t('dashboard_title') }} — CVForge{% endblock %}
 
 {% block extra_css %}
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; }
-    </style>
+<style>
+    :root {
+        --brand-teal: #022b32;
+        --brand-teal-light: #05535e;
+        --brand-gold: #f59e0b;
+        --brand-gold-hover: #d97706;
+        --bg-slate: #f8fafc;
+        --card-bg: #ffffff;
+        --border-color: #e2e8f0;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-muted: #94a3b8;
+        --accent-emerald: #10b981;
+        --accent-emerald-light: #ecfdf5;
+        --accent-emerald-border: #a7f3d0;
+        --error-red: #ef4444;
+        --radius-lg: 16px;
+        --radius-md: 10px;
+        --radius-sm: 6px;
+        --shadow-subtle: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+        background-color: var(--bg-slate);
+        color: var(--text-primary);
+        font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .dash-header {
+        background: rgba(255, 255, 255, 0.95);
+        border-bottom: 1px solid var(--border-color);
+        padding: 14px 6%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        backdrop-filter: blur(8px);
+    }
+
+    .brand-title {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--brand-teal);
+        text-decoration: none;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .dash-container {
+        padding: 36px 6% 60px;
+        max-width: 1320px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    /* Profile Banner */
+    .profile-banner {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        box-shadow: var(--shadow-subtle);
+        display: flex;
+        flex-direction: column;
+        md-flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start;
+        md-align-items: center;
+        gap: 20px;
+    }
+
+    @media(min-width: 768px) {
+        .profile-banner {
+            flex-direction: row;
+            align-items: center;
+        }
+    }
+
+    .profile-avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: var(--radius-md);
+        background: var(--brand-teal);
+        color: var(--brand-gold);
+        font-weight: 800;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid rgba(245, 158, 11, 0.3);
+        flex-shrink: 0;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .badge-pro-pill {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: #ffffff;
+        font-size: 10px;
+        font-weight: 800;
+        padding: 3px 10px;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .badge-free-pill {
+        background: #f1f5f9;
+        color: var(--text-secondary);
+        border: 1px solid var(--border-color);
+        font-size: 10px;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 20px;
+    }
+
+    /* Preferences Bar */
+    .prefs-bar {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 12px 20px;
+        box-shadow: var(--shadow-subtle);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+    }
+
+    .pref-chip {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #f8fafc;
+        padding: 6px 12px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border-color);
+        color: var(--text-secondary);
+    }
+
+    .pref-chip strong {
+        color: var(--text-primary);
+    }
+
+    /* Metrics Grid */
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+        .metrics-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .metric-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 20px;
+        box-shadow: var(--shadow-subtle);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        transition: var(--transition);
+    }
+
+    .metric-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(15, 23, 42, 0.08);
+    }
+
+    .metric-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    /* Suite Section */
+    .suite-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        box-shadow: var(--shadow-subtle);
+    }
+
+    .suite-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 16px;
+        margin-top: 16px;
+    }
+
+    .suite-item {
+        background: #f8fafc;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 16px;
+        transition: var(--transition);
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .suite-item:hover {
+        border-color: var(--brand-teal);
+        background: #ffffff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(2, 43, 50, 0.06);
+    }
+
+    /* Resumes Section */
+    .resumes-section {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        box-shadow: var(--shadow-subtle);
+    }
+
+    .resumes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 16px;
+    }
+
+    .resume-item-card {
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        transition: var(--transition);
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+
+    .resume-item-card:hover {
+        border-color: #cbd5e1;
+        box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+        transform: translateY(-2px);
+    }
+
+    /* Buttons */
+    .btn-primary {
+        background: linear-gradient(135deg, var(--brand-teal) 0%, var(--brand-teal-light) 100%);
+        color: #ffffff;
+        border: none;
+        padding: 10px 18px;
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: var(--transition);
+        text-decoration: none;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(2, 43, 50, 0.25);
+    }
+
+    /* Modal */
+    .modal-backdrop {
+        position: fixed;
+        top: 0; left: 0; width: 100vw; height: 100vh;
+        background: rgba(15, 23, 42, 0.5);
+        backdrop-filter: blur(4px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
     <!-- TOP NAVIGATION BAR -->
-    <nav class="bg-[#02353C] text-white sticky top-0 z-40 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-14">
-                
-                <!-- BRAND LOGO -->
-                <a href="/" class="flex items-center space-x-2 group">
-                    <div class="w-8 h-8 rounded-lg bg-amber-400 text-[#02353C] flex items-center justify-center font-extrabold text-base shadow-sm group-hover:scale-105 transition-transform">
-                        <i class="fa-solid fa-file-invoice"></i>
-                    </div>
-                    <span class="font-extrabold text-lg tracking-tight text-white">
-                        CVForge
-                    </span>
-                </a>
+    <header class="dash-header">
+        <a href="/" class="brand-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16 8L2 15L22 22L16 8Z" fill="var(--brand-teal)"/>
+                <path d="M16 8L8 2L2 15L16 8Z" fill="var(--brand-gold)"/>
+            </svg>
+            CVForge
+        </a>
 
-                <!-- HEADER ACTIONS -->
-                <div class="flex items-center space-x-2">
-                    <!-- Settings Gear Icon -->
-                    <a href="/dashboard/account" class="p-1.5 px-2.5 rounded-lg bg-white/10 hover:bg-white/20 transition-all border border-white/10 text-xs font-semibold text-white flex items-center gap-1.5" title="{{ t('account_settings') }}">
-                        <i class="fa-solid fa-gear text-amber-400 text-xs"></i>
-                        <span class="hidden sm:inline">{{ t('nav_settings') }}</span>
-                    </a>
-
-                    <!-- Logout Icon -->
-                    <a href="/auth/logout" class="p-1.5 px-2 text-rose-300 hover:text-rose-100 hover:bg-white/10 rounded-lg transition-all" title="{{ t('nav_logout') }}">
-                        <i class="fa-solid fa-power-off text-sm"></i>
-                    </a>
-                </div>
-
-            </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <a href="/dashboard/account" class="btn-back" style="background: #f1f5f9; padding: 8px 14px; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                <i class="fa-solid fa-gear text-amber-500"></i>
+                <span class="hidden sm:inline">{{ t('nav_settings') }}</span>
+            </a>
+            <a href="/auth/logout" style="padding: 8px 12px; color: var(--error-red); background: #fef2f2; border-radius: var(--radius-sm); text-decoration: none; font-size: 13px; font-weight: 600;" title="{{ t('nav_logout') }}">
+                <i class="fa-solid fa-power-off"></i>
+            </a>
         </div>
-    </nav>
+    </header>
 
     <!-- MAIN DASHBOARD CONTENT -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-3.5">
+    <main class="dash-container">
 
         <!-- 1. COMPACT USER PROFILE BANNER -->
-        <div class="bg-white rounded-xl p-3.5 sm:p-4 border border-slate-200/90 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3 relative">
-            <div class="flex items-center gap-3">
-                <!-- User Avatar / First Initial / Uploaded Image -->
-                <div class="w-11 h-11 rounded-xl bg-[#02353C] text-amber-400 font-extrabold text-base flex items-center justify-center border border-amber-400/30 shadow-2xs shrink-0 uppercase overflow-hidden bg-cover bg-center" id="dispAvatar" {% if user and user.avatar_url %}style="background-image: url('{{ user.avatar_url }}');"{% endif %}>
+        <div class="profile-banner">
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <div class="profile-avatar" id="dispAvatar" {% if user and user.avatar_url %}style="background-image: url('{{ user.avatar_url }}');"{% endif %}>
                     {% if not user or not user.avatar_url %}
                         {{ (user.full_name[0] if user and user.full_name else (user.email[0].upper() if user and user.email else 'U')) }}
                     {% endif %}
                 </div>
 
-                <div class="space-y-0.5">
-                    <div class="flex items-center space-x-2 flex-wrap gap-y-0.5">
-                        <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight" id="dispWelcomeName">
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <h1 style="font-size: 20px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.5px; margin: 0;" id="dispWelcomeName">
                             {{ t('welcome_back') }}, {{ user.full_name if user and user.full_name else t('job_seeker') }}!
                         </h1>
                         {% if user and user.is_premium %}
-                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-[#02353C] shadow-2xs">
-                                  <i class="fa-solid fa-crown text-[9px]"></i> {{ t('pro') }}   
+                            <span class="badge-pro-pill">
+                                <i class="fa-solid fa-crown text-[9px]"></i> {{ t('pro') }}   
                             </span>
                         {% else %}
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+                            <span class="badge-free-pill">
                                 {{ t('free_tier') }}
                             </span>
                         {% endif %}
                     </div>
 
-                    <!-- Target Role & Email Info -->
-                    <div class="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-slate-500 font-medium">
-                        <span class="flex items-center gap-1 text-slate-700 font-semibold" id="dispTargetRole">
-                            <i class="fa-solid fa-briefcase text-amber-500 text-[11px]"></i>
+                    <div style="display: flex; align-items: center; gap: 16px; font-size: 13px; color: var(--text-secondary);">
+                        <span style="display: flex; align-items: center; gap: 6px; font-weight: 600; color: var(--text-primary);" id="dispTargetRole">
+                            <i class="fa-solid fa-briefcase text-amber-500"></i>
                             <span>{{ user.preferences_json.get('profile', {}).get('targetTitle', t('general_professional')) if user and user.preferences_json else t('general_professional') }}</span>
                         </span>
-                        <span class="flex items-center gap-1 text-slate-400 truncate">
-                            <i class="fa-regular fa-envelope text-[11px]"></i>
+                        <span style="display: flex; align-items: center; gap: 6px; color: var(--text-muted);">
+                            <i class="fa-regular fa-envelope"></i>
                             {{ user.email if user and user.email else 'user@example.com' }}
                         </span>
                     </div>
@@ -89,250 +369,234 @@
             </div>
 
             {% if not user or not user.is_premium %}
-                <div class="bg-gradient-to-r from-[#02353C] to-[#05535E] text-white rounded-lg p-2.5 px-3 shadow-2xs flex items-center justify-between gap-3 md:max-w-xs w-full shrink-0 border border-white/10">
-                    <div class="space-y-0.5">
-                          <p class="font-bold text-[11px] uppercase tracking-wider text-amber-400">{{ t('upgrade_pro') }}</p>
-                          <p class="text-[10px] text-slate-200 leading-tight">{{ t('upgrade_sub') }}</p>
+                <div style="background: linear-gradient(135deg, var(--brand-teal) 0%, var(--brand-teal-light) 100%); color: white; padding: 16px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: space-between; gap: 16px; width: 100%; max-width: 320px; box-shadow: var(--shadow-subtle);">
+                    <div>
+                        <p style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--brand-gold); margin: 0 0 2px 0;">{{ t('upgrade_pro') }}</p>
+                        <p style="font-size: 12px; opacity: 0.9; margin: 0; line-height: 1.4;">{{ t('upgrade_sub') }}</p>
                     </div>
-                    <a href="/pricing" class="bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold text-[11px] px-3 py-1.5 rounded-md transition-all shrink-0 flex items-center gap-1">
-                        <i class="fa-solid fa-bolt text-[10px]"></i> {{ t('upgrade_btn') }}
+                    <a href="/pricing" style="background: var(--brand-gold); color: var(--brand-teal); font-weight: 800; font-size: 12px; padding: 8px 14px; border-radius: var(--radius-sm); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; transition: var(--transition);">
+                        <i class="fa-solid fa-bolt"></i> {{ t('upgrade_btn') }}
                     </a>
                 </div>
             {% endif %}
         </div>
 
         <!-- 2. STREAMLINED PREFERENCES BAR -->
-        <div class="bg-white rounded-xl p-2.5 px-3.5 border border-slate-200/80 shadow-2xs flex items-center justify-between gap-2 text-xs">
-            <div class="flex items-center gap-1.5 text-slate-500 font-semibold">
-                <i class="fa-solid fa-sliders text-amber-500 text-xs"></i>
-                <span class="uppercase text-[9px] tracking-wider text-slate-400 font-bold">{{ t('preferences') }}</span>
+        <div class="prefs-bar">
+            <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">
+                <i class="fa-solid fa-sliders text-amber-500"></i>
+                <span>{{ t('preferences') }}</span>
             </div>
 
-            <div class="flex items-center gap-2 sm:gap-3">
-                <!-- Language Badge -->
+            <div style="display: flex; align-items: center; gap: 12px;">
                 {% set prefs = user.preferences_json if user and user.preferences_json else {} %}
                 {% set global_lang = prefs.get('language') or prefs.get('aiPreferences', {}).get('aiLanguage') or 'English (US / UK)' %}
-                <div class="flex items-center gap-1 bg-slate-50 px-2.5 py-1 rounded-md border border-slate-200/80 text-[11px] text-slate-700">
-                    <i class="fa-solid fa-globe text-slate-400 text-[10px]"></i>
-                    <span class="text-slate-400 font-medium hidden sm:inline">{{ t('language') }}:</span>
-                    <strong id="dispLanguage" class="text-slate-800 font-bold">{{ global_lang }}</strong>
+                <div class="pref-chip">
+                    <i class="fa-solid fa-globe text-slate-400"></i>
+                    <span class="hidden sm:inline">{{ t('language') }}:</span>
+                    <strong id="dispLanguage">{{ global_lang }}</strong>
                 </div>
 
-                <!-- Currency Badge -->
-                <div class="flex items-center gap-1 bg-slate-50 px-2.5 py-1 rounded-md border border-slate-200/80 text-[11px] text-slate-700">
-                    <i class="fa-solid fa-coins text-amber-500 text-[10px]"></i>
-                    <span class="text-slate-400 font-medium hidden sm:inline">{{ t('currency') }}:</span>
-                    <strong id="dispCurrency" class="text-slate-800 font-bold">{{ prefs.get('trackerSettings', {}).get('currency', 'USD ($)') }}</strong>
+                <div class="pref-chip">
+                    <i class="fa-solid fa-coins text-amber-500"></i>
+                    <span class="hidden sm:inline">{{ t('currency') }}:</span>
+                    <strong id="dispCurrency">{{ prefs.get('trackerSettings', {}).get('currency', 'USD ($)') }}</strong>
                 </div>
             </div>
         </div>
 
         <!-- 3. COMPACT METRICS GRID -->
-        <div class="grid grid-cols-3 gap-2.5 sm:gap-4">
-            <!-- Resumes Metric -->
-            <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-center text-center sm:text-left gap-2 sm:gap-3">
-                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-emerald-50 text-[#02353C] flex items-center justify-center text-sm sm:text-base shrink-0">
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-icon" style="background: #ecfdf5; color: #065f46;">
                     <i class="fa-solid fa-file-lines"></i>
                 </div>
                 <div>
-                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ t('resumes') }}</p>
-                    <p class="text-base sm:text-xl font-extrabold text-slate-900" id="resumeCount">{{ resumes|length if resumes else 0 }}</p>
+                    <p style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 2px 0;">{{ t('resumes') }}</p>
+                    <p style="font-size: 22px; font-weight: 900; color: var(--text-primary); margin: 0;" id="resumeCount">{{ resumes|length if resumes else 0 }}</p>
                 </div>
             </div>
 
-            <!-- Credits Metric -->
-            <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-center text-center sm:text-left gap-2 sm:gap-3">
-                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-sm sm:text-base shrink-0">
+            <div class="metric-card">
+                <div class="metric-icon" style="background: #fef3c7; color: #d97706;">
                     <i class="fa-solid fa-wand-magic-sparkles"></i>
                 </div>
                 <div>
-                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ t('credits') }}</p>
-                    <p class="text-base sm:text-xl font-extrabold text-slate-900">{{ user.ai_credits_remaining if (user and user.ai_credits_remaining is defined and user.ai_credits_remaining is not none) else 3 }}</p>
+                    <p style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 2px 0;">{{ t('credits') }}</p>
+                    <p style="font-size: 22px; font-weight: 900; color: var(--text-primary); margin: 0;">{{ user.ai_credits_remaining if (user and user.ai_credits_remaining is defined and user.ai_credits_remaining is not none) else 3 }}</p>
                 </div>
             </div>
 
-            <!-- Applications Metric -->
-            <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-center text-center sm:text-left gap-2 sm:gap-3">
-                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-sm sm:text-base shrink-0">
+            <div class="metric-card">
+                <div class="metric-icon" style="background: #eff6ff; color: #2563eb;">
                     <i class="fa-solid fa-briefcase"></i>
                 </div>
                 <div>
-                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ t('applications') }}</p>
-                    <p class="text-base sm:text-xl font-extrabold text-slate-900" id="dashboardActiveAppsCount">0 {{ t('active') }}</p>
+                    <p style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 2px 0;">{{ t('applications') }}</p>
+                    <p style="font-size: 22px; font-weight: 900; color: var(--text-primary); margin: 0;" id="dashboardActiveAppsCount">0 {{ t('active') }}</p>
                 </div>
             </div>
         </div>
 
-        <!-- 4. CVFORGE PRO CAREER SUITE (QUICK-ACCESS INTEGRATED GRID) -->
-        <div class="bg-white rounded-xl p-4 border border-slate-200/90 shadow-2xs space-y-3">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <div class="w-7 h-7 rounded-lg bg-amber-400/20 text-amber-600 flex items-center justify-center text-xs font-bold">
+        <!-- 4. CVFORGE PRO CAREER SUITE -->
+        <div class="suite-card">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 32px; height: 32px; border-radius: 8px; background: #fef3c7; color: #d97706; display: flex; align-items: center; justify-content: center; font-size: 14px;">
                         <i class="fa-solid fa-bolt"></i>
                     </div>
-                    <h2 class="text-sm sm:text-base font-extrabold text-[#02353C]">{{ t('career_suite_title') }}</h2>
+                    <h2 style="font-size: 16px; font-weight: 800; color: var(--brand-teal); margin: 0;">{{ t('career_suite_title') }}</h2>
                 </div>
-                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-gradient-to-r from-amber-400 to-amber-500 text-[#02353C] shadow-2xs">
+                <span class="badge-pro-pill">
                     <i class="fa-solid fa-crown text-[9px]"></i> {{ t('unlocked_suite') }}
                 </span>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
-                
-                <!-- ATS Optimizer -->
-                <a href="/ats" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
+            <div class="suite-grid">
+                <a href="/ats" class="suite-item">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 13px; font-weight: 700; color: var(--brand-teal); display: flex; align-items: center; gap: 8px;">
                             <i class="fa-solid fa-file-shield text-amber-500"></i> {{ t('suite_ats_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <i class="fa-solid fa-arrow-right text-xs text-slate-400"></i>
                     </div>
-                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_ats_desc') }}</p>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin: 0; line-height: 1.4;">{{ t('suite_ats_desc') }}</p>
                 </a>
 
-                <!-- Cover Letter Generator -->
-                <a href="/cover-letter" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
+                <a href="/cover-letter" class="suite-item">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 13px; font-weight: 700; color: var(--brand-teal); display: flex; align-items: center; gap: 8px;">
                             <i class="fa-solid fa-envelope-open-text text-amber-500"></i> {{ t('suite_cover_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <i class="fa-solid fa-arrow-right text-xs text-slate-400"></i>
                     </div>
-                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_cover_desc') }}</p>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin: 0; line-height: 1.4;">{{ t('suite_cover_desc') }}</p>
                 </a>
 
-                <!-- Interview AI Coach -->
-                <a href="/interview" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
+                <a href="/interview" class="suite-item">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 13px; font-weight: 700; color: var(--brand-teal); display: flex; align-items: center; gap: 8px;">
                             <i class="fa-solid fa-comments text-amber-500"></i> {{ t('suite_interview_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <i class="fa-solid fa-arrow-right text-xs text-slate-400"></i>
                     </div>
-                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_interview_desc') }}</p>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin: 0; line-height: 1.4;">{{ t('suite_interview_desc') }}</p>
                 </a>
 
-                <!-- Application Tracker -->
-                <a href="/tracker" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
+                <a href="/tracker" class="suite-item">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 13px; font-weight: 700; color: var(--brand-teal); display: flex; align-items: center; gap: 8px;">
                             <i class="fa-solid fa-kanban text-amber-500"></i> {{ t('suite_tracker_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <i class="fa-solid fa-arrow-right text-xs text-slate-400"></i>
                     </div>
-                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_tracker_desc') }}</p>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin: 0; line-height: 1.4;">{{ t('suite_tracker_desc') }}</p>
                 </a>
 
-                <!-- AI Salary Negotiator (NEW) -->
-                <a href="/salary-negotiator" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
+                <a href="/salary-negotiator" class="suite-item">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 13px; font-weight: 700; color: var(--brand-teal); display: flex; align-items: center; gap: 8px;">
                             <i class="fa-solid fa-calculator text-amber-500"></i> AI Salary Negotiator
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <i class="fa-solid fa-arrow-right text-xs text-slate-400"></i>
                     </div>
-                    <p class="text-[11px] text-slate-500 leading-snug">Evaluate job offers and generate data-backed counter-offer strategies.</p>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin: 0; line-height: 1.4;">Evaluate job offers and generate data-backed counter-offer strategies.</p>
                 </a>
 
-                <!-- Cold Outreach Generator -->
-                <a href="/outreach" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
+                <a href="/outreach" class="suite-item">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 13px; font-weight: 700; color: var(--brand-teal); display: flex; align-items: center; gap: 8px;">
                             <i class="fa-solid fa-paper-plane text-amber-500"></i> Cold Outreach
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <i class="fa-solid fa-arrow-right text-xs text-slate-400"></i>
                     </div>
-                    <p class="text-[11px] text-slate-500 leading-snug">Generate personalized networking messages and cold emails.</p>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin: 0; line-height: 1.4;">Generate personalized networking messages and cold emails.</p>
                 </a>
 
-                <!-- LinkedIn Optimizer -->
-                <a href="/linkedin" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#0a66c2] transition-colors flex items-center gap-1.5">
+                <a href="/linkedin" class="suite-item">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 13px; font-weight: 700; color: #0a66c2; display: flex; align-items: center; gap: 8px;">
                             <i class="fa-brands fa-linkedin text-blue-600"></i> {{ t('suite_linkedin_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <i class="fa-solid fa-arrow-right text-xs text-slate-400"></i>
                     </div>
-                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_linkedin_desc') }}</p>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin: 0; line-height: 1.4;">{{ t('suite_linkedin_desc') }}</p>
                 </a>
 
-                <!-- PDF Studio -->
-                <a href="/pdf-studio" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
+                <a href="/pdf-studio" class="suite-item">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 13px; font-weight: 700; color: var(--brand-teal); display: flex; align-items: center; gap: 8px;">
                             <i class="fa-solid fa-palette text-amber-500"></i> {{ t('suite_pdf_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <i class="fa-solid fa-arrow-right text-xs text-slate-400"></i>
                     </div>
-                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_pdf_desc') }}</p>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin: 0; line-height: 1.4;">{{ t('suite_pdf_desc') }}</p>
                 </a>
-
             </div>
         </div>
 
         <!-- 5. SAVED RESUMES SECTION -->
-        <div class="space-y-3 pt-1">
-            <div class="flex items-center justify-between gap-2">
+        <div class="resumes-section">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px;">
                 <div>
-                    <h2 class="text-base sm:text-lg font-bold text-slate-900">{{ t('my_saved_resumes') }}</h2>
-                    <p class="text-slate-500 text-[11px] hidden sm:block">{{ t('manage_docs_sub') }}</p>
+                    <h2 style="font-size: 18px; font-weight: 800; color: var(--brand-teal); margin: 0 0 2px 0;">{{ t('my_saved_resumes') }}</h2>
+                    <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">{{ t('manage_docs_sub') }}</p>
                 </div>
-                <a href="/editor" class="inline-flex items-center gap-1.5 bg-[#02353C] hover:bg-[#034a54] text-white font-bold text-xs px-3.5 py-2 rounded-lg shadow-2xs transition-all whitespace-nowrap">
-                    <i class="fa-solid fa-plus text-[10px] text-amber-400"></i>
+                <a href="/editor" class="btn-primary">
+                    <i class="fa-solid fa-plus text-amber-400"></i>
                     <span>{{ t('create_cv') }}</span>
                 </a>
             </div>
 
             {% if resumes and resumes|length > 0 %}
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5" id="resumesGrid">
+                <div class="resumes-grid" id="resumesGrid">
                     {% for resume in resumes %}
-                        <div class="bg-white rounded-xl border border-slate-200/80 shadow-2xs hover:shadow-sm transition-all duration-200 flex flex-col overflow-hidden group" id="resume-card-{{ resume.id }}">
-                            <div class="h-1 w-full" style="background-color: {{ resume.accent_color if resume.accent_color else '#E5A93C' }};"></div>
+                        <div class="resume-item-card" id="resume-card-{{ resume.id }}">
+                            <div style="height: 4px; width: 100%; background: {{ resume.accent_color if resume.accent_color else 'var(--brand-gold)' }};"></div>
                             
-                            <div class="p-3.5 flex-grow space-y-2">
-                                <div class="flex items-start justify-between gap-2">
-                                    <h3 class="font-bold text-slate-800 text-sm line-clamp-1 group-hover:text-[#02353C] transition-colors">
-                                        {{ resume.title if resume.title else t('untitled_resume') }}
-                                    </h3>
-                                    <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200 shrink-0">
-                                        {{ resume.content_json.target_role if (resume.content_json is mapping and resume.content_json.get('target_role')) else (resume.template_used if resume.template_used else t('modern_template')) }}
-                                    </span>
+                            <div style="padding: 20px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 12px;">
+                                <div>
+                                    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 6px;">
+                                        <h3 style="font-size: 15px; font-weight: 700; color: var(--text-primary); margin: 0; line-height: 1.3;">
+                                            {{ resume.title if resume.title else t('untitled_resume') }}
+                                        </h3>
+                                        <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 2px 8px; border-radius: 6px; background: #f1f5f9; color: var(--text-secondary); border: 1px solid var(--border-color); flex-shrink: 0;">
+                                            {{ resume.content_json.target_role if (resume.content_json is mapping and resume.content_json.get('target_role')) else (resume.template_used if resume.template_used else t('modern_template')) }}
+                                        </span>
+                                    </div>
+                                    <p style="font-size: 12px; color: var(--text-muted); margin: 0; display: flex; align-items: center; gap: 6px;">
+                                        <i class="fa-regular fa-clock"></i>
+                                        {{ t('last_updated') }} {{ resume.updated_at.strftime('%b %d, %Y') if resume.updated_at else t('recently') }}
+                                    </p>
                                 </div>
 
-                                <p class="text-[11px] text-slate-400 flex items-center gap-1">
-                                    <i class="fa-regular fa-clock text-[10px]"></i>
-                                    {{ t('last_updated') }} {{ resume.updated_at.strftime('%b %d, %Y') if resume.updated_at else t('recently') }}
-                                </p>
-                            </div>
-
-                            <div class="px-3.5 py-2 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between text-xs font-semibold">
-                                <div class="flex items-center gap-3">
-                                    <a href="/editor?id={{ resume.id }}" class="text-[#02353C] hover:text-emerald-700 flex items-center gap-1">
-                                        <i class="fa-solid fa-pen-to-square text-[11px]"></i> {{ t('edit') }}
-                                    </a>
-                                    <a href="/preview?id={{ resume.id }}" class="text-slate-500 hover:text-slate-900 flex items-center gap-1" title="{{ t('view_pdf') }}">
-                                        <i class="fa-solid fa-eye text-[11px]"></i> {{ t('view_pdf') }}
-                                    </a>
+                                <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border-color); font-size: 13px; font-weight: 600;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <a href="/editor?id={{ resume.id }}" style="color: var(--brand-teal); text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                                            <i class="fa-solid fa-pen-to-square"></i> {{ t('edit') }}
+                                        </a>
+                                        <a href="/preview?id={{ resume.id }}" style="color: var(--text-secondary); text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                                            <i class="fa-solid fa-eye"></i> {{ t('view_pdf') }}
+                                        </a>
+                                    </div>
+                                    <button type="button" onclick="confirmDeleteResume('{{ resume.id }}', '{{ resume.title|e }}')" style="background: none; border: none; color: var(--error-red); cursor: pointer; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; padding: 0;">
+                                        <i class="fa-solid fa-trash-can"></i> {{ t('delete') }}
+                                    </button>
                                 </div>
-                                <button type="button" onclick="confirmDeleteResume('{{ resume.id }}', '{{ resume.title|e }}')" class="text-rose-500 hover:text-rose-700 flex items-center gap-1 transition-colors">
-                                    <i class="fa-solid fa-trash-can text-[11px]"></i> {{ t('delete') }}
-                                </button>
                             </div>
                         </div>
                     {% endfor %}
                 </div>
 
             {% else %}
-                <div class="bg-white rounded-xl border-2 border-dashed border-slate-200 p-6 sm:p-8 text-center space-y-3" id="emptyState">
-                    <div class="w-11 h-11 bg-slate-100 rounded-xl flex items-center justify-center mx-auto text-slate-400 text-lg">
+                <div style="border: 2px dashed var(--border-color); border-radius: var(--radius-md); padding: 48px 20px; text-align: center; background: #fafafa; margin-top: 16px;" id="emptyState">
+                    <div style="width: 52px; height: 52px; border-radius: 50%; background: #f1f5f9; color: var(--text-muted); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 14px; font-size: 20px;">
                         <i class="fa-solid fa-file-circle-plus"></i>
                     </div>
-                    <div class="max-w-sm mx-auto space-y-1">
-                          <h3 class="text-sm font-bold text-slate-800">{{ t('no_resumes_yet') }}</h3>
-                          <p class="text-slate-500 text-xs">{{ t('no_resumes_sub') }}</p>
-                    </div>
-                    <a href="/editor" class="inline-flex items-center gap-1.5 bg-[#02353C] hover:bg-[#034a54] text-white font-bold text-xs px-4 py-2.5 rounded-lg shadow-2xs transition-all">
-                        <i class="fa-solid fa-plus text-amber-400 text-[10px]"></i>
+                    <h3 style="font-size: 16px; font-weight: 700; color: var(--text-primary); margin: 0 0 6px 0;">{{ t('no_resumes_yet') }}</h3>
+                    <p style="font-size: 13px; color: var(--text-muted); margin: 0 0 20px 0;">{{ t('no_resumes_sub') }}</p>
+                    <a href="/editor" class="btn-primary" style="display: inline-flex;">
+                        <i class="fa-solid fa-plus text-amber-400"></i>
                         {{ t('build_first_cv') }}
                     </a>
                 </div>
@@ -342,22 +606,22 @@
     </main>
 
     <!-- RESUME DELETION MODAL -->
-    <div id="deleteResumeModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200 p-4">
-        <div class="bg-white rounded-xl p-5 max-w-sm w-full shadow-xl border border-slate-100 space-y-3">
-            <div class="flex items-center gap-3 text-rose-600">
-                <div class="w-9 h-9 rounded-full bg-rose-50 flex items-center justify-center shrink-0">
-                    <i class="fa-solid fa-trash-can text-base"></i>
+    <div id="deleteResumeModal" class="modal-backdrop">
+        <div style="background: white; border-radius: var(--radius-lg); width: 90%; max-width: 420px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
+            <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
+                <div style="width: 40px; height: 40px; border-radius: 50%; background: #fef2f2; color: var(--error-red); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px;">
+                    <i class="fa-solid fa-trash-can"></i>
                 </div>
                 <div>
-                      <h3 class="font-bold text-slate-900 text-sm">{{ t('delete') }}</h3>
-                      <p class="text-xs text-slate-500" id="deleteModalResumeTitle">{{ t('confirm_delete_resume') }}</p>
+                    <h3 style="font-size: 16px; font-weight: 800; color: var(--text-primary); margin: 0 0 4px 0;">{{ t('delete') }}</h3>
+                    <p style="font-size: 13px; color: var(--text-secondary); margin: 0;" id="deleteModalResumeTitle">{{ t('confirm_delete_resume') }}</p>
                 </div>
             </div>
-            <div class="flex items-center justify-end gap-2 pt-1">
-                <button type="button" onclick="closeDeleteModal()" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-lg transition-all">
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                <button type="button" onclick="closeDeleteModal()" style="padding: 10px 16px; background: #f1f5f9; border: none; border-radius: var(--radius-md); font-weight: 700; font-size: 13px; color: var(--text-secondary); cursor: pointer;">
                     {{ t('cancel') }}
                 </button>
-                <button type="button" id="confirmDeleteBtn" class="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-lg transition-all shadow-2xs">
+                <button type="button" id="confirmDeleteBtn" style="padding: 10px 16px; background: var(--error-red); border: none; border-radius: var(--radius-md); font-weight: 700; font-size: 13px; color: #ffffff; cursor: pointer;">
                     {{ t('delete') }}
                 </button>
             </div>
@@ -365,17 +629,15 @@
     </div>
 
     <!-- FOOTER -->
-    <footer class="bg-white border-t border-slate-200 py-3 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 text-center text-[11px] text-slate-400">
+    <footer style="background: #ffffff; border-top: 1px solid var(--border-color); padding: 20px 0; margin-top: auto; text-align: center; font-size: 12px; color: var(--text-muted);">
+        <div style="max-width: 1320px; margin: 0 auto; padding: 0 6%;">
             {{ t('footer_copy_exact') }}
         </div>
     </footer>
 {% endblock %}
 
 {% block extra_js %}
-    <!-- READ-ONLY SYNC & DELETION SCRIPTS -->
     <script>
-        // Load active stored preferences and avatar into the Dashboard UI
         async function loadStoredSettings() {
             try {
                 const response = await fetch('/api/v1/settings');
@@ -400,7 +662,6 @@
                     }
                 }
 
-                // Check top-level globalLanguage first, with fallbacks to nested properties
                 const activeLanguage = data.globalLanguage || (data.aiPreferences && data.aiPreferences.aiLanguage) || 'English (US / UK)';
                 document.getElementById('dispLanguage').textContent = activeLanguage;
 
@@ -412,7 +673,6 @@
             }
         }
 
-        // Fetch live job application count from tracker API
         async function loadDashboardApplicationCount() {
             try {
                 const res = await fetch('/api/v1/tracker');
@@ -435,20 +695,17 @@
             loadDashboardApplicationCount();
         });
 
-        // Resume Deletion Script
         let targetResumeId = null;
 
         function confirmDeleteResume(resumeId, title) {
             targetResumeId = resumeId;
             document.getElementById('deleteModalResumeTitle').textContent = `{{ t('confirm_delete_resume') }} ("${title}")`;
-            const modal = document.getElementById('deleteResumeModal');
-            modal.classList.remove('opacity-0', 'pointer-events-none');
+            document.getElementById('deleteResumeModal').style.display = 'flex';
         }
 
         function closeDeleteModal() {
             targetResumeId = null;
-            const modal = document.getElementById('deleteResumeModal');
-            modal.classList.add('opacity-0', 'pointer-events-none');
+            document.getElementById('deleteResumeModal').style.display = 'none';
         }
 
         document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
@@ -465,7 +722,8 @@
 
                 const card = document.getElementById(`resume-card-${targetResumeId}`);
                 if (card) {
-                    card.classList.add('scale-95', 'opacity-0');
+                    card.style.transform = 'scale(0.95)';
+                    card.style.opacity = '0';
                     setTimeout(() => {
                         card.remove();
                         
