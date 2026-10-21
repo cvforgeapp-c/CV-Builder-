@@ -76,7 +76,7 @@
                     <div class="p-3 bg-gradient-to-r from-amber-500/10 via-slate-50 to-emerald-500/10 border border-amber-300/60 rounded-xl space-y-2">
                         <div class="flex items-center justify-between">
                             <label class="text-[11px] font-bold text-[#02353C] flex items-center gap-1.5">
-                                <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i> Auto-Fill Role & Details from Link
+                                <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i> Auto-Fill Company, Role & Details from Link
                             </label>
                             <span class="text-[9px] font-bold bg-amber-400 text-[#02353C] px-2 py-0.5 rounded-full uppercase tracking-wider">Smart Fill</span>
                         </div>
@@ -240,7 +240,7 @@
                         <div class="flex items-center gap-1.5 flex-wrap pt-1">
                             <span class="text-[10px] font-bold text-slate-400 mr-1">Quick Refine:</span>
                             <button type="button" onclick="quickRefine('shorter')" class="text-[10px] font-semibold bg-slate-100 hover:bg-amber-100 text-slate-700 hover:text-[#02353C] px-2 py-0.5 rounded-md transition-colors border border-slate-200">
-                                <i class="fa-solid fa-[#02353C] text-[9px]"></i> Make Shorter
+                                Make Shorter
                             </button>
                             <button type="button" onclick="quickRefine('Technical & Analytical')" class="text-[10px] font-semibold bg-slate-100 hover:bg-amber-100 text-slate-700 hover:text-[#02353C] px-2 py-0.5 rounded-md transition-colors border border-slate-200">
                                 More Technical
@@ -278,7 +278,7 @@
 
 {% block extra_js %}
     <script>
-        // Scrape Live Job URL
+        // Scrape Live Job URL (Auto-fills Company Name, Job Title, & Description)
         async function scrapeJobPosting() {
             const urlInput = document.getElementById('jobUrlInput').value.trim();
             const statusEl = document.getElementById('scrapeStatus');
@@ -291,7 +291,7 @@
 
             statusEl.classList.remove('hidden', 'text-rose-600', 'text-emerald-600');
             statusEl.classList.add('text-slate-500');
-            statusEl.textContent = "Fetching job page details...";
+            statusEl.textContent = "Fetching job page details & company info...";
             btnText.textContent = "Fetching...";
 
             try {
@@ -305,6 +305,9 @@
 
                 if (!response.ok) throw new Error(data.error || "Unable to extract job context from URL.");
 
+                if (data.company_name_meta) {
+                    document.getElementById('companyName').value = data.company_name_meta;
+                }
                 if (data.job_title_meta) {
                     document.getElementById('jobTitle').value = data.job_title_meta;
                 }
@@ -313,7 +316,7 @@
                 }
 
                 statusEl.classList.add('text-emerald-600');
-                statusEl.textContent = "Job context auto-filled successfully!";
+                statusEl.textContent = "Company and job details auto-filled successfully!";
             } catch (err) {
                 statusEl.classList.add('text-rose-600');
                 statusEl.textContent = err.message;
