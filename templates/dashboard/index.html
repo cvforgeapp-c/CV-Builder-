@@ -971,6 +971,7 @@
 
             if (response.ok && data.success) {
               const pkg = data.copilot_package;
+              const targetResumeId = pkg.generated_resume_id || resumeId;
 
               // Populate Score & Full ATS Keywords
               document.getElementById('copilotAtsScore').innerText = (pkg.ats_score || 85) + '%';
@@ -996,14 +997,12 @@
               document.getElementById('copilotEmailSubject').innerText = pkg.cold_email_subject || '';
               document.getElementById('copilotEmailBody').innerText = pkg.cold_email_body || '';
 
-              // Dynamic Redirect Links for Edit & Preview/Download
-              const generatedResumeId = pkg.generated_resume_id || resumeId;
-              
+              // Dynamic Redirect Links for Edit & Preview/Download pointing to the newly generated resume ID
               const editCvBtn = document.getElementById('copilotEditCvBtn');
-              if (editCvBtn) editCvBtn.href = `/editor?id=${generatedResumeId || ''}`;
+              if (editCvBtn) editCvBtn.href = `/editor?id=${targetResumeId || ''}`;
 
               const previewCvBtn = document.getElementById('copilotPreviewCvBtn');
-              if (previewCvBtn) previewCvBtn.href = `/preview?id=${generatedResumeId || ''}`;
+              if (previewCvBtn) previewCvBtn.href = `/preview?id=${targetResumeId || ''}`;
 
               document.getElementById('copilotLoadingState').classList.add('hidden');
               document.getElementById('copilotResultsState').classList.remove('hidden');
