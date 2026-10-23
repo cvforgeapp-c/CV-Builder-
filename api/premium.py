@@ -452,6 +452,7 @@ FEATURE_RULES = {
     'interview_coach': {'tier': 'pro', 'cost': 5},
     'pdf_studio': {'tier': 'pro', 'cost': 5},
     'salary_negotiator': {'tier': 'elite', 'cost': 8},
+    'application_copilot': {'tier': 'pro', 'cost': 9},
 }
 
 # ============================================================
@@ -2343,6 +2344,109 @@ def scrape_job_url():
         }),
         500,
     )
+
+
+@premium_bp.route('/application-copilot', methods=['POST'])
+@login_required
+def run_application_copilot():
+    data = request.get_json(silent=True) or {}
+    
+    job_description = (data.get('job_description') or '').strip()
+    company_name = (data.get('company_name') or 'Target Company').strip()
+    job_title = (data.get('job_title') or 'Target Role').strip()
+    resume_id = data.get('resume_id')
+    
+    COPILOT_CREDIT_COST = FEATURE_RULES['application_copilot']['cost']
+
+    user_credits = getattr(current_user, 'ai_credits_remaining', 0) or 0
+    if not has_premium_access(current_user) and user_credits < COPILOT_CREDIT_COST:
+        return jsonify({
+            'error': 'Insufficient credits to run the AI Application Copilot.',
+            'required_credits': COPILOT_CREDIT_COST,
+            'credits_remaining': user_credits,
+            'button_action': 'REFILL_CREDIT'
+        }), 402
+
+    if not job_description:
+        return jsonify({'error': 'Job description is required for Copilot.'}), 400
+
+    try:
+        preferred_language = get_user_preferred_language(current_user)
+        
+        resume_content = {}
+        if resume_id:
+            resume_obj = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first()
+            if resume_obj and isinstance(resume_obj.content_json, dict):
+                resume_content = resume_obj.content_json
+
+        copilot_prompt = f"""
+You are CVForge Copilot — an executive career agent.
+
+Generate a complete, cohesive application package for this job posting in {preferred_language}.
+
+TARGET COMPANY: {company_name}
+TARGET ROLE: {job_title}
+
+JOB DESCRIPTION:
+{job_description}
+
+CANDIDATE BACKGROUND:
+{json.dumps(resume_content, ensure_ascii=False)}
+
+Generate strictly valid JSON containing:
+1. "ats_analysis": Match score (1-100), key matching keywords, and top missing skills.
+2. "tailored_summary": A rewritten, job-specific professional summary.
+3. "cover_letter": A complete, persuasive 3-paragraph cover letter.
+4. "cold_email": A high-converting recruiter cold email.
+5. "interview_questions": 3 role-specific practice interview questions.
+
+OUTPUT FORMAT (JSON ONLY):
+{{
+  "ats_score": 88,
+  "matched_keywords": ["Python", "Flask", "PostgreSQL"],
+  "missing_keywords": ["Docker", "Redis"],
+  "tailored_summary": "...",
+  "cover_letter": "...",
+  "cold_email_subject": "...",
+  "cold_email_body": "...",
+  "interview_questions": ["Question 1...", "Question 2...", "Question 3..."]
+}}
+"""
+
+        raw_response = generate_ai_text(copilot_prompt, max_tokens=2500)
+        
+        clean_json_str = raw_response.strip()
+        if clean_json_str.startswith('```json'): clean_json_str = clean_json_str[7:]
+        if clean_json_str.startswith('```'): clean_json_str = clean_json_str[3:]
+        if clean_json_str.endswith('```'): clean_json_str = clean_json_str[:-3]
+
+        copilot_result = json.loads(clean_json_str.strip())
+
+        if not has_premium_access(current_user):
+            current_user.ai_credits_remaining = user_credits - COPILOT_CREDIT_COST
+        
+        new_job_app = JobApplication(
+            id=str(uuid.uuid4()),
+            user_id=current_user.id,
+            company_name=company_name,
+            role_title=job_title,
+            status='applying',
+            updated_at=datetime.utcnow()
+        )
+        db.session.add(new_job_app)
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'copilot_package': copilot_result,
+            'tracker_id': new_job_app.id,
+            'credits_remaining': current_user.ai_credits_remaining
+        }), 200
+
+    except Exception as exc:
+        db.session.rollback()
+        premium_app.logger.error(f'Copilot execution error: {exc}')
+        return jsonify({'error': 'Failed to complete Copilot application run. Please try again.'}), 500
 
 
 @premium_bp.route('/portal-qa', methods=['POST'])
