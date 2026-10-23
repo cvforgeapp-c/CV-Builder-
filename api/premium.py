@@ -1,5 +1,5 @@
 import base64
-from datetime import datetime
+from datetime import datetime, timedelta
 import hashlib
 import hmac
 import io
@@ -415,19 +415,44 @@ def generate_ai_text(prompt, max_tokens=2048):
 
 
 # ============================================================
-# PADDLE CONFIGURATION
+# PADDLE CONFIGURATION & PRICING STRUCTURE
 # ============================================================
 
 PADDLE_API_KEY = os.getenv('PADDLE_API_KEY') or os.getenv('paddle_api_key')
-
 PADDLE_WEBHOOK_SECRET_KEY = os.getenv('PADDLE_WEBHOOK_SECRET_KEY') or os.getenv(
     'paddle_webhook_secret_key'
 )
-
 PADDLE_ENV = os.getenv('PADDLE_ENV', 'sandbox')
-PADDLE_PREMIUM_PRICE_ID = os.getenv(
-    'PADDLE_PREMIUM_PRICE_ID', 'pri_01hxxxxxxxxx'
-)
+
+# Updated Pricing Structure Mappings & Price IDs
+PADDLE_PRO_PRICE_ID = os.getenv('PADDLE_PRO_PRICE_ID', 'pri_pro_monthly_1799')
+PADDLE_ELITE_PRICE_ID = os.getenv('PADDLE_ELITE_PRICE_ID', 'pri_expert_monthly_4399')
+
+PRICE_MAP = {
+    # Monthly Subscriptions ($17.99 Pro, $43.99 Elite)
+    PADDLE_PRO_PRICE_ID: {"type": "sub", "tier": "pro", "credits": 130},
+    PADDLE_ELITE_PRICE_ID: {"type": "sub", "tier": "elite", "credits": 360},
+    
+    # 7-Day One-Time Pass ($7.99)
+    "pri_pass_7day_799": {"type": "pass", "tier": "pro", "credits": 60, "days": 7},
+    
+    # One-Time Credit Top-Up Packs ($2.99, $9.99, $24.99)
+    "pri_topup_10_299": {"type": "topup", "credits": 10},
+    "pri_topup_50_999": {"type": "topup", "credits": 50},
+    "pri_topup_150_2499": {"type": "topup", "credits": 150}
+}
+
+# Feature Consumption Weights
+FEATURE_RULES = {
+    'ats_optimizer': {'tier': 'free', 'cost': 3},
+    'cover_letter': {'tier': 'pro', 'cost': 3},
+    'cold_outreach': {'tier': 'pro', 'cost': 2},
+    'portal_qa': {'tier': 'pro', 'cost': 3},
+    'linkedin_optimizer': {'tier': 'pro', 'cost': 4},
+    'interview_coach': {'tier': 'pro', 'cost': 5},
+    'pdf_studio': {'tier': 'pro', 'cost': 5},
+    'salary_negotiator': {'tier': 'elite', 'cost': 8},
+}
 
 # ============================================================
 # LOGIN MANAGER USER LOADER
@@ -487,7 +512,7 @@ def register():
           is_premium=False,
           subscription_status='free',
           monthly_cv_generations=0,
-          ai_credits_remaining=3,
+          ai_credits_remaining=15, # Updated starting credit balance
           preferences_json={},
       )
 
@@ -720,11 +745,9 @@ def preview():
         id=resume_id, user_id=current_user.id
     ).first()
 
-  # Retrieve User Preferences for PDF Studio Fallbacks
   user_prefs = getattr(current_user, 'preferences_json', None) or {}
   pdf_settings = user_prefs.get('pdf_settings', {}) if isinstance(user_prefs, dict) else {}
 
-  # Determine active template & accent color with safe normalization
   raw_template = request.args.get('template') or (
       resume.template_used if resume and getattr(resume, 'template_used', None) else pdf_settings.get('template_id', 'exec_minimalist')
   )
@@ -2325,10 +2348,6 @@ def scrape_job_url():
 @premium_bp.route('/portal-qa', methods=['POST'])
 @login_required
 def generate_portal_qa():
-    """
-    Evaluates portal essay prompt, cross-references selected candidate profile,
-    and returns STAR structured breakdown + tailored application essay response.
-    """
     try:
         data = request.get_json(silent=True) or {}
 
@@ -2789,7 +2808,7 @@ def get_user_status():
               if is_developer
               else getattr(current_user, 'subscription_status', 'free')
           ),
-          'paddle_price_id': PADDLE_PREMIUM_PRICE_ID,
+          'paddle_price_id': PADDLE_PRO_PRICE_ID,
       }),
       200,
   )
@@ -2812,54 +2831,64 @@ def paddle_webhook():
   if not isinstance(event_data, dict):
     event_data = {}
 
-  if event_type in ['subscription.created', 'subscription.activated']:
-    custom_data = event_data.get('custom_data', {})
-    if not isinstance(custom_data, dict):
-      custom_data = {}
+  customer_email = event_data.get('customer', {}).get('email') or event_data.get('customer_email')
+  items = event_data.get('items', [])
+  price_id = items[0].get('price', {}).get('id') if items else None
+  item_config = PRICE_MAP.get(price_id, {})
 
-    user_id = custom_data.get('user_id')
-    user = None
+  # 1. HANDLE SUBSCRIPTION CREATED / UPDATED / ACTIVATED
+  if event_type in ['subscription.created', 'subscription.activated', 'subscription.updated']:
+    subscription_status = event_data.get('status')
+    if subscription_status == 'active' and item_config.get('type') == 'sub' and customer_email:
+      user = User.query.filter_by(email=customer_email.lower()).first()
+      if user:
+        try:
+          user.is_premium = True
+          user.subscription_tier = item_config['tier']
+          user.subscription_status = 'active'
+          user.ai_credits_remaining = item_config['credits']
+          user.paddle_subscription_id = event_data.get('id')
+          db.session.commit()
+        except Exception as exc:
+          db.session.rollback()
+          print(f'Paddle sub update error: {exc}')
+          return jsonify({'error': 'Unable to update subscription status.'}), 500
 
-    if user_id:
-      user = db.session.get(User, user_id)
-    else:
-      customer_id = event_data.get('customer_id')
-      if customer_id:
-        user = User.query.filter_by(paddle_customer_id=customer_id).first()
+  # 2. HANDLE ONE-TIME TRANSACTIONS (Passes & Credit Top-Ups)
+  elif event_type == 'transaction.completed':
+    if price_id in PRICE_MAP and customer_email:
+      user = User.query.filter_by(email=customer_email.lower()).first()
+      if user:
+        try:
+          if item_config['type'] == 'pass':
+            expiry_date = datetime.utcnow() + timedelta(days=item_config['days'])
+            user.subscription_tier = 'pro'
+            user.ai_credits_remaining = (user.ai_credits_remaining or 0) + item_config['credits']
+            user.pass_expires_at = expiry_date
+            db.session.commit()
+          elif item_config['type'] == 'topup':
+            user.ai_credits_remaining = (user.ai_credits_remaining or 0) + item_config['credits']
+            db.session.commit()
+        except Exception as exc:
+          db.session.rollback()
+          print(f'Paddle one-time purchase update error: {exc}')
+          return jsonify({'error': 'Unable to process purchase transaction.'}), 500
 
-    if user:
-      try:
-        user.is_premium = True
-        user.subscription_status = event_data.get('status', 'active')
-        user.paddle_customer_id = event_data.get('customer_id')
-        user.paddle_subscription_id = event_data.get('id')
-        db.session.commit()
-      except Exception as exc:
-        db.session.rollback()
-        print(f'Paddle activation update error: {exc}')
-        return (
-            jsonify({'error': 'Unable to update subscription status.'}),
-            500,
-        )
-
+  # 3. HANDLE CANCELLATIONS / PAST DUE
   elif event_type in ['subscription.canceled', 'subscription.past_due']:
     subscription_id = event_data.get('id')
     if subscription_id:
-      user = User.query.filter_by(
-          paddle_subscription_id=subscription_id
-      ).first()
+      user = User.query.filter_by(paddle_subscription_id=subscription_id).first()
       if user:
         try:
           user.is_premium = False
+          user.subscription_tier = 'free'
           user.subscription_status = event_data.get('status', 'canceled')
           db.session.commit()
         except Exception as exc:
           db.session.rollback()
           print(f'Paddle cancellation update error: {exc}')
-          return (
-              jsonify({'error': 'Unable to update subscription status.'}),
-              500,
-          )
+          return jsonify({'error': 'Unable to update subscription status.'}), 500
 
   return jsonify({'status': 'success'}), 200
 
