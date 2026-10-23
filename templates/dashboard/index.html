@@ -360,6 +360,26 @@
                       <p id="copilotTailoredSummary" class="text-xs text-slate-300 leading-relaxed pt-1"></p>
                     </div>
 
+                    <!-- Optimized Experience & Technical Skills Block -->
+                    <div class="space-y-2 bg-slate-800/60 p-3.5 rounded-xl border border-slate-700/50">
+                      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <h5 class="text-xs font-bold uppercase text-amber-400 tracking-wider flex items-center gap-1.5">
+                          <i class="fa-solid fa-list-check"></i> Optimized Experience & Technical Skills
+                        </h5>
+                      </div>
+                      
+                      <div class="text-xs text-slate-300 space-y-2 pt-1">
+                        <div>
+                          <strong class="text-slate-400 block text-[11px] uppercase font-bold">Tech Skills:</strong>
+                          <p id="copilotTailoredSkillsTech" class="text-emerald-300 font-mono text-[11px]"></p>
+                        </div>
+                        <div>
+                          <strong class="text-slate-400 block text-[11px] uppercase font-bold">Experience Highlights:</strong>
+                          <p id="copilotTailoredExperience" class="whitespace-pre-line leading-relaxed text-slate-300"></p>
+                        </div>
+                      </div>
+                    </div>
+
                     <!-- 2. Target Cover Letter Draft + Copy / Export PDF Options -->
                     <div class="space-y-2 bg-slate-800/60 p-3.5 rounded-xl border border-slate-700/50">
                       <div class="flex items-center justify-between gap-2">
@@ -993,6 +1013,15 @@
 
               // Populate Generated Assets
               document.getElementById('copilotTailoredSummary').innerText = pkg.tailored_summary || '';
+              
+              if (document.getElementById('copilotTailoredExperience')) {
+                document.getElementById('copilotTailoredExperience').innerText = pkg.tailored_experience || '';
+              }
+
+              if (document.getElementById('copilotTailoredSkillsTech')) {
+                document.getElementById('copilotTailoredSkillsTech').innerText = pkg.tailored_skills_tech || '';
+              }
+
               document.getElementById('copilotCoverLetterText').value = pkg.cover_letter || '';
               document.getElementById('copilotEmailSubject').innerText = pkg.cold_email_subject || '';
               document.getElementById('copilotEmailBody').innerText = pkg.cold_email_body || '';
@@ -1020,7 +1049,7 @@
             document.getElementById('copilotLoadingState').classList.add('hidden');
             document.getElementById('copilotFormContainer').classList.remove('hidden');
             errorMsg.innerText = "A network error occurred. Please try again.";
-            errorAlert.classList.remove('hidden');
+            errorAlert.classList.add('hidden');
           }
         }
     </script>
