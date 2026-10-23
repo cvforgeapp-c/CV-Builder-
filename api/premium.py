@@ -2374,10 +2374,11 @@ def run_application_copilot():
         preferred_language = get_user_preferred_language(current_user)
         
         resume_content = {}
+        source_resume = None
         if resume_id:
-            resume_obj = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first()
-            if resume_obj and isinstance(resume_obj.content_json, dict):
-                resume_content = resume_obj.content_json
+            source_resume = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first()
+            if source_resume and isinstance(source_resume.content_json, dict):
+                resume_content = source_resume.content_json
 
         copilot_prompt = f"""
 You are CVForge Copilot — an executive career agent.
@@ -2421,6 +2422,49 @@ OUTPUT FORMAT (JSON ONLY):
         if clean_json_str.endswith('```'): clean_json_str = clean_json_str[:-3]
 
         copilot_result = json.loads(clean_json_str.strip())
+        tailored_summary = copilot_result.get("tailored_summary", "").strip()
+
+        # PERSIST TAILORED SUMMARY DIRECTLY INTO A NEW RESUME RECORD IN DATABASE
+        import copy
+        user_prefs = getattr(current_user, 'preferences_json', None) or {}
+        pdf_settings = user_prefs.get('pdf_settings', {}) if isinstance(user_prefs, dict) else {}
+        chosen_template = (source_resume.template_used if source_resume and getattr(source_resume, 'template_used', None) else pdf_settings.get('template_id', 'exec_minimalist')).replace('-', '_')
+        chosen_accent = source_resume.accent_color if source_resume and getattr(source_resume, 'accent_color', None) else pdf_settings.get('accent_color', '#02353C')
+
+        if source_resume:
+            new_resume = Resume(
+                id=str(uuid.uuid4()),
+                user_id=current_user.id,
+                title=f"CV - {company_name} ({job_title})",
+                content_json=copy.deepcopy(source_resume.content_json) if isinstance(source_resume.content_json, dict) else {},
+                template_used=chosen_template,
+                accent_color=chosen_accent,
+                updated_at=datetime.utcnow()
+            )
+        else:
+            new_resume = Resume(
+                id=str(uuid.uuid4()),
+                user_id=current_user.id,
+                title=f"CV - {company_name} ({job_title})",
+                content_json={
+                    'full_name': getattr(current_user, 'full_name', ''),
+                    'email': current_user.email,
+                    'target_role': job_title
+                },
+                template_used=chosen_template,
+                accent_color=chosen_accent,
+                updated_at=datetime.utcnow()
+            )
+
+        if not isinstance(new_resume.content_json, dict):
+            new_resume.content_json = {}
+
+        if tailored_summary:
+            new_resume.content_json['summary'] = tailored_summary
+        new_resume.content_json['target_role'] = job_title
+
+        flag_modified(new_resume, 'content_json')
+        db.session.add(new_resume)
 
         if not has_premium_access(current_user):
             current_user.ai_credits_remaining = user_credits - COPILOT_CREDIT_COST
@@ -2435,6 +2479,8 @@ OUTPUT FORMAT (JSON ONLY):
         )
         db.session.add(new_job_app)
         db.session.commit()
+
+        copilot_result['generated_resume_id'] = new_resume.id
 
         return jsonify({
             'success': True,
