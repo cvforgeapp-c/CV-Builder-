@@ -238,6 +238,12 @@
                     <option value="{{ r.id }}">{{ r.title }}</option>
                   {% endfor %}
                 </select>
+                {% if not resumes or resumes|length == 0 %}
+                <div class="mt-1.5 p-2 bg-amber-500/10 border border-amber-500/20 rounded-lg text-[11px] text-amber-300 flex items-center justify-between">
+                  <span>Want better tailored results? Build your base CV in CVForge Studio first.</span>
+                  <a href="/editor" class="underline font-bold hover:text-amber-200 whitespace-nowrap ml-2">Open Studio →</a>
+                </div>
+                {% endif %}
               </div>
 
               <!-- Target Company & Role -->
@@ -294,39 +300,63 @@
               </div>
             </div>
 
-            <!-- Success View / Results Screen -->
+            <!-- Success View / Results Screen with Full ATS Breakdown -->
             <div id="copilotResultsState" class="hidden p-6 space-y-6">
+              
               <div class="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                  <div class="p-2 bg-emerald-500/20 rounded-lg text-emerald-400 font-bold text-sm" id="copilotAtsScore">88%</div>
+                  <div class="p-2 bg-emerald-500/20 rounded-lg text-emerald-400 font-extrabold text-base" id="copilotAtsScore">88%</div>
                   <div>
-                    <h4 class="text-sm font-bold text-white">Application Package Ready</h4>
-                    <p class="text-xs text-slate-400">Saved to Job Tracker & ready for custom styling.</p>
+                    <h4 class="text-sm font-bold text-white">Full ATS Tailored Package Ready</h4>
+                    <p class="text-xs text-slate-400">Job tracked & populated with high-ranking ATS keywords.</p>
                   </div>
                 </div>
-                <a id="copilotStudioRedirect" href="#" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs transition-colors flex items-center gap-1.5">
+                <a id="copilotStudioRedirect" href="#" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs transition-colors flex items-center gap-1.5 shadow-md">
                   Open in CVForge Studio
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                  <i class="fa-solid fa-arrow-right text-[10px]"></i>
                 </a>
               </div>
 
-              <!-- Generated Details Tabs / Preview -->
+              <!-- FULL ATS OPTIMIZER BREAKDOWN GRID -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700/60 space-y-2">
+                  <h5 class="text-xs font-bold uppercase text-emerald-400 tracking-wider flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-check"></i> Key Matched Terms
+                  </h5>
+                  <div id="copilotMatchedKeywords" class="flex flex-wrap gap-1.5 text-[11px] text-slate-300">
+                    <!-- Populated via JS -->
+                  </div>
+                </div>
+
+                <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700/60 space-y-2">
+                  <h5 class="text-xs font-bold uppercase text-amber-400 tracking-wider flex items-center gap-1.5">
+                    <i class="fa-solid fa-bullseye"></i> Integrated Target Keywords
+                  </h5>
+                  <div id="copilotTargetKeywords" class="flex flex-wrap gap-1.5 text-[11px] text-slate-300">
+                    <!-- Populated via JS -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- Generated Documents Breakdown -->
               <div class="space-y-4">
                 <div>
-                  <h5 class="text-xs font-semibold uppercase text-slate-400 tracking-wider mb-1">Tailored Executive Summary</h5>
+                  <h5 class="text-xs font-semibold uppercase text-slate-400 tracking-wider mb-1 flex items-center gap-1.5">
+                    <i class="fa-solid fa-user-tie text-amber-400"></i> Tailored Executive Summary
+                  </h5>
                   <p id="copilotTailoredSummary" class="text-xs text-slate-300 bg-slate-800 p-3 rounded-lg border border-slate-700/50 leading-relaxed"></p>
                 </div>
 
                 <div>
                   <h5 class="text-xs font-semibold uppercase text-slate-400 tracking-wider mb-1">Target Cover Letter Draft</h5>
-                  <textarea id="copilotCoverLetterText" rows="4" readonly class="w-full text-xs text-slate-300 bg-slate-800 p-3 rounded-lg border border-slate-700/50 resize-none focus:outline-none"></textarea>
+                  <textarea id="copilotCoverLetterText" rows="5" readonly class="w-full text-xs text-slate-300 bg-slate-800 p-3 rounded-lg border border-slate-700/50 resize-y focus:outline-none leading-relaxed"></textarea>
                 </div>
 
                 <div>
                   <h5 class="text-xs font-semibold uppercase text-slate-400 tracking-wider mb-1">Recruiter Cold Email</h5>
                   <div class="bg-slate-800 p-3 rounded-lg border border-slate-700/50 text-xs text-slate-300 space-y-1">
                     <div><strong class="text-slate-400">Subject:</strong> <span id="copilotEmailSubject"></span></div>
-                    <div id="copilotEmailBody" class="mt-2 text-slate-400 whitespace-pre-wrap"></div>
+                    <div id="copilotEmailBody" class="mt-2 text-slate-400 whitespace-pre-wrap leading-relaxed"></div>
                   </div>
                 </div>
               </div>
@@ -831,14 +861,33 @@
             if (response.ok && data.success) {
               const pkg = data.copilot_package;
 
+              // Populate Score & Full ATS Keywords
               document.getElementById('copilotAtsScore').innerText = (pkg.ats_score || 85) + '%';
+              
+              const matchedContainer = document.getElementById('copilotMatchedKeywords');
+              const targetContainer = document.getElementById('copilotTargetKeywords');
+
+              if (matchedContainer && pkg.matched_keywords) {
+                matchedContainer.innerHTML = pkg.matched_keywords
+                  .map(kw => `<span class="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">${kw}</span>`)
+                  .join('');
+              }
+
+              if (targetContainer && pkg.integrated_keywords) {
+                targetContainer.innerHTML = pkg.integrated_keywords
+                  .map(kw => `<span class="px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-300">${kw}</span>`)
+                  .join('');
+              }
+
+              // Populate Generated Assets
               document.getElementById('copilotTailoredSummary').innerText = pkg.tailored_summary || '';
               document.getElementById('copilotCoverLetterText').value = pkg.cover_letter || '';
               document.getElementById('copilotEmailSubject').innerText = pkg.cold_email_subject || '';
               document.getElementById('copilotEmailBody').innerText = pkg.cold_email_body || '';
 
               const studioBtn = document.getElementById('copilotStudioRedirect');
-              studioBtn.href = `/editor?id=${resumeId || ''}`;
+              const generatedResumeId = pkg.generated_resume_id || resumeId;
+              studioBtn.href = `/editor?id=${generatedResumeId || ''}`;
 
               document.getElementById('copilotLoadingState').classList.add('hidden');
               document.getElementById('copilotResultsState').classList.remove('hidden');
