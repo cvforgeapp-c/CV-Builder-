@@ -927,65 +927,86 @@ def priority_support():
 
 
 # ============================================================
-# JOBS SEARCH API BLUEPRINT (ADZUNA INTEGRATION)
+# LIVE JOB SEARCH BLUEPRINT (REPLACING ADZUNA WITH JSEARCH)
 # ============================================================
 
 jobs_bp = Blueprint('jobs', __name__)
 
-ADZUNA_APP_ID = os.environ.get('ADZUNA_APP_ID', 'YOUR_FREE_ADZUNA_APP_ID')
-ADZUNA_APP_KEY = os.environ.get('ADZUNA_APP_KEY', 'YOUR_FREE_ADZUNA_APP_KEY')
+RAPIDAPI_KEY = os.environ.get('RAPIDAPI_KEY', 'YOUR_RAPIDAPI_KEY')
+
 
 @jobs_bp.route('/api/v1/jobs/search', methods=['POST'])
 @login_required
 def search_jobs():
-    data = request.get_json() or {}
-    query = data.get('query', '').strip()
-    location = data.get('location', '').strip()
-    country = data.get('country', 'us').lower() # us, gb, ca, etc.
-    page = int(data.get('page', 1))
+  data = request.get_json() or {}
+  query = data.get('query', '').strip()
+  location = data.get('location', '').strip()
+  page = int(data.get('page', 1))
 
-    if not query:
-        return jsonify({'error': 'Please enter a search query (e.g. Frontend Engineer)'}), 400
+  if not query:
+    return (
+        jsonify(
+            {'error': 'Please enter a search query (e.g. Frontend Engineer)'}
+        ),
+        400,
+    )
 
-    # Call Adzuna Free Search Endpoint
-    url = f"https://api.adzuna.com/v1/api/jobs/{country}/search/{page}"
-    params = {
-        'app_id': ADZUNA_APP_ID,
-        'app_key': ADZUNA_APP_KEY,
-        'what': query,
-        'where': location,
-        'results_per_page': 10,
-        'content-type': 'application/json'
-    }
+  full_query = f'{query} in {location}' if location else query
 
-    try:
-        response = requests.get(url, params=params, timeout=10)
-        if response.status_code != 200:
-            return jsonify({'error': 'Job search provider temporary error. Try again.'}), 502
+  url = 'https://jsearch.p.rapidapi.com/search'
+  headers = {
+      'X-RapidAPI-Key': RAPIDAPI_KEY,
+      'X-RapidAPI-Host': 'jsearch.p.rapidapi.com',
+  }
+  params = {'query': full_query, 'page': str(page), 'num_pages': '1'}
 
-        res_data = response.json()
-        results = []
+  try:
+    response = requests.get(url, headers=headers, params=params, timeout=10)
+    if response.status_code != 200:
+      return (
+          jsonify(
+              {'error': 'Job search provider temporary error. Try again.'}
+          ),
+          502,
+      )
 
-        for job in res_data.get('results', []):
-            results.append({
-                'id': job.get('id'),
-                'title': job.get('title'),
-                'company': job.get('company', {}).get('display_name', 'Company'),
-                'location': job.get('location', {}).get('display_name', 'Remote / Unspecified'),
-                'description': job.get('description', ''),
-                'redirect_url': job.get('redirect_url', ''),
-                'created': job.get('created', '')
-            })
+    res_data = response.json()
+    results = []
 
-        return jsonify({
+    for job in res_data.get('data', []):
+      city = job.get('job_city') or ''
+      country = job.get('job_country') or ''
+      loc_str = (
+          f'{city}, {country}'.strip(', ')
+          if (city or country)
+          else 'Remote / Unspecified'
+      )
+
+      results.append({
+          'id': job.get('job_id'),
+          'title': job.get('job_title'),
+          'company': job.get('employer_name', 'Company'),
+          'location': loc_str,
+          'description': job.get('job_description', ''),
+          'redirect_url': job.get('job_apply_link', ''),
+          'created': job.get('job_posted_at_datetime_utc', ''),
+      })
+
+    return (
+        jsonify({
             'success': True,
-            'total_count': res_data.get('count', 0),
-            'jobs': results
-        }), 200
+            'total_count': len(results),
+            'jobs': results,
+        }),
+        200,
+    )
 
-    except Exception as e:
-        return jsonify({'error': 'Failed to reach job search network.'}), 500
+  except Exception as e:
+    premium_app.logger.error('Job search API request error: %s', e)
+    return jsonify({'error': 'Failed to reach job search network.'}), 500
 
+
+# Register Job Search Blueprint
 premium_app.register_blueprint(jobs_bp)
 
 
