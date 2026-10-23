@@ -2381,9 +2381,9 @@ def run_application_copilot():
                 resume_content = source_resume.content_json
 
         copilot_prompt = f"""
-You are CVForge Copilot — an executive career agent.
+You are CVForge Copilot — an executive career agent and elite ATS resume writer.
 
-Generate a complete, cohesive application package for this job posting in {preferred_language}.
+Generate a complete, cohesive, and fully optimized application package for this job posting in {preferred_language}.
 
 TARGET COMPANY: {company_name}
 TARGET ROLE: {job_title}
@@ -2394,19 +2394,33 @@ JOB DESCRIPTION:
 CANDIDATE BACKGROUND:
 {json.dumps(resume_content, ensure_ascii=False)}
 
+STRICT NO-FABRICATION & TRUTHFULNESS DIRECTIVES:
+1. DO NOT invent completely false companies, dates, degrees, or tools that the candidate has never used.
+2. Re-frame and polish existing candidate bullet points to emphasize relevant transferable skills and impact aligned with the job description.
+3. Re-organize technical and soft skills to prioritize terms directly mentioned in the job description that match the candidate's real profile.
+
 Generate strictly valid JSON containing:
-1. "ats_analysis": Match score (1-100), key matching keywords, and top missing skills.
-2. "tailored_summary": A rewritten, job-specific professional summary.
-3. "cover_letter": A complete, persuasive 3-paragraph cover letter.
-4. "cold_email": A high-converting recruiter cold email.
-5. "interview_questions": 3 role-specific practice interview questions.
+1. "ats_score": Estimated match score (1-100).
+2. "matched_keywords": Array of key terms matched between candidate profile and job description.
+3. "integrated_keywords": Array of target keywords integrated into the optimized CV text.
+4. "tailored_summary": A rewritten, job-specific professional summary.
+5. "tailored_experience": Rewritten, impact-oriented experience bullet points formatted with standard bullet prefixes ('- ').
+6. "tailored_skills_tech": Clean, comma-separated technical skills tailored to the role.
+7. "tailored_skills_soft": Clean, comma-separated soft skills tailored to the role.
+8. "cover_letter": A complete, persuasive 3-paragraph cover letter.
+9. "cold_email_subject": High-converting recruiter email subject line.
+10. "cold_email_body": A structured cold email body.
+11. "interview_questions": 3 role-specific practice interview questions.
 
 OUTPUT FORMAT (JSON ONLY):
 {{
   "ats_score": 88,
   "matched_keywords": ["Python", "Flask", "PostgreSQL"],
-  "missing_keywords": ["Docker", "Redis"],
+  "integrated_keywords": ["REST API", "Database Optimization"],
   "tailored_summary": "...",
+  "tailored_experience": "- Enhanced system reliability by...",
+  "tailored_skills_tech": "Python, Flask, PostgreSQL, REST APIs",
+  "tailored_skills_soft": "Cross-functional Collaboration, Problem Solving",
   "cover_letter": "...",
   "cold_email_subject": "...",
   "cold_email_body": "...",
@@ -2414,7 +2428,7 @@ OUTPUT FORMAT (JSON ONLY):
 }}
 """
 
-        raw_response = generate_ai_text(copilot_prompt, max_tokens=2500)
+        raw_response = generate_ai_text(copilot_prompt, max_tokens=2800)
         
         clean_json_str = raw_response.strip()
         if clean_json_str.startswith('```json'): clean_json_str = clean_json_str[7:]
@@ -2422,9 +2436,13 @@ OUTPUT FORMAT (JSON ONLY):
         if clean_json_str.endswith('```'): clean_json_str = clean_json_str[:-3]
 
         copilot_result = json.loads(clean_json_str.strip())
+        
         tailored_summary = copilot_result.get("tailored_summary", "").strip()
+        tailored_experience = copilot_result.get("tailored_experience", "").strip()
+        tailored_skills_tech = copilot_result.get("tailored_skills_tech", "").strip()
+        tailored_skills_soft = copilot_result.get("tailored_skills_soft", "").strip()
 
-        # PERSIST TAILORED SUMMARY DIRECTLY INTO A NEW RESUME RECORD IN DATABASE
+        # PERSIST ALL TAILORED SECTIONS (SUMMARY, EXPERIENCE, SKILLS) INTO NEW RESUME RECORD
         import copy
         user_prefs = getattr(current_user, 'preferences_json', None) or {}
         pdf_settings = user_prefs.get('pdf_settings', {}) if isinstance(user_prefs, dict) else {}
@@ -2461,6 +2479,13 @@ OUTPUT FORMAT (JSON ONLY):
 
         if tailored_summary:
             new_resume.content_json['summary'] = tailored_summary
+        if tailored_experience:
+            new_resume.content_json['experience_bullets'] = tailored_experience
+        if tailored_skills_tech:
+            new_resume.content_json['skills_tech'] = tailored_skills_tech
+        if tailored_skills_soft:
+            new_resume.content_json['skills_soft'] = tailored_skills_soft
+
         new_resume.content_json['target_role'] = job_title
 
         flag_modified(new_resume, 'content_json')
