@@ -13,30 +13,33 @@
 
 {% block content %}
     <!-- TOP NAVIGATION BAR -->
-    <nav class="bg-[#02353C] text-white sticky top-0 z-40 shadow-sm">
+    <nav class="bg-[#02353C] text-white sticky top-0 z-40 shadow-sm border-b border-white/5">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-14">
+            <div class="flex items-center justify-between h-16">
                 
                 <!-- BRAND LOGO -->
-                <a href="/" class="flex items-center space-x-2 group">
-                    <div class="w-8 h-8 rounded-lg bg-amber-400 text-[#02353C] flex items-center justify-center font-extrabold text-base shadow-sm group-hover:scale-105 transition-transform">
+                <a href="/" class="flex items-center space-x-2.5 group">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-500 text-[#02353C] flex items-center justify-center font-extrabold text-base shadow-md group-hover:scale-105 transition-transform">
                         <i class="fa-solid fa-file-invoice"></i>
                     </div>
-                    <span class="font-extrabold text-lg tracking-tight text-white">
-                        CVForge
-                    </span>
+                    <div class="flex flex-col">
+                        <span class="font-extrabold text-base tracking-tight text-white leading-none">
+                            CVForge<span class="text-amber-400">.</span>
+                        </span>
+                        <span class="text-[9px] font-semibold text-amber-400/90 tracking-widest uppercase mt-0.5">Executive Suite</span>
+                    </div>
                 </a>
 
                 <!-- HEADER ACTIONS -->
-                <div class="flex items-center space-x-2">
+                <div class="flex items-center space-x-3">
                     <!-- Settings Gear Icon -->
-                    <a href="/dashboard/account" class="p-1.5 px-2.5 rounded-lg bg-white/10 hover:bg-white/20 transition-all border border-white/10 text-xs font-semibold text-white flex items-center gap-1.5" title="{{ t('account_settings') }}">
+                    <a href="/dashboard/account" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition-all border border-white/10 text-xs font-semibold text-white flex items-center gap-2 shadow-2xs" title="{{ t('account_settings') }}">
                         <i class="fa-solid fa-gear text-amber-400 text-xs"></i>
                         <span class="hidden sm:inline">{{ t('nav_settings') }}</span>
                     </a>
 
                     <!-- Logout Icon -->
-                    <a href="/auth/logout" class="p-1.5 px-2 text-rose-300 hover:text-rose-100 hover:bg-white/10 rounded-lg transition-all" title="{{ t('nav_logout') }}">
+                    <a href="/auth/logout" class="p-2 text-rose-300 hover:text-rose-100 hover:bg-white/10 rounded-lg transition-all" title="{{ t('nav_logout') }}">
                         <i class="fa-solid fa-power-off text-sm"></i>
                     </a>
                 </div>
@@ -46,42 +49,44 @@
     </nav>
 
     <!-- MAIN DASHBOARD CONTENT -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-3.5">
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-5">
 
-        <!-- 1. COMPACT USER PROFILE BANNER -->
-        <div class="bg-white rounded-xl p-3.5 sm:p-4 border border-slate-200/90 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3 relative">
-            <div class="flex items-center gap-3">
+        <!-- 1. EXECUTIVE USER PROFILE BANNER -->
+        <div class="bg-gradient-to-br from-white via-white to-slate-50/80 rounded-2xl p-5 sm:p-6 border border-slate-200/90 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4 relative overflow-hidden">
+            <div class="absolute right-0 top-0 w-96 h-96 bg-amber-400/5 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="flex items-center gap-4 relative z-10">
                 <!-- User Avatar / First Initial / Uploaded Image -->
-                <div class="w-11 h-11 rounded-xl bg-[#02353C] text-amber-400 font-extrabold text-base flex items-center justify-center border border-amber-400/30 shadow-2xs shrink-0 uppercase overflow-hidden bg-cover bg-center" id="dispAvatar" {% if user and user.avatar_url %}style="background-image: url('{{ user.avatar_url }}');"{% endif %}>
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#02353C] to-[#05535E] text-amber-400 font-extrabold text-xl flex items-center justify-center border-2 border-amber-400/40 shadow-md shrink-0 uppercase overflow-hidden bg-cover bg-center" id="dispAvatar" {% if user and user.avatar_url %}style="background-image: url('{{ user.avatar_url }}');"{% endif %}>
                     {% if not user or not user.avatar_url %}
                         {{ (user.full_name[0] if user and user.full_name else (user.email[0].upper() if user and user.email else 'U')) }}
                     {% endif %}
                 </div>
 
-                <div class="space-y-0.5">
-                    <div class="flex items-center space-x-2 flex-wrap gap-y-0.5">
-                        <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight" id="dispWelcomeName">
+                <div class="space-y-1">
+                    <div class="flex items-center space-x-2.5 flex-wrap gap-y-1">
+                        <h1 class="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight" id="dispWelcomeName">
                             {{ t('welcome_back') }}, {{ user.full_name if user and user.full_name else t('job_seeker') }}!
                         </h1>
                         {% if user and user.is_premium %}
-                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-[#02353C] shadow-2xs">
-                                  <i class="fa-solid fa-crown text-[9px]"></i> {{ t('pro') }}   
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-gradient-to-r from-amber-400 to-amber-500 text-[#02353C] shadow-2xs">
+                                  <i class="fa-solid fa-crown text-[10px]"></i> {{ t('pro') }}   
                             </span>
                         {% else %}
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
                                 {{ t('free_tier') }}
                             </span>
                         {% endif %}
                     </div>
 
                     <!-- Target Role & Email Info -->
-                    <div class="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-slate-500 font-medium">
-                        <span class="flex items-center gap-1 text-slate-700 font-semibold" id="dispTargetRole">
+                    <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 font-medium">
+                        <span class="flex items-center gap-1.5 text-slate-800 font-semibold bg-slate-100/80 px-2.5 py-0.5 rounded-md border border-slate-200/60" id="dispTargetRole">
                             <i class="fa-solid fa-briefcase text-amber-500 text-[11px]"></i>
                             <span>{{ user.preferences_json.get('profile', {}).get('targetTitle', t('general_professional')) if user and user.preferences_json else t('general_professional') }}</span>
                         </span>
-                        <span class="flex items-center gap-1 text-slate-400 truncate">
-                            <i class="fa-regular fa-envelope text-[11px]"></i>
+                        <span class="flex items-center gap-1.5 text-slate-500 truncate">
+                            <i class="fa-regular fa-envelope text-[11px] text-slate-400"></i>
                             {{ user.email if user and user.email else 'user@example.com' }}
                         </span>
                     </div>
@@ -89,12 +94,12 @@
             </div>
 
             {% if not user or not user.is_premium %}
-                <div class="bg-gradient-to-r from-[#02353C] to-[#05535E] text-white rounded-lg p-2.5 px-3 shadow-2xs flex items-center justify-between gap-3 md:max-w-xs w-full shrink-0 border border-white/10">
+                <div class="bg-gradient-to-r from-[#02353C] to-[#05535E] text-white rounded-xl p-3.5 px-4 shadow-sm flex items-center justify-between gap-4 md:max-w-xs w-full shrink-0 border border-white/10 relative z-10">
                     <div class="space-y-0.5">
-                          <p class="font-bold text-[11px] uppercase tracking-wider text-amber-400">{{ t('upgrade_pro') }}</p>
-                          <p class="text-[10px] text-slate-200 leading-tight">{{ t('upgrade_sub') }}</p>
+                          <p class="font-extrabold text-xs uppercase tracking-wider text-amber-400">{{ t('upgrade_pro') }}</p>
+                          <p class="text-[11px] text-slate-200 leading-snug">{{ t('upgrade_sub') }}</p>
                     </div>
-                    <a href="/pricing" class="bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold text-[11px] px-3 py-1.5 rounded-md transition-all shrink-0 flex items-center gap-1">
+                    <a href="/pricing" class="bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold text-xs px-3.5 py-2 rounded-lg transition-all shrink-0 flex items-center gap-1.5 shadow-sm">
                         <i class="fa-solid fa-bolt text-[10px]"></i> {{ t('upgrade_btn') }}
                     </a>
                 </div>
@@ -102,63 +107,65 @@
         </div>
 
         <!-- 2. STREAMLINED PREFERENCES BAR -->
-        <div class="bg-white rounded-xl p-2.5 px-3.5 border border-slate-200/80 shadow-2xs flex items-center justify-between gap-2 text-xs">
-            <div class="flex items-center gap-1.5 text-slate-500 font-semibold">
-                <i class="fa-solid fa-sliders text-amber-500 text-xs"></i>
-                <span class="uppercase text-[9px] tracking-wider text-slate-400 font-bold">{{ t('preferences') }}</span>
+        <div class="bg-white rounded-xl p-3 px-4 border border-slate-200/80 shadow-2xs flex items-center justify-between gap-2 text-xs">
+            <div class="flex items-center gap-2 text-slate-500 font-semibold">
+                <div class="w-6 h-6 rounded-md bg-amber-50 text-amber-600 flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-sliders"></i>
+                </div>
+                <span class="uppercase text-[10px] tracking-wider text-slate-400 font-bold">{{ t('preferences') }}</span>
             </div>
 
-            <div class="flex items-center gap-2 sm:gap-3">
+            <div class="flex items-center gap-3">
                 <!-- Language Badge -->
                 {% set prefs = user.preferences_json if user and user.preferences_json else {} %}
                 {% set global_lang = prefs.get('language') or prefs.get('aiPreferences', {}).get('aiLanguage') or 'English (US / UK)' %}
-                <div class="flex items-center gap-1 bg-slate-50 px-2.5 py-1 rounded-md border border-slate-200/80 text-[11px] text-slate-700">
-                    <i class="fa-solid fa-globe text-slate-400 text-[10px]"></i>
+                <div class="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200/80 text-xs text-slate-700">
+                    <i class="fa-solid fa-globe text-slate-400 text-xs"></i>
                     <span class="text-slate-400 font-medium hidden sm:inline">{{ t('language') }}:</span>
-                    <strong id="dispLanguage" class="text-slate-800 font-bold">{{ global_lang }}</strong>
+                    <strong id="dispLanguage" class="text-slate-900 font-bold">{{ global_lang }}</strong>
                 </div>
 
                 <!-- Currency Badge -->
-                <div class="flex items-center gap-1 bg-slate-50 px-2.5 py-1 rounded-md border border-slate-200/80 text-[11px] text-slate-700">
-                    <i class="fa-solid fa-coins text-amber-500 text-[10px]"></i>
+                <div class="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200/80 text-xs text-slate-700">
+                    <i class="fa-solid fa-coins text-amber-500 text-xs"></i>
                     <span class="text-slate-400 font-medium hidden sm:inline">{{ t('currency') }}:</span>
-                    <strong id="dispCurrency" class="text-slate-800 font-bold">{{ prefs.get('trackerSettings', {}).get('currency', 'USD ($)') }}</strong>
+                    <strong id="dispCurrency" class="text-slate-900 font-bold">{{ prefs.get('trackerSettings', {}).get('currency', 'USD ($)') }}</strong>
                 </div>
             </div>
         </div>
 
-        <!-- 3. COMPACT METRICS GRID -->
-        <div class="grid grid-cols-3 gap-2.5 sm:gap-4">
+        <!-- 3. EXECUTIVE METRICS GRID -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
             <!-- Resumes Metric -->
-            <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-center text-center sm:text-left gap-2 sm:gap-3">
-                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-emerald-50 text-[#02353C] flex items-center justify-center text-sm sm:text-base shrink-0">
+            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs flex items-center gap-3.5">
+                <div class="w-12 h-12 rounded-xl bg-teal-50 text-[#02353C] flex items-center justify-center text-lg shrink-0 border border-teal-100">
                     <i class="fa-solid fa-file-lines"></i>
                 </div>
                 <div>
-                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ t('resumes') }}</p>
-                    <p class="text-base sm:text-xl font-extrabold text-slate-900" id="resumeCount">{{ resumes|length if resumes else 0 }}</p>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ t('resumes') }}</p>
+                    <p class="text-xl font-extrabold text-slate-900" id="resumeCount">{{ resumes|length if resumes else 0 }}</p>
                 </div>
             </div>
 
             <!-- Credits Metric -->
-            <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-center text-center sm:text-left gap-2 sm:gap-3">
-                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-sm sm:text-base shrink-0">
+            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs flex items-center gap-3.5">
+                <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg shrink-0 border border-amber-100">
                     <i class="fa-solid fa-wand-magic-sparkles"></i>
                 </div>
                 <div>
-                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ t('credits') }}</p>
-                    <p class="text-base sm:text-xl font-extrabold text-slate-900">{{ user.ai_credits_remaining if (user and user.ai_credits_remaining is defined and user.ai_credits_remaining is not none) else 3 }}</p>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ t('credits') }}</p>
+                    <p class="text-xl font-extrabold text-slate-900">{{ user.ai_credits_remaining if (user and user.ai_credits_remaining is defined and user.ai_credits_remaining is not none) else 3 }}</p>
                 </div>
             </div>
 
             <!-- Applications Metric -->
-            <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-center text-center sm:text-left gap-2 sm:gap-3">
-                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-sm sm:text-base shrink-0">
+            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs flex items-center gap-3.5">
+                <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg shrink-0 border border-blue-100">
                     <i class="fa-solid fa-briefcase"></i>
                 </div>
                 <div>
-                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ t('applications') }}</p>
-                    <p class="text-base sm:text-xl font-extrabold text-slate-900" id="dashboardActiveAppsCount">0 {{ t('active') }}</p>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ t('applications') }}</p>
+                    <p class="text-xl font-extrabold text-slate-900" id="dashboardActiveAppsCount">0 {{ t('active') }}</p>
                 </div>
             </div>
         </div>
@@ -166,33 +173,33 @@
         <!-- ========================================================== -->
         <!-- AI APPLICATION COPILOT TRIGGER BANNER & MODAL -->
         <!-- ========================================================== -->
-        <div class="bg-gradient-to-r from-teal-900 via-emerald-800 to-slate-900 text-white rounded-xl p-4 sm:p-5 shadow-sm border border-emerald-500/20 relative overflow-hidden">
+        <div class="bg-gradient-to-r from-[#02353C] via-[#044c57] to-[#05535E] text-white rounded-2xl p-5 sm:p-6 shadow-md border border-teal-500/20 relative overflow-hidden">
           <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
-            <svg class="w-64 h-64 text-emerald-400" fill="currentColor" viewBox="0 0 24 24">
+            <svg class="w-72 h-72 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
             </svg>
           </div>
 
-          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 relative z-10">
-            <div class="space-y-1.5 max-w-2xl">
-              <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-500/20 border border-emerald-400/30 rounded-full text-[10px] font-bold text-emerald-300">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5 relative z-10">
+            <div class="space-y-2 max-w-2xl">
+              <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-400/10 border border-amber-400/30 rounded-full text-[11px] font-bold text-amber-300">
+                <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
                 CVForge Executive Agent
               </div>
-              <h2 class="text-lg sm:text-xl font-bold tracking-tight text-white">AI Application Copilot</h2>
-              <p class="text-slate-300 text-xs leading-relaxed">
+              <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white">AI Application Copilot</h2>
+              <p class="text-slate-200 text-xs sm:text-sm leading-relaxed">
                 Paste a job link or description. Copilot generates a tailored CV draft for <strong>CVForge Studio</strong>, a cover letter, recruiter outreach emails, and adds the role to your Job Tracker in one click.
               </p>
             </div>
 
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-4">
               <div class="text-right hidden sm:block">
-                <span class="block text-[10px] text-slate-400 font-medium">Bundled Discount</span>
-                <span class="text-xs font-bold text-emerald-400">9 Credits <span class="line-through text-slate-500 text-[10px]">11 Credits</span></span>
+                <span class="block text-[10px] text-slate-300 font-medium">Bundled Discount</span>
+                <span class="text-xs font-bold text-amber-400">9 Credits <span class="line-through text-slate-400 text-[10px]">11 Credits</span></span>
               </div>
               <button 
                 onclick="openCopilotModal()" 
-                class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2.5 rounded-lg shadow-sm transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center gap-2 whitespace-nowrap text-xs">
+                class="bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold px-5 py-3 rounded-xl shadow-sm transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center gap-2.5 whitespace-nowrap text-xs sm:text-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                 </svg>
@@ -207,9 +214,9 @@
           <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-3xl w-full shadow-2xl overflow-hidden my-2 sm:my-6 flex flex-col max-h-[92vh]">
             
             <!-- Modal Header (Sticky Top) -->
-            <div class="flex items-center justify-between px-5 py-3.5 border-b border-slate-800 bg-slate-900/90 shrink-0 sticky top-0 z-20 backdrop-blur-sm">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-slate-800 bg-slate-900/90 shrink-0 sticky top-0 z-20 backdrop-blur-sm">
               <div class="flex items-center gap-3">
-                <div class="p-2 bg-emerald-500/10 rounded-lg border border-emerald-500/20 text-emerald-400">
+                <div class="p-2.5 bg-amber-400/10 rounded-xl border border-amber-400/20 text-amber-400">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
                   </svg>
@@ -219,15 +226,15 @@
                   <p class="text-[11px] sm:text-xs text-slate-400">Generate your end-to-end application package</p>
                 </div>
               </div>
-              <button onclick="closeCopilotModal()" class="text-slate-400 hover:text-white transition-colors p-1">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <button onclick="closeCopilotModal()" class="text-slate-400 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-slate-800">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
               </button>
             </div>
 
             <!-- Scrollable Inner Modal Body -->
-            <div class="overflow-y-auto p-4 sm:p-6 space-y-5 flex-grow">
+            <div class="overflow-y-auto p-5 sm:p-6 space-y-5 flex-grow">
 
                 <!-- Modal Form Content -->
                 <div id="copilotFormContainer" class="space-y-5">
@@ -235,14 +242,14 @@
                   <!-- Source Base Resume Selection -->
                   <div>
                     <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Select Base Resume (Optional)</label>
-                    <select id="copilotResumeSelect" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-emerald-500 transition-colors">
+                    <select id="copilotResumeSelect" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 text-sm focus:outline-none focus:border-amber-400 transition-colors">
                       <option value="">-- Use Default / Saved Profile Context --</option>
                       {% for r in resumes %}
                         <option value="{{ r.id }}">{{ r.title }}</option>
                       {% endfor %}
                     </select>
                     {% if not resumes or resumes|length == 0 %}
-                    <div class="mt-1.5 p-2 bg-amber-500/10 border border-amber-500/20 rounded-lg text-[11px] text-amber-300 flex items-center justify-between">
+                    <div class="mt-2 p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-300 flex items-center justify-between">
                       <span>Want better tailored results? Build your base CV in CVForge Studio first.</span>
                       <a href="/editor" class="underline font-bold hover:text-amber-200 whitespace-nowrap ml-2">Open Studio →</a>
                     </div>
@@ -253,11 +260,11 @@
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Target Company *</label>
-                      <input type="text" id="copilotCompany" placeholder="e.g. Stripe, Google, Acme Corp" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-emerald-500 transition-colors">
+                      <input type="text" id="copilotCompany" placeholder="e.g. Stripe, Google, Acme Corp" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 text-sm focus:outline-none focus:border-amber-400 transition-colors">
                     </div>
                     <div>
                       <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Target Role *</label>
-                      <input type="text" id="copilotRole" placeholder="e.g. Senior Frontend Engineer" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-emerald-500 transition-colors">
+                      <input type="text" id="copilotRole" placeholder="e.g. Senior Frontend Engineer" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 text-sm focus:outline-none focus:border-amber-400 transition-colors">
                     </div>
                   </div>
 
@@ -265,12 +272,12 @@
                   <div>
                     <div class="flex items-center justify-between mb-2">
                       <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">Job Posting Text or Description *</label>
-                      <button type="button" onclick="scrapeJobForCopilot()" class="text-xs text-emerald-400 hover:underline flex items-center gap-1 font-semibold">
+                      <button type="button" onclick="scrapeJobForCopilot()" class="text-xs text-amber-400 hover:underline flex items-center gap-1.5 font-semibold">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
                         Fetch from URL
                       </button>
                     </div>
-                    <textarea id="copilotJobDescription" rows="5" placeholder="Paste full job description, responsibilities, and required qualifications here..." class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3.5 text-slate-200 text-sm focus:outline-none focus:border-emerald-500 transition-colors resize-none"></textarea>
+                    <textarea id="copilotJobDescription" rows="5" placeholder="Paste full job description, responsibilities, and required qualifications here..." class="w-full bg-slate-800 border border-slate-700 rounded-xl p-4 text-slate-200 text-sm focus:outline-none focus:border-amber-400 transition-colors resize-none"></textarea>
                   </div>
 
                   <!-- Error Alert Box -->
@@ -282,9 +289,9 @@
                   <!-- Submit Footer -->
                   <div class="flex items-center justify-between pt-4 border-t border-slate-800">
                     <div class="text-xs text-slate-400">
-                      Cost: <strong class="text-emerald-400">9 Credits</strong>
+                      Cost: <strong class="text-amber-400">9 Credits</strong>
                     </div>
-                    <button id="copilotSubmitBtn" onclick="runCopilotPipeline()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-6 py-2.5 rounded-xl text-sm transition-all flex items-center gap-2">
+                    <button id="copilotSubmitBtn" onclick="runCopilotPipeline()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold px-6 py-3 rounded-xl text-sm transition-all flex items-center gap-2 shadow-sm">
                       <span>Generate Package</span>
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                     </button>
@@ -292,10 +299,10 @@
                 </div>
 
                 <!-- Loading State View -->
-                <div id="copilotLoadingState" class="hidden p-10 text-center space-y-6">
+                <div id="copilotLoadingState" class="hidden p-12 text-center space-y-6">
                   <div class="relative w-16 h-16 mx-auto">
-                    <div class="w-16 h-16 rounded-full border-4 border-emerald-500/20 border-t-emerald-400 animate-spin"></div>
-                    <div class="absolute inset-0 flex items-center justify-center text-emerald-400 font-bold text-xs">AI</div>
+                    <div class="w-16 h-16 rounded-full border-4 border-amber-400/20 border-t-amber-400 animate-spin"></div>
+                    <div class="absolute inset-0 flex items-center justify-center text-amber-400 font-bold text-xs">AI</div>
                   </div>
                   <div>
                     <h4 class="text-lg font-bold text-white">Generating Application Assets...</h4>
@@ -306,9 +313,9 @@
                 <!-- Success View / Results Screen with Full ATS Breakdown & Action Handlers -->
                 <div id="copilotResultsState" class="hidden space-y-5">
                   
-                  <div class="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                      <div class="p-2 bg-emerald-500/20 rounded-lg text-emerald-400 font-extrabold text-base" id="copilotAtsScore">88%</div>
+                  <div class="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-center justify-between">
+                    <div class="flex items-center gap-3.5">
+                      <div class="w-10 h-10 rounded-xl bg-amber-400/20 text-amber-400 flex items-center justify-center font-extrabold text-sm" id="copilotAtsScore">88%</div>
                       <div>
                         <h4 class="text-sm font-bold text-white">Full ATS Tailored Package Ready</h4>
                         <p class="text-xs text-slate-400">Job tracked & populated with high-ranking ATS keywords.</p>
@@ -317,8 +324,8 @@
                   </div>
 
                   <!-- FULL ATS OPTIMIZER BREAKDOWN GRID -->
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-                    <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700/60 space-y-2">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700/60 space-y-2">
                       <h5 class="text-xs font-bold uppercase text-emerald-400 tracking-wider flex items-center gap-1.5">
                         <i class="fa-solid fa-circle-check"></i> Key Matched Terms
                       </h5>
@@ -327,7 +334,7 @@
                       </div>
                     </div>
 
-                    <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700/60 space-y-2">
+                    <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700/60 space-y-2">
                       <h5 class="text-xs font-bold uppercase text-amber-400 tracking-wider flex items-center gap-1.5">
                         <i class="fa-solid fa-bullseye"></i> Integrated Target Keywords
                       </h5>
@@ -341,7 +348,7 @@
                   <div class="space-y-4">
                     
                     <!-- 1. Tailored CV Summary + Edit & Preview/Download Links -->
-                    <div class="space-y-2 bg-slate-800/60 p-3.5 rounded-xl border border-slate-700/50">
+                    <div class="space-y-2.5 bg-slate-800/60 p-4 rounded-xl border border-slate-700/50">
                       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <h5 class="text-xs font-bold uppercase text-amber-400 tracking-wider flex items-center gap-1.5">
                           <i class="fa-solid fa-user-tie"></i> Tailored Executive CV Summary
@@ -349,10 +356,10 @@
                         
                         <!-- Dual CTA Group as inspected in ATS Engine -->
                         <div class="flex items-center gap-2 shrink-0">
-                          <a id="copilotEditCvBtn" href="#" class="text-[11px] bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold px-2.5 py-1 rounded-md transition-colors flex items-center gap-1">
+                          <a id="copilotEditCvBtn" href="#" class="text-[11px] bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5">
                             <i class="fa-solid fa-pen-to-square text-[10px]"></i> Edit in Editor
                           </a>
-                          <a id="copilotPreviewCvBtn" href="#" class="text-[11px] bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold px-2.5 py-1 rounded-md transition-colors flex items-center gap-1">
+                          <a id="copilotPreviewCvBtn" href="#" class="text-[11px] bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5">
                             <i class="fa-solid fa-eye text-[10px]"></i> Preview & Download
                           </a>
                         </div>
@@ -361,66 +368,66 @@
                     </div>
 
                     <!-- Optimized Experience & Technical Skills Block -->
-                    <div class="space-y-2 bg-slate-800/60 p-3.5 rounded-xl border border-slate-700/50">
+                    <div class="space-y-2.5 bg-slate-800/60 p-4 rounded-xl border border-slate-700/50">
                       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <h5 class="text-xs font-bold uppercase text-amber-400 tracking-wider flex items-center gap-1.5">
                           <i class="fa-solid fa-list-check"></i> Optimized Experience & Technical Skills
                         </h5>
                       </div>
                       
-                      <div class="text-xs text-slate-300 space-y-2 pt-1">
+                      <div class="text-xs text-slate-300 space-y-2.5 pt-1">
                         <div>
-                          <strong class="text-slate-400 block text-[11px] uppercase font-bold">Tech Skills:</strong>
-                          <p id="copilotTailoredSkillsTech" class="text-emerald-300 font-mono text-[11px]"></p>
+                          <strong class="text-slate-400 block text-[11px] uppercase font-bold mb-1">Tech Skills:</strong>
+                          <p id="copilotTailoredSkillsTech" class="text-amber-300 font-mono text-[11px] bg-slate-900/60 p-2 rounded-lg border border-slate-700/40"></p>
                         </div>
                         <div>
-                          <strong class="text-slate-400 block text-[11px] uppercase font-bold">Experience Highlights:</strong>
-                          <p id="copilotTailoredExperience" class="whitespace-pre-line leading-relaxed text-slate-300"></p>
+                          <strong class="text-slate-400 block text-[11px] uppercase font-bold mb-1">Experience Highlights:</strong>
+                          <p id="copilotTailoredExperience" class="whitespace-pre-line leading-relaxed text-slate-300 bg-slate-900/60 p-3 rounded-lg border border-slate-700/40"></p>
                         </div>
                       </div>
                     </div>
 
                     <!-- 2. Target Cover Letter Draft + Copy / Export PDF Options -->
-                    <div class="space-y-2 bg-slate-800/60 p-3.5 rounded-xl border border-slate-700/50">
+                    <div class="space-y-2.5 bg-slate-800/60 p-4 rounded-xl border border-slate-700/50">
                       <div class="flex items-center justify-between gap-2">
                         <h5 class="text-xs font-bold uppercase text-slate-300 tracking-wider flex items-center gap-1.5">
                           <i class="fa-solid fa-envelope-open-text text-amber-400"></i> Target Cover Letter Draft
                         </h5>
                         <div class="flex items-center gap-2">
-                          <button type="button" onclick="copyCoverLetterText()" id="copyCoverBtn" class="text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-2.5 py-1 rounded-md transition-colors flex items-center gap-1 font-semibold">
+                          <button type="button" onclick="copyCoverLetterText()" id="copyCoverBtn" class="text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 font-semibold">
                             <i class="fa-regular fa-copy text-[10px]"></i>
                             <span>Copy Text</span>
                           </button>
-                          <button type="button" onclick="exportCoverLetterPdf()" id="exportCoverPdfBtn" class="text-[11px] bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold px-2.5 py-1 rounded-md transition-colors flex items-center gap-1">
+                          <button type="button" onclick="exportCoverLetterPdf()" id="exportCoverPdfBtn" class="text-[11px] bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5">
                             <i class="fa-solid fa-file-pdf text-[10px]"></i>
                             <span id="exportCoverPdfText">Export PDF</span>
                           </button>
                         </div>
                       </div>
-                      <textarea id="copilotCoverLetterText" rows="6" readonly class="w-full text-xs text-slate-300 bg-slate-900/80 p-3 rounded-lg border border-slate-700/60 resize-y focus:outline-none leading-relaxed"></textarea>
+                      <textarea id="copilotCoverLetterText" rows="6" readonly class="w-full text-xs text-slate-300 bg-slate-900/80 p-3.5 rounded-xl border border-slate-700/60 resize-y focus:outline-none leading-relaxed"></textarea>
                     </div>
 
                     <!-- 3. Recruiter Cold Email + Copy Button Option -->
-                    <div class="space-y-2 bg-slate-800/60 p-3.5 rounded-xl border border-slate-700/50">
+                    <div class="space-y-2.5 bg-slate-800/60 p-4 rounded-xl border border-slate-700/50">
                       <div class="flex items-center justify-between gap-2">
                         <h5 class="text-xs font-bold uppercase text-slate-300 tracking-wider flex items-center gap-1.5">
                           <i class="fa-solid fa-paper-plane text-amber-400"></i> Recruiter Cold Email
                         </h5>
-                        <button type="button" onclick="copyColdEmailText()" id="copyEmailBtn" class="text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-2.5 py-1 rounded-md transition-colors flex items-center gap-1 font-semibold">
+                        <button type="button" onclick="copyColdEmailText()" id="copyEmailBtn" class="text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 font-semibold">
                           <i class="fa-regular fa-copy text-[10px]"></i>
                           <span>Copy Email</span>
                         </button>
                       </div>
-                      <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-700/60 text-xs text-slate-300 space-y-1">
+                      <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-700/60 text-xs text-slate-300 space-y-2">
                         <div><strong class="text-slate-400">Subject:</strong> <span id="copilotEmailSubject" class="text-slate-200 font-semibold"></span></div>
-                        <div id="copilotEmailBody" class="mt-2 text-slate-300 whitespace-pre-wrap leading-relaxed"></div>
+                        <div id="copilotEmailBody" class="mt-2 text-slate-300 whitespace-pre-wrap leading-relaxed pt-2 border-t border-slate-800"></div>
                       </div>
                     </div>
 
                   </div>
 
                   <div class="flex justify-end pt-4 border-t border-slate-800">
-                    <button onclick="closeCopilotModal()" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition-colors">Close</button>
+                    <button onclick="closeCopilotModal()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition-colors">Close</button>
                   </div>
                 </div>
 
@@ -431,11 +438,11 @@
 
         <!-- PROFESSIONAL BRANDED URL FETCHER MODAL -->
         <div id="urlScrapeModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-          <div class="bg-white rounded-xl p-5 max-w-md w-full shadow-2xl border border-slate-200/90 space-y-4 relative">
+          <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-200/90 space-y-4 relative">
             
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div class="flex items-center gap-2 text-[#02353C]">
-                <div class="w-8 h-8 rounded-lg bg-amber-400/20 text-amber-600 flex items-center justify-center text-xs font-bold">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3.5">
+              <div class="flex items-center gap-3 text-[#02353C]">
+                <div class="w-9 h-9 rounded-xl bg-amber-400/20 text-amber-600 flex items-center justify-center text-xs font-bold">
                   <i class="fa-solid fa-link"></i>
                 </div>
                 <div>
@@ -443,33 +450,33 @@
                   <p class="text-[11px] text-slate-500">Paste a job posting URL to extract text directly</p>
                 </div>
               </div>
-              <button type="button" onclick="closeUrlModal()" class="text-slate-400 hover:text-slate-600 text-sm">
+              <button type="button" onclick="closeUrlModal()" class="text-slate-400 hover:text-slate-600 text-sm p-1 rounded-lg hover:bg-slate-100">
                 <i class="fa-solid fa-xmark"></i>
               </button>
             </div>
 
             <div class="space-y-3">
               <div>
-                <label class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">Job URL *</label>
+                <label class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">Job URL *</label>
                 <div class="relative">
                   <input 
                     type="url" 
                     id="scrapeInputUrl" 
                     placeholder="https://www.linkedin.com/jobs/view/..." 
-                    class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 pl-8 text-xs text-slate-800 focus:outline-none focus:border-[#02353C] transition-colors"
+                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 pl-9 text-xs text-slate-800 focus:outline-none focus:border-[#02353C] transition-colors"
                   />
-                  <i class="fa-solid fa-globe absolute left-2.5 top-2.5 text-slate-400 text-xs"></i>
+                  <i class="fa-solid fa-globe absolute left-3 top-3 text-slate-400 text-xs"></i>
                 </div>
               </div>
 
-              <div id="scrapeModalStatus" class="hidden p-2.5 rounded-lg text-xs font-medium"></div>
+              <div id="scrapeModalStatus" class="hidden p-3 rounded-xl text-xs font-medium"></div>
             </div>
 
-            <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-              <button type="button" onclick="closeUrlModal()" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-lg transition-colors">
+            <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+              <button type="button" onclick="closeUrlModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors">
                 Cancel
               </button>
-              <button type="button" id="submitScrapeBtn" onclick="confirmJobScrape()" class="px-4 py-1.5 bg-[#02353C] hover:bg-[#034a54] text-amber-400 font-bold text-xs rounded-lg transition-colors flex items-center gap-1.5 shadow-2xs">
+              <button type="button" id="submitScrapeBtn" onclick="confirmJobScrape()" class="px-4 py-2 bg-[#02353C] hover:bg-[#034a54] text-amber-400 font-bold text-xs rounded-xl transition-colors flex items-center gap-1.5 shadow-2xs">
                 <i class="fa-solid fa-wand-magic-sparkles text-[10px]"></i>
                 <span>Fetch Details</span>
               </button>
@@ -479,116 +486,119 @@
         </div>
 
         <!-- 4. CVFORGE PRO CAREER SUITE (QUICK-ACCESS INTEGRATED GRID) -->
-        <div class="bg-white rounded-xl p-4 border border-slate-200/90 shadow-2xs space-y-3">
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-xs space-y-4">
             <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <div class="w-7 h-7 rounded-lg bg-amber-400/20 text-amber-600 flex items-center justify-center text-xs font-bold">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-amber-400/20 text-amber-600 flex items-center justify-center text-sm font-bold border border-amber-400/30">
                         <i class="fa-solid fa-bolt"></i>
                     </div>
-                    <h2 class="text-sm sm:text-base font-extrabold text-[#02353C]">{{ t('career_suite_title') }}</h2>
+                    <div>
+                        <h2 class="text-base sm:text-lg font-extrabold text-[#02353C]">{{ t('career_suite_title') }}</h2>
+                        <p class="text-[11px] text-slate-500">Advanced AI modules designed to accelerate your job search</p>
+                    </div>
                 </div>
-                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-gradient-to-r from-amber-400 to-amber-500 text-[#02353C] shadow-2xs">
-                    <i class="fa-solid fa-crown text-[9px]"></i> {{ t('unlocked_suite') }}
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold bg-gradient-to-r from-amber-400 to-amber-500 text-[#02353C] shadow-2xs">
+                    <i class="fa-solid fa-crown text-[10px]"></i> {{ t('unlocked_suite') }}
                 </span>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 
                 <!-- ATS Optimizer -->
-                <a href="/ats" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
+                <a href="/ats" class="p-3.5 rounded-xl bg-slate-50 hover:bg-amber-50/40 border border-slate-200/80 hover:border-amber-400/40 transition-all group flex flex-col justify-between gap-2.5">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
-                            <i class="fa-solid fa-file-shield text-amber-500"></i> {{ t('suite_ats_title') }}
+                        <span class="text-xs font-bold text-[#02353C] group-hover:text-amber-700 transition-colors flex items-center gap-2">
+                            <i class="fa-solid fa-file-shield text-amber-500 text-sm"></i> {{ t('suite_ats_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-1 group-hover:text-amber-600 transition-all"></i>
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_ats_desc') }}</p>
                 </a>
 
                 <!-- Cover Letter Generator -->
-                <a href="/cover-letter" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
+                <a href="/cover-letter" class="p-3.5 rounded-xl bg-slate-50 hover:bg-amber-50/40 border border-slate-200/80 hover:border-amber-400/40 transition-all group flex flex-col justify-between gap-2.5">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
-                            <i class="fa-solid fa-envelope-open-text text-amber-500"></i> {{ t('suite_cover_title') }}
+                        <span class="text-xs font-bold text-[#02353C] group-hover:text-amber-700 transition-colors flex items-center gap-2">
+                            <i class="fa-solid fa-envelope-open-text text-amber-500 text-sm"></i> {{ t('suite_cover_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-1 group-hover:text-amber-600 transition-all"></i>
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_cover_desc') }}</p>
                 </a>
 
                 <!-- Interview AI Coach -->
-                <a href="/interview" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
+                <a href="/interview" class="p-3.5 rounded-xl bg-slate-50 hover:bg-amber-50/40 border border-slate-200/80 hover:border-amber-400/40 transition-all group flex flex-col justify-between gap-2.5">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
-                            <i class="fa-solid fa-comments text-amber-500"></i> {{ t('suite_interview_title') }}
+                        <span class="text-xs font-bold text-[#02353C] group-hover:text-amber-700 transition-colors flex items-center gap-2">
+                            <i class="fa-solid fa-comments text-amber-500 text-sm"></i> {{ t('suite_interview_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-1 group-hover:text-amber-600 transition-all"></i>
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_interview_desc') }}</p>
                 </a>
 
                 <!-- Application Tracker -->
-                <a href="/tracker" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
+                <a href="/tracker" class="p-3.5 rounded-xl bg-slate-50 hover:bg-amber-50/40 border border-slate-200/80 hover:border-amber-400/40 transition-all group flex flex-col justify-between gap-2.5">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
-                            <i class="fa-solid fa-kanban text-amber-500"></i> {{ t('suite_tracker_title') }}
+                        <span class="text-xs font-bold text-[#02353C] group-hover:text-amber-700 transition-colors flex items-center gap-2">
+                            <i class="fa-solid fa-kanban text-amber-500 text-sm"></i> {{ t('suite_tracker_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-1 group-hover:text-amber-600 transition-all"></i>
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_tracker_desc') }}</p>
                 </a>
 
                 <!-- AI Salary Negotiator -->
-                <a href="/salary-negotiator" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
+                <a href="/salary-negotiator" class="p-3.5 rounded-xl bg-slate-50 hover:bg-amber-50/40 border border-slate-200/80 hover:border-amber-400/40 transition-all group flex flex-col justify-between gap-2.5">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
-                            <i class="fa-solid fa-calculator text-amber-500"></i> AI Salary Negotiator
+                        <span class="text-xs font-bold text-[#02353C] group-hover:text-amber-700 transition-colors flex items-center gap-2">
+                            <i class="fa-solid fa-calculator text-amber-500 text-sm"></i> AI Salary Negotiator
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-1 group-hover:text-amber-600 transition-all"></i>
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">Evaluate job offers and generate data-backed counter-offer strategies.</p>
                 </a>
 
                 <!-- AI Application Essay & Portal Q&A Assistant -->
-                <a href="/portal-qa" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
+                <a href="/portal-qa" class="p-3.5 rounded-xl bg-slate-50 hover:bg-amber-50/40 border border-slate-200/80 hover:border-amber-400/40 transition-all group flex flex-col justify-between gap-2.5">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
-                            <i class="fa-solid fa-pen-nib text-amber-500"></i> AI Portal Q&A Assistant
+                        <span class="text-xs font-bold text-[#02353C] group-hover:text-amber-700 transition-colors flex items-center gap-2">
+                            <i class="fa-solid fa-pen-nib text-amber-500 text-sm"></i> AI Portal Q&A Assistant
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-1 group-hover:text-amber-600 transition-all"></i>
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">Generate custom, STAR-structured answers to job portal essay questions.</p>
                 </a>
 
                 <!-- Cold Outreach Generator -->
-                <a href="/outreach" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
+                <a href="/outreach" class="p-3.5 rounded-xl bg-slate-50 hover:bg-amber-50/40 border border-slate-200/80 hover:border-amber-400/40 transition-all group flex flex-col justify-between gap-2.5">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
-                            <i class="fa-solid fa-paper-plane text-amber-500"></i> Cold Outreach
+                        <span class="text-xs font-bold text-[#02353C] group-hover:text-amber-700 transition-colors flex items-center gap-2">
+                            <i class="fa-solid fa-paper-plane text-amber-500 text-sm"></i> Cold Outreach
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-1 group-hover:text-amber-600 transition-all"></i>
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">Generate personalized networking messages and cold emails.</p>
                 </a>
 
                 <!-- LinkedIn Optimizer -->
-                <a href="/linkedin" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
+                <a href="/linkedin" class="p-3.5 rounded-xl bg-slate-50 hover:bg-blue-50/50 border border-slate-200/80 hover:border-blue-400/40 transition-all group flex flex-col justify-between gap-2.5">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#0a66c2] transition-colors flex items-center gap-1.5">
-                            <i class="fa-brands fa-linkedin text-blue-600"></i> {{ t('suite_linkedin_title') }}
+                        <span class="text-xs font-bold text-[#0a66c2] transition-colors flex items-center gap-2">
+                            <i class="fa-brands fa-linkedin text-blue-600 text-sm"></i> {{ t('suite_linkedin_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-1 group-hover:text-blue-600 transition-all"></i>
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_linkedin_desc') }}</p>
                 </a>
 
                 <!-- PDF Studio -->
-                <a href="/pdf-studio" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
+                <a href="/pdf-studio" class="p-3.5 rounded-xl bg-slate-50 hover:bg-amber-50/40 border border-slate-200/80 hover:border-amber-400/40 transition-all group flex flex-col justify-between gap-2.5">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
-                            <i class="fa-solid fa-palette text-amber-500"></i> {{ t('suite_pdf_title') }}
+                        <span class="text-xs font-bold text-[#02353C] group-hover:text-amber-700 transition-colors flex items-center gap-2">
+                            <i class="fa-solid fa-palette text-amber-500 text-sm"></i> {{ t('suite_pdf_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-1 group-hover:text-amber-600 transition-all"></i>
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_pdf_desc') }}</p>
                 </a>
@@ -597,46 +607,46 @@
         </div>
 
         <!-- 5. SAVED RESUMES SECTION -->
-        <div class="space-y-3 pt-1">
+        <div class="space-y-4 pt-2">
             <div class="flex items-center justify-between gap-2">
                 <div>
-                    <h2 class="text-base sm:text-lg font-bold text-slate-900">{{ t('my_saved_resumes') }}</h2>
-                    <p class="text-slate-500 text-[11px] hidden sm:block">{{ t('manage_docs_sub') }}</p>
+                    <h2 class="text-base sm:text-lg font-extrabold text-slate-900">{{ t('my_saved_resumes') }}</h2>
+                    <p class="text-slate-500 text-[11px]">{{ t('manage_docs_sub') }}</p>
                 </div>
-                <a href="/editor" class="inline-flex items-center gap-1.5 bg-[#02353C] hover:bg-[#034a54] text-white font-bold text-xs px-3.5 py-2 rounded-lg shadow-2xs transition-all whitespace-nowrap">
-                    <i class="fa-solid fa-plus text-[10px] text-amber-400"></i>
+                <a href="/editor" class="inline-flex items-center gap-2 bg-[#02353C] hover:bg-[#034a54] text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-xs transition-all whitespace-nowrap">
+                    <i class="fa-solid fa-plus text-amber-400 text-[11px]"></i>
                     <span>{{ t('create_cv') }}</span>
                 </a>
             </div>
 
             {% if resumes and resumes|length > 0 %}
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5" id="resumesGrid">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="resumesGrid">
                     {% for resume in resumes %}
-                        <div class="bg-white rounded-xl border border-slate-200/80 shadow-2xs hover:shadow-sm transition-all duration-200 flex flex-col overflow-hidden group" id="resume-card-{{ resume.id }}">
-                            <div class="h-1 w-full" style="background-color: {{ resume.accent_color if resume.accent_color else '#E5A93C' }};"></div>
+                        <div class="bg-white rounded-xl border border-slate-200/80 shadow-2xs hover:shadow-md transition-all duration-200 flex flex-col overflow-hidden group" id="resume-card-{{ resume.id }}">
+                            <div class="h-1.5 w-full" style="background-color: {{ resume.accent_color if resume.accent_color else '#E5A93C' }};"></div>
                             
-                            <div class="p-3.5 flex-grow space-y-2">
+                            <div class="p-4 flex-grow space-y-2.5">
                                 <div class="flex items-start justify-between gap-2">
-                                    <h3 class="font-bold text-slate-800 text-sm line-clamp-1 group-hover:text-[#02353C] transition-colors">
+                                    <h3 class="font-bold text-slate-900 text-sm line-clamp-1 group-hover:text-[#02353C] transition-colors">
                                         {{ resume.title if resume.title else t('untitled_resume') }}
                                     </h3>
-                                    <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200 shrink-0">
+                                    <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200/60 shrink-0">
                                         {{ resume.content_json.target_role if (resume.content_json is mapping and resume.content_json.get('target_role')) else (resume.template_used if resume.template_used else t('modern_template')) }}
                                     </span>
                                 </div>
 
-                                <p class="text-[11px] text-slate-400 flex items-center gap-1">
+                                <p class="text-[11px] text-slate-400 flex items-center gap-1.5 font-medium">
                                     <i class="fa-regular fa-clock text-[10px]"></i>
                                     {{ t('last_updated') }} {{ resume.updated_at.strftime('%b %d, %Y') if resume.updated_at else t('recently') }}
                                 </p>
                             </div>
 
-                            <div class="px-3.5 py-2 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between text-xs font-semibold">
-                                <div class="flex items-center gap-3">
-                                    <a href="/editor?id={{ resume.id }}" class="text-[#02353C] hover:text-emerald-700 flex items-center gap-1">
+                            <div class="px-4 py-2.5 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between text-xs font-semibold">
+                                <div class="flex items-center gap-3.5">
+                                    <a href="/editor?id={{ resume.id }}" class="text-[#02353C] hover:text-amber-600 flex items-center gap-1.5 transition-colors">
                                         <i class="fa-solid fa-pen-to-square text-[11px]"></i> {{ t('edit') }}
                                     </a>
-                                    <a href="/preview?id={{ resume.id }}" class="text-slate-500 hover:text-slate-900 flex items-center gap-1" title="{{ t('view_pdf') }}">
+                                    <a href="/preview?id={{ resume.id }}" class="text-slate-500 hover:text-slate-900 flex items-center gap-1.5 transition-colors" title="{{ t('view_pdf') }}">
                                         <i class="fa-solid fa-eye text-[11px]"></i> {{ t('view_pdf') }}
                                     </a>
                                 </div>
@@ -649,15 +659,15 @@
                 </div>
 
             {% else %}
-                <div class="bg-white rounded-xl border-2 border-dashed border-slate-200 p-6 sm:p-8 text-center space-y-3" id="emptyState">
-                    <div class="w-11 h-11 bg-slate-100 rounded-xl flex items-center justify-center mx-auto text-slate-400 text-lg">
+                <div class="bg-white rounded-2xl border-2 border-dashed border-slate-200 p-8 sm:p-10 text-center space-y-3.5" id="emptyState">
+                    <div class="w-14 h-14 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mx-auto text-xl border border-amber-200/60 shadow-xs">
                         <i class="fa-solid fa-file-circle-plus"></i>
                     </div>
                     <div class="max-w-sm mx-auto space-y-1">
-                          <h3 class="text-sm font-bold text-slate-800">{{ t('no_resumes_yet') }}</h3>
+                          <h3 class="text-sm font-bold text-slate-900">{{ t('no_resumes_yet') }}</h3>
                           <p class="text-slate-500 text-xs">{{ t('no_resumes_sub') }}</p>
                     </div>
-                    <a href="/editor" class="inline-flex items-center gap-1.5 bg-[#02353C] hover:bg-[#034a54] text-white font-bold text-xs px-4 py-2.5 rounded-lg shadow-2xs transition-all">
+                    <a href="/editor" class="inline-flex items-center gap-2 bg-[#02353C] hover:bg-[#034a54] text-white font-bold text-xs px-4.5 py-3 rounded-xl shadow-xs transition-all">
                         <i class="fa-solid fa-plus text-amber-400 text-[10px]"></i>
                         {{ t('build_first_cv') }}
                     </a>
@@ -667,11 +677,59 @@
 
     </main>
 
+    <!-- ========================================================== -->
+    <!-- FLOATING AI ASSIST POPUP CHAT WIDGET -->
+    <!-- ========================================================== -->
+    <div class="fixed bottom-5 right-5 z-50">
+        <!-- Floating Toggle Button -->
+        <button id="aiChatToggleBtn" onclick="toggleAiChatWidget()" class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#02353C] to-[#05535E] text-amber-400 shadow-xl flex items-center justify-center text-xl hover:scale-105 transition-all border-2 border-amber-400/40 relative group" title="Open AI Career Assistant">
+            <i class="fa-solid fa-wand-magic-sparkles group-hover:rotate-12 transition-transform"></i>
+            <span class="absolute -top-1 -right-1 w-4 h-4 bg-amber-400 rounded-full border-2 border-[#02353C] flex items-center justify-center text-[9px] font-bold text-[#02353C]">AI</span>
+        </button>
+
+        <!-- Floating Chat Drawer Panel -->
+        <div id="aiChatDrawer" class="absolute bottom-16 right-0 w-[360px] sm:w-[400px] bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden hidden flex flex-col h-[500px] z-50">
+            <!-- Chat Header -->
+            <div class="bg-[#02353C] px-4 py-3.5 flex items-center justify-between border-b border-white/10 shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-amber-400 text-[#02353C] flex items-center justify-center text-xs font-extrabold shadow-sm">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-white text-xs font-bold tracking-wide">CVForge AI Assistant</h4>
+                        <p class="text-[10px] text-amber-400/90 font-medium">Powered by Gemini 3.8 Flash</p>
+                    </div>
+                </div>
+                <button onclick="toggleAiChatWidget()" class="text-slate-300 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <!-- Messages Stream Container -->
+            <div id="aiChatMessages" class="flex-grow p-4 overflow-y-auto space-y-3.5 text-xs text-slate-200">
+                <div class="flex gap-2.5">
+                    <div class="w-7 h-7 rounded-lg bg-amber-400 text-[#02353C] flex items-center justify-center font-bold text-[11px] shrink-0 mt-0.5">AI</div>
+                    <div class="bg-slate-800 border border-slate-700/80 p-3 rounded-2xl rounded-tl-xs leading-relaxed text-slate-200">
+                        Hello! I am your executive career strategist. Ask me anything about tailoring bullet points, prepping for interviews, or optimizing your CV!
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Input Footer -->
+            <div class="p-3 bg-slate-900/90 border-t border-slate-800 shrink-0 flex items-center gap-2">
+                <input type="text" id="aiChatInput" placeholder="Type your career or resume question..." onkeydown="handleAiChatKeydown(event)" class="flex-grow bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-amber-400 transition-colors" />
+                <button onclick="sendAiChatMessage()" class="w-10 h-10 rounded-xl bg-amber-400 hover:bg-amber-300 text-[#02353C] flex items-center justify-center font-bold transition-all shrink-0 shadow-xs">
+                    <i class="fa-solid fa-paper-plane text-xs"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- RESUME DELETION MODAL -->
     <div id="deleteResumeModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200 p-4">
-        <div class="bg-white rounded-xl p-5 max-w-sm w-full shadow-xl border border-slate-100 space-y-3">
-            <div class="flex items-center gap-3 text-rose-600">
-                <div class="w-9 h-9 rounded-full bg-rose-50 flex items-center justify-center shrink-0">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-100 space-y-4">
+            <div class="flex items-center gap-3.5 text-rose-600">
+                <div class="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center shrink-0 border border-rose-100">
                     <i class="fa-solid fa-trash-can text-base"></i>
                 </div>
                 <div>
@@ -679,11 +737,11 @@
                       <p class="text-xs text-slate-500" id="deleteModalResumeTitle">{{ t('confirm_delete_resume') }}</p>
                 </div>
             </div>
-            <div class="flex items-center justify-end gap-2 pt-1">
-                <button type="button" onclick="closeDeleteModal()" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-lg transition-all">
+            <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100">
+                <button type="button" onclick="closeDeleteModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all">
                     {{ t('cancel') }}
                 </button>
-                <button type="button" id="confirmDeleteBtn" class="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-lg transition-all shadow-2xs">
+                <button type="button" id="confirmDeleteBtn" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl transition-all shadow-xs">
                     {{ t('delete') }}
                 </button>
             </div>
@@ -691,8 +749,8 @@
     </div>
 
     <!-- FOOTER -->
-    <footer class="bg-white border-t border-slate-200 py-3 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 text-center text-[11px] text-slate-400">
+    <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-400 font-medium">
             {{ t('footer_copy_exact') }}
         </div>
     </footer>
@@ -812,6 +870,100 @@
                 closeDeleteModal();
             }
         });
+
+        // ==========================================================
+        // FLOATING AI CHAT WIDGET LOGIC
+        // ==========================================================
+        function toggleAiChatWidget() {
+            const drawer = document.getElementById('aiChatDrawer');
+            drawer.classList.toggle('hidden');
+            if (!drawer.classList.contains('hidden')) {
+                document.getElementById('aiChatInput').focus();
+            }
+        }
+
+        function handleAiChatKeydown(event) {
+            if (event.key === 'Enter') {
+                sendAiChatMessage();
+            }
+        }
+
+        async function sendAiChatMessage() {
+            const inputEl = document.getElementById('aiChatInput');
+            const message = inputEl.value.trim();
+            if (!message) return;
+
+            const msgContainer = document.getElementById('aiChatMessages');
+            
+            // Append User Message
+            msgContainer.innerHTML += `
+                <div class="flex gap-2.5 justify-end">
+                    <div class="bg-[#02353C] text-white p-3 rounded-2xl rounded-tr-xs leading-relaxed max-w-[85%]">
+                        ${escapeHtml(message)}
+                    </div>
+                </div>
+            `;
+            inputEl.value = '';
+            msgContainer.scrollTop = msgContainer.scrollHeight;
+
+            // Append Typing Indicator
+            const typingId = 'typing-' + Date.now();
+            msgContainer.innerHTML += `
+                <div id="${typingId}" class="flex gap-2.5">
+                    <div class="w-7 h-7 rounded-lg bg-amber-400 text-[#02353C] flex items-center justify-center font-bold text-[11px] shrink-0 mt-0.5">AI</div>
+                    <div class="bg-slate-800 border border-slate-700/80 p-3 rounded-2xl rounded-tl-xs text-slate-400 italic">
+                        Thinking...
+                    </div>
+                </div>
+            `;
+            msgContainer.scrollTop = msgContainer.scrollHeight;
+
+            try {
+                const response = await fetch('/api/v1/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
+                const data = await response.json();
+
+                document.getElementById(typingId).remove();
+
+                if (response.ok && data.success) {
+                    msgContainer.innerHTML += `
+                        <div class="flex gap-2.5">
+                            <div class="w-7 h-7 rounded-lg bg-amber-400 text-[#02353C] flex items-center justify-center font-bold text-[11px] shrink-0 mt-0.5">AI</div>
+                            <div class="bg-slate-800 border border-slate-700/80 p-3 rounded-2xl rounded-tl-xs leading-relaxed text-slate-200 whitespace-pre-wrap">
+                                ${escapeHtml(data.reply)}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    msgContainer.innerHTML += `
+                        <div class="flex gap-2.5">
+                            <div class="w-7 h-7 rounded-lg bg-rose-500 text-white flex items-center justify-center font-bold text-[11px] shrink-0 mt-0.5">!</div>
+                            <div class="bg-slate-800 border border-slate-700/80 p-3 rounded-2xl rounded-tl-xs leading-relaxed text-rose-300">
+                                ${escapeHtml(data.error || 'Unable to fetch response.')}
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                document.getElementById(typingId).remove();
+                msgContainer.innerHTML += `
+                    <div class="flex gap-2.5">
+                        <div class="w-7 h-7 rounded-lg bg-rose-500 text-white flex items-center justify-center font-bold text-[11px] shrink-0 mt-0.5">!</div>
+                        <div class="bg-slate-800 border border-slate-700/80 p-3 rounded-2xl rounded-tl-xs leading-relaxed text-rose-300">
+                            Network error. Please try again.
+                        </div>
+                    </div>
+                `;
+            }
+            msgContainer.scrollTop = msgContainer.scrollHeight;
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
 
         // ==========================================================
         // COPILOT MODAL & BRANDED URL FETCHER LOGIC
