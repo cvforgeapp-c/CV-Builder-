@@ -1009,13 +1009,12 @@ def search_jobs():
   # Construct clear query string for JSearch engine (e.g. "Computer science in Brazil")
   full_query = f'{query} in {location}' if location else query
 
-  url = 'https://jsearch.p.rapidapi.com/job-search'
+  url = 'https://jsearch.p.rapidapi.com/search'
   headers = {
       'X-RapidAPI-Key': rapidapi_key,
       'X-RapidAPI-Host': 'jsearch.p.rapidapi.com',
   }
   
-  # Removed restrictive 'country': 'us' parameter to allow global international searches
   params = {'query': full_query, 'page': str(page), 'num_pages': '1'}
 
   try:
