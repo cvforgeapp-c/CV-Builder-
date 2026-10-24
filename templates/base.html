@@ -180,7 +180,7 @@
     {% block extra_js %}{% endblock %}
 
     <!-- ========================================================== -->
-    <!-- GLOBAL FLOATING AI CHAT WIDGET & DRAWER                    -->
+    <!-- GLOBAL FLOATING AI CHAT WIDGET & POPUP WINDOW               -->
     <!-- ========================================================== -->
     <button onclick="toggleAiChatDrawer()" class="fixed bottom-6 right-6 z-50 bg-[#02353C] hover:bg-[#034a54] text-amber-400 p-3.5 rounded-full shadow-2xl transition-all transform hover:scale-110 border-2 border-amber-400/40 flex items-center justify-center gap-2 group cursor-pointer" title="Ask AI Assist">
         <i class="fa-solid fa-comments text-lg"></i>
@@ -189,51 +189,51 @@
         </span>
     </button>
 
-    <!-- GLOBAL SLIDE-OVER AI CHAT DRAWER -->
-    <div id="aiChatDrawer" class="fixed inset-y-0 right-0 z-50 w-full sm:w-[420px] bg-slate-900 border-l border-slate-800 shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+    <!-- FLOATING CHAT POPUP WINDOW -->
+    <div id="aiChatDrawer" class="fixed bottom-24 right-6 z-50 w-[90vw] max-w-[380px] h-[480px] bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl transform scale-0 opacity-0 transition-all duration-300 ease-in-out flex flex-col origin-bottom-right overflow-hidden">
         
         <!-- Drawer Header -->
-        <div class="p-4 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between shrink-0">
+        <div class="p-3.5 bg-slate-900/95 border-b border-slate-800 flex items-center justify-between shrink-0">
             <div class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-lg bg-amber-400/20 border border-amber-400/30 text-amber-400 flex items-center justify-center text-sm font-extrabold">
+                <div class="w-7 h-7 rounded-lg bg-amber-400/20 border border-amber-400/30 text-amber-400 flex items-center justify-center text-xs font-extrabold">
                     <i class="fa-solid fa-robot"></i>
                 </div>
                 <div>
-                    <h3 class="text-sm font-bold text-white">AI Assist</h3>
+                    <h3 class="text-xs font-bold text-white">AI Assist</h3>
                 </div>
             </div>
             <button onclick="toggleAiChatDrawer()" class="text-slate-400 hover:text-white p-1 cursor-pointer">
-                <i class="fa-solid fa-xmark text-lg"></i>
+                <i class="fa-solid fa-xmark text-base"></i>
             </button>
         </div>
 
         <!-- Chat Messages Container -->
-        <div id="globalChatMessages" class="flex-grow p-4 overflow-y-auto space-y-3 text-xs">
-            <div class="flex items-start gap-2.5">
-                <div class="w-7 h-7 rounded-lg bg-amber-400/20 text-amber-400 flex items-center justify-center text-xs shrink-0 mt-0.5">
+        <div id="globalChatMessages" class="flex-grow p-3.5 overflow-y-auto space-y-3 text-xs">
+            <div class="flex items-start gap-2">
+                <div class="w-6 h-6 rounded-lg bg-amber-400/20 text-amber-400 flex items-center justify-center text-[10px] shrink-0 mt-0.5">
                     <i class="fa-solid fa-robot"></i>
                 </div>
-                <div class="bg-slate-800 border border-slate-700/80 text-slate-200 p-3 rounded-2xl rounded-tl-none max-w-[85%] leading-relaxed">
+                <div class="bg-slate-800 border border-slate-700/80 text-slate-200 p-2.5 rounded-2xl rounded-tl-none max-w-[85%] leading-relaxed">
                     Hello! How can I help you optimize your resume or prepare for interviews today?
                 </div>
             </div>
         </div>
 
         <!-- Chat Input Area -->
-        <div class="p-3 bg-slate-900 border-t border-slate-800 shrink-0">
+        <div class="p-2.5 bg-slate-900 border-t border-slate-800 shrink-0">
             <form id="globalAiChatForm" onsubmit="handleGlobalSendMessage(event)" class="flex items-center gap-2">
                 <input 
                     type="text" 
                     id="globalChatInput" 
                     placeholder="Type your message..." 
-                    class="flex-grow bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-amber-400 transition-colors"
+                    class="flex-grow bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-amber-400 transition-colors"
                     autocomplete="off"
                 />
                 <button 
                     type="submit" 
                     id="btnSendGlobalChat" 
-                    class="bg-amber-400 hover:bg-amber-300 text-[#02353C] font-bold p-2.5 rounded-xl text-xs transition-all shrink-0 flex items-center justify-center cursor-pointer">
-                    <i class="fa-solid fa-paper-plane text-xs"></i>
+                    class="bg-amber-400 hover:bg-amber-300 text-[#02353C] font-bold p-2 rounded-xl text-xs transition-all shrink-0 flex items-center justify-center cursor-pointer">
+                    <i class="fa-solid fa-paper-plane text-[10px]"></i>
                 </button>
             </form>
         </div>
@@ -243,7 +243,14 @@
         function toggleAiChatDrawer() {
             const drawer = document.getElementById('aiChatDrawer');
             if (drawer) {
-                drawer.classList.toggle('translate-x-full');
+                if (drawer.classList.contains('scale-0')) {
+                    drawer.classList.remove('scale-0', 'opacity-0');
+                    drawer.classList.add('scale-100', 'opacity-100');
+                    document.getElementById('globalChatInput')?.focus();
+                } else {
+                    drawer.classList.remove('scale-100', 'opacity-100');
+                    drawer.classList.add('scale-0', 'opacity-0');
+                }
             }
         }
 
@@ -267,8 +274,8 @@
 
             // Render User Message
             messagesContainer.innerHTML += `
-                <div class="flex items-start justify-end gap-2.5">
-                    <div class="bg-emerald-600 text-white p-3 rounded-2xl rounded-tr-none max-w-[85%] leading-relaxed">
+                <div class="flex items-start justify-end gap-2">
+                    <div class="bg-emerald-600 text-white p-2.5 rounded-2xl rounded-tr-none max-w-[85%] leading-relaxed">
                         ${escapeHtml(message)}
                     </div>
                 </div>
@@ -280,11 +287,11 @@
             // Render Loading State
             const loadingId = 'loading-' + Date.now();
             messagesContainer.innerHTML += `
-                <div id="${loadingId}" class="flex items-start gap-2.5">
-                    <div class="w-7 h-7 rounded-lg bg-amber-400/20 text-amber-400 flex items-center justify-center text-xs shrink-0 mt-0.5">
+                <div id="${loadingId}" class="flex items-start gap-2">
+                    <div class="w-6 h-6 rounded-lg bg-amber-400/20 text-amber-400 flex items-center justify-center text-[10px] shrink-0 mt-0.5">
                         <i class="fa-solid fa-robot"></i>
                     </div>
-                    <div class="bg-slate-800 border border-slate-700/80 text-slate-400 p-3 rounded-2xl rounded-tl-none text-xs flex items-center gap-2">
+                    <div class="bg-slate-800 border border-slate-700/80 text-slate-400 p-2.5 rounded-2xl rounded-tl-none text-xs flex items-center gap-2">
                         <i class="fa-solid fa-circle-notch fa-spin text-amber-400"></i> Thinking...
                     </div>
                 </div>
@@ -305,22 +312,22 @@
 
                 if (response.ok && data.reply) {
                     messagesContainer.innerHTML += `
-                        <div class="flex items-start gap-2.5">
-                            <div class="w-7 h-7 rounded-lg bg-amber-400/20 text-amber-400 flex items-center justify-center text-xs shrink-0 mt-0.5">
+                        <div class="flex items-start gap-2">
+                            <div class="w-6 h-6 rounded-lg bg-amber-400/20 text-amber-400 flex items-center justify-center text-[10px] shrink-0 mt-0.5">
                                 <i class="fa-solid fa-robot"></i>
                             </div>
-                            <div class="bg-slate-800 border border-slate-700/80 text-slate-200 p-3 rounded-2xl rounded-tl-none max-w-[85%] leading-relaxed whitespace-pre-wrap">
+                            <div class="bg-slate-800 border border-slate-700/80 text-slate-200 p-2.5 rounded-2xl rounded-tl-none max-w-[85%] leading-relaxed whitespace-pre-wrap">
                                 ${escapeHtml(data.reply)}
                             </div>
                         </div>
                     `;
                 } else {
                     messagesContainer.innerHTML += `
-                        <div class="flex items-start gap-2.5">
-                            <div class="w-7 h-7 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center text-xs shrink-0 mt-0.5">
+                        <div class="flex items-start gap-2">
+                            <div class="w-6 h-6 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center text-[10px] shrink-0 mt-0.5">
                                 <i class="fa-solid fa-triangle-exclamation"></i>
                             </div>
-                            <div class="bg-slate-800 border border-rose-500/30 text-rose-300 p-3 rounded-2xl rounded-tl-none max-w-[85%]">
+                            <div class="bg-slate-800 border border-rose-500/30 text-rose-300 p-2.5 rounded-2xl rounded-tl-none max-w-[85%]">
                                 ${escapeHtml(data.error || 'Sorry, I encountered an issue. Please try again.')}
                             </div>
                         </div>
@@ -331,7 +338,7 @@
                 if (loadingEl) loadingEl.remove();
 
                 messagesContainer.innerHTML += `
-                    <div class="bg-slate-800 border border-rose-500/30 text-rose-300 p-3 rounded-2xl text-xs">
+                    <div class="bg-slate-800 border border-rose-500/30 text-rose-300 p-2.5 rounded-2xl text-xs">
                         Network error. Please check your connection.
                     </div>
                 `;
