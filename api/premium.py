@@ -1010,7 +1010,7 @@ def search_jobs():
   full_query = f'{query} in {location}' if location else query
 
   # Updated to match the active v5 API version in your RapidAPI dashboard
-  url = 'https://jsearch.p.rapidapi.com/v5/search'
+  url = 'https://jsearch.p.rapidapi.com/search-v2'
   headers = {
       'X-RapidAPI-Key': rapidapi_key,
       'X-RapidAPI-Host': 'jsearch.p.rapidapi.com',
