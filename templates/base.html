@@ -179,5 +179,168 @@
     <!-- Page-specific JavaScript -->
     {% block extra_js %}{% endblock %}
 
+    <!-- ========================================================== -->
+    <!-- GLOBAL FLOATING AI CHAT WIDGET & DRAWER                  -->
+    <!-- ========================================================== -->
+    <button onclick="toggleAiChatDrawer()" class="fixed bottom-6 right-6 z-50 bg-[#02353C] hover:bg-[#034a54] text-amber-400 p-3.5 rounded-full shadow-2xl transition-all transform hover:scale-110 border-2 border-amber-400/40 flex items-center justify-center gap-2 group cursor-pointer" title="Ask CVForge AI Assistant">
+        <i class="fa-solid fa-comments text-lg"></i>
+        <span class="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs transition-all duration-300 ease-in-out text-xs font-bold text-white pr-1">
+            AI Career Chat
+        </span>
+    </button>
+
+    <!-- GLOBAL SLIDE-OVER AI CHAT DRAWER -->
+    <div id="aiChatDrawer" class="fixed inset-y-0 right-0 z-50 w-full sm:w-[420px] bg-slate-900 border-l border-slate-800 shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+        
+        <!-- Drawer Header -->
+        <div class="p-4 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between shrink-0">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-amber-400/20 border border-amber-400/30 text-amber-400 flex items-center justify-center text-sm font-extrabold">
+                    <i class="fa-solid fa-robot"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-white">CVForge AI Copilot</h3>
+                    <p class="text-[11px] text-slate-400">Powered by Gemini 3.8 Flash</p>
+                </div>
+            </div>
+            <button onclick="toggleAiChatDrawer()" class="text-slate-400 hover:text-white p-1 cursor-pointer">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Chat Messages Container -->
+        <div id="globalChatMessages" class="flex-grow p-4 overflow-y-auto space-y-3 text-xs">
+            <div class="flex items-start gap-2.5">
+                <div class="w-7 h-7 rounded-lg bg-amber-400/20 text-amber-400 flex items-center justify-center text-xs shrink-0 mt-0.5">
+                    <i class="fa-solid fa-robot"></i>
+                </div>
+                <div class="bg-slate-800 border border-slate-700/80 text-slate-200 p-3 rounded-2xl rounded-tl-none max-w-[85%] leading-relaxed">
+                    Hello! I'm your global CVForge Career Copilot. Ask me anything about tailoring bullet points, ATS keywords, cover letters, or interview prep!
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Input Area -->
+        <div class="p-3 bg-slate-900 border-t border-slate-800 shrink-0">
+            <form id="globalAiChatForm" onsubmit="handleGlobalSendMessage(event)" class="flex items-center gap-2">
+                <input 
+                    type="text" 
+                    id="globalChatInput" 
+                    placeholder="Ask about resume tips, ATS keywords..." 
+                    class="flex-grow bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-amber-400 transition-colors"
+                    autocomplete="off"
+                />
+                <button 
+                    type="submit" 
+                    id="btnSendGlobalChat" 
+                    class="bg-amber-400 hover:bg-amber-300 text-[#02353C] font-bold p-2.5 rounded-xl text-xs transition-all shrink-0 flex items-center justify-center cursor-pointer">
+                    <i class="fa-solid fa-paper-plane text-xs"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function toggleAiChatDrawer() {
+            const drawer = document.getElementById('aiChatDrawer');
+            if (drawer) {
+                drawer.classList.toggle('translate-x-full');
+            }
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        async function handleGlobalSendMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('globalChatInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const messagesContainer = document.getElementById('globalChatMessages');
+            const sendBtn = document.getElementById('btnSendGlobalChat');
+
+            // Render User Message
+            messagesContainer.innerHTML += `
+                <div class="flex items-start justify-end gap-2.5">
+                    <div class="bg-emerald-600 text-white p-3 rounded-2xl rounded-tr-none max-w-[85%] leading-relaxed">
+                        ${escapeHtml(message)}
+                    </div>
+                </div>
+            `;
+
+            input.value = '';
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            // Render Loading State
+            const loadingId = 'loading-' + Date.now();
+            messagesContainer.innerHTML += `
+                <div id="${loadingId}" class="flex items-start gap-2.5">
+                    <div class="w-7 h-7 rounded-lg bg-amber-400/20 text-amber-400 flex items-center justify-center text-xs shrink-0 mt-0.5">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div class="bg-slate-800 border border-slate-700/80 text-slate-400 p-3 rounded-2xl rounded-tl-none text-xs flex items-center gap-2">
+                        <i class="fa-solid fa-circle-notch fa-spin text-amber-400"></i> Thinking...
+                    </div>
+                </div>
+            `;
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            sendBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/v1/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: message })
+                });
+
+                const data = await response.json();
+                const loadingEl = document.getElementById(loadingId);
+                if (loadingEl) loadingEl.remove();
+
+                if (response.ok && data.reply) {
+                    messagesContainer.innerHTML += `
+                        <div class="flex items-start gap-2.5">
+                            <div class="w-7 h-7 rounded-lg bg-amber-400/20 text-amber-400 flex items-center justify-center text-xs shrink-0 mt-0.5">
+                                <i class="fa-solid fa-robot"></i>
+                            </div>
+                            <div class="bg-slate-800 border border-slate-700/80 text-slate-200 p-3 rounded-2xl rounded-tl-none max-w-[85%] leading-relaxed whitespace-pre-wrap">
+                                ${escapeHtml(data.reply)}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    messagesContainer.innerHTML += `
+                        <div class="flex items-start gap-2.5">
+                            <div class="w-7 h-7 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center text-xs shrink-0 mt-0.5">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                            <div class="bg-slate-800 border border-rose-500/30 text-rose-300 p-3 rounded-2xl rounded-tl-none max-w-[85%]">
+                                ${escapeHtml(data.error || 'Sorry, I encountered an issue. Please try again.')}
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                const loadingEl = document.getElementById(loadingId);
+                if (loadingEl) loadingEl.remove();
+
+                messagesContainer.innerHTML += `
+                    <div class="bg-slate-800 border border-rose-500/30 text-rose-300 p-3 rounded-2xl text-xs">
+                        Network error. Please check your connection.
+                    </div>
+                `;
+            } finally {
+                sendBtn.disabled = false;
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        }
+    </script>
 </body>
 </html>
