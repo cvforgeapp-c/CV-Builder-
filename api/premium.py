@@ -1006,10 +1006,8 @@ def search_jobs():
         400,
     )
 
-  # Construct clear query string for JSearch engine (e.g. "Computer science in Brazil")
   full_query = f'{query} in {location}' if location else query
 
-  # Updated to match the active v5 API version in your RapidAPI dashboard
   url = 'https://jsearch.p.rapidapi.com/search-v2'
   headers = {
       'X-RapidAPI-Key': rapidapi_key,
@@ -1047,9 +1045,23 @@ def search_jobs():
       )
 
     res_data = response.json()
-    results = []
+    
+    if isinstance(res_data, str):
+      try:
+        res_data = json.loads(res_data)
+      except Exception:
+        res_data = {}
 
-    for job in res_data.get('data', []):
+    jobs_list = []
+    if isinstance(res_data, dict):
+      jobs_list = res_data.get('data', []) or res_data.get('jobs', []) or []
+    elif isinstance(res_data, list):
+      jobs_list = res_data
+
+    results = []
+    for job in jobs_list:
+      if not isinstance(job, dict):
+        continue
       city = job.get('job_city') or ''
       country = job.get('job_country') or ''
       loc_str = (
