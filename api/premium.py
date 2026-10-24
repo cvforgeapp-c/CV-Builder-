@@ -123,31 +123,36 @@ except ImportError:
 
 # 2. NEW MODULAR LOCALES PATHWAY (locales/__init__.py)
 try:
-    from locales import (
-        t as modular_t,
-        SUPPORTED_LANGUAGES as MODULAR_SUPPORTED_LANGUAGES,
-        get_supported_languages as get_modular_supported_languages,
-        get_language_code as get_modular_language_code,
-        TRANSLATIONS as MODULAR_TRANSLATIONS
-    )
+  from locales import (
+      SUPPORTED_LANGUAGES as MODULAR_SUPPORTED_LANGUAGES,
+      TRANSLATIONS as MODULAR_TRANSLATIONS,
+      get_language_code as get_modular_language_code,
+      get_supported_languages as get_modular_supported_languages,
+      t as modular_t,
+  )
 except ImportError:
-    try:
-        from ..locales import (
-            t as modular_t,
-            SUPPORTED_LANGUAGES as MODULAR_SUPPORTED_LANGUAGES,
-            get_supported_languages as get_modular_supported_languages,
-            get_language_code as get_modular_language_code,
-            TRANSLATIONS as MODULAR_TRANSLATIONS
-        )
-    except ImportError:
-        def modular_t(key, lang="English (US / UK)", default=None):
-            return str(key)
-        MODULAR_SUPPORTED_LANGUAGES = SUPPORTED_LANGUAGES.copy()
-        def get_modular_supported_languages():
-            return MODULAR_SUPPORTED_LANGUAGES.copy()
-        def get_modular_language_code(lang="English (US / UK)"):
-            return "en"
-        MODULAR_TRANSLATIONS = {}
+  try:
+    from ..locales import (
+        SUPPORTED_LANGUAGES as MODULAR_SUPPORTED_LANGUAGES,
+        TRANSLATIONS as MODULAR_TRANSLATIONS,
+        get_language_code as get_modular_language_code,
+        get_supported_languages as get_modular_supported_languages,
+        t as modular_t,
+    )
+  except ImportError:
+
+    def modular_t(key, lang='English (US / UK)', default=None):
+      return str(key)
+
+    MODULAR_SUPPORTED_LANGUAGES = SUPPORTED_LANGUAGES.copy()
+
+    def get_modular_supported_languages():
+      return MODULAR_SUPPORTED_LANGUAGES.copy()
+
+    def get_modular_language_code(lang='English (US / UK)'):
+      return 'en'
+
+    MODULAR_TRANSLATIONS = {}
 
 # ============================================================
 # USER LANGUAGE PREFERENCE HELPER
@@ -426,20 +431,25 @@ PADDLE_ENV = os.getenv('PADDLE_ENV', 'sandbox')
 
 # Updated Pricing Structure Mappings & Price IDs
 PADDLE_PRO_PRICE_ID = os.getenv('PADDLE_PRO_PRICE_ID', 'pri_pro_monthly_1799')
-PADDLE_ELITE_PRICE_ID = os.getenv('PADDLE_ELITE_PRICE_ID', 'pri_expert_monthly_4399')
+PADDLE_ELITE_PRICE_ID = os.getenv(
+    'PADDLE_ELITE_PRICE_ID', 'pri_expert_monthly_4399'
+)
 
 PRICE_MAP = {
     # Monthly Subscriptions ($17.99 Pro, $43.99 Elite)
-    PADDLE_PRO_PRICE_ID: {"type": "sub", "tier": "pro", "credits": 130},
-    PADDLE_ELITE_PRICE_ID: {"type": "sub", "tier": "elite", "credits": 360},
-    
+    PADDLE_PRO_PRICE_ID: {'type': 'sub', 'tier': 'pro', 'credits': 130},
+    PADDLE_ELITE_PRICE_ID: {'type': 'sub', 'tier': 'elite', 'credits': 360},
     # 7-Day One-Time Pass ($7.99)
-    "pri_pass_7day_799": {"type": "pass", "tier": "pro", "credits": 60, "days": 7},
-    
+    'pri_pass_7day_799': {
+        'type': 'pass',
+        'tier': 'pro',
+        'credits': 60,
+        'days': 7,
+    },
     # One-Time Credit Top-Up Packs ($2.99, $9.99, $24.99)
-    "pri_topup_10_299": {"type": "topup", "credits": 10},
-    "pri_topup_50_999": {"type": "topup", "credits": 50},
-    "pri_topup_150_2499": {"type": "topup", "credits": 150}
+    'pri_topup_10_299': {'type': 'topup', 'credits': 10},
+    'pri_topup_50_999': {'type': 'topup', 'credits': 50},
+    'pri_topup_150_2499': {'type': 'topup', 'credits': 150},
 }
 
 # Feature Consumption Weights
@@ -513,7 +523,7 @@ def register():
           is_premium=False,
           subscription_status='free',
           monthly_cv_generations=0,
-          ai_credits_remaining=15, # Updated starting credit balance
+          ai_credits_remaining=15,  # Updated starting credit balance
           preferences_json={},
       )
 
@@ -694,15 +704,21 @@ def editor():
     ).first()
 
   user_prefs = getattr(current_user, 'preferences_json', None) or {}
-  pdf_settings = user_prefs.get('pdf_settings', {}) if isinstance(user_prefs, dict) else {}
+  pdf_settings = (
+      user_prefs.get('pdf_settings', {}) if isinstance(user_prefs, dict) else {}
+  )
 
   raw_template = request.args.get('template') or (
-      resume.template_used if resume and getattr(resume, 'template_used', None) else pdf_settings.get('template_id', 'exec_minimalist')
+      resume.template_used
+      if resume and getattr(resume, 'template_used', None)
+      else pdf_settings.get('template_id', 'exec_minimalist')
   )
   active_template = raw_template.replace('-', '_')
 
   active_accent = (
-      resume.accent_color if resume and getattr(resume, 'accent_color', None) else pdf_settings.get('accent_color', '#02353C')
+      resume.accent_color
+      if resume and getattr(resume, 'accent_color', None)
+      else pdf_settings.get('accent_color', '#02353C')
   )
 
   try:
@@ -747,15 +763,21 @@ def preview():
     ).first()
 
   user_prefs = getattr(current_user, 'preferences_json', None) or {}
-  pdf_settings = user_prefs.get('pdf_settings', {}) if isinstance(user_prefs, dict) else {}
+  pdf_settings = (
+      user_prefs.get('pdf_settings', {}) if isinstance(user_prefs, dict) else {}
+  )
 
   raw_template = request.args.get('template') or (
-      resume.template_used if resume and getattr(resume, 'template_used', None) else pdf_settings.get('template_id', 'exec_minimalist')
+      resume.template_used
+      if resume and getattr(resume, 'template_used', None)
+      else pdf_settings.get('template_id', 'exec_minimalist')
   )
   active_template = raw_template.replace('-', '_')
 
   active_accent = (
-      resume.accent_color if resume and getattr(resume, 'accent_color', None) else pdf_settings.get('accent_color', '#02353C')
+      resume.accent_color
+      if resume and getattr(resume, 'accent_color', None)
+      else pdf_settings.get('accent_color', '#02353C')
   )
 
   return render_template(
@@ -843,17 +865,22 @@ def cold_outreach():
   resumes = Resume.query.filter_by(user_id=current_user.id).all()
   return render_template('outreach.html', resumes=resumes, user=current_user)
 
+
 @premium_app.route('/salary-negotiator')
 @login_required
 def salary_negotiator():
-    resumes = Resume.query.filter_by(user_id=current_user.id).all()
-    return render_template('salary_negotiator.html', resumes=resumes, user=current_user)
+  resumes = Resume.query.filter_by(user_id=current_user.id).all()
+  return render_template(
+      'salary_negotiator.html', resumes=resumes, user=current_user
+  )
+
 
 @premium_app.route('/portal-qa')
 @login_required
 def portal_qa_page():
-    resumes = Resume.query.filter_by(user_id=current_user.id).all()
-    return render_template('portal_qa.html', resumes=resumes, user=current_user)
+  resumes = Resume.query.filter_by(user_id=current_user.id).all()
+  return render_template('portal_qa.html', resumes=resumes, user=current_user)
+
 
 @premium_app.route('/linkedin')
 @login_required
@@ -867,57 +894,69 @@ def linkedin_optimizer():
 @premium_app.route('/pdf-studio', methods=['GET', 'POST'])
 @login_required
 def pdf_studio():
-    resume_id = request.args.get('resume_id') or request.form.get('resume_id')
+  resume_id = request.args.get('resume_id') or request.form.get('resume_id')
 
-    user_prefs = getattr(current_user, 'preferences_json', None) or {}
-    if not isinstance(user_prefs, dict):
-        user_prefs = {}
+  user_prefs = getattr(current_user, 'preferences_json', None) or {}
+  if not isinstance(user_prefs, dict):
+    user_prefs = {}
 
-    pdf_settings = user_prefs.get('pdf_settings', {
-        'template_id': 'exec_minimalist',
-        'accent_color': '#02353C',
-        'font_pairing': 'helvetica',
-        'line_spacing': 'normal',
-        'target_action': 'editor'
-    })
+  pdf_settings = user_prefs.get(
+      'pdf_settings',
+      {
+          'template_id': 'exec_minimalist',
+          'accent_color': '#02353C',
+          'font_pairing': 'helvetica',
+          'line_spacing': 'normal',
+          'target_action': 'editor',
+      },
+  )
 
-    if request.method == 'POST':
-        template_id = (request.form.get('template_id', 'exec_minimalist')).replace('-', '_')
-        accent_color = request.form.get('accent_color', '#02353C')
-        font_pairing = request.form.get('font_pairing', 'helvetica')
-        line_spacing = request.form.get('line_spacing', 'normal')
+  if request.method == 'POST':
+    template_id = (
+        request.form.get('template_id', 'exec_minimalist')
+    ).replace('-', '_')
+    accent_color = request.form.get('accent_color', '#02353C')
+    font_pairing = request.form.get('font_pairing', 'helvetica')
+    line_spacing = request.form.get('line_spacing', 'normal')
 
-        updated_settings = {
-            'template_id': template_id,
-            'accent_color': accent_color,
-            'font_pairing': font_pairing,
-            'line_spacing': line_spacing,
-        }
+    updated_settings = {
+        'template_id': template_id,
+        'accent_color': accent_color,
+        'font_pairing': font_pairing,
+        'line_spacing': line_spacing,
+    }
 
-        user_prefs['pdf_settings'] = updated_settings
-        current_user.preferences_json = user_prefs
-        flag_modified(current_user, 'preferences_json')
+    user_prefs['pdf_settings'] = updated_settings
+    current_user.preferences_json = user_prefs
+    flag_modified(current_user, 'preferences_json')
 
-        if resume_id:
-            resume = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first()
-            if resume:
-                resume.template_used = template_id
-                resume.accent_color = accent_color
+    if resume_id:
+      resume = Resume.query.filter_by(
+          id=resume_id, user_id=current_user.id
+      ).first()
+      if resume:
+        resume.template_used = template_id
+        resume.accent_color = accent_color
 
-        try:
-            db.session.commit()
-            session['pdf_settings'] = updated_settings
-            flash('PDF Template settings saved!', 'success')
-        except Exception as exc:
-            db.session.rollback()
-            premium_app.logger.error('Failed to save settings: %s', exc)
+    try:
+      db.session.commit()
+      session['pdf_settings'] = updated_settings
+      flash('PDF Template settings saved!', 'success')
+    except Exception as exc:
+      db.session.rollback()
+      premium_app.logger.error('Failed to save settings: %s', exc)
 
-        if resume_id:
-            return redirect(url_for('preview', id=resume_id, template=template_id))
-        else:
-            return redirect(url_for('editor', template=template_id))
+    if resume_id:
+      return redirect(url_for('preview', id=resume_id, template=template_id))
+    else:
+      return redirect(url_for('editor', template=template_id))
 
-    return render_template('dashboard/pdf_templates.html', settings=pdf_settings, resume_id=resume_id, user=current_user)
+  return render_template(
+      'dashboard/pdf_templates.html',
+      settings=pdf_settings,
+      resume_id=resume_id,
+      user=current_user,
+  )
 
 
 @premium_app.route('/support')
@@ -927,42 +966,77 @@ def priority_support():
 
 
 # ============================================================
-# LIVE JOB SEARCH BLUEPRINT (REPLACING ADZUNA WITH JSEARCH)
+# LIVE JOB SEARCH BLUEPRINT (REALITY JSEARCH INTEGRATION)
 # ============================================================
 
 jobs_bp = Blueprint('jobs', __name__)
-
-RAPIDAPI_KEY = os.environ.get('RAPIDAPI_KEY', 'YOUR_RAPIDAPI_KEY')
 
 
 @jobs_bp.route('/api/v1/jobs/search', methods=['POST'])
 @login_required
 def search_jobs():
-  data = request.get_json() or {}
-  query = data.get('query', '').strip()
-  location = data.get('location', '').strip()
+  rapidapi_key = (
+      os.environ.get('RAPIDAPI_KEY') or os.environ.get('rapidapi_key') or ''
+  ).strip()
+
+  if not rapidapi_key:
+    premium_app.logger.error(
+        'RAPIDAPI_KEY environment variable is missing on server.'
+    )
+    return (
+        jsonify({
+            'error': (
+                'Job search service is misconfigured. RAPIDAPI_KEY missing in'
+                ' server environment.'
+            )
+        }),
+        500,
+    )
+
+  data = request.get_json(silent=True) or {}
+  query = (data.get('query') or '').strip()
+  location = (data.get('location') or '').strip()
   page = int(data.get('page', 1))
 
   if not query:
     return (
         jsonify(
-            {'error': 'Please enter a search query (e.g. Frontend Engineer)'}
+            {'error': 'Please enter a search query (e.g. Computer Science)'}
         ),
         400,
     )
 
+  # Construct clear query string for JSearch engine (e.g. "Computer science in Brazil")
   full_query = f'{query} in {location}' if location else query
 
   url = 'https://jsearch.p.rapidapi.com/search'
   headers = {
-      'X-RapidAPI-Key': RAPIDAPI_KEY,
+      'X-RapidAPI-Key': rapidapi_key,
       'X-RapidAPI-Host': 'jsearch.p.rapidapi.com',
   }
   params = {'query': full_query, 'page': str(page), 'num_pages': '1'}
 
   try:
-    response = requests.get(url, headers=headers, params=params, timeout=10)
+    response = requests.get(url, headers=headers, params=params, timeout=12)
+
+    if response.status_code == 403:
+      premium_app.logger.error(
+          'RapidAPI 403 Forbidden: Invalid key or non-subscribed plan.'
+      )
+      return (
+          jsonify({
+              'error': (
+                  'Job search network denied access. Please check your RapidAPI'
+                  ' key subscription.'
+              )
+          }),
+          403,
+      )
+
     if response.status_code != 200:
+      premium_app.logger.error(
+          'RapidAPI Error Status %s: %s', response.status_code, response.text
+      )
       return (
           jsonify(
               {'error': 'Job search provider temporary error. Try again.'}
@@ -979,13 +1053,13 @@ def search_jobs():
       loc_str = (
           f'{city}, {country}'.strip(', ')
           if (city or country)
-          else 'Remote / Unspecified'
+          else (location or 'Remote / Unspecified')
       )
 
       results.append({
-          'id': job.get('job_id'),
-          'title': job.get('job_title'),
-          'company': job.get('employer_name', 'Company'),
+          'id': job.get('job_id', str(uuid.uuid4())),
+          'title': job.get('job_title', 'Target Role'),
+          'company': job.get('employer_name', 'Hiring Organization'),
           'location': loc_str,
           'description': job.get('job_description', ''),
           'redirect_url': job.get('job_apply_link', ''),
@@ -1036,9 +1110,7 @@ def fetch_job_keywords():
       response = client.get(job_url, headers=headers)
       if response.status_code != 200:
         return (
-            jsonify(
-                {'error': 'Unable to access the specified job URL.'}
-            ),
+            jsonify({'error': 'Unable to access the specified job URL.'}),
             400,
         )
 
@@ -1073,7 +1145,9 @@ Job Description Text:
 @login_required
 def generate_linkedin_assets():
   target_keywords = (request.form.get('target_keywords') or '').strip()
-  profile_goal = (request.form.get('profile_goal') or 'recruiter_search').strip()
+  profile_goal = (
+      request.form.get('profile_goal') or 'recruiter_search'
+  ).strip()
   resume_id = request.form.get('resume_id')
 
   cv_text = ''
@@ -1340,11 +1414,17 @@ def save_resume():
   resume = db.session.get(Resume, resume_id)
 
   user_prefs = getattr(current_user, 'preferences_json', None) or {}
-  pdf_settings = user_prefs.get('pdf_settings', {}) if isinstance(user_prefs, dict) else {}
+  pdf_settings = (
+      user_prefs.get('pdf_settings', {}) if isinstance(user_prefs, dict) else {}
+  )
 
-  raw_chosen_template = data.get('template_id') or pdf_settings.get('template_id', 'exec_minimalist')
+  raw_chosen_template = data.get('template_id') or pdf_settings.get(
+      'template_id', 'exec_minimalist'
+  )
   chosen_template = raw_chosen_template.replace('-', '_')
-  chosen_accent = data.get('accent_color') or pdf_settings.get('accent_color', '#02353C')
+  chosen_accent = data.get('accent_color') or pdf_settings.get(
+      'accent_color', '#02353C'
+  )
 
   if resume and str(resume.user_id) == str(current_user.id):
     resume.title = title
@@ -1398,7 +1478,9 @@ def save_resume():
     print(f'Save Resume Error: {exc}')
     if request.is_json:
       return (
-          jsonify({'error': 'Unable to save resume changes. Please try again.'}),
+          jsonify(
+              {'error': 'Unable to save resume changes. Please try again.'}
+          ),
           500,
       )
 
@@ -1653,16 +1735,48 @@ def generate_ai_field():
 
   context_str = '\n\n'.join(context_details)
 
-  lang_directive = f'CRITICAL REQUIREMENT: Write ALL generated text, phrases, and descriptions strictly and exclusively in {preferred_language}.'
+  lang_directive = (
+      'CRITICAL REQUIREMENT: Write ALL generated text, phrases, and'
+      f' descriptions strictly and exclusively in {preferred_language}.'
+  )
 
   if field_type == 'summary':
-    prompt = f"""Write a concise, professional resume summary tailored to the target role ({target_role}) using the candidate information supplied below.\n\n{lang_directive}\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Highlight core strengths, technical skills, and background.\n- Write the entire output in {preferred_language}.\n- Seamlessly accommodate career transitions or multi-disciplinary profiles.\n- Return only the professional summary text without commentary or questions."""
+    prompt = (
+        'Write a concise, professional resume summary tailored to the target'
+        f' role ({target_role}) using the candidate information supplied'
+        f' below.\n\n{lang_directive}\n\nCandidate'
+        f' information:\n{context_str}\n\nRequirements:\n- Highlight core'
+        ' strengths, technical skills, and background.\n- Write the entire'
+        f' output in {preferred_language}.\n- Seamlessly accommodate career'
+        ' transitions or multi-disciplinary profiles.\n- Return only the'
+        ' professional summary text without commentary or questions.'
+    )
   elif field_type == 'experience':
-    prompt = f"""Improve and polish the candidate's professional experience bullet points for the target role ({target_role}).\n\n{lang_directive}\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Enhance clarity, professional tone, and ATS keyword alignment.\n- Write the entire output in {preferred_language}.\n- Return clear bullet points beginning with '-'."""
+    prompt = (
+        "Improve and polish the candidate's professional experience bullet"
+        f' points for the target role ({target_role}).\n\n{lang_directive}\n\nCandidate'
+        f' information:\n{context_str}\n\nRequirements:\n- Enhance clarity,'
+        ' professional tone, and ATS keyword alignment.\n- Write the entire'
+        f' output in {preferred_language}.\n- Return clear bullet points'
+        " beginning with '-'."
+    )
   elif field_type == 'project':
-    prompt = f"""Write a compelling project description highlighting technical implementation and impact for the target role ({target_role}).\n\n{lang_directive}\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Focus on technical stack, architecture, and deliverables.\n- Write the entire output in {preferred_language}.\n- Return concise paragraph or bullet points."""
+    prompt = (
+        'Write a compelling project description highlighting technical'
+        f' implementation and impact for the target role ({target_role}).\n\n{lang_directive}\n\nCandidate'
+        f' information:\n{context_str}\n\nRequirements:\n- Focus on technical'
+        ' stack, architecture, and deliverables.\n- Write the entire output in'
+        f' {preferred_language}.\n- Return concise paragraph or bullet points.'
+    )
   else:
-    prompt = f"""Organize and format the candidate's professional and technical skills tailored to the target role ({target_role}).\n\n{lang_directive}\n\nCandidate information:\n{context_str}\n\nRequirements:\n- Group or list clean, industry-standard skills in {preferred_language}.\n- Return a comma-separated list or clean categorized text without introductory text."""
+    prompt = (
+        "Organize and format the candidate's professional and technical skills"
+        f' tailored to the target role ({target_role}).\n\n{lang_directive}\n\nCandidate'
+        f' information:\n{context_str}\n\nRequirements:\n- Group or list clean,'
+        f' industry-standard skills in {preferred_language}.\n- Return a'
+        ' comma-separated list or clean categorized text without introductory'
+        ' text.'
+    )
 
   try:
     generated_text = generate_ai_text(prompt, max_tokens=1024)
@@ -2433,38 +2547,43 @@ def scrape_job_url():
 @premium_bp.route('/application-copilot', methods=['POST'])
 @login_required
 def run_application_copilot():
-    data = request.get_json(silent=True) or {}
-    
-    job_description = (data.get('job_description') or '').strip()
-    company_name = (data.get('company_name') or 'Target Company').strip()
-    job_title = (data.get('job_title') or 'Target Role').strip()
-    resume_id = data.get('resume_id')
-    
-    COPILOT_CREDIT_COST = FEATURE_RULES['application_copilot']['cost']
+  data = request.get_json(silent=True) or {}
 
-    user_credits = getattr(current_user, 'ai_credits_remaining', 0) or 0
-    if not has_premium_access(current_user) and user_credits < COPILOT_CREDIT_COST:
-        return jsonify({
+  job_description = (data.get('job_description') or '').strip()
+  company_name = (data.get('company_name') or 'Target Company').strip()
+  job_title = (data.get('job_title') or 'Target Role').strip()
+  resume_id = data.get('resume_id')
+
+  COPILOT_CREDIT_COST = FEATURE_RULES['application_copilot']['cost']
+
+  user_credits = getattr(current_user, 'ai_credits_remaining', 0) or 0
+  if not has_premium_access(current_user) and user_credits < COPILOT_CREDIT_COST:
+    return (
+        jsonify({
             'error': 'Insufficient credits to run the AI Application Copilot.',
             'required_credits': COPILOT_CREDIT_COST,
             'credits_remaining': user_credits,
-            'button_action': 'REFILL_CREDIT'
-        }), 402
+            'button_action': 'REFILL_CREDIT',
+        }),
+        402,
+    )
 
-    if not job_description:
-        return jsonify({'error': 'Job description is required for Copilot.'}), 400
+  if not job_description:
+    return jsonify({'error': 'Job description is required for Copilot.'}), 400
 
-    try:
-        preferred_language = get_user_preferred_language(current_user)
-        
-        resume_content = {}
-        source_resume = None
-        if resume_id:
-            source_resume = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first()
-            if source_resume and isinstance(source_resume.content_json, dict):
-                resume_content = source_resume.content_json
+  try:
+    preferred_language = get_user_preferred_language(current_user)
 
-        copilot_prompt = f"""
+    resume_content = {}
+    source_resume = None
+    if resume_id:
+      source_resume = Resume.query.filter_by(
+          id=resume_id, user_id=current_user.id
+      ).first()
+      if source_resume and isinstance(source_resume.content_json, dict):
+        resume_content = source_resume.content_json
+
+    copilot_prompt = f"""
 You are CVForge Copilot — an executive career agent and elite ATS resume writer.
 
 Generate a complete, cohesive, and fully optimized application package for this job posting in {preferred_language}.
@@ -2512,121 +2631,165 @@ OUTPUT FORMAT (JSON ONLY):
 }}
 """
 
-        raw_response = generate_ai_text(copilot_prompt, max_tokens=2800)
-        
-        clean_json_str = raw_response.strip()
-        if clean_json_str.startswith('```json'): clean_json_str = clean_json_str[7:]
-        if clean_json_str.startswith('```'): clean_json_str = clean_json_str[3:]
-        if clean_json_str.endswith('```'): clean_json_str = clean_json_str[:-3]
+    raw_response = generate_ai_text(copilot_prompt, max_tokens=2800)
 
-        copilot_result = json.loads(clean_json_str.strip())
-        
-        tailored_summary = copilot_result.get("tailored_summary", "").strip()
-        tailored_experience = copilot_result.get("tailored_experience", "").strip()
-        tailored_skills_tech = copilot_result.get("tailored_skills_tech", "").strip()
-        tailored_skills_soft = copilot_result.get("tailored_skills_soft", "").strip()
+    clean_json_str = raw_response.strip()
+    if clean_json_str.startswith('```json'):
+      clean_json_str = clean_json_str[7:]
+    if clean_json_str.startswith('```'):
+      clean_json_str = clean_json_str[3:]
+    if clean_json_str.endswith('```'):
+      clean_json_str = clean_json_str[:-3]
 
-        # PERSIST ALL TAILORED SECTIONS (SUMMARY, EXPERIENCE, SKILLS) INTO NEW RESUME RECORD
-        import copy
-        user_prefs = getattr(current_user, 'preferences_json', None) or {}
-        pdf_settings = user_prefs.get('pdf_settings', {}) if isinstance(user_prefs, dict) else {}
-        chosen_template = (source_resume.template_used if source_resume and getattr(source_resume, 'template_used', None) else pdf_settings.get('template_id', 'exec_minimalist')).replace('-', '_')
-        chosen_accent = source_resume.accent_color if source_resume and getattr(source_resume, 'accent_color', None) else pdf_settings.get('accent_color', '#02353C')
+    copilot_result = json.loads(clean_json_str.strip())
 
-        if source_resume:
-            new_resume = Resume(
-                id=str(uuid.uuid4()),
-                user_id=current_user.id,
-                title=f"CV - {company_name} ({job_title})",
-                content_json=copy.deepcopy(source_resume.content_json) if isinstance(source_resume.content_json, dict) else {},
-                template_used=chosen_template,
-                accent_color=chosen_accent,
-                updated_at=datetime.utcnow()
-            )
-        else:
-            new_resume = Resume(
-                id=str(uuid.uuid4()),
-                user_id=current_user.id,
-                title=f"CV - {company_name} ({job_title})",
-                content_json={
-                    'full_name': getattr(current_user, 'full_name', ''),
-                    'email': current_user.email,
-                    'target_role': job_title
-                },
-                template_used=chosen_template,
-                accent_color=chosen_accent,
-                updated_at=datetime.utcnow()
-            )
+    tailored_summary = copilot_result.get('tailored_summary', '').strip()
+    tailored_experience = copilot_result.get('tailored_experience', '').strip()
+    tailored_skills_tech = copilot_result.get(
+        'tailored_skills_tech', ''
+    ).strip()
+    tailored_skills_soft = copilot_result.get(
+        'tailored_skills_soft', ''
+    ).strip()
 
-        if not isinstance(new_resume.content_json, dict):
-            new_resume.content_json = {}
+    # PERSIST ALL TAILORED SECTIONS (SUMMARY, EXPERIENCE, SKILLS) INTO NEW RESUME RECORD
+    import copy
 
-        if tailored_summary:
-            new_resume.content_json['summary'] = tailored_summary
-        if tailored_experience:
-            new_resume.content_json['experience_bullets'] = tailored_experience
-        if tailored_skills_tech:
-            new_resume.content_json['skills_tech'] = tailored_skills_tech
-        if tailored_skills_soft:
-            new_resume.content_json['skills_soft'] = tailored_skills_soft
+    user_prefs = getattr(current_user, 'preferences_json', None) or {}
+    pdf_settings = (
+        user_prefs.get('pdf_settings', {})
+        if isinstance(user_prefs, dict)
+        else {}
+    )
+    chosen_template = (
+        source_resume.template_used
+        if source_resume and getattr(source_resume, 'template_used', None)
+        else pdf_settings.get('template_id', 'exec_minimalist')
+    ).replace('-', '_')
+    chosen_accent = (
+        source_resume.accent_color
+        if source_resume and getattr(source_resume, 'accent_color', None)
+        else pdf_settings.get('accent_color', '#02353C')
+    )
 
-        new_resume.content_json['target_role'] = job_title
+    if source_resume:
+      new_resume = Resume(
+          id=str(uuid.uuid4()),
+          user_id=current_user.id,
+          title=f'CV - {company_name} ({job_title})',
+          content_json=(
+              copy.deepcopy(source_resume.content_json)
+              if isinstance(source_resume.content_json, dict)
+              else {}
+          ),
+          template_used=chosen_template,
+          accent_color=chosen_accent,
+          updated_at=datetime.utcnow(),
+      )
+    else:
+      new_resume = Resume(
+          id=str(uuid.uuid4()),
+          user_id=current_user.id,
+          title=f'CV - {company_name} ({job_title})',
+          content_json={
+              'full_name': getattr(current_user, 'full_name', ''),
+              'email': current_user.email,
+              'target_role': job_title,
+          },
+          template_used=chosen_template,
+          accent_color=chosen_accent,
+          updated_at=datetime.utcnow(),
+      )
 
-        flag_modified(new_resume, 'content_json')
-        db.session.add(new_resume)
+    if not isinstance(new_resume.content_json, dict):
+      new_resume.content_json = {}
 
-        if not has_premium_access(current_user):
-            current_user.ai_credits_remaining = user_credits - COPILOT_CREDIT_COST
-        
-        new_job_app = JobApplication(
-            id=str(uuid.uuid4()),
-            user_id=current_user.id,
-            company_name=company_name,
-            role_title=job_title,
-            status='applying',
-            updated_at=datetime.utcnow()
-        )
-        db.session.add(new_job_app)
-        db.session.commit()
+    if tailored_summary:
+      new_resume.content_json['summary'] = tailored_summary
+    if tailored_experience:
+      new_resume.content_json['experience_bullets'] = tailored_experience
+    if tailored_skills_tech:
+      new_resume.content_json['skills_tech'] = tailored_skills_tech
+    if tailored_skills_soft:
+      new_resume.content_json['skills_soft'] = tailored_skills_soft
 
-        copilot_result['generated_resume_id'] = new_resume.id
+    new_resume.content_json['target_role'] = job_title
 
-        return jsonify({
+    flag_modified(new_resume, 'content_json')
+    db.session.add(new_resume)
+
+    if not has_premium_access(current_user):
+      current_user.ai_credits_remaining = user_credits - COPILOT_CREDIT_COST
+
+    new_job_app = JobApplication(
+        id=str(uuid.uuid4()),
+        user_id=current_user.id,
+        company_name=company_name,
+        role_title=job_title,
+        status='applying',
+        updated_at=datetime.utcnow(),
+    )
+    db.session.add(new_job_app)
+    db.session.commit()
+
+    copilot_result['generated_resume_id'] = new_resume.id
+
+    return (
+        jsonify({
             'success': True,
             'copilot_package': copilot_result,
             'tracker_id': new_job_app.id,
-            'credits_remaining': current_user.ai_credits_remaining
-        }), 200
+            'credits_remaining': current_user.ai_credits_remaining,
+        }),
+        200,
+    )
 
-    except Exception as exc:
-        db.session.rollback()
-        premium_app.logger.error(f'Copilot execution error: {exc}')
-        return jsonify({'error': 'Failed to complete Copilot application run. Please try again.'}), 500
+  except Exception as exc:
+    db.session.rollback()
+    premium_app.logger.error(f'Copilot execution error: {exc}')
+    return (
+        jsonify({
+            'error': (
+                'Failed to complete Copilot application run. Please try again.'
+            )
+        }),
+        500,
+    )
 
 
 @premium_bp.route('/portal-qa', methods=['POST'])
 @login_required
 def generate_portal_qa():
-    try:
-        data = request.get_json(silent=True) or {}
+  try:
+    data = request.get_json(silent=True) or {}
 
-        prompt_question = data.get("prompt", "").strip()
-        if not prompt_question:
-            return jsonify({"error": "The application portal question prompt is required."}), 400
+    prompt_question = data.get('prompt', '').strip()
+    if not prompt_question:
+      return (
+          jsonify(
+              {'error': 'The application portal question prompt is required.'}
+          ),
+          400,
+      )
 
-        company_name = data.get("company_name", "").strip() or "Target Company"
-        job_title = data.get("job_title", "").strip() or "Candidate Role"
-        tone = data.get("tone", "Professional & Direct")
-        custom_context = data.get("custom_context", "").strip()
-        max_words = data.get("max_words")
-        resume_id = data.get("resume_id")
+    company_name = data.get('company_name', '').strip() or 'Target Company'
+    job_title = data.get('job_title', '').strip() or 'Candidate Role'
+    tone = data.get('tone', 'Professional & Direct')
+    custom_context = data.get('custom_context', '').strip()
+    max_words = data.get('max_words')
+    resume_id = data.get('resume_id')
 
-        candidate_cv_summary = "Professional candidate with strong background in software development, project execution, and cross-functional team leadership."
-        if resume_id and resume_id != 'default':
-            resume_obj = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first()
-            if resume_obj and isinstance(resume_obj.content_json, dict):
-                c_json = resume_obj.content_json
-                candidate_cv_summary = f"""
+    candidate_cv_summary = (
+        'Professional candidate with strong background in software'
+        ' development, project execution, and cross-functional team leadership.'
+    )
+    if resume_id and resume_id != 'default':
+      resume_obj = Resume.query.filter_by(
+          id=resume_id, user_id=current_user.id
+      ).first()
+      if resume_obj and isinstance(resume_obj.content_json, dict):
+        c_json = resume_obj.content_json
+        candidate_cv_summary = f"""
                 Name: {c_json.get('full_name', '')}
                 Target Role: {c_json.get('target_role', '')}
                 Summary: {c_json.get('summary', '')}
@@ -2635,22 +2798,27 @@ def generate_portal_qa():
                 Projects: {c_json.get('projects', '')}
                 """
 
-        word_constraint_clause = ""
-        if max_words:
-            try:
-                max_w_int = int(max_words)
-                word_constraint_clause = f"CRITICAL CONSTRAINT: The final answer MUST NOT exceed {max_w_int} words."
-            except ValueError:
-                pass
-
-        system_instructions = (
-            "You are an executive career coach and expert job application writer for CVForge Pro. "
-            "Your objective is to craft high-converting, metric-driven responses to job portal essay questions. "
-            "Always structure candidate stories using the STAR framework (Situation, Task, Action, Result). "
-            "Never use generic AI fluff or empty buzzwords. Provide clear, concrete actions and outcomes."
+    word_constraint_clause = ''
+    if max_words:
+      try:
+        max_w_int = int(max_words)
+        word_constraint_clause = (
+            'CRITICAL CONSTRAINT: The final answer MUST NOT exceed'
+            f' {max_w_int} words.'
         )
+      except ValueError:
+        pass
 
-        user_prompt = f"""
+    system_instructions = (
+        'You are an executive career coach and expert job application writer'
+        ' for CVForge Pro. Your objective is to craft high-converting,'
+        ' metric-driven responses to job portal essay questions. Always'
+        ' structure candidate stories using the STAR framework (Situation,'
+        ' Task, Action, Result). Never use generic AI fluff or empty'
+        ' buzzwords. Provide clear, concrete actions and outcomes.'
+    )
+
+    user_prompt = f"""
 TARGET COMPANY: {company_name}
 TARGET ROLE: {job_title}
 PREFERRED TONE: {tone}
@@ -2672,22 +2840,33 @@ INSTRUCTIONS:
 3. Output MUST adhere strictly to valid JSON with keys `star_breakdown` (object containing situation, task, action, result) and `answer` (string).
 """
 
-        raw_response = generate_ai_text(system_instructions + "\n\n" + user_prompt, max_tokens=1500)
+    raw_response = generate_ai_text(
+        system_instructions + '\n\n' + user_prompt, max_tokens=1500
+    )
 
-        clean_json_str = raw_response.strip()
-        if clean_json_str.startswith('```json'):
-            clean_json_str = clean_json_str[7:]
-        if clean_json_str.startswith('```'):
-            clean_json_str = clean_json_str[3:]
-        if clean_json_str.endswith('```'):
-            clean_json_str = clean_json_str[:-3]
+    clean_json_str = raw_response.strip()
+    if clean_json_str.startswith('```json'):
+      clean_json_str = clean_json_str[7:]
+    if clean_json_str.startswith('```'):
+      clean_json_str = clean_json_str[3:]
+    if clean_json_str.endswith('```'):
+      clean_json_str = clean_json_str[:-3]
 
-        result = json.loads(clean_json_str.strip())
-        return jsonify(result), 200
+    result = json.loads(clean_json_str.strip())
+    return jsonify(result), 200
 
-    except Exception as exc:
-        premium_app.logger.error(f"Error generating portal Q&A response: {str(exc)}", exc_info=True)
-        return jsonify({"error": "Failed to generate application response. Please try again."}), 500
+  except Exception as exc:
+    premium_app.logger.error(
+        f'Error generating portal Q&A response: {str(exc)}', exc_info=True
+    )
+    return (
+        jsonify({
+            'error': (
+                'Failed to generate application response. Please try again.'
+            )
+        }),
+        500,
+    )
 
 
 @premium_bp.route('/generate-cover-letter', methods=['POST'])
@@ -2907,21 +3086,21 @@ Output MUST be strictly valid JSON matching this schema:
 @premium_bp.route('/evaluate-offer', methods=['POST'])
 @login_required
 def evaluate_offer():
-    data = request.get_json(silent=True) or {}
-    
-    company_name = (data.get('company_name') or 'Target Company').strip()
-    job_title = (data.get('job_title') or 'Target Position').strip()
-    currency = (data.get('currency') or 'USD').strip()
-    base_salary = (data.get('base_salary') or '').strip()
-    bonus_equity = (data.get('bonus_equity') or '').strip()
-    target_salary = (data.get('target_salary') or '').strip()
-    location_remote = (data.get('location_remote') or '').strip()
-    perks_notes = (data.get('perks_notes') or '').strip()
-    tone = (data.get('tone') or 'Professional & Firm').strip()
+  data = request.get_json(silent=True) or {}
 
-    preferred_language = get_user_preferred_language(current_user)
+  company_name = (data.get('company_name') or 'Target Company').strip()
+  job_title = (data.get('job_title') or 'Target Position').strip()
+  currency = (data.get('currency') or 'USD').strip()
+  base_salary = (data.get('base_salary') or '').strip()
+  bonus_equity = (data.get('bonus_equity') or '').strip()
+  target_salary = (data.get('target_salary') or '').strip()
+  location_remote = (data.get('location_remote') or '').strip()
+  perks_notes = (data.get('perks_notes') or '').strip()
+  tone = (data.get('tone') or 'Professional & Firm').strip()
 
-    prompt = f"""
+  preferred_language = get_user_preferred_language(current_user)
+
+  prompt = f"""
 You are CVForge AI, an executive compensation consultant and salary negotiation expert.
 
 Task: Evaluate a job offer and craft a high-impact, persuasive counter-offer negotiation strategy for a candidate.
@@ -2959,25 +3138,31 @@ Output MUST be strictly valid JSON matching this schema:
 }}
 """
 
-    try:
-        raw_response = generate_ai_text(prompt, max_tokens=1500)
+  try:
+    raw_response = generate_ai_text(prompt, max_tokens=1500)
 
-        clean_json_str = raw_response.strip()
-        if clean_json_str.startswith('```json'):
-            clean_json_str = clean_json_str[7:]
-        if clean_json_str.startswith('```'):
-            clean_json_str = clean_json_str[3:]
-        if clean_json_str.endswith('```'):
-            clean_json_str = clean_json_str[:-3]
+    clean_json_str = raw_response.strip()
+    if clean_json_str.startswith('```json'):
+      clean_json_str = clean_json_str[7:]
+    if clean_json_str.startswith('```'):
+      clean_json_str = clean_json_str[3:]
+    if clean_json_str.endswith('```'):
+      clean_json_str = clean_json_str[:-3]
 
-        result = json.loads(clean_json_str.strip())
-        return jsonify(result), 200
+    result = json.loads(clean_json_str.strip())
+    return jsonify(result), 200
 
-    except Exception as exc:
-        premium_app.logger.error('Salary negotiation evaluation error: %s', exc)
-        return jsonify({
-            'error': 'Unable to evaluate offer. Please verify your input details and try again.'
-        }), 500
+  except Exception as exc:
+    premium_app.logger.error('Salary negotiation evaluation error: %s', exc)
+    return (
+        jsonify({
+            'error': (
+                'Unable to evaluate offer. Please verify your input details and'
+                ' try again.'
+            )
+        }),
+        500,
+    )
 
 
 @premium_bp.route('/save-cover-letter-pdf', methods=['POST'])
@@ -3090,15 +3275,25 @@ def paddle_webhook():
   if not isinstance(event_data, dict):
     event_data = {}
 
-  customer_email = event_data.get('customer', {}).get('email') or event_data.get('customer_email')
+  customer_email = event_data.get('customer', {}).get(
+      'email'
+  ) or event_data.get('customer_email')
   items = event_data.get('items', [])
   price_id = items[0].get('price', {}).get('id') if items else None
   item_config = PRICE_MAP.get(price_id, {})
 
   # 1. HANDLE SUBSCRIPTION CREATED / UPDATED / ACTIVATED
-  if event_type in ['subscription.created', 'subscription.activated', 'subscription.updated']:
+  if event_type in [
+      'subscription.created',
+      'subscription.activated',
+      'subscription.updated',
+  ]:
     subscription_status = event_data.get('status')
-    if subscription_status == 'active' and item_config.get('type') == 'sub' and customer_email:
+    if (
+        subscription_status == 'active'
+        and item_config.get('type') == 'sub'
+        and customer_email
+    ):
       user = User.query.filter_by(email=customer_email.lower()).first()
       if user:
         try:
@@ -3120,24 +3315,35 @@ def paddle_webhook():
       if user:
         try:
           if item_config['type'] == 'pass':
-            expiry_date = datetime.utcnow() + timedelta(days=item_config['days'])
+            expiry_date = datetime.utcnow() + timedelta(
+                days=item_config['days']
+            )
             user.subscription_tier = 'pro'
-            user.ai_credits_remaining = (user.ai_credits_remaining or 0) + item_config['credits']
+            user.ai_credits_remaining = (
+                user.ai_credits_remaining or 0
+            ) + item_config['credits']
             user.pass_expires_at = expiry_date
             db.session.commit()
           elif item_config['type'] == 'topup':
-            user.ai_credits_remaining = (user.ai_credits_remaining or 0) + item_config['credits']
+            user.ai_credits_remaining = (
+                user.ai_credits_remaining or 0
+            ) + item_config['credits']
             db.session.commit()
         except Exception as exc:
           db.session.rollback()
           print(f'Paddle one-time purchase update error: {exc}')
-          return jsonify({'error': 'Unable to process purchase transaction.'}), 500
+          return (
+              jsonify({'error': 'Unable to process purchase transaction.'}),
+              500,
+          )
 
   # 3. HANDLE CANCELLATIONS / PAST DUE
   elif event_type in ['subscription.canceled', 'subscription.past_due']:
     subscription_id = event_data.get('id')
     if subscription_id:
-      user = User.query.filter_by(paddle_subscription_id=subscription_id).first()
+      user = User.query.filter_by(
+          paddle_subscription_id=subscription_id
+      ).first()
       if user:
         try:
           user.is_premium = False
@@ -3309,7 +3515,11 @@ Return ONLY a JSON object matching this structure:
     extracted = parsed_data.get('parsed_profile', {})
 
     def clean_val(val):
-      if not val or str(val).strip().lower() in ['not specified', 'none', 'n/a', 'not provided', 'null']:
+      if (
+          not val
+          or str(val).strip().lower()
+          in ['not specified', 'none', 'n/a', 'not provided', 'null']
+      ):
         return ''
       return str(val).strip()
 
@@ -3324,40 +3534,85 @@ Return ONLY a JSON object matching this structure:
         or clean_val(getattr(current_user, 'email', ''))
         or clean_val(extracted.get('email', ''))
     )
-    merged_content['phone'] = clean_val(original_content.get('phone')) or clean_val(extracted.get('phone', ''))
-    merged_content['location'] = clean_val(original_content.get('location')) or clean_val(extracted.get('location', ''))
-    merged_content['linkedin'] = clean_val(original_content.get('linkedin')) or clean_val(extracted.get('linkedin', ''))
-    merged_content['portfolio'] = clean_val(original_content.get('portfolio')) or clean_val(extracted.get('portfolio', ''))
+    merged_content['phone'] = clean_val(
+        original_content.get('phone')
+    ) or clean_val(extracted.get('phone', ''))
+    merged_content['location'] = clean_val(
+        original_content.get('location')
+    ) or clean_val(extracted.get('location', ''))
+    merged_content['linkedin'] = clean_val(
+        original_content.get('linkedin')
+    ) or clean_val(extracted.get('linkedin', ''))
+    merged_content['portfolio'] = clean_val(
+        original_content.get('portfolio')
+    ) or clean_val(extracted.get('portfolio', ''))
 
-    merged_content['job_title'] = clean_val(original_content.get('job_title')) or clean_val(extracted.get('job_title', ''))
+    merged_content['job_title'] = clean_val(
+        original_content.get('job_title')
+    ) or clean_val(extracted.get('job_title', ''))
     merged_content['target_role'] = (
-        clean_val(original_content.get('target_role')) or merged_content['job_title']
+        clean_val(original_content.get('target_role'))
+        or merged_content['job_title']
     )
-    merged_content['company'] = clean_val(original_content.get('company')) or clean_val(extracted.get('company', ''))
-    merged_content['job_location'] = clean_val(original_content.get('job_location')) or clean_val(extracted.get('job_location', ''))
-    merged_content['job_dates'] = clean_val(original_content.get('job_dates')) or clean_val(extracted.get('job_dates', ''))
+    merged_content['company'] = clean_val(
+        original_content.get('company')
+    ) or clean_val(extracted.get('company', ''))
+    merged_content['job_location'] = clean_val(
+        original_content.get('job_location')
+    ) or clean_val(extracted.get('job_location', ''))
+    merged_content['job_dates'] = clean_val(
+        original_content.get('job_dates')
+    ) or clean_val(extracted.get('job_dates', ''))
 
-    merged_content['education_degree'] = clean_val(original_content.get('education_degree')) or clean_val(extracted.get('education_degree', ''))
-    merged_content['education_school'] = clean_val(original_content.get('education_school')) or clean_val(extracted.get('education_school', ''))
-    merged_content['education_dates'] = clean_val(original_content.get('education_dates')) or clean_val(extracted.get('education_dates', ''))
-    merged_content['education_honors'] = clean_val(original_content.get('education_honors')) or clean_val(extracted.get('education_honors', ''))
+    merged_content['education_degree'] = clean_val(
+        original_content.get('education_degree')
+    ) or clean_val(extracted.get('education_degree', ''))
+    merged_content['education_school'] = clean_val(
+        original_content.get('education_school')
+    ) or clean_val(extracted.get('education_school', ''))
+    merged_content['education_dates'] = clean_val(
+        original_content.get('education_dates')
+    ) or clean_val(extracted.get('education_dates', ''))
+    merged_content['education_honors'] = clean_val(
+        original_content.get('education_honors')
+    ) or clean_val(extracted.get('education_honors', ''))
 
-    merged_content['certifications'] = clean_val(original_content.get('certifications')) or clean_val(extracted.get('certifications', ''))
-    merged_content['projects'] = clean_val(original_content.get('projects')) or clean_val(extracted.get('projects', ''))
-    merged_content['languages'] = clean_val(original_content.get('languages')) or clean_val(extracted.get('languages', ''))
+    merged_content['certifications'] = clean_val(
+        original_content.get('certifications')
+    ) or clean_val(extracted.get('certifications', ''))
+    merged_content['projects'] = clean_val(
+        original_content.get('projects')
+    ) or clean_val(extracted.get('projects', ''))
+    merged_content['languages'] = clean_val(
+        original_content.get('languages')
+    ) or clean_val(extracted.get('languages', ''))
 
-    merged_content['summary'] = opt_sections.get('summary') or original_content.get('summary', '')
-    merged_content['experience_bullets'] = opt_sections.get('experience_bullets') or original_content.get('experience_bullets', '')
-    merged_content['skills_tech'] = opt_sections.get('skills_tech') or original_content.get('skills_tech', '')
-    merged_content['skills_soft'] = opt_sections.get('skills_soft') or original_content.get('skills_soft', '')
+    merged_content['summary'] = opt_sections.get(
+        'summary'
+    ) or original_content.get('summary', '')
+    merged_content['experience_bullets'] = opt_sections.get(
+        'experience_bullets'
+    ) or original_content.get('experience_bullets', '')
+    merged_content['skills_tech'] = opt_sections.get(
+        'skills_tech'
+    ) or original_content.get('skills_tech', '')
+    merged_content['skills_soft'] = opt_sections.get(
+        'skills_soft'
+    ) or original_content.get('skills_soft', '')
 
     user_prefs = getattr(current_user, 'preferences_json', None) or {}
-    pdf_settings = user_prefs.get('pdf_settings', {}) if isinstance(user_prefs, dict) else {}
+    pdf_settings = (
+        user_prefs.get('pdf_settings', {})
+        if isinstance(user_prefs, dict)
+        else {}
+    )
 
     is_pro = has_premium_access(current_user)
 
     if is_pro and pdf_settings.get('template_id'):
-      chosen_template = (pdf_settings.get('template_id', 'exec_minimalist')).replace('-', '_')
+      chosen_template = (
+          pdf_settings.get('template_id', 'exec_minimalist')
+      ).replace('-', '_')
       chosen_accent = pdf_settings.get('accent_color', '#02353C')
     else:
       chosen_template = 'standard_ats'
