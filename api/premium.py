@@ -1014,6 +1014,8 @@ def search_jobs():
       'X-RapidAPI-Key': rapidapi_key,
       'X-RapidAPI-Host': 'jsearch.p.rapidapi.com',
   }
+  
+  # Removed restrictive 'country': 'us' parameter to allow global international searches
   params = {'query': full_query, 'page': str(page), 'num_pages': '1'}
 
   try:
@@ -1026,7 +1028,7 @@ def search_jobs():
       return (
           jsonify({
               'error': (
-                  'Job search network denied access. Please check your RapidAPI'
+                  'Job search network denied access (HTTP 403). Please verify your RapidAPI'
                   ' key subscription.'
               )
           }),
@@ -1039,9 +1041,9 @@ def search_jobs():
       )
       return (
           jsonify(
-              {'error': 'Job search provider temporary error. Try again.'}
+              {'error': f'Job network error (HTTP {response.status_code}).'}
           ),
-          502,
+          response.status_code,
       )
 
     res_data = response.json()
