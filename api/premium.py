@@ -1533,6 +1533,54 @@ def has_premium_access(user):
   return is_developer_user(user) or bool(getattr(user, 'is_premium', False))
 
 
+# ============================================================
+# GLOBAL AI CHAT ENDPOINT (GEMINI 3.8 FLASH)
+# ============================================================
+
+
+@premium_app.route('/api/v1/chat', methods=['POST'])
+@login_required
+def global_ai_chat():
+  data = request.get_json(silent=True) or {}
+  user_message = (data.get('message') or '').strip()
+
+  if not user_message:
+    return jsonify({'error': 'Please enter a message.'}), 400
+
+  preferred_language = get_user_preferred_language(current_user)
+
+  prompt = f"""
+You are CVForge AI Assistant — an expert executive career strategist, resume writer, and interview coach.
+
+USER MESSAGE:
+{user_message}
+
+PREFERRED USER LANGUAGE:
+{preferred_language}
+
+GUIDELINES:
+1. Provide actionable, concise, and professional career advice.
+2. If asked to write or rewrite bullet points, use impact metrics and strong action verbs.
+3. Write your entire response strictly in {preferred_language}.
+"""
+
+  try:
+    reply_text = generate_ai_text(prompt, max_tokens=1024)
+    return jsonify({'success': True, 'reply': reply_text}), 200
+
+  except Exception as exc:
+    premium_app.logger.error('Global AI chat error: %s', exc)
+    return (
+        jsonify({
+            'error': (
+                'The AI assistant is temporarily unavailable. Please try again'
+                ' in a moment.'
+            )
+        }),
+        500,
+    )
+
+
 @premium_app.route('/api/v1/ai/generate-field', methods=['POST'])
 @login_required
 def generate_ai_field():
