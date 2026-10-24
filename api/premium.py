@@ -1017,7 +1017,7 @@ def search_jobs():
   params = {'query': full_query, 'page': str(page), 'num_pages': '1'}
 
   try:
-    response = requests.get(url, headers=headers, params=params, timeout=12)
+    response = requests.get(url, headers=headers, params=params, timeout=25)
 
     if response.status_code == 403:
       premium_app.logger.error(
