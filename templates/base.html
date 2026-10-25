@@ -257,7 +257,8 @@
                             <button type="button" onclick="clearAttachedFile()" style="background: none; border: none; color: #93c5fd; cursor: pointer; padding: 0; font-weight: bold; font-size: 12px;" title="Remove">&times;</button>
                         </div>
 
-                        <input type="text" id="globalChatInput" placeholder="Reply to AI Assist..." autocomplete="off"/>
+                        <!-- Auto-Expanding Multi-line Textarea -->
+                        <textarea id="globalChatInput" rows="1" placeholder="Reply to AI Assist..." autocomplete="off" oninput="autoResizeTextarea(this)" onkeydown="handleKeydown(event)"></textarea>
 
                         <!-- Voice Record Button -->
                         <button type="button" id="btnVoiceRecord" class="btn-mic" onclick="toggleVoiceRecording()" title="Voice input">
@@ -530,11 +531,11 @@
         }
         .chat-form {
             display: flex;
-            align-items: center;
+            align-items: flex-end; /* Aligns icons and send button cleanly to bottom as box expands */
             background-color: #172033;
             border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 9999px;
-            padding: 6px 8px 6px 12px;
+            border-radius: 24px;
+            padding: 8px 10px 8px 12px;
             gap: 6px;
             transition: border-color 0.2s;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
@@ -548,13 +549,14 @@
             border: none;
             color: #94a3b8;
             cursor: pointer;
-            padding: 6px;
+            padding: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
             transition: color 0.2s, background 0.2s;
             flex-shrink: 0;
+            margin-bottom: 2px;
         }
         .btn-attachment:hover, .btn-mic:hover {
             color: #ffffff;
@@ -572,12 +574,16 @@
         #globalChatInput {
             flex-grow: 1;
             min-width: 60px;
+            max-height: 120px; /* Limits max expansion height with scrolling */
+            resize: none;
             background: none;
             border: none;
             padding: 8px 4px;
             font-size: 14px;
+            font-family: inherit;
             color: #f8fafc;
             outline: none;
+            line-height: 1.4;
         }
         #globalChatInput::placeholder {
             color: #64748b;
@@ -595,6 +601,7 @@
             justify-content: center;
             transition: background-color 0.2s, transform 0.1s;
             flex-shrink: 0;
+            margin-bottom: 2px;
         }
         .btn-send:hover {
             background-color: #2563eb;
@@ -626,6 +633,19 @@
                         window.speechSynthesis.cancel();
                     }
                 }
+            }
+        }
+
+        function autoResizeTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+        }
+
+        function handleKeydown(e) {
+            // Send on Enter without Shift key
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                document.getElementById('globalAiChatForm').requestSubmit();
             }
         }
 
@@ -697,6 +717,7 @@
                     transcript += event.results[i][0].transcript;
                 }
                 inputField.value = transcript;
+                autoResizeTextarea(inputField);
             };
 
             speechRecognitionInstance.onerror = (event) => {
@@ -736,8 +757,8 @@
             if (inputField) {
                 inputField.value = textToEdit;
                 inputField.focus();
+                autoResizeTextarea(inputField);
             }
-            // Optional: remove row when editing to refine
             document.getElementById(rowId)?.remove();
         }
 
@@ -757,7 +778,7 @@
             const msgRowId = 'user-msg-' + Date.now();
 
             // Format message display with file badge if attached
-            let displayContent = escapeHtml(message);
+            let displayContent = escapeHtml(message).replace(/\n/g, '<br>');
             if (currentAttachedFile) {
                 displayContent += `<br><span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; background:rgba(255,255,255,0.15); padding:2px 6px; border-radius:4px; margin-top:4px;">📎 ${escapeHtml(currentAttachedFile.name)}</span>`;
             }
@@ -768,7 +789,7 @@
             messagesContainer.innerHTML += `
                 <div id="${msgRowId}" class="msg-row user-row">
                     <div class="msg-bubble user-bubble">
-                        <div>${displayContent}</div>
+                        <div style="white-space: pre-wrap;">${displayContent}</div>
                         <div class="msg-actions">
                             <button type="button" class="msg-btn-action" onclick="copyUserMessage(this, '${rawTextForJs}')" title="Copy text">
                                 📋 Copy
@@ -787,6 +808,7 @@
             }
 
             input.value = '';
+            input.style.height = 'auto'; // Reset textarea height
             clearAttachedFile();
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
