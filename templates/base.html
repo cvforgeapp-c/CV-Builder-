@@ -212,6 +212,12 @@
                         <p class="header-sub">Your personal career & resume copilot</p>
                     </div>
                 </div>
+
+                <!-- Stop Speech Button (Appears when AI is speaking) -->
+                <button type="button" id="btnStopSpeech" onclick="stopAiSpeech()" style="display: none; align-items: center; gap: 6px; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.5); color: #fca5a5; padding: 6px 12px; border-radius: 9999px; font-size: 12px; font-weight: 600; cursor: pointer;">
+                    🔊 Stop Sound
+                </button>
+
                 <button type="button" onclick="toggleAiChatDrawer()" class="btn-close-drawer" title="Close">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -221,7 +227,7 @@
             </div>
 
             <!-- Chat Feed (Centered Content Area) -->
-            <div id="globalChatMessages" class="messages-container" onclick="handleOutsideClick(event)">
+            <div id="globalChatMessages" class="messages-container">
                 <div class="msg-row bot-row">
                     <div class="msg-avatar">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -450,15 +456,12 @@
             word-break: break-word;
             font-size: 14px;
             position: relative;
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
         }
         .bot-bubble {
             background-color: #172033;
             border: 1px solid rgba(255, 255, 255, 0.08);
             color: #e2e8f0;
             border-top-left-radius: 4px;
-            cursor: default;
         }
         .user-bubble {
             background-color: #059669;
@@ -468,26 +471,15 @@
             flex-direction: column;
         }
         
-        /* Action Bar inside User Messages - Hidden by Default, Revealed on Tap */
+        /* Action Bar inside User Messages - Always Visible */
         .msg-actions {
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-top: 6px;
+            margin-top: 8px;
             padding-top: 4px;
             border-top: 1px solid rgba(255, 255, 255, 0.2);
             justify-content: flex-end;
-            opacity: 0;
-            pointer-events: none;
-            max-height: 0;
-            overflow: hidden;
-            transition: opacity 0.2s ease, max-height 0.2s ease, margin-top 0.2s ease;
-        }
-        .msg-bubble.active-actions .msg-actions {
-            opacity: 1;
-            pointer-events: auto;
-            max-height: 40px;
-            margin-top: 8px;
         }
 
         .msg-btn-action {
@@ -643,9 +635,7 @@
                 } else {
                     drawer.classList.remove('drawer-open');
                     drawer.classList.add('drawer-closed');
-                    if ('speechSynthesis' in window) {
-                        window.speechSynthesis.cancel();
-                    }
+                    stopAiSpeech();
                 }
             }
         }
@@ -680,13 +670,37 @@
             if (!('speechSynthesis' in window)) return;
             const cleanText = text.replace(/[*_#`[\]()]/g, '');
             window.speechSynthesis.cancel();
+            
             const utterance = new SpeechSynthesisUtterance(cleanText);
             utterance.lang = 'en-US';
             utterance.rate = 1.0;
             utterance.pitch = 1.0;
+
+            const stopBtn = document.getElementById('btnStopSpeech');
+
+            utterance.onstart = () => {
+                if (stopBtn) stopBtn.style.display = 'flex';
+            };
+
+            utterance.onend = () => {
+                if (stopBtn) stopBtn.style.display = 'none';
+            };
+
+            utterance.onerror = () => {
+                if (stopBtn) stopBtn.style.display = 'none';
+            };
+
             setTimeout(() => {
                 window.speechSynthesis.speak(utterance);
             }, 100);
+        }
+
+        function stopAiSpeech() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+            const stopBtn = document.getElementById('btnStopSpeech');
+            if (stopBtn) stopBtn.style.display = 'none';
         }
 
         function toggleVoiceRecording() {
@@ -746,31 +760,6 @@
             if (inputField) inputField.placeholder = "Reply to AI Assist...";
         }
 
-        /* Tap-to-Toggle Handler for User Message Bubbles */
-        function initBubbleToggle(bubbleEl) {
-            bubbleEl.addEventListener('click', (e) => {
-                // Prevent bubbling if clicking directly on the action buttons
-                if (e.target.closest('.msg-actions')) return;
-
-                // Close all other open message bubbles first
-                document.querySelectorAll('.msg-bubble.active-actions').forEach(b => {
-                    if (b !== bubbleEl) b.classList.remove('active-actions');
-                });
-
-                // Toggle this bubble's action menu
-                bubbleEl.classList.toggle('active-actions');
-            });
-        }
-
-        function handleOutsideClick(e) {
-            // Close action menus if clicking/tapping anywhere outside a user bubble
-            if (!e.target.closest('.user-bubble')) {
-                document.querySelectorAll('.msg-bubble.active-actions').forEach(b => {
-                    b.classList.remove('active-actions');
-                });
-            }
-        }
-
         function copyUserMessage(btnElement, textToCopy) {
             navigator.clipboard.writeText(textToCopy).then(() => {
                 const originalText = btnElement.innerText;
@@ -817,7 +806,7 @@
 
             messagesContainer.innerHTML += `
                 <div id="${msgRowId}" class="msg-row user-row">
-                    <div class="msg-bubble user-bubble" id="bubble-${msgRowId}">
+                    <div class="msg-bubble user-bubble">
                         <div style="white-space: pre-wrap;">${displayContent}</div>
                         <div class="msg-actions">
                             <button type="button" class="msg-btn-action" onclick="copyUserMessage(this, '${rawTextForJs}')" title="Copy text">
@@ -830,9 +819,6 @@
                     </div>
                 </div>
             `;
-
-            const newBubble = document.getElementById(`bubble-${msgRowId}`);
-            if (newBubble) initBubbleToggle(newBubble);
             
             let payloadMessage = message;
             if (currentAttachedFile) {
