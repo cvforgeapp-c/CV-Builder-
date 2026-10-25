@@ -448,6 +448,7 @@
             line-height: 1.6;
             word-break: break-word;
             font-size: 14px;
+            position: relative;
         }
         .bot-bubble {
             background-color: #172033;
@@ -459,7 +460,38 @@
             background-color: #059669;
             color: #ffffff;
             border-top-right-radius: 4px;
+            display: flex;
+            flex-direction: column;
         }
+        
+        /* Action Bar inside User Messages for Edit & Copy */
+        .msg-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 6px;
+            padding-top: 4px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            justify-content: flex-end;
+        }
+        .msg-btn-action {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 11px;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .msg-btn-action:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+        }
+
         .error-bubble {
             background-color: #172033;
             border: 1px solid rgba(239, 68, 68, 0.4);
@@ -506,7 +538,7 @@
             gap: 6px;
             transition: border-color 0.2s;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-            flex-wrap: nowrap; /* Ensures all items stay on one row */
+            flex-wrap: nowrap;
         }
         .chat-form:focus-within {
             border-color: #fbbf24;
@@ -539,7 +571,7 @@
         }
         #globalChatInput {
             flex-grow: 1;
-            min-width: 60px; /* Allows input to shrink gracefully so icons never get pushed out */
+            min-width: 60px;
             background: none;
             border: none;
             padding: 8px 4px;
@@ -687,6 +719,28 @@
             if (inputField) inputField.placeholder = "Reply to AI Assist...";
         }
 
+        function copyUserMessage(btnElement, textToCopy) {
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = btnElement.innerText;
+                btnElement.innerText = "✓ Copied";
+                setTimeout(() => {
+                    btnElement.innerText = originalText;
+                }, 1800);
+            }).catch(err => {
+                console.error("Failed to copy message:", err);
+            });
+        }
+
+        function editUserMessage(rowId, textToEdit) {
+            const inputField = document.getElementById('globalChatInput');
+            if (inputField) {
+                inputField.value = textToEdit;
+                inputField.focus();
+            }
+            // Optional: remove row when editing to refine
+            document.getElementById(rowId)?.remove();
+        }
+
         function escapeHtml(str) {
             return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
         }
@@ -700,17 +754,29 @@
             const messagesContainer = document.getElementById('globalChatMessages');
             const sendBtn = document.getElementById('btnSendGlobalChat');
 
+            const msgRowId = 'user-msg-' + Date.now();
+
             // Format message display with file badge if attached
-            let displayHtml = escapeHtml(message);
+            let displayContent = escapeHtml(message);
             if (currentAttachedFile) {
-                displayHtml += `<br><span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; background:rgba(255,255,255,0.15); padding:2px 6px; border-radius:4px; margin-top:4px;">📎 ${escapeHtml(currentAttachedFile.name)}</span>`;
+                displayContent += `<br><span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; background:rgba(255,255,255,0.15); padding:2px 6px; border-radius:4px; margin-top:4px;">📎 ${escapeHtml(currentAttachedFile.name)}</span>`;
             }
 
-            // Append User Message
+            const rawTextForJs = message.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+            // Append User Message with Copy & Edit Buttons
             messagesContainer.innerHTML += `
-                <div class="msg-row user-row">
+                <div id="${msgRowId}" class="msg-row user-row">
                     <div class="msg-bubble user-bubble">
-                        ${displayHtml}
+                        <div>${displayContent}</div>
+                        <div class="msg-actions">
+                            <button type="button" class="msg-btn-action" onclick="copyUserMessage(this, '${rawTextForJs}')" title="Copy text">
+                                📋 Copy
+                            </button>
+                            <button type="button" class="msg-btn-action" onclick="editUserMessage('${msgRowId}', '${rawTextForJs}')" title="Edit message">
+                                ✏️ Edit
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
