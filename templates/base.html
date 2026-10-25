@@ -595,6 +595,10 @@
                 } else {
                     drawer.classList.remove('drawer-open');
                     drawer.classList.add('drawer-closed');
+                    // Stop speech synthesis if drawer is closed
+                    if ('speechSynthesis' in window) {
+                        window.speechSynthesis.cancel();
+                    }
                 }
             }
         }
@@ -618,6 +622,18 @@
             if (fileInput) fileInput.value = '';
             const previewEl = document.getElementById('attachedFilePreview');
             if (previewEl) previewEl.style.display = 'none';
+        }
+
+        function speakAiResponse(text) {
+            if (!('speechSynthesis' in window)) return;
+            // Cancel any ongoing speech
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            window.speechSynthesis.speak(utterance);
         }
 
         function toggleVoiceRecording() {
@@ -754,24 +770,30 @@
                             </div>
                         </div>
                     `;
+                    // Speak the response out loud automatically
+                    speakAiResponse(data.reply);
                 } else {
+                    const errorText = data.error || 'Sorry, I encountered an issue. Please try again.';
                     messagesContainer.innerHTML += `
                         <div class="msg-row bot-row">
                             <div class="msg-bubble error-bubble">
-                                ${escapeHtml(data.error || 'Sorry, I encountered an issue. Please try again.')}
+                                ${escapeHtml(errorText)}
                             </div>
                         </div>
                     `;
+                    speakAiResponse(errorText);
                 }
             } catch (err) {
                 document.getElementById(loadingId)?.remove();
+                const networkError = 'Network error. Please check your connection.';
                 messagesContainer.innerHTML += `
                     <div class="msg-row bot-row">
                         <div class="msg-bubble error-bubble">
-                            Network error. Please check your connection.
+                            ${networkError}
                         </div>
                     </div>
                 `;
+                speakAiResponse(networkError);
             } finally {
                 sendBtn.disabled = false;
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
