@@ -78,7 +78,7 @@
                     <div class="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-slate-500 font-medium">
                         <span class="flex items-center gap-1 text-slate-700 font-semibold" id="dispTargetRole">
                             <i class="fa-solid fa-briefcase text-amber-500 text-[11px]"></i>
-                            <span>{{ user.preferences_json.get('profile', {}).get('targetTitle', t('general_professional')) if user and user.preferences_json else t('general_professional') }}</span>
+                            <span>{{ user.preferences_json.get('profile', {}).get('targetTitle', t('general_professional')) if user and user.preferences_json is mapping else t('general_professional') }}</span>
                         </span>
                         <span class="flex items-center gap-1 text-slate-400 truncate">
                             <i class="fa-regular fa-envelope text-[11px]"></i>
@@ -110,7 +110,7 @@
 
             <div class="flex items-center gap-2 sm:gap-3">
                 <!-- Language Badge -->
-                {% set prefs = user.preferences_json if user and user.preferences_json else {} %}
+                {% set prefs = user.preferences_json if user and user.preferences_json is mapping else {} %}
                 {% set global_lang = prefs.get('language') or prefs.get('aiPreferences', {}).get('aiLanguage') or 'English (US / UK)' %}
                 <div class="flex items-center gap-1 bg-slate-50 px-2.5 py-1 rounded-md border border-slate-200/80 text-[11px] text-slate-700">
                     <i class="fa-solid fa-globe text-slate-400 text-[10px]"></i>
@@ -621,7 +621,7 @@
                                         {{ resume.title if resume.title else t('untitled_resume') }}
                                     </h3>
                                     <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200 shrink-0">
-                                        {{ resume.content_json.target_role if (resume.content_json is mapping and resume.content_json.get('target_role')) else (resume.template_used if resume.template_used else t('modern_template')) }}
+                                        {{ resume.content_json.get('target_role') if (resume.content_json is mapping and resume.content_json.get('target_role')) else (resume.template_used if resume.template_used else t('modern_template')) }}
                                     </span>
                                 </div>
 
