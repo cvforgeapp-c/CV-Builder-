@@ -452,6 +452,7 @@
             position: relative;
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
         .bot-bubble {
             background-color: #172033;
@@ -747,47 +748,48 @@
             if (inputField) inputField.placeholder = "Reply to AI Assist...";
         }
 
-        /* Robust Long-Press Handlers for Mobile & Desktop */
+        /* Fixed Touch & Mouse Long-Press Handlers */
         function initLongPress(bubbleEl) {
-            const triggerAction = (e) => {
-                e.preventDefault();
+            const toggleActive = (e) => {
+                e.stopPropagation();
+                // Close all other active bubbles
                 document.querySelectorAll('.msg-bubble.active-actions').forEach(b => {
                     if (b !== bubbleEl) b.classList.remove('active-actions');
                 });
                 bubbleEl.classList.toggle('active-actions');
             };
 
-            const start = (e) => {
+            const startHold = (e) => {
                 if (pressTimer) clearTimeout(pressTimer);
                 pressTimer = setTimeout(() => {
-                    triggerAction(e);
-                }, 600); // 600ms long press hold
+                    toggleActive(e);
+                }, 500); // 500ms hold
             };
 
-            const clear = () => {
+            const cancelHold = () => {
                 if (pressTimer) {
                     clearTimeout(pressTimer);
                     pressTimer = null;
                 }
             };
 
-            bubbleEl.addEventListener('touchstart', start, {passive: true});
-            bubbleEl.addEventListener('touchend', clear);
-            bubbleEl.addEventListener('touchmove', clear);
+            bubbleEl.addEventListener('touchstart', startHold, {passive: true});
+            bubbleEl.addEventListener('touchend', cancelHold);
+            bubbleEl.addEventListener('touchmove', cancelHold);
 
-            bubbleEl.addEventListener('mousedown', start);
-            bubbleEl.addEventListener('mouseup', clear);
-            bubbleEl.addEventListener('mouseleave', clear);
-            
-            // Allow right-click or context menu as well
+            bubbleEl.addEventListener('mousedown', startHold);
+            bubbleEl.addEventListener('mouseup', cancelHold);
+            bubbleEl.addEventListener('mouseleave', cancelHold);
+
+            // Desktop Right-Click / Context Menu fallback
             bubbleEl.addEventListener('contextmenu', (e) => {
                 e.preventDefault();
-                triggerAction(e);
+                toggleActive(e);
             });
         }
 
         function handleOutsideClick(e) {
-            if (!e.target.closest('.user-bubble')) {
+            if (!e.target.closest('.user-bubble') && !e.target.closest('.msg-btn-action')) {
                 document.querySelectorAll('.msg-bubble.active-actions').forEach(b => {
                     b.classList.remove('active-actions');
                 });
