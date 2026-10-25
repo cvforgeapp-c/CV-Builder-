@@ -177,11 +177,11 @@
             <div class="space-y-1.5 max-w-2xl">
               <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-500/20 border border-emerald-400/30 rounded-full text-[10px] font-bold text-emerald-300">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                CVForge Executive Agent
+                {{ t('copilot_badge') }}
               </div>
-              <h2 class="text-lg sm:text-xl font-bold tracking-tight text-white">AI Application Copilot</h2>
+              <h2 class="text-lg sm:text-xl font-bold tracking-tight text-white">{{ t('copilot_title') }}</h2>
               <p class="text-slate-300 text-xs leading-relaxed">
-                Paste a job link or description. Copilot generates a tailored CV draft for <strong>CVForge Studio</strong>, a cover letter, recruiter outreach emails, and adds the role to your Job Tracker in one click.
+                {{ t('copilot_desc') | safe }}
               </p>
             </div>
 
@@ -196,7 +196,7 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                 </svg>
-                Launch Copilot
+                {{ t('copilot_launch_btn') }}
               </button>
             </div>
           </div>
@@ -215,7 +215,7 @@
                   </svg>
                 </div>
                 <div>
-                  <h3 class="text-base sm:text-lg font-bold text-white">AI Application Copilot Run</h3>
+                  <h3 class="text-base sm:text-lg font-bold text-white">{{ t('copilot_title') }} Run</h3>
                   <p class="text-[11px] sm:text-xs text-slate-400">Generate your end-to-end application package</p>
                 </div>
               </div>
@@ -384,7 +384,7 @@
                     <div class="space-y-2 bg-slate-800/60 p-3.5 rounded-xl border border-slate-700/50">
                       <div class="flex items-center justify-between gap-2">
                         <h5 class="text-xs font-bold uppercase text-slate-300 tracking-wider flex items-center gap-1.5">
-                          <i class="fa-solid fa-envelope-open-text text-amber-400"></i> Target Cover Letter Draft
+                          <i class="fa-solid fa-envelope-open-text text-amber-400"></i> {{ t('suite_cover_title') }} Draft
                         </h5>
                         <div class="flex items-center gap-2">
                           <button type="button" onclick="copyCoverLetterText()" id="copyCoverBtn" class="text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-2.5 py-1 rounded-md transition-colors flex items-center gap-1 font-semibold">
@@ -404,7 +404,7 @@
                     <div class="space-y-2 bg-slate-800/60 p-3.5 rounded-xl border border-slate-700/50">
                       <div class="flex items-center justify-between gap-2">
                         <h5 class="text-xs font-bold uppercase text-slate-300 tracking-wider flex items-center gap-1.5">
-                          <i class="fa-solid fa-paper-plane text-amber-400"></i> Recruiter Cold Email
+                          <i class="fa-solid fa-paper-plane text-amber-400"></i> {{ t('suite_outreach_title') }}
                         </h5>
                         <button type="button" onclick="copyColdEmailText()" id="copyEmailBtn" class="text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-2.5 py-1 rounded-md transition-colors flex items-center gap-1 font-semibold">
                           <i class="fa-regular fa-copy text-[10px]"></i>
@@ -542,33 +542,33 @@
                 <a href="/salary-negotiator" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
-                            <i class="fa-solid fa-calculator text-amber-500"></i> AI Salary Negotiator
+                            <i class="fa-solid fa-calculator text-amber-500"></i> {{ t('suite_salary_title') }}
                         </span>
                         <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
                     </div>
-                    <p class="text-[11px] text-slate-500 leading-snug">Evaluate job offers and generate data-backed counter-offer strategies.</p>
+                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_salary_desc') }}</p>
                 </a>
 
                 <!-- AI Application Essay & Portal Q&A Assistant -->
                 <a href="/portal-qa" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
-                            <i class="fa-solid fa-pen-nib text-amber-500"></i> AI Portal Q&A Assistant
+                            <i class="fa-solid fa-pen-nib text-amber-500"></i> {{ t('suite_portal_qa_title') }}
                         </span>
                         <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
                     </div>
-                    <p class="text-[11px] text-slate-500 leading-snug">Generate custom, STAR-structured answers to job portal essay questions.</p>
+                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_portal_qa_desc') }}</p>
                 </a>
 
                 <!-- Cold Outreach Generator -->
                 <a href="/outreach" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
-                            <i class="fa-solid fa-paper-plane text-amber-500"></i> Cold Outreach
+                            <i class="fa-solid fa-paper-plane text-amber-500"></i> {{ t('suite_outreach_title') }}
                         </span>
                         <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
                     </div>
-                    <p class="text-[11px] text-slate-500 leading-snug">Generate personalized networking messages and cold emails.</p>
+                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_outreach_desc') }}</p>
                 </a>
 
                 <!-- LinkedIn Optimizer -->
