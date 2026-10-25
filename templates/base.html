@@ -213,8 +213,8 @@
                     </div>
                 </div>
 
-                <!-- Stop Speech Button (Appears when AI is speaking) -->
-                <button type="button" id="btnStopSpeech" onclick="stopAiSpeech()" style="display: none; align-items: center; gap: 6px; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.5); color: #fca5a5; padding: 6px 12px; border-radius: 9999px; font-size: 12px; font-weight: 600; cursor: pointer;">
+                <!-- Stop Speech Button (Visible while AI is speaking) -->
+                <button type="button" id="btnStopSpeech" onclick="stopAiSpeech()" style="display: none; align-items: center; gap: 6px; background: rgba(239, 68, 68, 0.25); border: 1px solid rgba(239, 68, 68, 0.6); color: #fca5a5; padding: 6px 14px; border-radius: 9999px; font-size: 12px; font-weight: 600; cursor: pointer;">
                     🔊 Stop Sound
                 </button>
 
@@ -236,7 +236,12 @@
                         </svg>
                     </div>
                     <div class="msg-bubble bot-bubble">
-                        Hello! How can I help you optimize your resume, draft cover letters, or prepare for interviews today?
+                        <div>Hello! How can I help you optimize your resume, draft cover letters, or prepare for interviews today?</div>
+                        <div class="msg-actions">
+                            <button type="button" class="msg-btn-action" onclick="speakAiResponse('Hello! How can I help you optimize your resume, draft cover letters, or prepare for interviews today?')" title="Listen to response">
+                                🔊 Listen
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -462,6 +467,8 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
             color: #e2e8f0;
             border-top-left-radius: 4px;
+            display: flex;
+            flex-direction: column;
         }
         .user-bubble {
             background-color: #059669;
@@ -471,19 +478,19 @@
             flex-direction: column;
         }
         
-        /* Action Bar inside User Messages - Always Visible */
+        /* Action Bar inside Messages */
         .msg-actions {
             display: flex;
             align-items: center;
             gap: 8px;
             margin-top: 8px;
             padding-top: 4px;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
             justify-content: flex-end;
         }
 
         .msg-btn-action {
-            background: rgba(0, 0, 0, 0.25);
+            background: rgba(255, 255, 255, 0.1);
             border: none;
             color: #ffffff;
             font-size: 11px;
@@ -496,7 +503,7 @@
             transition: background 0.2s;
         }
         .msg-btn-action:hover {
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(255, 255, 255, 0.25);
         }
 
         .error-bubble {
@@ -857,6 +864,7 @@
                 document.getElementById(loadingId)?.remove();
 
                 if (response.ok && data.reply) {
+                    const cleanReplyForJs = data.reply.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ');
                     messagesContainer.innerHTML += `
                         <div class="msg-row bot-row">
                             <div class="msg-avatar">
@@ -865,8 +873,13 @@
                                     <path d="M12 7v4"></path>
                                 </svg>
                             </div>
-                            <div class="msg-bubble bot-bubble" style="white-space: pre-wrap;">
-                                ${escapeHtml(data.reply)}
+                            <div class="msg-bubble bot-bubble">
+                                <div style="white-space: pre-wrap;">${escapeHtml(data.reply)}</div>
+                                <div class="msg-actions">
+                                    <button type="button" class="msg-btn-action" onclick="speakAiResponse('${cleanReplyForJs}')" title="Listen to response">
+                                        🔊 Listen
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     `;
