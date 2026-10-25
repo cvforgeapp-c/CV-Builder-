@@ -452,7 +452,6 @@
             position: relative;
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
-            user-select: none;
         }
         .bot-bubble {
             background-color: #172033;
@@ -469,7 +468,7 @@
             flex-direction: column;
         }
         
-        /* Action Bar inside User Messages - Hidden by Default, Revealed on Long Press */
+        /* Action Bar inside User Messages - Hidden by Default, Revealed on Tap */
         .msg-actions {
             display: flex;
             align-items: center;
@@ -482,7 +481,7 @@
             pointer-events: none;
             max-height: 0;
             overflow: hidden;
-            transition: opacity 0.25s ease, max-height 0.25s ease, margin-top 0.25s ease;
+            transition: opacity 0.2s ease, max-height 0.2s ease, margin-top 0.2s ease;
         }
         .msg-bubble.active-actions .msg-actions {
             opacity: 1;
@@ -492,12 +491,12 @@
         }
 
         .msg-btn-action {
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.25);
             border: none;
             color: #ffffff;
             font-size: 11px;
             cursor: pointer;
-            padding: 3px 8px;
+            padding: 4px 10px;
             border-radius: 4px;
             display: inline-flex;
             align-items: center;
@@ -505,7 +504,7 @@
             transition: background 0.2s;
         }
         .msg-btn-action:hover {
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.5);
         }
 
         .error-bubble {
@@ -633,7 +632,6 @@
         let currentAttachedFile = null;
         let speechRecognitionInstance = null;
         let isRecordingVoice = false;
-        let pressTimer = null;
 
         function toggleAiChatDrawer() {
             const drawer = document.getElementById('aiChatDrawer');
@@ -748,48 +746,25 @@
             if (inputField) inputField.placeholder = "Reply to AI Assist...";
         }
 
-        /* Fixed Touch & Mouse Long-Press Handlers */
-        function initLongPress(bubbleEl) {
-            const toggleActive = (e) => {
-                e.stopPropagation();
-                // Close all other active bubbles
+        /* Tap-to-Toggle Handler for User Message Bubbles */
+        function initBubbleToggle(bubbleEl) {
+            bubbleEl.addEventListener('click', (e) => {
+                // Prevent bubbling if clicking directly on the action buttons
+                if (e.target.closest('.msg-actions')) return;
+
+                // Close all other open message bubbles first
                 document.querySelectorAll('.msg-bubble.active-actions').forEach(b => {
                     if (b !== bubbleEl) b.classList.remove('active-actions');
                 });
+
+                // Toggle this bubble's action menu
                 bubbleEl.classList.toggle('active-actions');
-            };
-
-            const startHold = (e) => {
-                if (pressTimer) clearTimeout(pressTimer);
-                pressTimer = setTimeout(() => {
-                    toggleActive(e);
-                }, 500); // 500ms hold
-            };
-
-            const cancelHold = () => {
-                if (pressTimer) {
-                    clearTimeout(pressTimer);
-                    pressTimer = null;
-                }
-            };
-
-            bubbleEl.addEventListener('touchstart', startHold, {passive: true});
-            bubbleEl.addEventListener('touchend', cancelHold);
-            bubbleEl.addEventListener('touchmove', cancelHold);
-
-            bubbleEl.addEventListener('mousedown', startHold);
-            bubbleEl.addEventListener('mouseup', cancelHold);
-            bubbleEl.addEventListener('mouseleave', cancelHold);
-
-            // Desktop Right-Click / Context Menu fallback
-            bubbleEl.addEventListener('contextmenu', (e) => {
-                e.preventDefault();
-                toggleActive(e);
             });
         }
 
         function handleOutsideClick(e) {
-            if (!e.target.closest('.user-bubble') && !e.target.closest('.msg-btn-action')) {
+            // Close action menus if clicking/tapping anywhere outside a user bubble
+            if (!e.target.closest('.user-bubble')) {
                 document.querySelectorAll('.msg-bubble.active-actions').forEach(b => {
                     b.classList.remove('active-actions');
                 });
@@ -857,7 +832,7 @@
             `;
 
             const newBubble = document.getElementById(`bubble-${msgRowId}`);
-            if (newBubble) initLongPress(newBubble);
+            if (newBubble) initBubbleToggle(newBubble);
             
             let payloadMessage = message;
             if (currentAttachedFile) {
