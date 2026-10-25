@@ -221,7 +221,7 @@
             </div>
 
             <!-- Chat Feed (Centered Content Area) -->
-            <div id="globalChatMessages" class="messages-container">
+            <div id="globalChatMessages" class="messages-container" onclick="handleOutsideClick(event)">
                 <div class="msg-row bot-row">
                     <div class="msg-avatar">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -418,6 +418,8 @@
             max-width: 760px;
             width: 100%;
             margin: 0 auto;
+            -webkit-user-select: none;
+            user-select: none;
         }
         .msg-row {
             display: flex;
@@ -450,12 +452,15 @@
             word-break: break-word;
             font-size: 14px;
             position: relative;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
         }
         .bot-bubble {
             background-color: #172033;
             border: 1px solid rgba(255, 255, 255, 0.08);
             color: #e2e8f0;
             border-top-left-radius: 4px;
+            cursor: default;
         }
         .user-bubble {
             background-color: #059669;
@@ -465,7 +470,7 @@
             flex-direction: column;
         }
         
-        /* Action Bar inside User Messages for Edit & Copy */
+        /* Action Bar inside User Messages - Hidden by Default, Revealed on Long Press */
         .msg-actions {
             display: flex;
             align-items: center;
@@ -474,23 +479,34 @@
             padding-top: 4px;
             border-top: 1px solid rgba(255, 255, 255, 0.2);
             justify-content: flex-end;
+            opacity: 0;
+            pointer-events: none;
+            max-height: 0;
+            overflow: hidden;
+            transition: opacity 0.25s ease, max-height 0.25s ease, margin-top 0.25s ease;
         }
+        .msg-bubble.active-actions .msg-actions {
+            opacity: 1;
+            pointer-events: auto;
+            max-height: 40px;
+            margin-top: 8px;
+        }
+
         .msg-btn-action {
-            background: none;
+            background: rgba(0, 0, 0, 0.2);
             border: none;
-            color: rgba(255, 255, 255, 0.85);
+            color: #ffffff;
             font-size: 11px;
             cursor: pointer;
-            padding: 2px 6px;
+            padding: 3px 8px;
             border-radius: 4px;
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            transition: background 0.2s, color 0.2s;
+            transition: background 0.2s;
         }
         .msg-btn-action:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: #ffffff;
+            background: rgba(0, 0, 0, 0.4);
         }
 
         .error-bubble {
@@ -531,7 +547,7 @@
         }
         .chat-form {
             display: flex;
-            align-items: flex-end; /* Aligns icons and send button cleanly to bottom as box expands */
+            align-items: flex-end;
             background-color: #172033;
             border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 24px;
@@ -574,7 +590,7 @@
         #globalChatInput {
             flex-grow: 1;
             min-width: 60px;
-            max-height: 120px; /* Limits max expansion height with scrolling */
+            max-height: 120px;
             resize: none;
             background: none;
             border: none;
@@ -618,6 +634,7 @@
         let currentAttachedFile = null;
         let speechRecognitionInstance = null;
         let isRecordingVoice = false;
+        let longPressTimer = null;
 
         function toggleAiChatDrawer() {
             const drawer = document.getElementById('aiChatDrawer');
@@ -642,7 +659,6 @@
         }
 
         function handleKeydown(e) {
-            // Send on Enter without Shift key
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 document.getElementById('globalAiChatForm').requestSubmit();
@@ -740,6 +756,47 @@
             if (inputField) inputField.placeholder = "Reply to AI Assist...";
         }
 
+        /* Long Press Event Handlers for User Message Bubbles */
+        function initLongPress(bubbleEl) {
+            const startPress = (e) => {
+                // Clear any existing timer
+                if (longPressTimer) clearTimeout(longPressTimer);
+
+                longPressTimer = setTimeout(() => {
+                    // Close active states on other bubbles first
+                    document.querySelectorAll('.msg-bubble.active-actions').forEach(b => {
+                        if (b !== bubbleEl) b.classList.remove('active-actions');
+                    });
+                    // Toggle current bubble action bar
+                    bubbleEl.classList.toggle('active-actions');
+                }, 500); // 500ms hold triggers long press
+            };
+
+            const cancelPress = () => {
+                if (longPressTimer) {
+                    clearTimeout(longPressTimer);
+                    longPressTimer = null;
+                }
+            };
+
+            bubbleEl.addEventListener('touchstart', startPress);
+            bubbleEl.addEventListener('touchend', cancelPress);
+            bubbleEl.addEventListener('touchmove', cancelPress);
+            
+            bubbleEl.addEventListener('mousedown', startPress);
+            bubbleEl.addEventListener('mouseup', cancelPress);
+            bubbleEl.addEventListener('mouseleave', cancelPress);
+        }
+
+        function handleOutsideClick(e) {
+            // Close active action menus if tapping outside message bubbles
+            if (!e.target.closest('.user-bubble')) {
+                document.querySelectorAll('.msg-bubble.active-actions').forEach(b => {
+                    b.classList.remove('active-actions');
+                });
+            }
+        }
+
         function copyUserMessage(btnElement, textToCopy) {
             navigator.clipboard.writeText(textToCopy).then(() => {
                 const originalText = btnElement.innerText;
@@ -785,10 +842,10 @@
 
             const rawTextForJs = message.replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
-            // Append User Message with Copy & Edit Buttons
+            // Append User Message with Hidden Actions (Revealed on Long Press)
             messagesContainer.innerHTML += `
                 <div id="${msgRowId}" class="msg-row user-row">
-                    <div class="msg-bubble user-bubble">
+                    <div class="msg-bubble user-bubble" id="bubble-${msgRowId}">
                         <div style="white-space: pre-wrap;">${displayContent}</div>
                         <div class="msg-actions">
                             <button type="button" class="msg-btn-action" onclick="copyUserMessage(this, '${rawTextForJs}')" title="Copy text">
@@ -801,6 +858,10 @@
                     </div>
                 </div>
             `;
+
+            // Initialize long press listener on the newly created bubble
+            const newBubble = document.getElementById(`bubble-${msgRowId}`);
+            if (newBubble) initLongPress(newBubble);
             
             let payloadMessage = message;
             if (currentAttachedFile) {
@@ -808,7 +869,7 @@
             }
 
             input.value = '';
-            input.style.height = 'auto'; // Reset textarea height
+            input.style.height = 'auto';
             clearAttachedFile();
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
