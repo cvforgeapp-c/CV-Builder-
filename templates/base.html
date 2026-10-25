@@ -179,5 +179,154 @@
     <!-- Page-specific JavaScript -->
     {% block extra_js %}{% endblock %}
 
+        <!-- ========================================================== -->
+    <!-- BULLETPROOF GLOBAL FLOATING AI CHAT WIDGET & MODAL        -->
+    <!-- ========================================================== -->
+    <div style="position: fixed; bottom: 24px; right: 24px; z-index: 99999; font-family: 'Plus Jakarta Sans', system-ui, sans-serif;">
+        <!-- Trigger Button -->
+        <button type="button" onclick="toggleAiChatDrawer()" style="background-color: #02353C; color: #f59e0b; width: 56px; height: 56px; border-radius: 50%; border: 2px solid rgba(245, 158, 11, 0.4); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s;" title="Ask AI Assist" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+            <i class="fa-solid fa-comments" style="font-size: 20px;"></i>
+        </button>
+
+        <!-- Chat Drawer Modal -->
+        <div id="aiChatDrawer" style="position: fixed; bottom: 90px; right: 24px; width: 380px; max-width: calc(100vw - 48px); height: 480px; max-height: calc(100vh - 120px); background-color: #0f172a; border: 1px solid rgba(51, 65, 85, 0.8); border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); display: flex; flex-direction: column; overflow: hidden; transform: scale(0); opacity: 0; transform-origin: bottom right; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none;">
+            
+            <!-- Header -->
+            <div style="padding: 16px; background-color: rgba(15, 23, 42, 0.95); border-bottom: 1px solid #1e293b; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 32px; height: 32px; border-radius: 8px; background-color: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.3); color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800;">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <h3 style="font-size: 13px; font-weight: 700; color: #ffffff; margin: 0;">AI Assist</h3>
+                </div>
+                <button type="button" onclick="toggleAiChatDrawer()" style="background: none; border: none; color: #94a3b8; cursor: pointer; padding: 4px; font-size: 16px;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Messages Area -->
+            <div id="globalChatMessages" style="flex-grow: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; font-size: 12px;">
+                <div style="display: flex; align-items: flex-start; gap: 8px;">
+                    <div style="width: 24px; height: 24px; border-radius: 6px; background-color: rgba(245, 158, 11, 0.2); color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; margin-top: 2px;">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div style="background-color: #1e293b; border: 1px solid rgba(51, 65, 85, 0.8); color: #cbd5e1; padding: 12px; border-radius: 16px; border-top-left-radius: 0; max-width: 85%; line-height: 1.5;">
+                        Hello! How can I help you optimize your resume or prepare for interviews today?
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Footer -->
+            <div style="padding: 12px; background-color: #0f172a; border-top: 1px solid #1e293b; flex-shrink: 0;">
+                <form id="globalAiChatForm" onsubmit="handleGlobalSendMessage(event)" style="display: flex; align-items: center; gap: 8px; margin: 0;">
+                    <input type="text" id="globalChatInput" placeholder="Type your message..." style="flex-grow: 1; background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 10px 14px; font-size: 12px; color: #f8fafc; outline: none;" autocomplete="off"/>
+                    <button type="submit" id="btnSendGlobalChat" style="background-color: #f59e0b; color: #02353C; border: none; font-weight: 700; padding: 10px 14px; border-radius: 12px; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center;" onmouseover="this.style.backgroundColor='#fbbf24'" onmouseout="this.style.backgroundColor='#f59e0b'">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleAiChatDrawer() {
+            const drawer = document.getElementById('aiChatDrawer');
+            if (drawer) {
+                if (drawer.style.transform === 'scale(0)' || drawer.style.transform === '') {
+                    drawer.style.transform = 'scale(1)';
+                    drawer.style.opacity = '1';
+                    drawer.style.pointerEvents = 'auto';
+                    document.getElementById('globalChatInput')?.focus();
+                } else {
+                    drawer.style.transform = 'scale(0)';
+                    drawer.style.opacity = '0';
+                    drawer.style.pointerEvents = 'none';
+                }
+            }
+        }
+
+        function escapeHtml(str) {
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        async function handleGlobalSendMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('globalChatInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const messagesContainer = document.getElementById('globalChatMessages');
+            const sendBtn = document.getElementById('btnSendGlobalChat');
+
+            messagesContainer.innerHTML += `
+                <div style="display: flex; align-items: flex-start; justify-content: flex-end; gap: 8px;">
+                    <div style="background-color: #059669; color: #ffffff; padding: 12px; border-radius: 16px; border-top-right-radius: 0; max-width: 85%; line-height: 1.5;">
+                        ${escapeHtml(message)}
+                    </div>
+                </div>
+            `;
+            input.value = '';
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            const loadingId = 'loading-' + Date.now();
+            messagesContainer.innerHTML += `
+                <div id="${loadingId}" style="display: flex; align-items: flex-start; gap: 8px;">
+                    <div style="width: 24px; height: 24px; border-radius: 6px; background-color: rgba(245, 158, 11, 0.2); color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; margin-top: 2px;">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div style="background-color: #1e293b; border: 1px solid rgba(51, 65, 85, 0.8); color: #94a3b8; padding: 12px; border-radius: 16px; border-top-left-radius: 0; font-size: 12px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-circle-notch fa-spin" style="color: #f59e0b;"></i> Thinking...
+                    </div>
+                </div>
+            `;
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            sendBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/v1/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: message })
+                });
+                const data = await response.json();
+                document.getElementById(loadingId)?.remove();
+
+                if (response.ok && data.reply) {
+                    messagesContainer.innerHTML += `
+                        <div style="display: flex; align-items: flex-start; gap: 8px;">
+                            <div style="width: 24px; height: 24px; border-radius: 6px; background-color: rgba(245, 158, 11, 0.2); color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; margin-top: 2px;">
+                                <i class="fa-solid fa-robot"></i>
+                            </div>
+                            <div style="background-color: #1e293b; border: 1px solid rgba(51, 65, 85, 0.8); color: #e2e8f0; padding: 12px; border-radius: 16px; border-top-left-radius: 0; max-width: 85%; line-height: 1.5; white-space: pre-wrap;">
+                                ${escapeHtml(data.reply)}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    messagesContainer.innerHTML += `
+                        <div style="display: flex; align-items: flex-start; gap: 8px;">
+                            <div style="width: 24px; height: 24px; border-radius: 6px; background-color: rgba(239, 68, 68, 0.2); color: #f87171; display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; margin-top: 2px;">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                            <div style="background-color: #1e293b; border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; padding: 12px; border-radius: 16px; border-top-left-radius: 0; max-width: 85%;">
+                                ${escapeHtml(data.error || 'Sorry, I encountered an issue. Please try again.')}
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                document.getElementById(loadingId)?.remove();
+                messagesContainer.innerHTML += `
+                    <div style="background-color: #1e293b; border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; padding: 12px; border-radius: 16px; font-size: 12px;">
+                        Network error. Please check your connection.
+                    </div>
+                `;
+            } finally {
+                sendBtn.disabled = false;
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        }
+    </script>
+
 </body>
 </html>
