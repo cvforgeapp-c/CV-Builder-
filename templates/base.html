@@ -239,14 +239,28 @@
             <div class="drawer-footer">
                 <div class="input-wrapper">
                     <form id="globalAiChatForm" onsubmit="handleGlobalSendMessage(event)" class="chat-form">
-                        <button type="button" class="btn-attachment" title="Add attachment">
+                        
+                        <!-- Hidden File Input for Upload -->
+                        <input type="file" id="globalChatFileInput" style="display: none;" accept=".pdf,.doc,.docx,.txt,image/*" onchange="handleFileSelected(event)"/>
+                        
+                        <!-- Upload Button -->
+                        <button type="button" class="btn-attachment" onclick="document.getElementById('globalChatFileInput').click()" title="Upload file or document">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <line x1="12" y1="5" x2="12" y2="19"></line>
                                 <line x1="5" y1="12" x2="19" y2="12"></line>
                             </svg>
                         </button>
+
+                        <!-- Attached File Chip Preview Container -->
+                        <div id="attachedFilePreview" style="display: none; align-items: center; gap: 6px; background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.4); padding: 4px 8px; border-radius: 8px; font-size: 11px; color: #93c5fd; max-width: 140px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                            <span id="attachedFileName" style="overflow: hidden; text-overflow: ellipsis;"></span>
+                            <button type="button" onclick="clearAttachedFile()" style="background: none; border: none; color: #93c5fd; cursor: pointer; padding: 0; font-weight: bold;">&times;</button>
+                        </div>
+
                         <input type="text" id="globalChatInput" placeholder="Reply to AI Assist..." autocomplete="off"/>
-                        <button type="button" class="btn-mic" title="Voice input">
+
+                        <!-- Voice Record Button -->
+                        <button type="button" id="btnVoiceRecord" class="btn-mic" onclick="toggleVoiceRecording()" title="Voice input">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
                                 <path d="M19 10v1a7 7 0 0 1-14 0v-1"></path>
@@ -254,6 +268,8 @@
                                 <line x1="8" y1="23" x2="16" y2="23"></line>
                             </svg>
                         </button>
+
+                        <!-- Send Button -->
                         <button type="submit" id="btnSendGlobalChat" class="btn-send" title="Send message">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                 <line x1="12" y1="19" x2="12" y2="5"></line>
@@ -310,7 +326,7 @@
             position: fixed;
             inset: 0;
             width: 100vw;
-            height: 100dvh; /* Uses dynamic mobile viewport height to prevent clipping */
+            height: 100dvh;
             background-color: #0b0f19;
             z-index: 9999999;
             display: flex;
@@ -510,6 +526,15 @@
             color: #ffffff;
             background-color: rgba(255, 255, 255, 0.06);
         }
+        .recording-active {
+            color: #ef4444 !important;
+            animation: pulse-red 1.5s infinite;
+        }
+        @keyframes pulse-red {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); color: #f87171; }
+            100% { transform: scale(1); }
+        }
         #globalChatInput {
             flex-grow: 1;
             background: none;
@@ -548,6 +573,10 @@
     </style>
 
     <script>
+        let currentAttachedFile = null;
+        let speechRecognitionInstance = null;
+        let isRecordingVoice = false;
+
         function toggleAiChatDrawer() {
             const drawer = document.getElementById('aiChatDrawer');
             if (drawer) {
@@ -562,6 +591,83 @@
             }
         }
 
+        function handleFileSelected(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            currentAttachedFile = file;
+            
+            const previewEl = document.getElementById('attachedFilePreview');
+            const nameEl = document.getElementById('attachedFileName');
+            if (previewEl && nameEl) {
+                nameEl.textContent = file.name;
+                previewEl.style.display = 'flex';
+            }
+        }
+
+        function clearAttachedFile() {
+            currentAttachedFile = null;
+            const fileInput = document.getElementById('globalChatFileInput');
+            if (fileInput) fileInput.value = '';
+            const previewEl = document.getElementById('attachedFilePreview');
+            if (previewEl) previewEl.style.display = 'none';
+        }
+
+        function toggleVoiceRecording() {
+            const micBtn = document.getElementById('btnVoiceRecord');
+            const inputField = document.getElementById('globalChatInput');
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("Speech recognition is not supported in this browser. Try Chrome or Safari.");
+                return;
+            }
+
+            if (isRecordingVoice) {
+                if (speechRecognitionInstance) {
+                    speechRecognitionInstance.stop();
+                }
+                return;
+            }
+
+            speechRecognitionInstance = new SpeechRecognition();
+            speechRecognitionInstance.lang = 'en-US';
+            speechRecognitionInstance.interimResults = true;
+            speechRecognitionInstance.continuous = false;
+
+            speechRecognitionInstance.onstart = () => {
+                isRecordingVoice = true;
+                micBtn.classList.add('recording-active');
+                inputField.placeholder = "Listening...";
+            };
+
+            speechRecognitionInstance.onresult = (event) => {
+                let transcript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    transcript += event.results[i][0].transcript;
+                }
+                inputField.value = transcript;
+            };
+
+            speechRecognitionInstance.onerror = (event) => {
+                console.error("Speech recognition error", event.error);
+                stopVoiceRecordingState();
+            };
+
+            speechRecognitionInstance.onend = () => {
+                stopVoiceRecordingState();
+            };
+
+            speechRecognitionInstance.start();
+        }
+
+        function stopVoiceRecordingState() {
+            isRecordingVoice = false;
+            const micBtn = document.getElementById('btnVoiceRecord');
+            const inputField = document.getElementById('globalChatInput');
+            if (micBtn) micBtn.classList.remove('recording-active');
+            if (inputField) inputField.placeholder = "Reply to AI Assist...";
+        }
+
         function escapeHtml(str) {
             return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
         }
@@ -569,21 +675,34 @@
         async function handleGlobalSendMessage(e) {
             e.preventDefault();
             const input = document.getElementById('globalChatInput');
-            const message = input.value.trim();
-            if (!message) return;
+            let message = input.value.trim();
+            if (!message && !currentAttachedFile) return;
 
             const messagesContainer = document.getElementById('globalChatMessages');
             const sendBtn = document.getElementById('btnSendGlobalChat');
+
+            // Format message display with file badge if attached
+            let displayHtml = escapeHtml(message);
+            if (currentAttachedFile) {
+                displayHtml += `<br><span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; background:rgba(255,255,255,0.15); padding:2px 6px; border-radius:4px; margin-top:4px;">📎 ${escapeHtml(currentAttachedFile.name)}</span>`;
+            }
 
             // Append User Message
             messagesContainer.innerHTML += `
                 <div class="msg-row user-row">
                     <div class="msg-bubble user-bubble">
-                        ${escapeHtml(message)}
+                        ${displayHtml}
                     </div>
                 </div>
             `;
+            
+            let payloadMessage = message;
+            if (currentAttachedFile) {
+                payloadMessage = `[Attached File: ${currentAttachedFile.name}] ${message}`;
+            }
+
             input.value = '';
+            clearAttachedFile();
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
             // Append Loading State
@@ -608,7 +727,7 @@
                 const response = await fetch('/api/v1/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: message })
+                    body: JSON.stringify({ message: payloadMessage })
                 });
                 const data = await response.json();
                 document.getElementById(loadingId)?.remove();
