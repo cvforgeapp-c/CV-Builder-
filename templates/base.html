@@ -180,7 +180,7 @@
     {% block extra_js %}{% endblock %}
 
     <!-- ========================================================== -->
-    <!-- ULTRA-STYLED GLOBAL AI ASSIST FLOATING WIDGET (ALL PAGES)  -->
+    <!-- ULTRA-CLEAN FULL-SCREEN AI ASSIST WIDGET (ALL PAGES)       -->
     <!-- ========================================================== -->
     <div id="cvforgeAiAssistRoot" style="position: fixed; bottom: 24px; right: 24px; z-index: 999999; font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;">
         
@@ -192,14 +192,14 @@
             <span class="btn-label">AI Assist</span>
         </button>
 
-        <!-- Chat Drawer Modal -->
+        <!-- Full-Screen Chat Overlay Modal -->
         <div id="aiChatDrawer" class="drawer-closed">
             
-            <!-- Header -->
+            <!-- Top App Bar -->
             <div class="drawer-header">
                 <div class="header-title-box">
                     <div class="bot-icon-badge">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                             <rect x="3" y="11" width="18" height="10" rx="2"></rect>
                             <circle cx="12" cy="5" r="2"></circle>
                             <path d="M12 7v4"></path>
@@ -208,44 +208,60 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="header-heading">AI Assist</h3>
-                        <p class="header-sub">CVForge Career Coach</p>
+                        <h3 class="header-heading">CVForge AI Assist</h3>
+                        <p class="header-sub">Your personal career & resume copilot</p>
                     </div>
                 </div>
-                <button type="button" onclick="toggleAiChatDrawer()" class="btn-close-drawer">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <button type="button" onclick="toggleAiChatDrawer()" class="btn-close-drawer" title="Close">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
                         <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
                 </button>
             </div>
 
-            <!-- Chat Feed -->
+            <!-- Chat Feed (Centered Content Area) -->
             <div id="globalChatMessages" class="messages-container">
                 <div class="msg-row bot-row">
                     <div class="msg-avatar">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="3" y="11" width="18" height="10" rx="2"></rect>
                             <path d="M12 7v4"></path>
                         </svg>
                     </div>
                     <div class="msg-bubble bot-bubble">
-                        Hello! How can I help you optimize your resume or prepare for interviews today?
+                        Hello! How can I help you optimize your resume, draft cover letters, or prepare for interviews today?
                     </div>
                 </div>
             </div>
 
-            <!-- Input Footer -->
+            <!-- Bottom Floating Input Bar -->
             <div class="drawer-footer">
-                <form id="globalAiChatForm" onsubmit="handleGlobalSendMessage(event)" class="chat-form">
-                    <input type="text" id="globalChatInput" placeholder="Type your message..." autocomplete="off"/>
-                    <button type="submit" id="btnSendGlobalChat">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                            <line x1="22" y1="2" x2="11" y2="13"></line>
-                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                        </svg>
-                    </button>
-                </form>
+                <div class="input-wrapper">
+                    <form id="globalAiChatForm" onsubmit="handleGlobalSendMessage(event)" class="chat-form">
+                        <button type="button" class="btn-attachment" title="Add attachment">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                        </button>
+                        <input type="text" id="globalChatInput" placeholder="Reply to AI Assist..." autocomplete="off"/>
+                        <button type="button" class="btn-mic" title="Voice input">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                                <path d="M19 10v1a7 7 0 0 1-14 0v-1"></path>
+                                <line x1="12" y1="19" x2="12" y2="23"></line>
+                                <line x1="8" y1="23" x2="16" y2="23"></line>
+                            </svg>
+                        </button>
+                        <button type="submit" id="btnSendGlobalChat" class="btn-send" title="Send message">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <line x1="12" y1="19" x2="12" y2="5"></line>
+                                <polyline points="5 12 12 5 19 12"></polyline>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -256,7 +272,7 @@
             background-color: #02353C;
             color: #fbbf24;
             height: 52px;
-            padding: 0 16px;
+            padding: 0 18px;
             border-radius: 9999px;
             border: 2px solid rgba(251, 191, 36, 0.4);
             box-shadow: 0 12px 30px -4px rgba(2, 53, 60, 0.5), 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -289,56 +305,51 @@
             padding-right: 4px;
         }
 
-        /* Chat Drawer Container */
+        /* Full-Screen Chat Overlay Container */
         #aiChatDrawer {
             position: fixed;
-            bottom: 90px;
-            right: 24px;
-            width: 380px;
-            max-width: calc(100vw - 32px);
-            height: 500px;
-            max-height: calc(100vh - 120px);
-            background-color: #0f172a;
-            border: 1px solid rgba(51, 65, 85, 0.8);
-            border-radius: 20px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #0b0f19;
+            z-index: 9999999;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            transform-origin: bottom right;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: opacity 0.25s ease, transform 0.25s ease;
         }
 
         .drawer-closed {
-            transform: scale(0);
             opacity: 0;
             pointer-events: none;
+            transform: scale(0.98);
         }
         .drawer-open {
-            transform: scale(1);
             opacity: 1;
             pointer-events: auto;
+            transform: scale(1);
         }
 
-        /* Header */
+        /* Top App Bar */
         .drawer-header {
-            padding: 14px 18px;
-            background-color: rgba(15, 23, 42, 0.95);
-            border-bottom: 1px solid #1e293b;
+            padding: 16px 24px;
+            background-color: rgba(11, 15, 25, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-shrink: 0;
+            backdrop-filter: blur(10px);
         }
         .header-title-box {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
         .bot-icon-badge {
-            width: 34px;
-            height: 34px;
-            border-radius: 10px;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
             background-color: rgba(251, 191, 36, 0.15);
             border: 1px solid rgba(251, 191, 36, 0.3);
             color: #fbbf24;
@@ -348,50 +359,53 @@
             flex-shrink: 0;
         }
         .header-heading {
-            font-size: 13px;
-            font-weight: 800;
+            font-size: 15px;
+            font-weight: 700;
             color: #ffffff;
             margin: 0;
-            line-height: 1.2;
+            letter-spacing: -0.2px;
         }
         .header-sub {
-            font-size: 10px;
+            font-size: 12px;
             color: #94a3b8;
             margin: 2px 0 0 0;
-            font-weight: 500;
+            font-weight: 400;
         }
         .btn-close-drawer {
-            background: none;
-            border: none;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: #94a3b8;
             cursor: pointer;
-            padding: 6px;
-            border-radius: 8px;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: color 0.2s, background 0.2s;
+            transition: all 0.2s;
         }
         .btn-close-drawer:hover {
             color: #ffffff;
-            background-color: #1e293b;
+            background-color: rgba(255, 255, 255, 0.12);
         }
 
-        /* Messages Area */
+        /* Chat Feed (Centered Max Width Container) */
         .messages-container {
             flex-grow: 1;
-            padding: 16px;
+            padding: 24px 16px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            font-size: 12px;
-            background-color: #0b1324;
+            gap: 20px;
+            font-size: 14px;
+            max-width: 760px;
+            width: 100%;
+            margin: 0 auto;
         }
         .msg-row {
             display: flex;
             align-items: flex-start;
-            gap: 8px;
+            gap: 12px;
         }
         .user-row {
             justify-content: flex-end;
@@ -400,9 +414,9 @@
             justify-content: flex-start;
         }
         .msg-avatar {
-            width: 26px;
-            height: 26px;
-            border-radius: 8px;
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
             background-color: rgba(251, 191, 36, 0.15);
             color: #fbbf24;
             display: flex;
@@ -412,15 +426,16 @@
             margin-top: 2px;
         }
         .msg-bubble {
-            padding: 12px 14px;
-            border-radius: 16px;
-            max-width: 84%;
-            line-height: 1.5;
+            padding: 14px 18px;
+            border-radius: 18px;
+            max-width: 85%;
+            line-height: 1.6;
             word-break: break-word;
+            font-size: 14px;
         }
         .bot-bubble {
-            background-color: #1e293b;
-            border: 1px solid rgba(51, 65, 85, 0.8);
+            background-color: #172033;
+            border: 1px solid rgba(255, 255, 255, 0.08);
             color: #e2e8f0;
             border-top-left-radius: 4px;
         }
@@ -430,7 +445,7 @@
             border-top-right-radius: 4px;
         }
         .error-bubble {
-            background-color: #1e293b;
+            background-color: #172033;
             border: 1px solid rgba(239, 68, 68, 0.4);
             color: #fca5a5;
             border-top-left-radius: 4px;
@@ -439,8 +454,8 @@
         /* Loading Spinner */
         .typing-spinner {
             display: inline-block;
-            width: 12px;
-            height: 12px;
+            width: 14px;
+            height: 14px;
             border: 2px solid rgba(251, 191, 36, 0.3);
             border-top-color: #fbbf24;
             border-radius: 50%;
@@ -450,52 +465,84 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Footer / Input */
+        /* Bottom Footer / Input Bar Container */
         .drawer-footer {
-            padding: 12px;
-            background-color: #0f172a;
-            border-top: 1px solid #1e293b;
+            padding: 16px 16px 24px 16px;
+            background-color: rgba(11, 15, 25, 0.95);
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
             flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+        .input-wrapper {
+            max-width: 760px;
+            width: 100%;
         }
         .chat-form {
             display: flex;
             align-items: center;
+            background-color: #172033;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 9999px;
+            padding: 6px 8px 6px 16px;
             gap: 8px;
-            margin: 0;
+            transition: border-color 0.2s;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+        .chat-form:focus-within {
+            border-color: #fbbf24;
+        }
+        .btn-attachment, .btn-mic {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: color 0.2s, background 0.2s;
+        }
+        .btn-attachment:hover, .btn-mic:hover {
+            color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.06);
         }
         #globalChatInput {
             flex-grow: 1;
-            background-color: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 12px;
-            padding: 10px 14px;
-            font-size: 12px;
+            background: none;
+            border: none;
+            padding: 10px 4px;
+            font-size: 14px;
             color: #f8fafc;
             outline: none;
-            transition: border-color 0.2s;
         }
-        #globalChatInput:focus {
-            border-color: #fbbf24;
+        #globalChatInput::placeholder {
+            color: #64748b;
         }
-        #btnSendGlobalChat {
-            background-color: #fbbf24;
-            color: #02353C;
+        .btn-send {
+            background-color: #3b82f6;
+            color: #ffffff;
             border: none;
-            font-weight: 700;
-            padding: 10px 14px;
-            border-radius: 12px;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, transform 0.1s;
+            flex-shrink: 0;
         }
-        #btnSendGlobalChat:hover {
-            background-color: #f59e0b;
+        .btn-send:hover {
+            background-color: #2563eb;
+            transform: scale(1.05);
         }
-        #btnSendGlobalChat:disabled {
-            opacity: 0.6;
+        .btn-send:disabled {
+            opacity: 0.5;
             cursor: not-allowed;
+            transform: none;
         }
     </style>
 
@@ -543,12 +590,12 @@
             messagesContainer.innerHTML += `
                 <div id="${loadingId}" class="msg-row bot-row">
                     <div class="msg-avatar">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="3" y="11" width="18" height="10" rx="2"></rect>
                             <path d="M12 7v4"></path>
                         </svg>
                     </div>
-                    <div class="msg-bubble bot-bubble" style="display: flex; align-items: center; gap: 8px; color: #94a3b8;">
+                    <div class="msg-bubble bot-bubble" style="display: flex; align-items: center; gap: 10px; color: #94a3b8;">
                         <span class="typing-spinner"></span> Thinking...
                     </div>
                 </div>
@@ -569,7 +616,7 @@
                     messagesContainer.innerHTML += `
                         <div class="msg-row bot-row">
                             <div class="msg-avatar">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <rect x="3" y="11" width="18" height="10" rx="2"></rect>
                                     <path d="M12 7v4"></path>
                                 </svg>
