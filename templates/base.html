@@ -258,7 +258,7 @@
                         </div>
 
                         <!-- Auto-Expanding Multi-line Textarea -->
-                        <textarea id="globalChatInput" rows="1" placeholder="Reply to AI Assist..." autocomplete="off" oninput="autoResizeTextarea(this)" onkeydown="handleKeydown(event)"></textarea>
+                        <textarea id="globalChatInput" rows="1" placeholder="Reply to AI Assist..." autocomplete="off" oninput="autoResizeTextarea(this)"></textarea>
 
                         <!-- Voice Record Button -->
                         <button type="button" id="btnVoiceRecord" class="btn-mic" onclick="toggleVoiceRecording()" title="Voice input">
@@ -418,8 +418,6 @@
             max-width: 760px;
             width: 100%;
             margin: 0 auto;
-            -webkit-user-select: none;
-            user-select: none;
         }
         .msg-row {
             display: flex;
@@ -634,7 +632,7 @@
         let currentAttachedFile = null;
         let speechRecognitionInstance = null;
         let isRecordingVoice = false;
-        let longPressTimer = null;
+        let pressTimer = null;
 
         function toggleAiChatDrawer() {
             const drawer = document.getElementById('aiChatDrawer');
@@ -656,13 +654,6 @@
         function autoResizeTextarea(textarea) {
             textarea.style.height = 'auto';
             textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
-        }
-
-        function handleKeydown(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                document.getElementById('globalAiChatForm').requestSubmit();
-            }
         }
 
         function handleFileSelected(event) {
@@ -756,40 +747,46 @@
             if (inputField) inputField.placeholder = "Reply to AI Assist...";
         }
 
-        /* Long Press Event Handlers for User Message Bubbles */
+        /* Robust Long-Press Handlers for Mobile & Desktop */
         function initLongPress(bubbleEl) {
-            const startPress = (e) => {
-                // Clear any existing timer
-                if (longPressTimer) clearTimeout(longPressTimer);
-
-                longPressTimer = setTimeout(() => {
-                    // Close active states on other bubbles first
-                    document.querySelectorAll('.msg-bubble.active-actions').forEach(b => {
-                        if (b !== bubbleEl) b.classList.remove('active-actions');
-                    });
-                    // Toggle current bubble action bar
-                    bubbleEl.classList.toggle('active-actions');
-                }, 500); // 500ms hold triggers long press
+            const triggerAction = (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.msg-bubble.active-actions').forEach(b => {
+                    if (b !== bubbleEl) b.classList.remove('active-actions');
+                });
+                bubbleEl.classList.toggle('active-actions');
             };
 
-            const cancelPress = () => {
-                if (longPressTimer) {
-                    clearTimeout(longPressTimer);
-                    longPressTimer = null;
+            const start = (e) => {
+                if (pressTimer) clearTimeout(pressTimer);
+                pressTimer = setTimeout(() => {
+                    triggerAction(e);
+                }, 600); // 600ms long press hold
+            };
+
+            const clear = () => {
+                if (pressTimer) {
+                    clearTimeout(pressTimer);
+                    pressTimer = null;
                 }
             };
 
-            bubbleEl.addEventListener('touchstart', startPress);
-            bubbleEl.addEventListener('touchend', cancelPress);
-            bubbleEl.addEventListener('touchmove', cancelPress);
+            bubbleEl.addEventListener('touchstart', start, {passive: true});
+            bubbleEl.addEventListener('touchend', clear);
+            bubbleEl.addEventListener('touchmove', clear);
+
+            bubbleEl.addEventListener('mousedown', start);
+            bubbleEl.addEventListener('mouseup', clear);
+            bubbleEl.addEventListener('mouseleave', clear);
             
-            bubbleEl.addEventListener('mousedown', startPress);
-            bubbleEl.addEventListener('mouseup', cancelPress);
-            bubbleEl.addEventListener('mouseleave', cancelPress);
+            // Allow right-click or context menu as well
+            bubbleEl.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                triggerAction(e);
+            });
         }
 
         function handleOutsideClick(e) {
-            // Close active action menus if tapping outside message bubbles
             if (!e.target.closest('.user-bubble')) {
                 document.querySelectorAll('.msg-bubble.active-actions').forEach(b => {
                     b.classList.remove('active-actions');
@@ -834,7 +831,6 @@
 
             const msgRowId = 'user-msg-' + Date.now();
 
-            // Format message display with file badge if attached
             let displayContent = escapeHtml(message).replace(/\n/g, '<br>');
             if (currentAttachedFile) {
                 displayContent += `<br><span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; background:rgba(255,255,255,0.15); padding:2px 6px; border-radius:4px; margin-top:4px;">📎 ${escapeHtml(currentAttachedFile.name)}</span>`;
@@ -842,7 +838,6 @@
 
             const rawTextForJs = message.replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
-            // Append User Message with Hidden Actions (Revealed on Long Press)
             messagesContainer.innerHTML += `
                 <div id="${msgRowId}" class="msg-row user-row">
                     <div class="msg-bubble user-bubble" id="bubble-${msgRowId}">
@@ -859,7 +854,6 @@
                 </div>
             `;
 
-            // Initialize long press listener on the newly created bubble
             const newBubble = document.getElementById(`bubble-${msgRowId}`);
             if (newBubble) initLongPress(newBubble);
             
@@ -873,7 +867,6 @@
             clearAttachedFile();
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-            // Append Loading State
             const loadingId = 'loading-' + Date.now();
             messagesContainer.innerHTML += `
                 <div id="${loadingId}" class="msg-row bot-row">
