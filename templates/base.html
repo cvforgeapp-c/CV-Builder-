@@ -251,19 +251,13 @@
                             </svg>
                         </button>
 
-                        <!-- Properly Stacked Input Container -->
-                        <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 6px;">
-                            
-                            <!-- Attached File Clear Chip Preview -->
-                            <div id="attachedFilePreview" style="display: none; align-items: center; justify-content: space-between; background: rgba(59, 130, 246, 0.25); border: 1px solid rgba(59, 130, 246, 0.5); padding: 5px 10px; border-radius: 8px; font-size: 12px; color: #93c5fd; width: 100%;">
-                                <span style="display: flex; align-items: center; gap: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                    📎 <strong id="attachedFileName" style="overflow: hidden; text-overflow: ellipsis;"></strong>
-                                </span>
-                                <button type="button" onclick="clearAttachedFile()" style="background: none; border: none; color: #93c5fd; cursor: pointer; padding: 0 4px; font-size: 14px; font-weight: bold;" title="Remove file">&times;</button>
-                            </div>
-
-                            <input type="text" id="globalChatInput" placeholder="Reply to AI Assist..." autocomplete="off"/>
+                        <!-- Attached File Compact Chip (Right Next to Upload Icon) -->
+                        <div id="attachedFilePreview" style="display: none; align-items: center; gap: 6px; background: rgba(59, 130, 246, 0.25); border: 1px solid rgba(59, 130, 246, 0.5); padding: 4px 8px; border-radius: 8px; font-size: 11px; color: #93c5fd; max-width: 140px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; flex-shrink: 0;">
+                            📎 <span id="attachedFileName" style="overflow: hidden; text-overflow: ellipsis;"></span>
+                            <button type="button" onclick="clearAttachedFile()" style="background: none; border: none; color: #93c5fd; cursor: pointer; padding: 0; font-weight: bold; font-size: 13px;" title="Remove">&times;</button>
                         </div>
+
+                        <input type="text" id="globalChatInput" placeholder="Reply to AI Assist..." autocomplete="off"/>
 
                         <!-- Voice Record Button -->
                         <button type="button" id="btnVoiceRecord" class="btn-mic" onclick="toggleVoiceRecording()" title="Voice input">
@@ -504,12 +498,12 @@
         }
         .chat-form {
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             background-color: #172033;
             border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 20px;
-            padding: 10px 12px;
-            gap: 10px;
+            border-radius: 9999px;
+            padding: 6px 8px 6px 16px;
+            gap: 8px;
             transition: border-color 0.2s;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
         }
@@ -527,7 +521,6 @@
             justify-content: center;
             border-radius: 50%;
             transition: color 0.2s, background 0.2s;
-            align-self: center;
             flex-shrink: 0;
         }
         .btn-attachment:hover, .btn-mic:hover {
@@ -547,7 +540,7 @@
             flex-grow: 1;
             background: none;
             border: none;
-            padding: 6px 4px;
+            padding: 10px 4px;
             font-size: 14px;
             color: #f8fafc;
             outline: none;
@@ -568,7 +561,6 @@
             justify-content: center;
             transition: background-color 0.2s, transform 0.1s;
             flex-shrink: 0;
-            align-self: center;
         }
         .btn-send:hover {
             background-color: #2563eb;
@@ -626,17 +618,12 @@
 
         function speakAiResponse(text) {
             if (!('speechSynthesis' in window)) return;
-            
-            // Clean markdown or special characters for smooth text-to-speech reading
             const cleanText = text.replace(/[*_#`[\]()]/g, '');
-            
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(cleanText);
             utterance.lang = 'en-US';
             utterance.rate = 1.0;
             utterance.pitch = 1.0;
-
-            // Trigger speech safely after user activation gesture
             setTimeout(() => {
                 window.speechSynthesis.speak(utterance);
             }, 100);
@@ -776,7 +763,6 @@
                             </div>
                         </div>
                     `;
-                    // Speak the response out loud in sound mode
                     speakAiResponse(data.reply);
                 } else {
                     const errorText = data.error || 'Sorry, I encountered an issue. Please try again.';
