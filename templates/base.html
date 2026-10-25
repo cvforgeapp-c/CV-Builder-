@@ -252,9 +252,9 @@
                         </button>
 
                         <!-- Attached File Compact Chip (Right Next to Upload Icon) -->
-                        <div id="attachedFilePreview" style="display: none; align-items: center; gap: 6px; background: rgba(59, 130, 246, 0.25); border: 1px solid rgba(59, 130, 246, 0.5); padding: 4px 8px; border-radius: 8px; font-size: 11px; color: #93c5fd; max-width: 140px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; flex-shrink: 0;">
+                        <div id="attachedFilePreview" style="display: none; align-items: center; gap: 4px; background: rgba(59, 130, 246, 0.25); border: 1px solid rgba(59, 130, 246, 0.5); padding: 3px 6px; border-radius: 6px; font-size: 11px; color: #93c5fd; max-width: 100px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; flex-shrink: 0;">
                             📎 <span id="attachedFileName" style="overflow: hidden; text-overflow: ellipsis;"></span>
-                            <button type="button" onclick="clearAttachedFile()" style="background: none; border: none; color: #93c5fd; cursor: pointer; padding: 0; font-weight: bold; font-size: 13px;" title="Remove">&times;</button>
+                            <button type="button" onclick="clearAttachedFile()" style="background: none; border: none; color: #93c5fd; cursor: pointer; padding: 0; font-weight: bold; font-size: 12px;" title="Remove">&times;</button>
                         </div>
 
                         <input type="text" id="globalChatInput" placeholder="Reply to AI Assist..." autocomplete="off"/>
@@ -502,10 +502,11 @@
             background-color: #172033;
             border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 9999px;
-            padding: 6px 8px 6px 16px;
-            gap: 8px;
+            padding: 6px 8px 6px 12px;
+            gap: 6px;
             transition: border-color 0.2s;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            flex-wrap: nowrap; /* Ensures all items stay on one row */
         }
         .chat-form:focus-within {
             border-color: #fbbf24;
@@ -515,7 +516,7 @@
             border: none;
             color: #94a3b8;
             cursor: pointer;
-            padding: 8px;
+            padding: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -538,9 +539,10 @@
         }
         #globalChatInput {
             flex-grow: 1;
+            min-width: 60px; /* Allows input to shrink gracefully so icons never get pushed out */
             background: none;
             border: none;
-            padding: 10px 4px;
+            padding: 8px 4px;
             font-size: 14px;
             color: #f8fafc;
             outline: none;
@@ -552,8 +554,8 @@
             background-color: #3b82f6;
             color: #ffffff;
             border: none;
-            width: 38px;
-            height: 38px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
