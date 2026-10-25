@@ -1098,6 +1098,7 @@ DASHBOARD_TRANSLATIONS = {
         "suite_interview_title": "Interviewcoach",
         "suite_interview_desc": "Oefen gedragsvragen met behulp van het STAR-framework.",
         "suite_tracker_title": "Sollicitatietracker",
+        "suite_tracker_title": "Sollicitatietracker",
         "suite_tracker_desc": "Volg doelgerichte sollicitaties op een interactief Kanban-bord.",
         "suite_matcher_title": "Trefwoordenmatcher",
         "suite_matcher_desc": "Extraheer vaardigheden en voeg ontbrekende trefwoorden toe.",
