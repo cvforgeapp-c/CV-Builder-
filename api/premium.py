@@ -154,6 +154,20 @@ except ImportError:
 
     MODULAR_TRANSLATIONS = {}
 
+try:
+    from dictionary_aggregator import init_app_dictionary_pathway
+except ImportError:
+    try:
+        from .dictionary_aggregator import init_app_dictionary_pathway
+    except ImportError:
+        def init_app_dictionary_pathway(flask_app):
+            @flask_app.context_processor
+            def inject_fallback():
+                return {"t_deal": lambda key, default=None: default or str(key)}
+
+init_app_dictionary_pathway(app)
+
+
 # ============================================================
 # USER LANGUAGE PREFERENCE HELPER
 # ============================================================
