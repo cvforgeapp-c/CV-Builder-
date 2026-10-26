@@ -63,6 +63,23 @@ if PROJECT_ROOT not in sys.path:
   sys.path.insert(0, PROJECT_ROOT)
 
 # ============================================================
+# APPLICATION CONFIGURATION (INSTANTIATED FIRST)
+# ============================================================
+
+TEMPLATE_DIR = os.path.join(PROJECT_ROOT, 'templates')
+
+premium_app = Flask(
+    __name__,
+    template_folder=TEMPLATE_DIR,
+)
+
+premium_app.config['SECRET_KEY'] = (
+    os.getenv('SECRET_KEY')
+    or os.getenv('secret_key')
+    or 'cvforge-premium-key-998877'
+)
+
+# ============================================================
 # DATABASE MODELS & DUAL TRANSLATION PATHWAY SETUP
 # ============================================================
 
@@ -165,7 +182,7 @@ except ImportError:
             def inject_fallback():
                 return {"t_deal": lambda key, default=None: default or str(key)}
 
-init_app_dictionary_pathway(app)
+init_app_dictionary_pathway(premium_app)
 
 
 # ============================================================
@@ -215,23 +232,6 @@ def get_user_preferred_language(user):
 
   return DEFAULT_LANGUAGE
 
-
-# ============================================================
-# APPLICATION CONFIGURATION
-# ============================================================
-
-TEMPLATE_DIR = os.path.join(PROJECT_ROOT, 'templates')
-
-premium_app = Flask(
-    __name__,
-    template_folder=TEMPLATE_DIR,
-)
-
-premium_app.config['SECRET_KEY'] = (
-    os.getenv('SECRET_KEY')
-    or os.getenv('secret_key')
-    or 'cvforge-premium-key-998877'
-)
 
 # ============================================================
 # DATABASE CONFIGURATION
