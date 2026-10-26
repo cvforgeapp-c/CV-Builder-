@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ t('portal_qa_title', 'AI Application Essay & Portal Q&A Assistant') }} — CVForge{% endblock %}
+{% block title %}{{ t_deal('AI Application Essay & Portal Q&A Assistant') }} — CVForge{% endblock %}
 
 {% block extra_css %}
     <script src="https://cdn.tailwindcss.com"></script>
@@ -22,17 +22,17 @@
                     <div class="w-8 h-8 rounded-lg bg-amber-400 text-[#02353C] flex items-center justify-center font-extrabold text-base shadow-sm group-hover:scale-105 transition-transform">
                         <i class="fa-solid fa-pen-nib"></i>
                     </div>
-                    <span class="font-extrabold text-lg tracking-tight text-white">{{ t('nav_brand_name', 'CVForge') }}</span>
+                    <span class="font-extrabold text-lg tracking-tight text-white">{{ t_deal('CVForge') }}</span>
                 </a>
 
                 <!-- HEADER ACTIONS -->
                 <div class="flex items-center space-x-2">
                     <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-amber-400 text-[#02353C] shadow-2xs">
-                        <i class="fa-solid fa-crown text-[9px]"></i> {{ t('nav_pro_feature', 'PRO FEATURE') }}
+                        <i class="fa-solid fa-crown text-[9px]"></i> {{ t_deal('PRO FEATURE') }}
                     </span>
                     <a href="/dashboard" class="p-1.5 px-3 rounded-lg bg-white/10 hover:bg-white/20 transition-all border border-white/10 text-xs font-semibold text-white flex items-center gap-1.5">
                         <i class="fa-solid fa-arrow-left text-amber-400 text-xs"></i>
-                        <span>{{ t('nav_back_to_dashboard', 'Back to Dashboard') }}</span>
+                        <span>{{ t_deal('Back to Dashboard') }}</span>
                     </a>
                 </div>
 
@@ -47,13 +47,13 @@
         <div class="text-center max-w-3xl mx-auto space-y-2 py-2">
             <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-400/20 text-[#02353C] border border-amber-300">
                 <i class="fa-solid fa-pen-to-square text-amber-500"></i>
-                <span>{{ t('header_smart_essay_assistant', 'Smart Essay Assistant') }}</span>
+                <span>{{ t_deal('Smart Essay Assistant') }}</span>
             </div>
             <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                {{ t('portal_qa_main_title', 'AI Application Essay & Portal Q&A Assistant') }}
+                {{ t_deal('AI Application Essay & Portal Q&A Assistant') }}
             </h1>
             <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                {{ t('portal_qa_main_subtitle', 'Bypass application portal bottlenecks. Paste custom prompt questions and generate perfectly sized, STAR-structured responses backed by your saved profile.') }}
+                {{ t_deal('Bypass application portal bottlenecks. Paste custom prompt questions and generate perfectly sized, STAR-structured responses backed by your saved profile.') }}
             </p>
         </div>
 
@@ -69,25 +69,25 @@
                         <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center text-sm font-bold">
                             <i class="fa-regular fa-comment-dots"></i>
                         </div>
-                        <h2 class="text-sm font-extrabold text-slate-800">{{ t('form_section_title', 'Portal Prompt & Limits') }}</h2>
+                        <h2 class="text-sm font-extrabold text-slate-800">{{ t_deal('Portal Prompt & Limits') }}</h2>
                     </div>
 
                     <!-- SMART URL AUTO-FETCH BAR -->
                     <div class="p-3 bg-gradient-to-r from-amber-500/10 via-slate-50 to-emerald-500/10 border border-amber-300/60 rounded-xl space-y-2">
                         <div class="flex items-center justify-between">
                             <label class="text-[11px] font-bold text-[#02353C] flex items-center gap-1.5">
-                                <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i> {{ t('scrape_label_autofill', 'Auto-Fill Company, Role & Details from Link') }}
+                                <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i> {{ t_deal('Auto-Fill Company, Role & Details from Link') }}
                             </label>
-                            <span class="text-[9px] font-bold bg-amber-400 text-[#02353C] px-2 py-0.5 rounded-full uppercase tracking-wider">{{ t('badge_smart_fill', 'Smart Fill') }}</span>
+                            <span class="text-[9px] font-bold bg-amber-400 text-[#02353C] px-2 py-0.5 rounded-full uppercase tracking-wider">{{ t_deal('Smart Fill') }}</span>
                         </div>
                         <div class="flex gap-2">
                             <div class="relative flex-grow">
                                 <i class="fa-solid fa-link text-slate-400 text-xs absolute left-3 top-1/2 -translate-y-1/2"></i>
-                                <input type="url" id="jobUrlInput" placeholder="{{ t('scrape_url_placeholder', 'Paste job URL (LinkedIn, Indeed...)') }}" class="w-full pl-8 pr-3 py-1.5 text-xs border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#02353C] text-slate-800">
+                                <input type="url" id="jobUrlInput" placeholder="{{ t_deal('Paste job URL (LinkedIn, Indeed...)') }}" class="w-full pl-8 pr-3 py-1.5 text-xs border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#02353C] text-slate-800">
                             </div>
                             <button type="button" id="btnScrapeUrl" onclick="scrapeJobPosting()" class="bg-[#02353C] hover:bg-[#034a54] text-white font-bold text-xs px-3.5 py-1.5 rounded-lg transition-all shrink-0 flex items-center gap-1.5 shadow-2xs">
                                 <i class="fa-solid fa-bolt text-amber-400 text-xs"></i>
-                                <span id="scrapeBtnText">{{ t('btn_auto_fetch', 'Auto-Fetch') }}</span>
+                                <span id="scrapeBtnText">{{ t_deal('Auto-Fetch') }}</span>
                             </button>
                         </div>
                         <p id="scrapeStatus" class="text-[10px] text-slate-500 hidden"></p>
@@ -95,54 +95,54 @@
 
                     <!-- COMPANY NAME -->
                     <div class="space-y-1">
-                        <label class="block text-xs font-bold text-slate-700">{{ t('label_company_name', 'Company Name') }}</label>
+                        <label class="block text-xs font-bold text-slate-700">{{ t_deal('Company Name') }}</label>
                         <div class="relative">
                             <i class="fa-solid fa-building text-slate-400 text-xs absolute left-3 top-1/2 -translate-y-1/2"></i>
-                            <input type="text" id="companyName" placeholder="{{ t('placeholder_company_name', 'e.g. Stripe, Microsoft, Meta') }}" class="w-full pl-8 pr-3 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#02353C] text-slate-800" required>
+                            <input type="text" id="companyName" placeholder="{{ t_deal('e.g. Stripe, Microsoft, Meta') }}" class="w-full pl-8 pr-3 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#02353C] text-slate-800" required>
                         </div>
                     </div>
 
                     <!-- JOB TITLE -->
                     <div class="space-y-1">
-                        <label class="block text-xs font-bold text-slate-700">{{ t('label_job_title', 'Job Title') }}</label>
+                        <label class="block text-xs font-bold text-slate-700">{{ t_deal('Job Title') }}</label>
                         <div class="relative">
                             <i class="fa-solid fa-briefcase text-slate-400 text-xs absolute left-3 top-1/2 -translate-y-1/2"></i>
-                            <input type="text" id="jobTitle" placeholder="{{ t('placeholder_job_title', 'e.g. Software Engineer, Product Manager') }}" class="w-full pl-8 pr-3 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#02353C] text-slate-800" required>
+                            <input type="text" id="jobTitle" placeholder="{{ t_deal('e.g. Software Engineer, Product Manager') }}" class="w-full pl-8 pr-3 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#02353C] text-slate-800" required>
                         </div>
                     </div>
 
                     <!-- PORTAL ESSAY QUESTION / PROMPT -->
                     <div class="space-y-1">
-                        <label class="block text-xs font-bold text-slate-700">{{ t('label_prompt_question', 'Portal Essay Question / Prompt') }}</label>
-                        <textarea id="promptQuestion" rows="3" placeholder="{{ t('placeholder_prompt_question', 'e.g. Describe a time you resolved a conflict within a cross-functional team, or why do you want to join our engineering division?') }}" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#02353C] text-slate-800 resize-none" required></textarea>
+                        <label class="block text-xs font-bold text-slate-700">{{ t_deal('Portal Essay Question / Prompt') }}</label>
+                        <textarea id="promptQuestion" rows="3" placeholder="{{ t_deal('e.g. Describe a time you resolved a conflict within a cross-functional team, or why do you want to join our engineering division?') }}" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#02353C] text-slate-800 resize-none" required></textarea>
                     </div>
 
                     <!-- MAX WORD LIMIT -->
                     <div class="space-y-1">
-                        <label class="block text-xs font-bold text-slate-700">{{ t('label_max_words', 'Max Word Limit') }}</label>
+                        <label class="block text-xs font-bold text-slate-700">{{ t_deal('Max Word Limit') }}</label>
                         <div class="relative">
                             <i class="fa-solid fa-i-cursor text-slate-400 text-xs absolute left-3 top-1/2 -translate-y-1/2"></i>
-                            <input type="number" id="maxWords" placeholder="{{ t('placeholder_max_words', 'e.g. 250 (Optional)') }}" class="w-full pl-8 pr-3 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#02353C] text-slate-800">
+                            <input type="number" id="maxWords" placeholder="{{ t_deal('e.g. 250 (Optional)') }}" class="w-full pl-8 pr-3 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#02353C] text-slate-800">
                         </div>
                     </div>
 
                     <!-- RESPONSE TONE -->
                     <div class="space-y-1">
-                        <label class="block text-xs font-bold text-slate-700">{{ t('label_response_tone', 'Response Tone') }}</label>
+                        <label class="block text-xs font-bold text-slate-700">{{ t_deal('Response Tone') }}</label>
                         <div class="relative">
                             <i class="fa-solid fa-sliders text-slate-400 text-xs absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
                             <select id="toneSelect" class="w-full pl-8 pr-3 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#02353C] text-slate-800 bg-white">
-                                <option value="Professional & Direct">{{ t('tone_professional_direct', 'Professional & Direct (Recommended)') }}</option>
-                                <option value="Executive & Leadership">{{ t('tone_executive_leadership', 'Executive & Leadership') }}</option>
-                                <option value="Confident & Achievement-Focused">{{ t('tone_confident_achievement', 'Confident & Achievement-Focused') }}</option>
-                                <option value="Technical & Analytical">{{ t('tone_technical_analytical', 'Technical & Analytical') }}</option>
+                                <option value="Professional & Direct">{{ t_deal('Professional & Direct (Recommended)') }}</option>
+                                <option value="Executive & Leadership">{{ t_deal('Executive & Leadership') }}</option>
+                                <option value="Confident & Achievement-Focused">{{ t_deal('Confident & Achievement-Focused') }}</option>
+                                <option value="Technical & Analytical">{{ t_deal('Technical & Analytical') }}</option>
                             </select>
                         </div>
                     </div>
 
                     <!-- SOURCE CV PROFILE -->
                     <div class="space-y-1">
-                        <label class="block text-xs font-bold text-slate-700">{{ t('label_source_cv', 'Source CV Profile') }}</label>
+                        <label class="block text-xs font-bold text-slate-700">{{ t_deal('Source CV Profile') }}</label>
                         <div class="relative">
                             <i class="fa-solid fa-file-invoice text-slate-400 text-xs absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
                             <select id="resumeSelect" class="w-full pl-8 pr-3 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#02353C] text-slate-800 bg-white">
@@ -151,7 +151,7 @@
                                         <option value="{{ r.id }}">{{ r.title }} ({{ r.template_used }})</option>
                                     {% endfor %}
                                 {% else %}
-                                    <option value="default">{{ t('option_default_candidate_profile', 'Default Candidate Profile') }}</option>
+                                    <option value="default">{{ t_deal('Default Candidate Profile') }}</option>
                                 {% endif %}
                             </select>
                         </div>
@@ -159,15 +159,15 @@
 
                     <!-- SPECIFIC EXPERIENCE / PROJECT TO FOCUS ON -->
                     <div class="space-y-1">
-                        <label class="block text-xs font-bold text-slate-700">{{ t('label_custom_context', 'Specific Experience / Project to Focus On') }}</label>
-                        <textarea id="customContext" rows="2" placeholder="{{ t('placeholder_custom_context', 'e.g. Highlight my work on the microservices database migration project or leading the team.') }}" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#02353C] text-slate-800 resize-none"></textarea>
-                        <p class="text-[10px] text-slate-400">{{ t('helper_custom_context', 'Optional. Leave blank to let AI select the best matching experience from your saved profile.') }}</p>
+                        <label class="block text-xs font-bold text-slate-700">{{ t_deal('Specific Experience / Project to Focus On') }}</label>
+                        <textarea id="customContext" rows="2" placeholder="{{ t_deal('e.g. Highlight my work on the microservices database migration project or leading the team.') }}" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#02353C] text-slate-800 resize-none"></textarea>
+                        <p class="text-[10px] text-slate-400">{{ t_deal('Optional. Leave blank to let AI select the best matching experience from your saved profile.') }}</p>
                     </div>
 
                     <!-- GENERATE BUTTON -->
                     <button type="submit" id="btnGenerate" class="w-full bg-[#02353C] hover:bg-[#034a54] text-white font-extrabold text-xs py-3 px-4 rounded-xl shadow-xs transition-all flex items-center justify-center gap-2">
                         <i class="fa-solid fa-bolt text-amber-400"></i>
-                        <span id="generateBtnText">{{ t('btn_generate_answer', 'Generate Tailored Answer') }}</span>
+                        <span id="generateBtnText">{{ t_deal('Generate Tailored Answer') }}</span>
                     </button>
                 </form>
 
@@ -182,15 +182,15 @@
                         <i class="fa-solid fa-pen-fancy"></i>
                     </div>
                     <div class="max-w-xs mx-auto space-y-1">
-                        <h3 class="text-sm font-bold text-slate-800">{{ t('empty_state_title', 'Ready to Draft Portal Responses') }}</h3>
-                        <p class="text-xs text-slate-500">{{ t('empty_state_desc', 'Provide an application essay prompt on the left to generate structured STAR analysis and formatted text.') }}</p>
+                        <h3 class="text-sm font-bold text-slate-800">{{ t_deal('Ready to Draft Portal Responses') }}</h3>
+                        <p class="text-xs text-slate-500">{{ t_deal('Provide an application essay prompt on the left to generate structured STAR analysis and formatted text.') }}</p>
                     </div>
                 </div>
 
                 <!-- LOADING SPINNER STATE -->
                 <div id="outputLoadingState" class="hidden bg-white rounded-2xl p-10 border border-slate-200/90 shadow-sm text-center space-y-3">
                     <div class="w-10 h-10 border-4 border-amber-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
-                    <p class="text-xs font-bold text-slate-700">{{ t('loading_synthesizing_star', 'Synthesizing STAR structure and drafting essay response...') }}</p>
+                    <p class="text-xs font-bold text-slate-700">{{ t_deal('Synthesizing STAR structure and drafting essay response...') }}</p>
                 </div>
 
                 <!-- GENERATED OUTPUT PANEL -->
@@ -200,26 +200,26 @@
                     <div class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm space-y-3">
                         <div class="flex items-center justify-between border-b border-slate-100 pb-2">
                             <h3 class="text-xs font-extrabold text-[#02353C] uppercase tracking-wider flex items-center gap-1.5">
-                                <i class="fa-solid fa-layer-group text-amber-500"></i> {{ t('star_breakdown_title', 'STAR Framework Breakdown') }}
+                                <i class="fa-solid fa-layer-group text-amber-500"></i> {{ t_deal('STAR Framework Breakdown') }}
                             </h3>
-                            <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">{{ t('badge_structured', 'Structured') }}</span>
+                            <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">{{ t_deal('Structured') }}</span>
                         </div>
                         
                         <div class="grid grid-cols-1 gap-2 text-xs">
                             <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200/80">
-                                <strong class="text-[#02353C] font-bold block mb-0.5">{{ t('star_situation_label', 'Situation:') }}</strong>
+                                <strong class="text-[#02353C] font-bold block mb-0.5">{{ t_deal('Situation:') }}</strong>
                                 <span id="starSituation" class="text-slate-600 leading-relaxed"></span>
                             </div>
                             <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200/80">
-                                <strong class="text-[#02353C] font-bold block mb-0.5">{{ t('star_task_label', 'Task:') }}</strong>
+                                <strong class="text-[#02353C] font-bold block mb-0.5">{{ t_deal('Task:') }}</strong>
                                 <span id="starTask" class="text-slate-600 leading-relaxed"></span>
                             </div>
                             <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200/80">
-                                <strong class="text-[#02353C] font-bold block mb-0.5">{{ t('star_action_label', 'Action:') }}</strong>
+                                <strong class="text-[#02353C] font-bold block mb-0.5">{{ t_deal('Action:') }}</strong>
                                 <span id="starAction" class="text-slate-600 leading-relaxed"></span>
                             </div>
                             <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200/80">
-                                <strong class="text-[#02353C] font-bold block mb-0.5">{{ t('star_result_label', 'Result:') }}</strong>
+                                <strong class="text-[#02353C] font-bold block mb-0.5">{{ t_deal('Result:') }}</strong>
                                 <span id="starResult" class="text-slate-600 leading-relaxed"></span>
                             </div>
                         </div>
@@ -229,24 +229,24 @@
                     <div class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm space-y-3">
                         <div class="flex flex-wrap items-center justify-between border-b border-slate-100 pb-2 gap-2">
                             <h3 class="text-xs font-extrabold text-[#02353C] uppercase tracking-wider flex items-center gap-1.5">
-                                <i class="fa-solid fa-file-lines text-amber-500"></i> {{ t('final_answer_title', 'Final Formatted Answer') }}
+                                <i class="fa-solid fa-file-lines text-amber-500"></i> {{ t_deal('Final Formatted Answer') }}
                             </h3>
                             <button type="button" onclick="copyAnswerToClipboard()" class="text-xs font-bold text-[#02353C] hover:text-emerald-700 flex items-center gap-1 transition-colors">
-                                <i class="fa-regular fa-copy text-amber-500"></i> <span id="copyBtnLabel">{{ t('btn_copy_response', 'Copy Response') }}</span>
+                                <i class="fa-regular fa-copy text-amber-500"></i> <span id="copyBtnLabel">{{ t_deal('Copy Response') }}</span>
                             </button>
                         </div>
 
                         <!-- QUICK REFINEMENT TOOLBAR -->
                         <div class="flex items-center gap-1.5 flex-wrap pt-1">
-                            <span class="text-[10px] font-bold text-slate-400 mr-1">{{ t('quick_refine_label', 'Quick Refine:') }}</span>
+                            <span class="text-[10px] font-bold text-slate-400 mr-1">{{ t_deal('Quick Refine:') }}</span>
                             <button type="button" onclick="quickRefine('shorter')" class="text-[10px] font-semibold bg-slate-100 hover:bg-amber-100 text-slate-700 hover:text-[#02353C] px-2 py-0.5 rounded-md transition-colors border border-slate-200">
-                                {{ t('refine_btn_shorter', 'Make Shorter') }}
+                                {{ t_deal('Make Shorter') }}
                             </button>
                             <button type="button" onclick="quickRefine('Technical & Analytical')" class="text-[10px] font-semibold bg-slate-100 hover:bg-amber-100 text-slate-700 hover:text-[#02353C] px-2 py-0.5 rounded-md transition-colors border border-slate-200">
-                                {{ t('refine_btn_technical', 'More Technical') }}
+                                {{ t_deal('More Technical') }}
                             </button>
                             <button type="button" onclick="quickRefine('Executive & Leadership')" class="text-[10px] font-semibold bg-slate-100 hover:bg-amber-100 text-slate-700 hover:text-[#02353C] px-2 py-0.5 rounded-md transition-colors border border-slate-200">
-                                {{ t('refine_btn_executive', 'More Executive') }}
+                                {{ t_deal('More Executive') }}
                             </button>
                         </div>
 
@@ -255,9 +255,9 @@
                         <!-- WORD COUNT & TARGET INDICATOR -->
                         <div class="flex justify-between items-center text-[11px] text-slate-400">
                             <span id="wordLimitWarning" class="hidden text-amber-600 font-bold flex items-center gap-1">
-                                <i class="fa-solid fa-triangle-exclamation"></i> {{ t('warning_exceeds_word_limit', 'Exceeds requested word limit!') }}
+                                <i class="fa-solid fa-triangle-exclamation"></i> {{ t_deal('Exceeds requested word limit!') }}
                             </span>
-                            <span id="wordCountCounter" class="font-semibold text-slate-500 ml-auto">0 {{ t('word_count_suffix', 'words') }}</span>
+                            <span id="wordCountCounter" class="font-semibold text-slate-500 ml-auto">0 {{ t_deal('words') }}</span>
                         </div>
                     </div>
 
@@ -271,7 +271,7 @@
     <!-- FOOTER -->
     <footer class="bg-white border-t border-slate-200 py-3 mt-auto">
         <div class="max-w-7xl mx-auto px-4 text-center text-[11px] text-slate-400">
-            {{ t('footer_copy_exact', '© 2026 CVForge. All rights reserved.') }}
+            {{ t_deal('© 2026 CVForge. All rights reserved.') }}
         </div>
     </footer>
 {% endblock %}
@@ -285,14 +285,14 @@
             const btnText = document.getElementById('scrapeBtnText');
 
             if (!urlInput) {
-                alert("{{ t('alert_enter_valid_url', 'Please enter a valid job posting URL first.') }}");
+                alert("{{ t_deal('Please enter a valid job posting URL first.') }}");
                 return;
             }
 
             statusEl.classList.remove('hidden', 'text-rose-600', 'text-emerald-600');
             statusEl.classList.add('text-slate-500');
-            statusEl.textContent = "{{ t('status_fetching_job', 'Fetching job page details & company info...') }}";
-            btnText.textContent = "{{ t('status_fetching_btn', 'Fetching...') }}";
+            statusEl.textContent = "{{ t_deal('Fetching job page details & company info...') }}";
+            btnText.textContent = "{{ t_deal('Fetching...') }}";
 
             try {
                 const response = await fetch('/api/v1/premium/scrape-job', {
@@ -303,7 +303,7 @@
 
                 const data = await response.json();
 
-                if (!response.ok) throw new Error(data.error || "{{ t('error_scrape_failed', 'Unable to extract job context from URL.') }}");
+                if (!response.ok) throw new Error(data.error || "{{ t_deal('Unable to extract job context from URL.') }}");
 
                 if (data.company_name_meta) {
                     document.getElementById('companyName').value = data.company_name_meta;
@@ -316,12 +316,12 @@
                 }
 
                 statusEl.classList.add('text-emerald-600');
-                statusEl.textContent = "{{ t('status_autofill_success', 'Company and job details auto-filled successfully!') }}";
+                statusEl.textContent = "{{ t_deal('Company and job details auto-filled successfully!') }}";
             } catch (err) {
                 statusEl.classList.add('text-rose-600');
                 statusEl.textContent = err.message;
             } finally {
-                btnText.textContent = "{{ t('btn_auto_fetch', 'Auto-Fetch') }}";
+                btnText.textContent = "{{ t_deal('Auto-Fetch') }}";
             }
         }
 
@@ -347,7 +347,7 @@
             outputContainer.classList.add('hidden');
             loadingState.classList.remove('hidden');
             btn.disabled = true;
-            btnText.textContent = "{{ t('status_generating_answer', 'Generating Answer...') }}";
+            btnText.textContent = "{{ t_deal('Generating Answer...') }}";
 
             try {
                 const response = await fetch('/api/v1/premium/portal-qa', {
@@ -366,7 +366,7 @@
 
                 const data = await response.json();
 
-                if (!response.ok) throw new Error(data.error || "{{ t('error_generation_failed', 'Generation failed. Please try again.') }}");
+                if (!response.ok) throw new Error(data.error || "{{ t_deal('Generation failed. Please try again.') }}");
 
                 const star = data.star_breakdown || {};
                 document.getElementById('starSituation').textContent = star.situation || "N/A";
@@ -386,15 +386,15 @@
                 if (max_words && wordCount > parseInt(max_words)) {
                     warningEl.classList.remove('hidden');
                     counterEl.classList.add('text-amber-600');
-                    counterEl.textContent = `${wordCount} / ${max_words} {{ t('word_count_suffix', 'words') }}`;
+                    counterEl.textContent = `${wordCount} / ${max_words} {{ t_deal('words') }}`;
                 } else if (max_words) {
                     warningEl.classList.add('hidden');
                     counterEl.classList.remove('text-amber-600');
-                    counterEl.textContent = `${wordCount} / ${max_words} {{ t('word_count_suffix', 'words') }}`;
+                    counterEl.textContent = `${wordCount} / ${max_words} {{ t_deal('words') }}`;
                 } else {
                     warningEl.classList.add('hidden');
                     counterEl.classList.remove('text-amber-600');
-                    counterEl.textContent = `${wordCount} {{ t('word_count_suffix', 'words') }}`;
+                    counterEl.textContent = `${wordCount} {{ t_deal('words') }}`;
                 }
 
                 loadingState.classList.add('hidden');
@@ -406,7 +406,7 @@
                 emptyState.classList.remove('hidden');
             } finally {
                 btn.disabled = false;
-                btnText.textContent = "{{ t('btn_generate_answer', 'Generate Tailored Answer') }}";
+                btnText.textContent = "{{ t_deal('Generate Tailored Answer') }}";
             }
         }
 
@@ -429,9 +429,9 @@
 
             navigator.clipboard.writeText(text).then(() => {
                 const copyBtnLabel = document.getElementById('copyBtnLabel');
-                copyBtnLabel.textContent = "{{ t('status_copied', 'Copied!') }}";
+                copyBtnLabel.textContent = "{{ t_deal('Copied!') }}";
                 setTimeout(() => {
-                    copyBtnLabel.textContent = "{{ t('btn_copy_response', 'Copy Response') }}";
+                    copyBtnLabel.textContent = "{{ t_deal('Copy Response') }}";
                 }, 2000);
             }).catch(err => {
                 console.error("Clipboard copy failed: ", err);
