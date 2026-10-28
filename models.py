@@ -24,9 +24,13 @@ class User(UserMixin, db.Model):
     paddle_subscription_id = db.Column(db.String(255), nullable=True)
     subscription_status = db.Column(db.String(50), default="free")
     
+    # NEW FIELDS FOR FREEMIUM CONTROL
+    plan_tier = db.Column(db.String(20), default='free')       # 'free', 'pro', or 'elite'
+    credits_balance = db.Column(db.Integer, default=15)         # Starts at 15 for new signups
+    
     # Metering
     monthly_cv_generations = db.Column(db.Integer, default=0)
-    ai_credits_remaining = db.Column(db.Integer, default=3)
+    ai_credits_remaining = db.Column(db.Integer, default=15)    # Aligned with starter credits
     
     resumes = db.relationship('Resume', backref='owner', lazy=True)
     applications = db.relationship('JobApplication', backref='owner', lazy=True)
