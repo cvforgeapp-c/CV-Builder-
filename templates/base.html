@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html
     lang="{{ html_lang_code | default('en') }}"
@@ -117,7 +116,9 @@
                 "Dutch": "nl",
                 "Polish": "pl",
                 "Swedish": "sv",
-                "Swahili": "sw"
+                "Swahili": "sw",
+                "Amharic": "am",
+                "Afaan Oromoo": "om"
             };
 
             const languageCode = languageCodes[userLang] || "en";
@@ -186,11 +187,11 @@
     <div id="cvforgeAiAssistRoot" style="position: fixed; bottom: 24px; right: 24px; z-index: 999999; font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;">
         
         <!-- Floating Trigger Button -->
-        <button type="button" onclick="toggleAiChatDrawer()" id="aiAssistTriggerBtn" title="Ask AI Assist">
+        <button type="button" onclick="toggleAiChatDrawer()" id="aiAssistTriggerBtn" title="{{ t_deal('ai_assist_title') }}">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
             </svg>
-            <span class="btn-label">AI Assist</span>
+            <span class="btn-label">{{ t_deal('ai_assist_title') }}</span>
         </button>
 
         <!-- Full-Screen Chat Overlay Modal -->
@@ -209,14 +210,14 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="header-heading">CVForge AI Assist</h3>
-                        <p class="header-sub">Your personal career & resume copilot</p>
+                        <h3 class="header-heading">{{ t_deal('chat_header_title') }}</h3>
+                        <p class="header-sub">{{ t_deal('chat_header_sub') }}</p>
                     </div>
                 </div>
 
                 <!-- Stop Speech Button (Visible while AI is speaking) -->
                 <button type="button" id="btnStopSpeech" onclick="stopAiSpeech()" style="display: none; align-items: center; gap: 6px; background: rgba(239, 68, 68, 0.25); border: 1px solid rgba(239, 68, 68, 0.6); color: #fca5a5; padding: 6px 14px; border-radius: 9999px; font-size: 12px; font-weight: 600; cursor: pointer;">
-                    🔊 Stop Sound
+                    🔊 {{ t_deal('stop_sound') }}
                 </button>
 
                 <button type="button" onclick="toggleAiChatDrawer()" class="btn-close-drawer" title="Close">
@@ -237,10 +238,10 @@
                         </svg>
                     </div>
                     <div class="msg-bubble bot-bubble">
-                        <div>Hello! How can I help you optimize your resume, draft cover letters, or prepare for interviews today?</div>
+                        <div>{{ t_deal('default_welcome_msg') }}</div>
                         <div class="msg-actions">
-                            <button type="button" class="msg-btn-action" onclick="speakAiResponse('Hello! How can I help you optimize your resume, draft cover letters, or prepare for interviews today?')" title="Listen to response">
-                                🔊 Listen
+                            <button type="button" class="msg-btn-action" onclick="speakAiResponse('{{ t_deal('default_welcome_msg') }}')" title="Listen to response">
+                                🔊 {{ t_deal('listen') }}
                             </button>
                         </div>
                     </div>
@@ -270,7 +271,7 @@
                         </div>
 
                         <!-- Auto-Expanding Multi-line Textarea -->
-                        <textarea id="globalChatInput" rows="1" placeholder="Reply to AI Assist..." autocomplete="off" oninput="autoResizeTextarea(this)"></textarea>
+                        <textarea id="globalChatInput" rows="1" placeholder="{{ t_deal('input_placeholder') }}" autocomplete="off" oninput="autoResizeTextarea(this)"></textarea>
 
                         <!-- Voice Record Button -->
                         <button type="button" id="btnVoiceRecord" class="btn-mic" onclick="toggleVoiceRecording()" title="Voice input">
@@ -680,7 +681,7 @@
             window.speechSynthesis.cancel();
             
             const utterance = new SpeechSynthesisUtterance(cleanText);
-            utterance.lang = 'en-US';
+            utterance.lang = window.CVForgeLanguage ? window.CVForgeLanguage.code : 'en';
             utterance.rate = 1.0;
             utterance.pitch = 1.0;
 
@@ -729,14 +730,14 @@
             }
 
             speechRecognitionInstance = new SpeechRecognition();
-            speechRecognitionInstance.lang = 'en-US';
+            speechRecognitionInstance.lang = window.CVForgeLanguage ? window.CVForgeLanguage.code : 'en';
             speechRecognitionInstance.interimResults = true;
             speechRecognitionInstance.continuous = false;
 
             speechRecognitionInstance.onstart = () => {
                 isRecordingVoice = true;
                 micBtn.classList.add('recording-active');
-                inputField.placeholder = "Listening...";
+                inputField.placeholder = "{{ t_deal('listening') }}";
             };
 
             speechRecognitionInstance.onresult = (event) => {
@@ -765,13 +766,13 @@
             const micBtn = document.getElementById('btnVoiceRecord');
             const inputField = document.getElementById('globalChatInput');
             if (micBtn) micBtn.classList.remove('recording-active');
-            if (inputField) inputField.placeholder = "Reply to AI Assist...";
+            if (inputField) inputField.placeholder = "{{ t_deal('input_placeholder') }}";
         }
 
         function copyUserMessage(btnElement, textToCopy) {
             navigator.clipboard.writeText(textToCopy).then(() => {
                 const originalText = btnElement.innerText;
-                btnElement.innerText = "✓ Copied";
+                btnElement.innerText = "{{ t_deal('copied') }}";
                 setTimeout(() => {
                     btnElement.innerText = originalText;
                 }, 1800);
@@ -818,10 +819,10 @@
                         <div style="white-space: pre-wrap;">${displayContent}</div>
                         <div class="msg-actions">
                             <button type="button" class="msg-btn-action" onclick="copyUserMessage(this, '${rawTextForJs}')" title="Copy text">
-                                📋 Copy
+                                📋 {{ t_deal('copy') }}
                             </button>
                             <button type="button" class="msg-btn-action" onclick="editUserMessage('${msgRowId}', '${rawTextForJs}')" title="Edit message">
-                                ✏️ Edit
+                                ✏️ {{ t_deal('edit') }}
                             </button>
                         </div>
                     </div>
@@ -848,7 +849,7 @@
                         </svg>
                     </div>
                     <div class="msg-bubble bot-bubble" style="display: flex; align-items: center; gap: 10px; color: #94a3b8;">
-                        <span class="typing-spinner"></span> Thinking...
+                        <span class="typing-spinner"></span> {{ t_deal('thinking') }}
                     </div>
                 </div>
             `;
@@ -878,7 +879,7 @@
                                 <div style="white-space: pre-wrap;">${escapeHtml(data.reply)}</div>
                                 <div class="msg-actions">
                                     <button type="button" class="msg-btn-action" onclick="speakAiResponse('${cleanReplyForJs}')" title="Listen to response">
-                                        🔊 Listen
+                                        🔊 {{ t_deal('listen') }}
                                     </button>
                                 </div>
                             </div>
@@ -886,7 +887,7 @@
                     `;
                     speakAiResponse(data.reply);
                 } else {
-                    const errorText = data.error || 'Sorry, I encountered an issue. Please try again.';
+                    const errorText = data.error || '{{ t_deal('default_error') }}';
                     messagesContainer.innerHTML += `
                         <div class="msg-row bot-row">
                             <div class="msg-bubble error-bubble">
@@ -898,7 +899,7 @@
                 }
             } catch (err) {
                 document.getElementById(loadingId)?.remove();
-                const networkError = 'Network error. Please check your connection.';
+                const networkError = '{{ t_deal('network_error') }}';
                 messagesContainer.innerHTML += `
                     <div class="msg-row bot-row">
                         <div class="msg-bubble error-bubble">
