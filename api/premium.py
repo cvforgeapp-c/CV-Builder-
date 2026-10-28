@@ -594,12 +594,12 @@ PRICE_MAP = {
 FEATURE_RULES = {
     'ats_optimizer': {'tier': 'free', 'cost': 3},
     'cover_letter': {'tier': 'pro', 'cost': 3},
-    'cold_outreach': {'tier': 'pro', 'cost': 2},
-    'portal_qa': {'tier': 'pro', 'cost': 3},
+    'cold_outreach': {'tier': 'pro', 'cost': 5},
+    'portal_qa': {'tier': 'pro', 'cost': 6},
     'linkedin_optimizer': {'tier': 'pro', 'cost': 4},
     'interview_coach': {'tier': 'pro', 'cost': 5},
     'pdf_studio': {'tier': 'pro', 'cost': 5},
-    'salary_negotiator': {'tier': 'elite', 'cost': 8},
+    'salary_negotiator': {'tier': 'elite', 'cost': 10},
     'application_copilot': {'tier': 'pro', 'cost': 9},
 }
 
