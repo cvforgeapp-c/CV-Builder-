@@ -296,6 +296,42 @@
         </div>
     </div>
 
+    <!-- ============================================================ -->
+    <!-- PADDLE CHECKOUT SCRIPT INTEGRATION                           -->
+    <!-- ============================================================ -->
+    <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+    <script>
+      try {
+        Paddle.Initialize({
+          token: "test_your_paddle_client_token_here" 
+        });
+      } catch (e) {
+        console.error("Paddle initialization error:", e);
+      }
+
+      function openPaddleCheckout(priceId) {
+        if (!window.Paddle) {
+          alert("Payment gateway is loading. Please try again in a moment.");
+          return;
+        }
+        
+        Paddle.Checkout.open({
+          items: [
+            {
+              priceId: priceId,
+              quantity: 1
+            }
+          ],
+          customer: {
+            email: "{{ current_user.email if current_user.is_authenticated else '' }}"
+          },
+          settings: {
+            successUrl: window.location.origin + "/dashboard?payment=success"
+          }
+        });
+      }
+    </script>
+
     <style>
         /* Trigger Button Styling */
         #aiAssistTriggerBtn {
@@ -887,7 +923,6 @@
                     `;
                     speakAiResponse(data.reply);
                 } else {
-                    // Pulls translation key dynamically from window dictionary or falls back to server message or default_error translation
                     const errorText = (window.CVForgeTranslations && window.CVForgeTranslations.default_error) || data.error || '{{ t_deal('default_error') }}';
                     messagesContainer.innerHTML += `
                         <div class="msg-row bot-row">
@@ -900,7 +935,6 @@
                 }
             } catch (err) {
                 document.getElementById(loadingId)?.remove();
-                // Pulls network error translation dynamically from window dictionary or template tag
                 const networkError = (window.CVForgeTranslations && window.CVForgeTranslations.network_error) || '{{ t_deal('network_error') }}';
                 messagesContainer.innerHTML += `
                     <div class="msg-row bot-row">
