@@ -512,10 +512,15 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto items-stretch" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 35px; max-width: 1100px; margin: 0 auto; align-items: stretch;">
         
         <!-- FREE TIER -->
-        <div class="flex flex-col rounded-2xl bg-slate-900/80 border border-slate-800 p-8 shadow-xl relative backdrop-blur-sm" style="background: #0f172a; border-radius: 24px; padding: 40px 30px; border: 1px solid #1e293b; display: flex; flex-direction: column; justify-content: space-between;">
+        <div class="flex flex-col rounded-3xl bg-gradient-to-b from-slate-900/90 to-slate-900 border-2 border-emerald-500/60 p-8 shadow-2xl relative" style="background: linear-gradient(180deg, rgba(15, 23, 42, 0.9) 0%, #0f172a 100%); border-radius: 28px; padding: 40px 30px; border: 2.5px solid rgba(52, 211, 153, 0.6); box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5); display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+          <!-- Badge -->
+          <div style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: #1e293b; color: #34d399; font-size: 11px; font-weight: 800; padding: 5px 18px; border-radius: 20px; letter-spacing: 0.8px; text-transform: uppercase; border: 1.5px solid rgba(52, 211, 153, 0.4); box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+            STARTER TIER
+          </div>
+
           <div>
             <div class="mb-6" style="margin-bottom: 30px; text-align: center;">
-              <h3 class="text-xl font-bold text-white" style="font-size: 20px; font-weight: 700; color: #ffffff; margin-bottom: 8px;">Free Explorer</h3>
+              <h3 class="text-xl font-bold text-white" style="font-size: 22px; font-weight: 800; color: #ffffff; margin-bottom: 8px;">Free Explorer</h3>
               <p class="text-slate-400 text-sm mt-1" style="color: #94a3b8; font-size: 13px;">For testing features and basic profile building.</p>
               <div class="mt-4 flex items-baseline justify-center" style="margin-top: 16px; display: flex; align-items: baseline; justify-content: center;">
                 <span class="text-4xl font-extrabold tracking-tight" style="font-size: 42px; font-weight: 800; color: #ffffff;">$0</span>
@@ -543,16 +548,17 @@
           </div>
 
           <div class="mt-8" style="margin-top: 35px;">
-            <a href="/auth/register" class="w-full inline-block bg-slate-800 hover:bg-slate-700 text-white font-medium py-3 px-4 rounded-xl text-center transition-colors" style="display: block; width: 100%; background: #1e293b; color: #ffffff; text-align: center; padding: 14px; border-radius: 12px; font-weight: 700; text-decoration: none;">
+            <a href="/auth/register" class="w-full inline-block bg-slate-800 hover:bg-slate-700 text-white font-medium py-3 px-4 rounded-xl text-center transition-colors" style="display: block; width: 100%; background: #1e293b; color: #ffffff; text-align: center; padding: 14px; border-radius: 12px; font-weight: 700; text-decoration: none; border: 1px solid #334155;">
               Get Started Free
             </a>
           </div>
         </div>
 
         <!-- PRO PLAN (HIGHLIGHTED) -->
-        <div class="flex flex-col rounded-2xl bg-gradient-to-b from-emerald-950/40 via-slate-900 to-slate-900 border-2 border-emerald-500/80 p-8 shadow-2xl relative" style="background: linear-gradient(180deg, rgba(6, 78, 59, 0.2) 0%, #0f172a 100%); border-radius: 24px; padding: 40px 30px; border: 2.5px solid #34d399; box-shadow: 0 20px 40px -10px rgba(52, 211, 153, 0.2); display: flex; flex-direction: column; justify-content: space-between; position: relative; transform: translateY(-6px);">
-          <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-emerald-500 text-slate-950 font-bold text-xs uppercase tracking-wider py-1 px-3 rounded-full shadow-md" style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: #34d399; color: #020617; font-size: 11px; font-weight: 800; padding: 5px 18px; border-radius: 20px; letter-spacing: 0.8px; text-transform: uppercase;">
-            ★ Most Popular
+        <div class="flex flex-col rounded-3xl bg-gradient-to-b from-emerald-950/40 via-slate-900 to-slate-900 border-2 border-emerald-500 p-8 shadow-2xl relative" style="background: linear-gradient(180deg, rgba(6, 78, 59, 0.2) 0%, #0f172a 100%); border-radius: 28px; padding: 40px 30px; border: 2.5px solid #34d399; box-shadow: 0 20px 40px -10px rgba(52, 211, 153, 0.3); display: flex; flex-direction: column; justify-content: space-between; position: relative; transform: translateY(-6px);">
+          <!-- Floating Popular Badge -->
+          <div style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: #34d399; color: #020617; font-size: 11px; font-weight: 800; padding: 5px 18px; border-radius: 20px; letter-spacing: 0.8px; text-transform: uppercase; box-shadow: 0 4px 12px rgba(52, 211, 153, 0.4);">
+            ★ MOST POPULAR
           </div>
 
           <div>
@@ -598,10 +604,15 @@
         </div>
 
         <!-- ELITE PLAN -->
-        <div class="flex flex-col rounded-2xl bg-slate-900/80 border border-slate-800 p-8 shadow-xl relative backdrop-blur-sm" style="background: #0f172a; border-radius: 24px; padding: 40px 30px; border: 1px solid #1e293b; display: flex; flex-direction: column; justify-content: space-between;">
+        <div class="flex flex-col rounded-3xl bg-gradient-to-b from-slate-900/90 to-slate-900 border-2 border-amber-500/60 p-8 shadow-2xl relative" style="background: linear-gradient(180deg, rgba(15, 23, 42, 0.9) 0%, #0f172a 100%); border-radius: 28px; padding: 40px 30px; border: 2.5px solid rgba(245, 158, 11, 0.6); box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5); display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+          <!-- Badge -->
+          <div style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: #1e293b; color: #fbbf24; font-size: 11px; font-weight: 800; padding: 5px 18px; border-radius: 20px; letter-spacing: 0.8px; text-transform: uppercase; border: 1.5px solid rgba(245, 158, 11, 0.4); box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+            EXECUTIVE TIER
+          </div>
+
           <div>
             <div class="mb-6" style="margin-bottom: 30px; text-align: center;">
-              <h3 class="text-xl font-bold text-white flex items-center justify-between" style="font-size: 20px; font-weight: 700; color: #ffffff; margin-bottom: 8px;">
+              <h3 class="text-xl font-bold text-white flex items-center justify-between" style="font-size: 22px; font-weight: 800; color: #ffffff; margin-bottom: 8px;">
                 Elite Executive
               </h3>
               <p class="text-slate-400 text-sm mt-1" style="color: #94a3b8; font-size: 13px;">For senior professionals and high-stakes offers.</p>
@@ -631,7 +642,7 @@
           </div>
 
           <div class="mt-8" style="margin-top: 35px;">
-            <a href="/pricing" class="w-full inline-block bg-slate-800 hover:bg-slate-700 text-white font-medium py-3 px-4 rounded-xl text-center transition-colors" style="display: block; width: 100%; background: #1e293b; color: #ffffff; text-align: center; padding: 14px; border-radius: 12px; font-weight: 700; text-decoration: none;">
+            <a href="/pricing" class="w-full inline-block bg-slate-800 hover:bg-slate-700 text-white font-medium py-3 px-4 rounded-xl text-center transition-colors" style="display: block; width: 100%; background: #1e293b; color: #ffffff; text-align: center; padding: 14px; border-radius: 12px; font-weight: 700; text-decoration: none; border: 1px solid #334155;">
               Unlock Elite Access
             </a>
           </div>
