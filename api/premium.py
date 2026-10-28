@@ -2628,6 +2628,7 @@ def run_application_copilot():
     return (
         jsonify({
             'error': 'Insufficient credits to run the AI Application Copilot.',
+            'code': 'CREDIT_INSUFFICIENCY',
             'required_credits': COPILOT_CREDIT_COST,
             'credits_remaining': user_credits,
             'button_action': 'REFILL_CREDIT',
