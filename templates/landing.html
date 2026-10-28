@@ -17,8 +17,8 @@
 
         body { 
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
-            background: #f8fafc; 
-            color: #1e293b; 
+            background: #020617; 
+            color: #f8fafc; 
             line-height: 1.6; 
         }
 
@@ -28,8 +28,9 @@
             justify-content: space-between;
             align-items: center;
             padding: 10px 5%;
-            background: #ffffff;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            background: #0f172a;
+            border-bottom: 1px solid #1e293b;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
             position: fixed;
             top: 0;
             left: 0;
@@ -49,14 +50,14 @@
         .brand {
             font-size: 20px;
             font-weight: 800;
-            color: #02353C;
+            color: #34d399;
             text-decoration: none;
             line-height: 1.1;
         }
 
         .brand-subtitle {
             font-size: 10px;
-            color: #64748b;
+            color: #94a3b8;
             font-weight: 600;
             letter-spacing: 0.3px;
             margin-top: 2px;
@@ -77,19 +78,19 @@
 
         .desktop-nav a {
             text-decoration: none;
-            color: #475569;
+            color: #94a3b8;
             font-weight: 600;
             font-size: 14px;
             transition: color 0.2s;
             white-space: nowrap;
         }
 
-        .desktop-nav a:hover { color: #02353C; }
+        .desktop-nav a:hover { color: #34d399; }
 
         /* Hamburger Icon Button */
         .hamburger-btn {
-            background: #f1f5f9;
-            border: 1px solid #e2e8f0;
+            background: #1e293b;
+            border: 1px solid #334155;
             border-radius: 6px;
             cursor: pointer;
             padding: 8px;
@@ -104,13 +105,13 @@
         }
 
         .hamburger-btn:hover {
-            background: #e2e8f0;
+            background: #334155;
         }
 
         .hamburger-bar {
             width: 18px;
             height: 2px;
-            background-color: #02353C;
+            background-color: #34d399;
             border-radius: 2px;
             transition: all 0.3s ease;
         }
@@ -122,7 +123,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(2, 53, 60, 0.5);
+            background: rgba(2, 6, 23, 0.7);
             backdrop-filter: blur(6px);
             opacity: 0;
             visibility: hidden;
@@ -141,15 +142,15 @@
             right: -320px;
             width: 280px;
             height: 100%;
-            background: linear-gradient(165deg, #02353C 0%, #05535E 60%, #011f24 100%);
-            box-shadow: -8px 0 30px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(165deg, #0f172a 0%, #020617 100%);
+            box-shadow: -8px 0 30px rgba(0, 0, 0, 0.5);
             padding: 30px 24px;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
             transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: 2001;
-            border-left: 1px solid rgba(229, 169, 60, 0.25);
+            border-left: 1px solid rgba(52, 211, 153, 0.25);
             overflow-y: auto;
         }
 
@@ -189,8 +190,8 @@
         }
 
         .close-btn:hover {
-            background: #E5A93C;
-            color: #02353C;
+            background: #34d399;
+            color: #020617;
         }
 
         .menu-list {
@@ -202,7 +203,7 @@
 
         .menu-list a {
             text-decoration: none;
-            color: #e2e8f0;
+            color: #cbd5e1;
             font-weight: 600;
             font-size: 14px;
             display: flex;
@@ -216,23 +217,23 @@
         }
 
         .menu-list a:hover {
-            color: #02353C;
-            background: #E5A93C;
+            color: #020617;
+            background: #34d399;
             transform: translateX(4px);
-            box-shadow: 0 4px 15px rgba(229, 169, 60, 0.3);
+            box-shadow: 0 4px 15px rgba(52, 211, 153, 0.3);
         }
 
         /* Buttons */
         .btn-primary {
-            background: linear-gradient(135deg, #02353C 0%, #05535E 100%);
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
             color: #ffffff !important;
-            padding: 8px 12px;
-            border-radius: 6px;
+            padding: 8px 14px;
+            border-radius: 8px;
             font-weight: 600;
             font-size: 13px;
             text-decoration: none;
             display: inline-block;
-            box-shadow: 0 2px 8px rgba(2, 53, 60, 0.2);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
             transition: all 0.25s ease;
             text-align: center;
             border: none;
@@ -242,14 +243,15 @@
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(2, 53, 60, 0.3);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
         }
 
         .btn-secondary {
-            background: #e2e8f0;
-            color: #1e293b;
+            background: #1e293b;
+            color: #f8fafc;
+            border: 1px solid #334155;
             padding: 12px 24px;
-            border-radius: 8px;
+            border-radius: 10px;
             font-weight: 600;
             text-decoration: none;
             display: inline-block;
@@ -257,48 +259,48 @@
             text-align: center;
         }
 
-        .btn-secondary:hover { background: #cbd5e1; }
+        .btn-secondary:hover { background: #334155; }
 
         .btn-accent {
-            background: linear-gradient(135deg, #E5A93C 0%, #d99a2b 100%);
-            color: #02353C !important;
+            background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+            color: #020617 !important;
             padding: 14px 28px;
-            border-radius: 8px;
+            border-radius: 10px;
             font-weight: 700;
             text-decoration: none;
             display: inline-block;
-            box-shadow: 0 4px 12px rgba(229, 169, 60, 0.3);
+            box-shadow: 0 4px 15px rgba(52, 211, 153, 0.3);
             transition: all 0.25s ease;
             text-align: center;
             border: none;
             cursor: pointer;
-            width: 100%;
         }
 
         .btn-accent:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(229, 169, 60, 0.4);
+            box-shadow: 0 6px 20px rgba(52, 211, 153, 0.4);
         }
 
         /* Hero Section */
         .hero {
-            padding: 40px 8% 40px;
+            padding: 60px 8% 50px;
             text-align: center;
             max-width: 900px;
             margin: 0 auto;
         }
 
         .hero-title {
-            font-size: 42px;
+            font-size: 44px;
             font-weight: 800;
-            color: #02353C;
+            color: #ffffff;
             line-height: 1.2;
             margin-bottom: 16px;
+            letter-spacing: -0.5px;
         }
 
         .hero-subtitle {
             font-size: 18px;
-            color: #64748b;
+            color: #94a3b8;
             margin-bottom: 30px;
         }
 
@@ -311,22 +313,24 @@
 
         /* Features Section */
         .features {
-            padding: 60px 8%;
-            background: #ffffff;
+            padding: 70px 8%;
+            background: #090d16;
             width: 100%;
+            border-top: 1px solid #1e293b;
+            border-bottom: 1px solid #1e293b;
         }
 
         .section-title {
             text-align: center;
-            font-size: 30px;
-            color: #02353C;
-            font-weight: 700;
+            font-size: 32px;
+            color: #ffffff;
+            font-weight: 800;
             margin-bottom: 10px;
         }
 
         .section-subtitle {
             text-align: center;
-            color: #64748b;
+            color: #94a3b8;
             margin-bottom: 40px;
         }
 
@@ -339,10 +343,16 @@
         }
 
         .feature-card {
-            background: #f8fafc;
-            padding: 24px;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
+            background: #0f172a;
+            padding: 28px;
+            border-radius: 16px;
+            border: 1px solid #1e293b;
+            transition: transform 0.2s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: #34d399;
         }
 
         .feature-icon {
@@ -351,55 +361,33 @@
         }
 
         .feature-card h3 {
-            color: #02353C;
+            color: #ffffff;
             margin-bottom: 8px;
             font-size: 18px;
         }
 
         .feature-card p {
-            color: #64748b;
+            color: #94a3b8;
             font-size: 14px;
         }
 
         /* Footer */
         footer {
             text-align: center;
-            padding: 30px 8%;
-            background: #02353C;
-            color: #94a3b8;
+            padding: 40px 8%;
+            background: #020617;
+            border-top: 1px solid #1e293b;
+            color: #64748b;
             font-size: 14px;
             width: 100%;
         }
 
-        /* RESPONSIVE BREAKPOINTS */
         @media (max-width: 900px) {
-            .desktop-nav {
-                display: none;
-            }
-
-            .hero-title { 
-                font-size: 26px; 
-            }
-
-            .hero-subtitle {
-                font-size: 15px;
-            }
-
-            .hero-actions { 
-                flex-direction: column; 
-            }
-
-            .hero-actions a {
-                width: 100%;
-            }
-
-            .features, .pricing-section {
-                padding: 40px 5%;
-            }
-
-            .section-title {
-                font-size: 24px;
-            }
+            .desktop-nav { display: none; }
+            .hero-title { font-size: 28px; }
+            .hero-subtitle { font-size: 15px; }
+            .hero-actions { flex-direction: column; }
+            .hero-actions a { width: 100%; }
         }
     </style>
 {% endblock %}
@@ -506,88 +494,202 @@
         </div>
     </section>
 
-    <!-- PROFESSIONAL BRAND PRICING SECTION -->
-    <section style="padding: 80px 5%; background: #f8fafc;" id="pricing">
-        <div style="max-width: 1100px; margin: 0 auto; text-align: center; margin-bottom: 50px;">
-            <span style="font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #b45309; background: #fef3c7; padding: 6px 16px; border-radius: 20px; border: 1px solid #fde68a;">
-                {{ t('pricing_title') }}
-            </span>
-            <h2 style="font-size: 36px; font-weight: 800; color: #0f172a; margin-top: 16px; margin-bottom: 12px; letter-spacing: -0.5px;">
-                Invest in Your Career Acceleration
-            </h2>
-            <p style="font-size: 16px; color: #64748b; max-width: 600px; margin: 0 auto;">
-                {{ t('pricing_subtitle') }}
-            </p>
-        </div>
+    <!-- PROFESSIONAL DARK PRICING SECTION -->
+    <section class="py-16 px-4 bg-slate-950 text-slate-100" id="pricing" style="padding: 80px 5%; background: #020617;">
+      <div class="max-w-7xl mx-auto text-center mb-16">
+        <span class="text-xs font-bold tracking-widest text-emerald-400 uppercase bg-emerald-950/60 border border-emerald-800/50 py-1.5 px-3 rounded-full" style="color: #34d399; background: rgba(6, 78, 59, 0.6); border: 1px solid rgba(5, 150, 105, 0.4); padding: 6px 16px; border-radius: 20px; font-size: 11px; font-weight: 800; letter-spacing: 1.5px;">
+          Flexible Career Plans
+        </span>
+        <h2 class="text-3xl md:text-5xl font-extrabold tracking-tight mt-4 mb-4" style="font-size: 38px; font-weight: 800; color: #ffffff; margin-top: 16px; margin-bottom: 12px;">
+          Invest in Your Career Acceleration
+        </h2>
+        <p class="text-slate-400 max-w-2xl mx-auto text-base md:text-lg" style="color: #94a3b8; font-size: 16px; max-width: 600px; margin: 0 auto;">
+          Choose the tier that fits your job search velocity. Upgrade, pause, or switch plans anytime.
+        </p>
+      </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 35px; max-width: 1100px; margin: 0 auto; align-items: stretch;">
-            
-            <!-- FREE TIER CARD -->
-            <div style="background: #ffffff; border-radius: 24px; padding: 40px 30px; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.03); display: flex; flex-direction: column; justify-content: space-between; position: relative;">
-                <div>
-                    <div style="text-align: center; margin-bottom: 30px;">
-                        <h3 style="font-size: 20px; font-weight: 700; color: #0f172a; margin-bottom: 12px;">{{ t('plan_free_title') }}</h3>
-                        <div style="font-size: 42px; font-weight: 800; color: #0f172a; line-height: 1;">{{ t('plan_free_price') }}</div>
-                        <div style="font-size: 13px; color: #64748b; font-weight: 500; margin-top: 6px;">{{ t('plan_free_period') }}</div>
-                        <div style="font-size: 13px; color: #02353C; font-weight: 700; margin-top: 8px; background: #f1f5f9; display: inline-block; padding: 4px 12px; border-radius: 8px;">15 credits total</div>
-                    </div>
-
-                    <ul style="list-style: none; margin-bottom: 35px; display: flex; flex-direction: column; gap: 14px; text-align: left;">
-                        <li style="font-size: 14px; color: #334155; display: flex; align-items: center; gap: 12px;">
-                            <span style="color: #16a34a; font-weight: bold; font-size: 16px;">✓</span> <strong>15 AI Credits</strong> (One-time base)
-                        </li>
-                        <li style="font-size: 14px; color: #334155; display: flex; align-items: center; gap: 12px;">
-                            <span style="color: #16a34a; font-weight: bold; font-size: 16px;">✓</span> {{ t('feat_create_edit') }}
-                        </li>
-                        <li style="font-size: 14px; color: #334155; display: flex; align-items: center; gap: 12px;">
-                            <span style="color: #16a34a; font-weight: bold; font-size: 16px;">✓</span> Standard ATS Resume Builder
-                        </li>
-                        <li style="font-size: 14px; color: #334155; display: flex; align-items: center; gap: 12px;">
-                            <span style="color: #16a34a; font-weight: bold; font-size: 16px;">✓</span> Interactive Job Application Kanban Tracker
-                        </li>
-                        <li style="font-size: 14px; color: #94a3b8; display: flex; align-items: center; gap: 12px; text-decoration: line-through;">
-                            <span style="color: #cbd5e1; font-weight: bold; font-size: 16px;">✕</span> Advanced PDF Studio Templates (5 Cr)
-                        </li>
-                        <li style="font-size: 14px; color: #94a3b8; display: flex; align-items: center; gap: 12px; text-decoration: line-through;">
-                            <span style="color: #cbd5e1; font-weight: bold; font-size: 16px;">✕</span> AI Application Copilot & Salary Negotiator
-                        </li>
-                    </ul>
-                </div>
-
-                <a href="/editor" style="display: block; width: 100%; background: #f1f5f9; color: #0f172a; text-align: center; padding: 14px; border-radius: 12px; font-weight: 700; text-decoration: none; transition: background 0.2s;">
-                    {{ t('start_free') }}
-                </a>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto items-stretch" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 35px; max-width: 1100px; margin: 0 auto; align-items: stretch;">
+        
+        <!-- FREE TIER -->
+        <div class="flex flex-col rounded-2xl bg-slate-900/80 border border-slate-800 p-8 shadow-xl relative backdrop-blur-sm" style="background: #0f172a; border-radius: 24px; padding: 40px 30px; border: 1px solid #1e293b; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div class="mb-6" style="margin-bottom: 30px; text-align: center;">
+              <h3 class="text-xl font-bold text-white" style="font-size: 20px; font-weight: 700; color: #ffffff; margin-bottom: 8px;">Free Explorer</h3>
+              <p class="text-slate-400 text-sm mt-1" style="color: #94a3b8; font-size: 13px;">For testing features and basic profile building.</p>
+              <div class="mt-4 flex items-baseline justify-center" style="margin-top: 16px; display: flex; align-items: baseline; justify-content: center;">
+                <span class="text-4xl font-extrabold tracking-tight" style="font-size: 42px; font-weight: 800; color: #ffffff;">$0</span>
+                <span class="ml-1 text-sm text-slate-500" style="font-size: 13px; color: #64748b; margin-left: 4px;">/ forever</span>
+              </div>
             </div>
 
-            <!-- PRO PLAN CARD (HIGHLIGHTED WITH GOLD BORDER & BADGE) -->
-            <div style="background: linear-gradient(180deg, #fffdfa 0%, #ffffff 100%); border-radius: 24px; padding: 40px 30px; border: 2.5px solid #d99a2b; box-shadow: 0 20px 40px -10px rgba(217, 154, 43, 0.2); display: flex; flex-direction: column; justify-content: space-between; position: relative; transform: translateY(-6px);">
-                <!-- Floating Popular Badge -->
-                <div style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #e5a93c 0%, #b45309 100%); color: #ffffff; font-size: 11px; font-weight: 800; padding: 5px 18px; border-radius: 20px; letter-spacing: 0.8px; text-transform: uppercase; box-shadow: 0 4px 12px rgba(180, 83, 9, 0.3);">
-                    ★ POPULAR
-                </div>
+            <div class="border-t border-slate-800 pt-6 flex-1" style="border-top: 1px solid #1e293b; padding-top: 24px;">
+              <ul class="space-y-4 text-sm text-slate-300 text-left" style="list-style: none; display: flex; flex-direction: column; gap: 14px; text-align: left;">
+                <li class="flex items-center gap-3" style="display: flex; align-items: center; gap: 12px; font-size: 14px; color: #cbd5e1;">
+                  <span style="color: #34d399; font-weight: bold; font-size: 16px;">✓</span> <span><strong>15 AI Credits</strong> (One-time base)</span>
+                </li>
+                <li class="flex items-center gap-3" style="display: flex; align-items: center; gap: 12px; font-size: 14px; color: #cbd5e1;">
+                  <span style="color: #34d399; font-weight: bold; font-size: 16px;">✓</span> <span>Standard ATS Resume Builder</span>
+                </li>
+                <li class="flex items-center gap-3" style="display: flex; align-items: center; gap: 12px; font-size: 14px; color: #cbd5e1;">
+                  <span style="color: #34d399; font-weight: bold; font-size: 16px;">✓</span> <span>Interactive Job Application Kanban Tracker</span>
+                </li>
+                <li class="flex items-center gap-3 text-slate-500" style="display: flex; align-items: center; gap: 12px; font-size: 14px; color: #64748b; text-decoration: line-through;">
+                  <span style="color: #475569; font-weight: bold; font-size: 16px;">✕</span> <span>Advanced PDF Studio Templates (5 Cr)</span>
+                </li>
+                <li class="flex items-center gap-3 text-slate-500" style="display: flex; align-items: center; gap: 12px; font-size: 14px; color: #64748b; text-decoration: line-through;">
+                  <span style="color: #475569; font-weight: bold; font-size: 16px;">✕</span> <span>AI Application Copilot & Salary Negotiator</span>
+                </li>
+              </ul>
+            </div>
+          </div>
 
-                <div>
-                    <div style="text-align: center; margin-bottom: 30px;">
-                        <h3 style="font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 10px;">{{ t('plan_pro_title') }}</h3>
-                        <div style="font-size: 42px; font-weight: 800; color: #0f172a; line-height: 1;">$17.99 <span style="font-size: 15px; color: #64748b; font-weight: 500;">/month</span></div>
-                        <div style="font-size: 13px; color: #b45309; font-weight: 700; margin-top: 8px;">130 credits/month</div>
-                        <div style="font-size: 11px; color: #64748b; margin-top: 2px;">Or $7.99 for a 7-day trial pass</div>
-                    </div>
+          <div class="mt-8" style="margin-top: 35px;">
+            <a href="/auth/register" class="w-full inline-block bg-slate-800 hover:bg-slate-700 text-white font-medium py-3 px-4 rounded-xl text-center transition-colors" style="display: block; width: 100%; background: #1e293b; color: #ffffff; text-align: center; padding: 14px; border-radius: 12px; font-weight: 700; text-decoration: none;">
+              Get Started Free
+            </a>
+          </div>
+        </div>
 
-                    <ul style="list-style: none; margin-bottom: 35px; display: flex; flex-direction: column; gap: 14px; text-align: left;">
-                        <li style="font-size: 14px; color: #1e293b; font-weight: 600; display: flex; align-items: center; gap: 12px;">
-                            <span style="color: #16a34a; font-weight: bold; font-size: 16px;">✓</span> <strong>AI Application Copilot</strong> (9 Credits)
-                        </li>
-                        <li style="font-size: 14px; color: #334155; display: flex; align-items: center; gap: 12px;">
-                            <span style="color: #16a34a; font-weight: bold; font-size: 16px;">✓</span> Full ATS Deep Matcher & Keyword Optimizer (3 Cr)
-                        </li>
-                        <li style="font-size: 14px; color: #334155; display: flex; align-items: center; gap: 12px;">
-                            <span style="color: #16a34a; font-weight: bold; font-size: 16px;">✓</span> <strong>PDF Template Studio</strong> (Custom ReportLab layouts, 5 Cr)
-                        </li>
-                        <li style="font-size: 14px; color: #334155; display: flex; align-items: center; gap: 12px;">
-                            <span style="color: #16a34a; font-weight: bold; font-size: 16px;">✓</span> Cover Letter, LinkedIn & Interview Coach
-                        </li>
-                        <li style="font-size: 14px; color: #334155; display: flex; align-items: center; gap: 12px;">
-                            <span style="color: #16a34a; font-weight: bold; font-size: 16px;">✓</span> 17-Language Multi-Language Support
-                        </li>
-                        <li style="font-size: 14px; color: #94a3b8; display: flex; align-items: center; gap: 1
+        <!-- PRO PLAN (HIGHLIGHTED) -->
+        <div class="flex flex-col rounded-2xl bg-gradient-to-b from-emerald-950/40 via-slate-900 to-slate-900 border-2 border-emerald-500/80 p-8 shadow-2xl relative" style="background: linear-gradient(180deg, rgba(6, 78, 59, 0.2) 0%, #0f172a 100%); border-radius: 24px; padding: 40px 30px; border: 2.5px solid #34d399; box-shadow: 0 20px 40px -10px rgba(52, 211, 153, 0.2); display: flex; flex-direction: column; justify-content: space-between; position: relative; transform: translateY(-6px);">
+          <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-emerald-500 text-slate-950 font-bold text-xs uppercase tracking-wider py-1 px-3 rounded-full shadow-md" style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: #34d399; color: #020617; font-size: 11px; font-weight: 800; padding: 5px 18px; border-radius: 20px; letter-spacing: 0.8px; text-transform: uppercase;">
+            ★ Most Popular
+          </div>
+
+          <div>
+            <div class="mb-6" style="margin-bottom: 30px; text-align: center;">
+              <h3 class="text-xl font-bold text-white flex items-center justify-between" style="font-size: 22px; font-weight: 800; color: #ffffff; margin-bottom: 8px;">
+                Pro Career Suite
+              </h3>
+              <p class="text-slate-400 text-sm mt-1" style="color: #94a3b8; font-size: 13px;">For active job seekers applying at scale.</p>
+              <div class="mt-4 flex items-baseline justify-center" style="margin-top: 16px; display: flex; align-items: baseline; justify-content: center;">
+                <span class="text-4xl font-extrabold tracking-tight" style="font-size: 42px; font-weight: 800; color: #ffffff;">$17.99</span>
+                <span class="ml-1 text-sm text-slate-400" style="font-size: 13px; color: #94a3b8; margin-left: 4px;">/ month</span>
+              </div>
+              <p class="text-xs text-emerald-400 mt-1" style="font-size: 12px; color: #34d399; margin-top: 6px;">Or $7.99 for a 7-day trial pass</p>
+            </div>
+
+            <div class="border-t border-slate-800 pt-6 flex-1" style="border-top: 1px solid #1e293b; padding-top: 24px;">
+              <ul class="space-y-4 text-sm text-slate-200 text-left" style="list-style: none; display: flex; flex-direction: column; gap: 14px; text-align: left;">
+                <li class="flex items-center gap-3" style="display: flex; align-items: center; gap: 12px; font-size: 14px; color: #f8fafc;">
+                  <span style="color: #34d399; font-weight: bold; font-size: 16px;">✓</span> <span><strong>130 AI Credits</strong> per month</span>
+                </li>
+                <li class="flex items-center gap-3" style="display: flex; align-items: center; gap: 12px; font-size: 14px; color: #f8fafc;">
+                  <span style="color: #34d399; font-weight: bold; font-size: 16px;">✓</span> <span><strong>AI Application Copilot</strong> (9 Credits)</span>
+                </li>
+                <li class="flex items-center gap-3" style="display: flex; align-items: center; gap: 12px; font-size: 14px; color: #f8fafc;">
+                  <span style="color: #34d399; font-weight: bold; font-size: 16px;">✓</span> <span>Full ATS Deep Matcher & Optimizer (3 Cr)</span>
+                </li>
+                <li class="flex items-center gap-3" style="display: flex; align-items: center; gap: 12px; font-size: 14px; color: #f8fafc;">
+                  <span style="color: #34d399; font-weight: bold; font-size: 16px;">✓</span> <span>Cover Letter, LinkedIn & Interview Coach</span>
+                </li>
+                <li class="flex items-center gap-3" style="display: flex; align-items: center; gap: 12px; font-size: 14px; color: #f8fafc;">
+                  <span style="color: #34d399; font-weight: bold; font-size: 16px;">✓</span> <span><strong>PDF Template Studio</strong> (ReportLab layouts, 5 Cr)</span>
+                </li>
+                <li class="flex items-center gap-3" style="display: flex; align-items: center; gap: 12px; font-size: 14px; color: #f8fafc;">
+                  <span style="color: #34d399; font-weight: bold; font-size: 16px;">✓</span> <span>17-Language Multi-Language Support</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="mt-8" style="margin-top: 35px;">
+            <a href="/pricing" class="w-full inline-block bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3 px-4 rounded-xl text-center transition-colors shadow-lg shadow-emerald-500/20" style="display: block; width: 100%; background: linear-gradient(135deg, #34d399 0%, #059669 100%); color: #020617; text-align: center; padding: 15px; border-radius: 12px; font-weight: 800; text-decoration: none; box-shadow: 0 4px 15px rgba(52, 211, 153, 0.4);">
+              Upgrade to Pro
+            </a>
+          </div>
+        </div>
+
+        <!-- ELITE PLAN -->
+        <div class="flex flex-col rounded-2xl bg-slate-900/80 border border-slate-800 p-8 shadow-xl relative backdrop-blur-sm" style="background: #0f172a; border-radius: 24px; padding: 40px 30px; border: 1px solid #1e293b; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div class="mb-6" style="margin-bottom: 30px; text-align: center;">
+              <h3 class="text-xl font-bold text-white flex items-center justify-between" style="font-size: 20px; font-weight: 700; color: #ffffff; margin-bottom: 8px;">
+                Elite Executive
+              </h3>
+              <p class="text-slate-400 text-sm mt-1" style="color: #94a3b8; font-size: 13px;">For senior professionals and high-stakes offers.</p>
+              <div class="mt-4 flex items-baseline justify-center" style="margin-top: 16px; display: flex; align-items: baseline; justify-content: center;">
+                <span class="text-4xl font-extrabold tracking-tight" style="font-size: 42px; font-weight: 800; color: #ffffff;">$43.99</span>
+                <span class="ml-1 text-sm text-slate-500" style="font-size: 13px; color: #64748b; margin-left: 4px;">/ month</span>
+              </div>
+            </div>
+
+            <div class="border-t border-slate-800 pt-6 flex-1" style="border-top: 1px solid #1e293b; padding-top: 24px;">
+              <ul class="space-y-4 text-sm text-slate-300 text-left" style="list-style: none; display: flex; flex-direction: column; gap: 14px; text-align: left;">
+                <li class="flex items-center gap-3" style="display: flex; align-items: center; gap: 12px; font-size: 14px; color: #cbd5e1;">
+                  <span style="color: #f59e0b; font-weight: bold; font-size: 16px;">✓</span> <span><strong>360 AI Credits</strong> per month</span>
+                </li>
+                <li class="flex items-center gap-3" style="display: flex; align-items: center; gap: 12px; font-size: 14px; color: #cbd5e1;">
+                  <span style="color: #f59e0b; font-weight: bold; font-size: 16px;">✓</span> <span><strong>AI Salary Negotiator</strong> (8 Credits)</span>
+                </li>
+                <li class="flex items-center gap-3" style="display: flex; align-items: center; gap: 12px; font-size: 14px; color: #cbd5e1;">
+                  <span style="color: #f59e0b; font-weight: bold; font-size: 16px;">✓</span> <span>Highest Priority Generation Speed</span>
+                </li>
+                <li class="flex items-center gap-3" style="display: flex; align-items: center; gap: 12px; font-size: 14px; color: #cbd5e1;">
+                  <span style="color: #f59e0b; font-weight: bold; font-size: 16px;">✓</span> <span>All Pro Features & PDF Studio Included</span>
+                </li>
+                <li class="flex items-center gap-3" style="display: flex; align-items: center; gap: 12px; font-size: 14px; color: #cbd5e1;">
+                  <span style="color: #f59e0b; font-weight: bold; font-size: 16px;">✓</span> <span>VIP Priority Support Channel</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="mt-8" style="margin-top: 35px;">
+            <a href="/pricing" class="w-full inline-block bg-slate-800 hover:bg-slate-700 text-white font-medium py-3 px-4 rounded-xl text-center transition-colors" style="display: block; width: 100%; background: #1e293b; color: #ffffff; text-align: center; padding: 14px; border-radius: 12px; font-weight: 700; text-decoration: none;">
+              Unlock Elite Access
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- CREDIT TOP-UP ADD-ON CALLOUT BAR -->
+      <div style="max-width: 1100px; margin: 40px auto 0 auto; background: rgba(15, 23, 42, 0.9); border: 1.5px dashed #f59e0b; border-radius: 16px; padding: 20px 30px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px;">
+          <div style="display: flex; align-items: center; gap: 15px;">
+              <div style="font-size: 28px;">⚡</div>
+              <div>
+                  <h4 style="font-size: 16px; font-weight: 700; color: #fbbf24; margin-bottom: 2px;">Need extra generation power without waiting for monthly renewal?</h4>
+                  <p style="font-size: 13px; color: #94a3b8;">Top up instantly anytime: <strong style="color: #f8fafc;">10 Credits ($2.99)</strong> | <strong style="color: #f8fafc;">50 Credits ($9.99)</strong> | <strong style="color: #f8fafc;">150 Credits ($24.99)</strong></p>
+              </div>
+          </div>
+          <a href="/pricing" style="background: #f59e0b; color: #020617; padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 13px; text-decoration: none; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3); white-space: nowrap;">
+              Top-Up Credits
+          </a>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>{{ t('footer_copy_exact') }}</p>
+    </footer>
+{% endblock %}
+
+{% block extra_js %}
+    <!-- HAMBURGER JS -->
+    <script>
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const closeBtn = document.getElementById('closeBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const menuOverlay = document.getElementById('menuOverlay');
+        const menuLinks = document.querySelectorAll('.menu-link');
+
+        function openMenu() {
+            mobileMenu.classList.add('active');
+            menuOverlay.classList.add('active');
+        }
+
+        function closeMenu() {
+            mobileMenu.classList.remove('active');
+            menuOverlay.classList.remove('active');
+        }
+
+        hamburgerBtn.addEventListener('click', openMenu);
+        closeBtn.addEventListener('click', closeMenu);
+        menuOverlay.addEventListener('click', closeMenu);
+
+        menuLinks.forEach(link => {
+            link.addEventListener('click', closeMenu);
+        });
+    </script>
+{% endblock %}
