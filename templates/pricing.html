@@ -1,55 +1,53 @@
 <!-- ============================================================ -->
-<!-- PROFESSIONAL CVFORGE PRICING & CREDIT REFILL SUITE           -->
+<!-- RESPONSIVE CVFORGE PRICING & CREDIT REFILL SUITE             -->
 <!-- ============================================================ -->
-<div style="max-width: 1000px; margin: 40px auto; padding: 0 20px; font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; color: #f8fafc;">
+<div class="cvforge-pricing-wrapper">
     
     <!-- Section Heading -->
-    <div style="text-align: center; margin-bottom: 40px;">
-        <span style="background: rgba(59, 130, 246, 0.15); color: #38bdf8; border: 1px solid rgba(59, 130, 246, 0.3); padding: 6px 14px; border-radius: 9999px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Investment in Your Career</span>
-        <h2 style="font-size: 32px; font-weight: 800; margin: 16px 0 8px 0; letter-spacing: -0.5px;">Accelerate Your Job Search with AI</h2>
-        <p style="color: #94a3b8; font-size: 16px; margin: 0;">Choose the plan that matches your career momentum or top up credits as needed.</p>
+    <div class="pricing-header">
+        <span class="pricing-badge">Investment in Your Career</span>
+        <h2 class="pricing-title">Accelerate Your Job Search with AI</h2>
+        <p class="pricing-subtitle">Choose the plan that matches your career momentum or top up credits as needed.</p>
     </div>
 
-    <!-- Pricing Grid -->
-    <div class="pricing-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; align-items: stretch; margin-bottom: 48px;">
+    <!-- Pricing Grid (Responsive: 1 col on mobile, 2 cols on desktop) -->
+    <div class="pricing-grid">
         
         <!-- Pro Plan Card -->
-        <div class="pricing-card" style="background: #111827; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 32px; display: flex; flex-direction: column; justify-content: space-between; position: relative; transition: transform 0.2s, border-color 0.2s; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);">
-            <div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                    <h3 style="font-size: 20px; font-weight: 700; margin: 0; color: #ffffff;">Pro Plan</h3>
+        <div class="pricing-card">
+            <div class="card-content">
+                <div class="card-title-row">
+                    <h3>Pro Plan</h3>
                 </div>
-                <div style="margin-bottom: 20px;">
-                    <span class="price" style="font-size: 36px; font-weight: 800; color: #ffffff; letter-spacing: -1px;">$17.99</span>
-                    <span style="color: #94a3b8; font-size: 14px;"> / month</span>
+                <div class="price-display">
+                    <span class="price-amount">$17.99</span>
+                    <span class="price-period"> / month</span>
                 </div>
-                <p style="color: #cbd5e1; font-size: 14px; line-height: 1.5; margin: 0 0 24px 0; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px;">
+                <p class="card-desc">
                     ⚡ Includes <strong>130 AI credits monthly</strong> for fast resumes, cover letters, and outreach workflows.
                 </p>
             </div>
-            <button onclick="openPaddleCheckout('pri_pro_monthly_1799')" class="btn-primary" style="width: 100%; background: #374151; color: #ffffff; border: 1px solid rgba(255,255,255,0.1); padding: 14px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; transition: background 0.2s;">
+            <button onclick="openPaddleCheckout('pri_pro_monthly_1799')" class="btn-pricing btn-pro">
                 Upgrade to Pro
             </button>
         </div>
 
         <!-- Elite Plan Card (Featured / High-tier) -->
-        <div class="pricing-card featured" style="background: linear-gradient(145deg, #172033 0%, #0b0f19 100%); border: 2px solid #fbbf24; border-radius: 20px; padding: 32px; display: flex; flex-direction: column; justify-content: space-between; position: relative; box-shadow: 0 20px 40px -10px rgba(251, 191, 36, 0.15);">
-            <!-- Popular Badge -->
-            <div style="position: absolute; top: -14px; right: 24px; background: #fbbf24; color: #0b0f19; font-size: 11px; font-weight: 800; text-transform: uppercase; padding: 4px 12px; border-radius: 9999px; letter-spacing: 0.5px;">Most Popular</div>
-            
-            <div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                    <h3 style="font-size: 20px; font-weight: 700; margin: 0; color: #fbbf24;">Elite Expert Plan</h3>
+        <div class="pricing-card featured">
+            <div class="popular-badge">Most Popular</div>
+            <div class="card-content">
+                <div class="card-title-row">
+                    <h3 style="color: #fbbf24;">Elite Expert Plan</h3>
                 </div>
-                <div style="margin-bottom: 20px;">
-                    <span class="price" style="font-size: 36px; font-weight: 800; color: #ffffff; letter-spacing: -1px;">$43.99</span>
-                    <span style="color: #94a3b8; font-size: 14px;"> / month</span>
+                <div class="price-display">
+                    <span class="price-amount">$43.99</span>
+                    <span class="price-period"> / month</span>
                 </div>
-                <p style="color: #cbd5e1; font-size: 14px; line-height: 1.5; margin: 0 0 24px 0; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px;">
+                <p class="card-desc">
                     🔥 Includes <strong>360 AI credits</strong>, full suite access, & the exclusive <strong>Salary Negotiator</strong>.
                 </p>
             </div>
-            <button onclick="openPaddleCheckout('pri_expert_monthly_4399')" class="btn-primary" style="width: 100%; background: #fbbf24; color: #0b0f19; border: none; padding: 14px; border-radius: 12px; font-weight: 800; font-size: 14px; cursor: pointer; transition: transform 0.2s, background 0.2s; box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);">
+            <button onclick="openPaddleCheckout('pri_expert_monthly_4399')" class="btn-pricing btn-elite">
                 Upgrade to Elite
             </button>
         </div>
@@ -57,21 +55,282 @@
     </div>
 
     <!-- Credit Top-Ups Section -->
-    <div id="topups" class="topup-container" style="background: #111827; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 32px; text-align: center;">
-        <h3 style="font-size: 18px; font-weight: 700; margin: 0 0 8px 0; color: #ffffff;">Need More Credits?</h3>
-        <p style="color: #94a3b8; font-size: 14px; margin: 0 0 24px 0;">Top up instantly without altering your monthly subscription plan.</p>
+    <div id="topups" class="topup-container">
+        <h3>Need More Credits?</h3>
+        <p class="topup-sub">Top up instantly without altering your monthly subscription plan.</p>
         
-        <div class="topup-options" style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;">
-            <button onclick="openPaddleCheckout('pri_topup_10_299')" class="btn-secondary" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); color: #f8fafc; padding: 12px 20px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s;">
-                10 Credits <span style="color: #38bdf8; margin-left: 6px;">($2.99)</span>
+        <div class="topup-options">
+            <button onclick="openPaddleCheckout('pri_topup_10_299')" class="btn-topup">
+                10 Credits <span class="topup-price">($2.99)</span>
             </button>
-            <button onclick="openPaddleCheckout('pri_topup_50_999')" class="btn-secondary" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); color: #f8fafc; padding: 12px 20px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s;">
-                50 Credits <span style="color: #38bdf8; margin-left: 6px;">($9.99)</span>
+            <button onclick="openPaddleCheckout('pri_topup_50_999')" class="btn-topup">
+                50 Credits <span class="topup-price">($9.99)</span>
             </button>
-            <button onclick="openPaddleCheckout('pri_topup_150_2499')" class="btn-secondary" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); color: #f8fafc; padding: 12px 20px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s;">
-                150 Credits <span style="color: #38bdf8; margin-left: 6px;">($24.99)</span>
+            <button onclick="openPaddleCheckout('pri_topup_150_2499')" class="btn-topup">
+                150 Credits <span class="topup-price">($24.99)</span>
             </button>
         </div>
     </div>
 
 </div>
+
+<!-- ============================================================ -->
+<!-- RESPONSIVE CSS STYLES (MOBILE-FIRST ARCHITECTURE)            -->
+<!-- ============================================================ -->
+<style>
+    .cvforge-pricing-wrapper {
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 32px 16px;
+        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        color: #f8fafc;
+        box-sizing: border-box;
+    }
+
+    .pricing-header {
+        text-align: center;
+        margin-bottom: 32px;
+    }
+
+    .pricing-badge {
+        background: rgba(59, 130, 246, 0.15);
+        color: #38bdf8;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        padding: 5px 12px;
+        border-radius: 9999px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .pricing-title {
+        font-size: 26px;
+        font-weight: 800;
+        margin: 12px 0 6px 0;
+        letter-spacing: -0.5px;
+        line-height: 1.2;
+    }
+
+    .pricing-subtitle {
+        color: #94a3b8;
+        font-size: 14px;
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    /* Grid Layout: Stacks vertically on mobile, splits side-by-side on desktop */
+    .pricing-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+        margin-bottom: 32px;
+    }
+
+    .pricing-card {
+        background: #111827;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+    }
+
+    .pricing-card.featured {
+        background: linear-gradient(145deg, #172033 0%, #0b0f19 100%);
+        border: 2px solid #fbbf24;
+        box-shadow: 0 20px 40px -10px rgba(251, 191, 36, 0.15);
+    }
+
+    .popular-badge {
+        position: absolute;
+        top: -12px;
+        right: 20px;
+        background: #fbbf24;
+        color: #0b0f19;
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        padding: 3px 10px;
+        border-radius: 9999px;
+        letter-spacing: 0.5px;
+    }
+
+    .card-title-row h3 {
+        font-size: 18px;
+        font-weight: 700;
+        margin: 0 0 12px 0;
+        color: #ffffff;
+    }
+
+    .price-display {
+        margin-bottom: 16px;
+    }
+
+    .price-amount {
+        font-size: 32px;
+        font-weight: 800;
+        color: #ffffff;
+        letter-spacing: -1px;
+    }
+
+    .price-period {
+        color: #94a3b8;
+        font-size: 13px;
+    }
+
+    .card-desc {
+        color: #cbd5e1;
+        font-size: 13px;
+        line-height: 1.5;
+        margin: 0 0 20px 0;
+        border-top: 1px solid rgba(255,255,255,0.06);
+        padding-top: 14px;
+    }
+
+    .btn-pricing {
+        width: 100%;
+        padding: 13px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 14px;
+        cursor: pointer;
+        text-align: center;
+        border: none;
+        transition: transform 0.1s ease, background 0.2s ease;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-pricing:active {
+        transform: scale(0.98);
+    }
+
+    .btn-pro {
+        background: #374151;
+        color: #ffffff;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .btn-elite {
+        background: #fbbf24;
+        color: #0b0f19;
+        font-weight: 800;
+        box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+    }
+
+    /* Top-Up Section */
+    .topup-container {
+        background: #111827;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        padding: 24px 16px;
+        text-align: center;
+    }
+
+    .topup-container h3 {
+        font-size: 17px;
+        font-weight: 700;
+        margin: 0 0 6px 0;
+        color: #ffffff;
+    }
+
+    .topup-sub {
+        color: #94a3b8;
+        font-size: 13px;
+        margin: 0 0 20px 0;
+    }
+
+    .topup-options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .btn-topup {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.12);
+        color: #f8fafc;
+        padding: 12px 16px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+        width: 100%;
+        transition: background 0.2s;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-topup:active {
+        background: rgba(255,255,255,0.1);
+    }
+
+    .topup-price {
+        color: #38bdf8;
+        margin-left: 4px;
+    }
+
+    /* ======================================================== */
+    /* DESKTOP MEDIA QUERY (Min-width: 768px)                     */
+    /* ======================================================== */
+    @media (min-width: 768px) {
+        .cvforge-pricing-wrapper {
+            padding: 60px 24px;
+        }
+
+        .pricing-header {
+            margin-bottom: 48px;
+        }
+
+        .pricing-title {
+            font-size: 36px;
+        }
+
+        .pricing-subtitle {
+            font-size: 16px;
+        }
+
+        .pricing-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 28px;
+            margin-bottom: 40px;
+        }
+
+        .pricing-card {
+            padding: 36px;
+        }
+
+        .card-title-row h3 {
+            font-size: 20px;
+        }
+
+        .price-amount {
+            font-size: 40px;
+        }
+
+        .card-desc {
+            font-size: 14px;
+        }
+
+        .topup-container {
+            padding: 36px;
+        }
+
+        .topup-container h3 {
+            font-size: 19px;
+        }
+
+        .topup-options {
+            flex-direction: row;
+            justify-content: center;
+            gap: 14px;
+        }
+
+        .btn-topup {
+            width: auto;
+            padding: 14px 24px;
+        }
+    }
+</style>
