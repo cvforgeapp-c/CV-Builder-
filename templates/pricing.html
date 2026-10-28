@@ -4,7 +4,7 @@
 
 {% block content %}
 <!-- ============================================================ -->
-<!-- CVFORGE COMPACT-MODERN PRICING SUITE                         -->
+<!-- CVFORGE ULTRA-COMPACT PRICING SUITE                          -->
 <!-- ============================================================ -->
 <div class="cvforge-pricing-wrapper">
     
@@ -12,12 +12,12 @@
     <div class="pricing-header">
         <div class="pricing-badge-wrapper">
             <span class="pricing-badge">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 4px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 3px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                 Investment in Your Career
             </span>
         </div>
         <h2 class="pricing-title">Unlock Full AI Platform Access</h2>
-        <p class="pricing-subtitle">Choose the plan that matches your career momentum or pick a short-term trial pass to unlock all AI resume and career optimization tools.</p>
+        <p class="pricing-subtitle">Choose your plan or pick a short-term trial pass to unlock all AI resume and career optimization tools.</p>
     </div>
 
     <!-- Pricing Grid -->
@@ -60,11 +60,11 @@
                 <div class="card-title-row">
                     <h3 style="color: #fbbf24;">Elite Expert Plan</h3>
                 </div>
-                <div class="price-display" style="margin-top: 6px;">
+                <div class="price-display" style="margin-top: 4px;">
                     <span class="price-amount">$43.99</span>
                     <span class="price-period"> / mo</span>
                 </div>
-                <p class="price-subtext" style="margin-bottom: 14px;">360 AI credits & Salary Negotiator</p>
+                <p class="price-subtext" style="margin-bottom: 10px;">360 AI credits & Salary Negotiator</p>
                 <p class="card-desc">
                     🔥 Full suite access, automated application copilot, and executive interview coach.
                 </p>
@@ -79,7 +79,7 @@
     <!-- Credit Top-Ups Section -->
     <div id="topups" class="topup-container">
         <h3>Need More Credits?</h3>
-        <p class="topup-sub">Top up instantly without altering your monthly subscription plan.</p>
+        <p class="topup-sub">Top up instantly without altering your monthly plan.</p>
         
         <div class="topup-options">
             <button type="button" onclick="openPaddleCheckout('pri_topup_10_299')" class="btn-topup">
@@ -144,9 +144,9 @@
 {% block extra_css %}
 <style>
     .cvforge-pricing-wrapper {
-        max-width: 980px;
+        max-width: 900px;
         margin: 0 auto;
-        padding: 20px 16px;
+        padding: 12px 12px;
         font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
         color: #ffffff;
         box-sizing: border-box;
@@ -154,107 +154,107 @@
 
     .pricing-header {
         text-align: center;
-        max-width: 620px;
-        margin: 0 auto 28px auto;
-        padding: 0 12px;
+        max-width: 580px;
+        margin: 0 auto 20px auto;
+        padding: 0 8px;
     }
 
     .pricing-badge-wrapper {
         display: inline-block;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
     }
 
     .pricing-badge {
         background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(147, 51, 234, 0.15) 100%);
         color: #2563eb;
         border: 1px solid rgba(59, 130, 246, 0.3);
-        padding: 4px 12px;
+        padding: 3px 10px;
         border-radius: 9999px;
-        font-size: 10px;
+        font-size: 9px;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.8px;
         display: inline-flex;
         align-items: center;
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
     }
 
     .pricing-title {
-        font-size: 24px;
+        font-size: 21px;
         font-weight: 800;
-        margin: 0 0 8px 0;
-        letter-spacing: -0.5px;
+        margin: 0 0 6px 0;
+        letter-spacing: -0.4px;
         color: #0f172a !important;
-        line-height: 1.25;
+        line-height: 1.2;
     }
 
     .pricing-subtitle {
         color: #334155 !important;
-        font-size: 13px;
+        font-size: 12px;
         margin: 0;
-        line-height: 1.5;
+        line-height: 1.4;
         font-weight: 500;
     }
 
     .pricing-grid {
         display: flex;
         flex-direction: column;
-        gap: 16px;
-        margin-bottom: 20px;
+        gap: 12px;
+        margin-bottom: 14px;
     }
 
-    /* Medium-Compact Card Sizing */
+    /* Small & Tight Mobile Card Footprint */
     .pricing-card {
         background: #111827;
         border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 16px;
-        padding: 20px 18px;
+        border-radius: 14px;
+        padding: 14px 14px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         position: relative;
-        box-shadow: 0 8px 20px -4px rgba(0,0,0,0.5);
+        box-shadow: 0 6px 16px -4px rgba(0,0,0,0.5);
         color: #ffffff;
     }
 
     .pricing-card.featured {
         background: linear-gradient(145deg, #172033 0%, #0b0f19 100%);
         border: 2px solid #fbbf24;
-        box-shadow: 0 10px 25px -4px rgba(251, 191, 36, 0.15);
+        box-shadow: 0 8px 20px -4px rgba(251, 191, 36, 0.15);
     }
 
     .popular-badge {
         position: absolute;
-        top: -10px;
-        right: 18px;
+        top: -9px;
+        right: 14px;
         background: #fbbf24;
         color: #0b0f19;
-        font-size: 9px;
+        font-size: 8px;
         font-weight: 800;
         text-transform: uppercase;
-        padding: 2px 8px;
+        padding: 2px 7px;
         border-radius: 9999px;
         letter-spacing: 0.5px;
     }
 
     .card-title-row h3 {
-        font-size: 17px;
+        font-size: 15px;
         font-weight: 700;
-        margin: 0 0 12px 0;
+        margin: 0 0 8px 0;
         color: #ffffff;
     }
 
     .pro-pricing-options {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 8px;
     }
 
     .price-tier-block {
         background: rgba(255, 255, 255, 0.04);
         border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        padding: 12px 14px;
+        border-radius: 8px;
+        padding: 9px 10px;
     }
 
     .trial-block {
@@ -263,34 +263,34 @@
     }
 
     .price-amount {
-        font-size: 24px;
+        font-size: 21px;
         font-weight: 800;
         color: #ffffff;
         letter-spacing: -0.5px;
     }
 
     .price-period {
-        font-size: 12px;
+        font-size: 11px;
         color: #cbd5e1;
         font-weight: normal;
     }
 
     .price-subtext {
-        font-size: 12px;
+        font-size: 11px;
         color: #cbd5e1;
-        margin: 2px 0 10px 0;
+        margin: 1px 0 6px 0;
     }
 
     .price-divider {
         text-align: center;
         position: relative;
-        margin: 2px 0;
+        margin: 1px 0;
     }
 
     .price-divider span {
         background: #111827;
-        padding: 0 8px;
-        font-size: 10px;
+        padding: 0 6px;
+        font-size: 9px;
         font-weight: 700;
         color: #94a3b8;
         position: relative;
@@ -313,19 +313,19 @@
 
     .card-desc {
         color: #f1f5f9;
-        font-size: 13px;
-        line-height: 1.45;
+        font-size: 12px;
+        line-height: 1.4;
         margin: 0;
         border-top: 1px solid rgba(255,255,255,0.1);
-        padding-top: 10px;
+        padding-top: 8px;
     }
 
     .btn-pricing {
         width: 100%;
-        padding: 10px;
-        border-radius: 8px;
+        padding: 8px;
+        border-radius: 6px;
         font-weight: 700;
-        font-size: 13px;
+        font-size: 12px;
         cursor: pointer;
         text-align: center;
         border: none;
@@ -352,48 +352,48 @@
         background: #fbbf24;
         color: #0b0f19;
         font-weight: 800;
-        padding: 12px;
-        border-radius: 10px;
+        padding: 10px;
+        border-radius: 8px;
         box-shadow: 0 4px 10px rgba(251, 191, 36, 0.3);
-        margin-top: 18px;
+        margin-top: 12px;
     }
 
     .topup-container {
         background: #111827;
         border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 16px;
-        padding: 20px 16px;
+        border-radius: 14px;
+        padding: 14px 12px;
         text-align: center;
         color: #ffffff;
     }
 
     .topup-container h3 {
-        font-size: 16px;
+        font-size: 14px;
         font-weight: 700;
-        margin: 0 0 4px 0;
+        margin: 0 0 2px 0;
         color: #ffffff;
     }
 
     .topup-sub {
         color: #cbd5e1;
-        font-size: 12px;
-        margin: 0 0 14px 0;
+        font-size: 11px;
+        margin: 0 0 10px 0;
     }
 
     .topup-options {
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 6px;
     }
 
     .btn-topup {
         background: rgba(255,255,255,0.06);
         border: 1px solid rgba(255,255,255,0.15);
         color: #ffffff;
-        padding: 11px 14px;
-        border-radius: 10px;
+        padding: 9px 12px;
+        border-radius: 8px;
         font-weight: 600;
-        font-size: 13px;
+        font-size: 12px;
         cursor: pointer;
         width: 100%;
         -webkit-tap-highlight-color: transparent;
@@ -408,38 +408,38 @@
     /* Desktop View */
     @media (min-width: 768px) {
         .cvforge-pricing-wrapper {
-            padding: 48px 20px;
-            max-width: 1020px;
+            padding: 36px 16px;
+            max-width: 960px;
         }
         .pricing-header {
-            margin-bottom: 40px;
+            margin-bottom: 32px;
         }
         .pricing-title {
-            font-size: 36px;
+            font-size: 32px;
         }
         .pricing-subtitle {
-            font-size: 15px;
+            font-size: 14px;
         }
         .pricing-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 24px;
-            margin-bottom: 24px;
+            gap: 20px;
+            margin-bottom: 20px;
         }
         .pricing-card {
-            padding: 28px;
+            padding: 22px;
         }
         .topup-container {
-            padding: 28px;
+            padding: 22px;
         }
         .topup-options {
             flex-direction: row;
             justify-content: center;
-            gap: 12px;
+            gap: 10px;
         }
         .btn-topup {
             width: auto;
-            padding: 12px 20px;
+            padding: 10px 18px;
         }
     }
 </style>
