@@ -1,330 +1,733 @@
-"""AI Assist Chat & Base Layout translations for all 17 supported global languages.
-Fully synchronized key mapping to prevent fallback failures across all variants.
-"""
+    <!-- ========================================================== -->
+    <!-- ULTRA-CLEAN FULL-SCREEN AI ASSIST WIDGET (ALL PAGES)       -->
+    <!-- ========================================================== -->
+    <div id="cvforgeAiAssistRoot" style="position: fixed; bottom: 24px; right: 24px; z-index: 999999; font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;">
+        
+        <!-- Floating Trigger Button -->
+        <button type="button" onclick="toggleAiChatDrawer()" id="aiAssistTriggerBtn" title="{{ t_deal('ai_assist_title') }}">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span class="btn-label">{{ t_deal('ai_assist_title') }}</span>
+        </button>
 
-AI_ASSIST_CHAT_TRANSLATIONS = {
-    "English (US / UK)": {
-        "ai_assist_title": "AI Assist",
-        "chat_header_title": "CVForge AI Assist",
-        "chat_header_sub": "Your personal career & resume copilot",
-        "stop_sound": "Stop Sound",
-        "default_welcome_msg": "Hello! How can I help you optimize your resume, draft cover letters, or prepare for interviews today?",
-        "listen": "Listen",
-        "input_placeholder": "Reply to AI Assist...",
-        "listening": "Listening...",
-        "copied": "✓ Copied",
-        "copy": "Copy",
-        "edit": "Edit",
-        "thinking": "Thinking...",
-        "network_error": "Network error. Please check your connection.",
-        "default_error": "Sorry, I encountered an issue. Please try again."
-    },
+        <!-- Full-Screen Chat Overlay Modal -->
+        <div id="aiChatDrawer" class="drawer-closed">
+            
+            <!-- Top App Bar -->
+            <div class="drawer-header">
+                <div class="header-title-box">
+                    <div class="bot-icon-badge">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+                            <circle cx="12" cy="5" r="2"></circle>
+                            <path d="M12 7v4"></path>
+                            <line x1="8" y1="16" x2="8.01" y2="16"></line>
+                            <line x1="16" y1="16" x2="16.01" y2="16"></line>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="header-heading">{{ t_deal('chat_header_title') }}</h3>
+                        <p class="header-sub">{{ t_deal('chat_header_sub') }}</p>
+                    </div>
+                </div>
 
-    "Mandarin Chinese": {
-        "ai_assist_title": "AI 助手",
-        "chat_header_title": "CVForge AI 助手",
-        "chat_header_sub": "您的个人职业与简历副驾驶",
-        "stop_sound": "停止声音",
-        "default_welcome_msg": "你好！今天我能帮你优化简历、起草求职信还是准备面试？",
-        "listen": "收听",
-        "input_placeholder": "回复 AI 助手...",
-        "listening": "正在聆听...",
-        "copied": "✓ 已复制",
-        "copy": "复制",
-        "edit": "编辑",
-        "thinking": "思考中...",
-        "network_error": "网络错误。请检查您的连接。",
-        "default_error": "抱歉，遇到了一些问题。请再试一次。"
-    },
+                <!-- Stop Speech Button (Visible while AI is speaking) -->
+                <button type="button" id="btnStopSpeech" onclick="stopAiSpeech()" style="display: none; align-items: center; gap: 6px; background: rgba(239, 68, 68, 0.25); border: 1px solid rgba(239, 68, 68, 0.6); color: #fca5a5; padding: 6px 14px; border-radius: 9999px; font-size: 12px; font-weight: 600; cursor: pointer;">
+                    🔊 {{ t_deal('stop_sound') }}
+                </button>
 
-    "Spanish": {
-        "ai_assist_title": "Asistente IA",
-        "chat_header_title": "CVForge Asistente IA",
-        "chat_header_sub": "Tu copiloto personal de carrera y currículum",
-        "stop_sound": "Detener sonido",
-        "default_welcome_msg": "¡Hola! ¿Cómo puedo ayudarte a optimizar tu currículum, redactar cartas de presentación o prepararte para entrevistas hoy?",
-        "listen": "Escuchar",
-        "input_placeholder": "Responder al Asistente IA...",
-        "listening": "Escuchando...",
-        "copied": "✓ Copiado",
-        "copy": "Copiar",
-        "edit": "Editar",
-        "thinking": "Pensando...",
-        "network_error": "Error de red. Por favor, verifica tu conexión.",
-        "default_error": "Lo siento, encontré un problema. Por favor, inténtalo de nuevo."
-    },
+                <button type="button" onclick="toggleAiChatDrawer()" class="btn-close-drawer" title="Close">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
 
-    "Hindi": {
-        "ai_assist_title": "AI सहायक",
-        "chat_header_title": "CVForge AI सहायक",
-        "chat_header_sub": "आपका व्यक्तिगत करियर और बायोडाटा सह-पायलट",
-        "stop_sound": "ध्वनि बंद करें",
-        "default_welcome_msg": "नमस्ते! आज मैं आपके बायोडाटा को अनुकूलित करने, कवर लेटर का मसौदा तैयार करने या साक्षात्कार की तैयारी करने में कैसे मदद कर सकता हूँ?",
-        "listen": "सुनें",
-        "input_placeholder": "AI सहायक को उत्तर दें...",
-        "listening": "सुना जा रहा है...",
-        "copied": "✓ कॉपी किया गया",
-        "copy": "कॉपी करें",
-        "edit": "संपादित करें",
-        "thinking": "सोच रहा है...",
-        "network_error": "नेटवर्क त्रुटि। कृपया अपना कनेक्शन जांचें।",
-        "default_error": "क्षमा करें, मुझे एक समस्या का सामना करना पड़ा। कृपया पुनः प्रयास करें।"
-    },
+            <!-- Chat Feed (Centered Content Area) -->
+            <div id="globalChatMessages" class="messages-container">
+                <div class="msg-row bot-row">
+                    <div class="msg-avatar">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+                            <path d="M12 7v4"></path>
+                        </svg>
+                    </div>
+                    <div class="msg-bubble bot-bubble">
+                        <div>{{ t_deal('default_welcome_msg') }}</div>
+                        <div class="msg-actions">
+                            <button type="button" class="msg-btn-action" onclick="speakAiResponse('{{ t_deal('default_welcome_msg') }}')" title="Listen to response">
+                                🔊 {{ t_deal('listen') }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    "Arabic": {
-        "ai_assist_title": "مساعد الذكاء الاصطناعي",
-        "chat_header_title": "CVForge مساعد الذكاء الاصطناعي",
-        "chat_header_sub": "مساعدك الشخصي للمسار المهني والسيرة الذاتية",
-        "stop_sound": "إيقاف الصوت",
-        "default_welcome_msg": "مرحبًا! كيف يمكنني مساعدتك في تحسين سيرتك الذاتية، أو صياغة رسائل التغطية، أو التحضير للمقابلات اليوم؟",
-        "listen": "استماع",
-        "input_placeholder": "الرد على مساعد الذكاء الاصطناعي...",
-        "listening": "جاري الاستماع...",
-        "copied": "✓ تم النسخ",
-        "copy": "نسخ",
-        "edit": "تعديل",
-        "thinking": "جاري التفكير...",
-        "network_error": "خطأ في الشبكة. يرجى التحقق من اتصالك.",
-        "default_error": "عذرًا، واجهت مشكلة. يرجى المحاولة مرة أخرى."
-    },
+            <!-- Bottom Floating Input Bar -->
+            <div class="drawer-footer">
+                <div class="input-wrapper">
+                    <form id="globalAiChatForm" onsubmit="handleGlobalSendMessage(event)" class="chat-form">
+                        
+                        <!-- Hidden File Input for Upload -->
+                        <input type="file" id="globalChatFileInput" style="display: none;" accept=".pdf,.doc,.docx,.txt,image/*" onchange="handleFileSelected(event)"/>
+                        
+                        <!-- Upload Button -->
+                        <button type="button" class="btn-attachment" onclick="document.getElementById('globalChatFileInput').click()" title="Upload file or document">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                        </button>
 
-    "French": {
-        "ai_assist_title": "Assistant IA",
-        "chat_header_title": "CVForge Assistant IA",
-        "chat_header_sub": "Votre copilote personnel de carrière et de CV",
-        "stop_sound": "Arrêter le son",
-        "default_welcome_msg": "Bonjour ! Comment puis-je vous aider à optimiser votre CV, rédiger des lettres de motivation ou vous préparer pour des entretiens aujourd'hui ?",
-        "listen": "Éouter",
-        "input_placeholder": "Répondre à l'Assistant IA...",
-        "listening": "Écoute...",
-        "copied": "✓ Copié",
-        "copy": "Copier",
-        "edit": "Modifier",
-        "thinking": "Réflexion...",
-        "network_error": "Erreur réseau. Veuillez vérifier votre connexion.",
-        "default_error": "Désolé, j'ai rencontré un problème. Veuillez réessayer."
-    },
+                        <!-- Attached File Compact Chip (Right Next to Upload Icon) -->
+                        <div id="attachedFilePreview" style="display: none; align-items: center; gap: 4px; background: rgba(59, 130, 246, 0.25); border: 1px solid rgba(59, 130, 246, 0.5); padding: 3px 6px; border-radius: 6px; font-size: 11px; color: #93c5fd; max-width: 100px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; flex-shrink: 0;">
+                            📎 <span id="attachedFileName" style="overflow: hidden; text-overflow: ellipsis;"></span>
+                            <button type="button" onclick="clearAttachedFile()" style="background: none; border: none; color: #93c5fd; cursor: pointer; padding: 0; font-weight: bold; font-size: 12px;" title="Remove">&times;</button>
+                        </div>
 
-    "Portuguese": {
-        "ai_assist_title": "Assistente de IA",
-        "chat_header_title": "CVForge Assistente de IA",
-        "chat_header_sub": "Seu copiloto pessoal de carreira e currículo",
-        "stop_sound": "Parar som",
-        "default_welcome_msg": "Olá! Como posso ajudar você a otimizar seu currículo, redigir cartas de apresentação ou se preparar para entrevistas hoje?",
-        "listen": "Ouvir",
-        "input_placeholder": "Responder ao Assistente de IA...",
-        "listening": "Ouvindo...",
-        "copied": "✓ Copiado",
-        "copy": "Copiar",
-        "edit": "Editar",
-        "thinking": "Pensando...",
-        "network_error": "Erro de rede. Por favor, verifique sua conexão.",
-        "default_error": "Desculpe, encontrei um problema. Por favor, tente novamente."
-    },
+                        <!-- Auto-Expanding Multi-line Textarea -->
+                        <textarea id="globalChatInput" rows="1" placeholder="{{ t_deal('input_placeholder') }}" autocomplete="off" oninput="autoResizeTextarea(this)"></textarea>
 
-    "Russian": {
-        "ai_assist_title": "ИИ-помощник",
-        "chat_header_title": "CVForge ИИ-помощник",
-        "chat_header_sub": "Ваш личный карьерный пилот и помощник по резюме",
-        "stop_sound": "Остановить звук",
-        "default_welcome_msg": "Здравствуйте! Чем я могу помочь вам оптимизировать резюме, составить сопроводительное письмо или подготовиться к собеседованию?",
-        "listen": "Слушать",
-        "input_placeholder": "Ответить ИИ-помощнику...",
-        "listening": "Слушаю...",
-        "copied": "✓ Скопировано",
-        "copy": "Копировать",
-        "edit": "Изменить",
-        "thinking": "Думаю...",
-        "network_error": "Ошибка сети. Пожалуйста, проверьте подключение.",
-        "default_error": "Извините, произошла ошибка. Пожалуйста, попробуйте еще раз."
-    },
+                        <!-- Voice Record Button -->
+                        <button type="button" id="btnVoiceRecord" class="btn-mic" onclick="toggleVoiceRecording()" title="Voice input">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                                <path d="M19 10v1a7 7 0 0 1-14 0v-1"></path>
+                                <line x1="12" y1="19" x2="12" y2="23"></line>
+                                <line x1="8" y1="23" x2="16" y2="23"></line>
+                            </svg>
+                        </button>
 
-    "German": {
-        "ai_assist_title": "KI-Assistent",
-        "chat_header_title": "CVForge KI-Assistent",
-        "chat_header_sub": "Ihr persönlicher Karriere- und Lebenslauf-Copilot",
-        "stop_sound": "Ton stoppen",
-        "default_welcome_msg": "Hallo! Wie kann ich Ihnen heute helfen, Ihren Lebenslauf zu optimieren, Anschreiben zu verfassen oder sich auf Vorstellungsgespräche vorzubereiten?",
-        "listen": "Anhören",
-        "input_placeholder": "Dem KI-Assistenten antworten...",
-        "listening": "Höre zu...",
-        "copied": "✓ Kopiert",
-        "copy": "Kopieren",
-        "edit": "Bearbeiten",
-        "thinking": "Denke nach...",
-        "network_error": "Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung.",
-        "default_error": "Entschuldigung, es ist ein Problem aufgetreten. Bitte versuchen Sie es erneut."
-    },
+                        <!-- Send Button -->
+                        <button type="submit" id="btnSendGlobalChat" class="btn-send" title="Send message">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <line x1="12" y1="19" x2="12" y2="5"></line>
+                                <polyline points="5 12 12 5 19 12"></polyline>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    "Japanese": {
-        "ai_assist_title": "AIアシスト",
-        "chat_header_title": "CVForge AIアシスト",
-        "chat_header_sub": "あなたの個人のキャリア＆履歴書コパイロット",
-        "stop_sound": "音声を停止",
-        "default_welcome_msg": "こんにちは！本日は履歴書の最適化、カバーレターの作成、面接の準備など、どのようにサポートしましょうか？",
-        "listen": "聞く",
-        "input_placeholder": "AIアシストに返信する...",
-        "listening": "聞いています...",
-        "copied": "✓ コピー完了",
-        "copy": "コピー",
-        "edit": "編集",
-        "thinking": "考え中...",
-        "network_error": "ネットワークエラーです。接続を確認してください。",
-        "default_error": "申し訳ありません、問題が発生しました。もう一度お試しください。"
-    },
+    <style>
+        /* Trigger Button Styling */
+        #aiAssistTriggerBtn {
+            background-color: #02353C;
+            color: #fbbf24;
+            height: 52px;
+            padding: 0 18px;
+            border-radius: 9999px;
+            border: 2px solid rgba(251, 191, 36, 0.4);
+            box-shadow: 0 12px 30px -4px rgba(2, 53, 60, 0.5), 0 4px 12px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+        }
+        #aiAssistTriggerBtn:hover {
+            transform: scale(1.08);
+            background-color: #034a54;
+            border-color: #fbbf24;
+            box-shadow: 0 16px 36px -4px rgba(2, 53, 60, 0.7);
+        }
+        #aiAssistTriggerBtn .btn-label {
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            max-width: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            transition: max-width 0.3s ease, padding 0.3s ease;
+        }
+        #aiAssistTriggerBtn:hover .btn-label {
+            max-width: 100px;
+            padding-right: 4px;
+        }
 
-    "Korean": {
-        "ai_assist_title": "AI 어시스트",
-        "chat_header_title": "CVForge AI 어시스트",
-        "chat_header_sub": "나만의 커리어 및 이력서 코파일럿",
-        "stop_sound": "소리 중지",
-        "default_welcome_msg": "안녕하세요! 오늘 이력서 최적화, 자기소개서 작성, 면접 준비를 어떻게 도와드릴까요?",
-        "listen": "듣기",
-        "input_placeholder": "AI 어시스트에게 답장...",
-        "listening": "듣는 중...",
-        "copied": "✓ 복사됨",
-        "copy": "복사",
-        "edit": "편집",
-        "thinking": "생각 중...",
-        "network_error": "네트워크 오류입니다. 연결을 확인하세요.",
-        "default_error": "죄송합니다. 문제가 발생했습니다. 다시 시도해 주세요."
-    },
+        /* Full-Screen Chat Overlay Container */
+        #aiChatDrawer {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100dvh;
+            background-color: #0b0f19;
+            z-index: 9999999;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+        }
 
-    "Italian": {
-        "ai_assist_title": "Assistente IA",
-        "chat_header_title": "CVForge Assistente IA",
-        "chat_header_sub": "Il tuo copilota personale per carriera e curriculum",
-        "stop_sound": "Ferma audio",
-        "default_welcome_msg": "Ciao! Come posso aiutarti a ottimizzare il tuo curriculum, redigere lettere di presentazione o prepararti per i colloqui oggi?",
-        "listen": "Ascolta",
-        "input_placeholder": "Rispondi all'Assistente IA...",
-        "listening": "In ascolto...",
-        "copied": "✓ Copiato",
-        "copy": "Copia",
-        "edit": "Modifica",
-        "thinking": "Sto pensando...",
-        "network_error": "Errore di rete. Controlla la tua connessione.",
-        "default_error": "Spiacente, si è verificato un problema. Riprova."
-    },
+        .drawer-closed {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.98);
+        }
+        .drawer-open {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+        }
 
-    "Turkish": {
-        "ai_assist_title": "AI Asistan",
-        "chat_header_title": "CVForge AI Asistan",
-        "chat_header_sub": "Kişisel kariyer ve özgeçmiş pilotunuz",
-        "stop_sound": "Sesi Durdur",
-        "default_welcome_msg": "Merhaba! Bugün özgeçmişinizi optimize etmenize, ön yazı taslakları hazırlamanıza veya mülakatlara hazırlanmanıza nasıl yardımcı olabilirim?",
-        "listen": "Dinle",
-        "input_placeholder": "AI Asistana yanıt ver...",
-        "listening": "Dinleniyor...",
-        "copied": "✓ Kopyalandı",
-        "copy": "Kopyala",
-        "edit": "Düzenle",
-        "thinking": "Düşünüyor...",
-        "network_error": "Ağ hatası. Lütfen bağlantınızı kontrol edin.",
-        "default_error": "Üzgünüm, bir sorunla karşılaştım. Lütfen tekrar deneyin."
-    },
+        /* Top App Bar */
+        .drawer-header {
+            padding: 16px 24px;
+            background-color: rgba(11, 15, 25, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            backdrop-filter: blur(10px);
+        }
+        .header-title-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .bot-icon-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background-color: rgba(251, 191, 36, 0.15);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            color: #fbbf24;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .header-heading {
+            font-size: 15px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            letter-spacing: -0.2px;
+        }
+        .header-sub {
+            font-size: 12px;
+            color: #94a3b8;
+            margin: 2px 0 0 0;
+            font-weight: 400;
+        }
+        .btn-close-drawer {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+            cursor: pointer;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .btn-close-drawer:hover {
+            color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.12);
+        }
 
-    "Dutch": {
-        "ai_assist_title": "AI-assistent",
-        "chat_header_title": "CVForge AI-assistent",
-        "chat_header_sub": "Jouw persoonlijke carrière- en cv-copiloot",
-        "stop_sound": "Geluid stoppen",
-        "default_welcome_msg": "Hallo! Hoe kan ik je vandaag helpen bij het optimaliseren van je cv, het opstellen van sollicitatiebrieven of het voorbereiden op sollicitatiegesprekken?",
-        "listen": "Luisteren",
-        "input_placeholder": "Beantwoord AI-assistent...",
-        "listening": "Luisteren...",
-        "copied": "✓ Gekopieerd",
-        "copy": "Kopiëren",
-        "edit": "Bewerken",
-        "thinking": "Nadenken...",
-        "network_error": "Netwerkfout. Controleer je verbinding.",
-        "default_error": "Sorry, ik ben een probleem tegengekomen. Probeer het opnieuw."
-    },
+        /* Chat Feed (Centered Max Width Container) */
+        .messages-container {
+            flex-grow: 1;
+            padding: 24px 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            font-size: 14px;
+            max-width: 760px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        .msg-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .user-row {
+            justify-content: flex-end;
+        }
+        .bot-row {
+            justify-content: flex-start;
+        }
+        .msg-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            background-color: rgba(251, 191, 36, 0.15);
+            color: #fbbf24;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .msg-bubble {
+            padding: 14px 18px;
+            border-radius: 18px;
+            max-width: 85%;
+            line-height: 1.6;
+            word-break: break-word;
+            font-size: 14px;
+            position: relative;
+        }
+        .bot-bubble {
+            background-color: #172033;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #e2e8f0;
+            border-top-left-radius: 4px;
+            display: flex;
+            flex-direction: column;
+        }
+        .user-bubble {
+            background-color: #059669;
+            color: #ffffff;
+            border-top-right-radius: 4px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Action Bar inside Messages */
+        .msg-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            padding-top: 4px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            justify-content: flex-end;
+        }
 
-    "Polish": {
-        "ai_assist_title": "Asystent AI",
-        "chat_header_title": "CVForge Asystent AI",
-        "chat_header_sub": "Twój osobisty drugi pilot ds. kariery i CV",
-        "stop_sound": "Zatrzymaj dźwięк",
-        "default_welcome_msg": "Witaj! W czym mogę Ci dzisiaj pomóc w optymalizacji CV, pisaniu listów motywacyjnych lub przygotowaniu do rozmów kwalifikacyjnych?",
-        "listen": "Posłuchaj",
-        "input_placeholder": "Odpowiedz Asystentowi AI...",
-        "listening": "Słucham...",
-        "copied": "✓ Skopiowano",
-        "copy": "Kopiuj",
-        "edit": "Edytuj",
-        "thinking": "Myślę...",
-        "network_error": "Błąd sieci. Sprawdź swoje połączenie.",
-        "default_error": "Przepraszam, napotkałem problem. Proszę spróbować ponownie."
-    },
+        .msg-btn-action {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #ffffff;
+            font-size: 11px;
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: background 0.2s;
+        }
+        .msg-btn-action:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
 
-    "Swedish": {
-        "ai_assist_title": "AI-assistent",
-        "chat_header_title": "CVForge AI-assistent",
-        "chat_header_sub": "Din personliga karriär- och CV-copilot",
-        "stop_sound": "Stoppa ljud",
-        "default_welcome_msg": "Hej! Hur kan jag hjälpa dig att optimera ditt CV, skriva personliga brev eller förbereda dig för intervjuer idag?",
-        "listen": "Lyssna",
-        "input_placeholder": "Svara AI-assistenten...",
-        "listening": "Lyssnar...",
-        "copied": "✓ Kopierat",
-        "copy": "Kopiera",
-        "edit": "Redigera",
-        "thinking": "Tänker...",
-        "network_error": "Nätverksfel. Vänligen kontrollera din anslutning.",
-        "default_error": "Tyvärr stötte jag på ett problem. Vänligen försök igen."
-    },
+        .error-bubble {
+            background-color: #172033;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+            border-top-left-radius: 4px;
+        }
 
-    "Swahili": {
-        "ai_assist_title": "Msaidizi wa AI",
-        "chat_header_title": "CVForge Msaidizi wa AI",
-        "chat_header_sub": "Rubani wako binafsi wa kazi na wasifu",
-        "stop_sound": "Simamisha Sauti",
-        "default_welcome_msg": "Hujambo! Ninawezaje kukusaidia kuboresha wasifu wako, kuandaa barua za maombi, au kujiandaa kwa usahili leo?",
-        "listen": "Sikiliza",
-        "input_placeholder": "Jibu Msaidizi wa AI...",
-        "listening": "Inasikiliza...",
-        "copied": "✓ Imenakiliwa",
-        "copy": "Nakili",
-        "edit": "Hariri",
-        "thinking": "Inafikiria...",
-        "network_error": "Hitilafu ya mtandao. Tafadhali angalia muunganisho wako.",
-        "default_error": "Samahani, nimepata tatizo. Tafadhali jaribu tena."
-    },
+        /* Loading Spinner */
+        .typing-spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(251, 191, 36, 0.3);
+            border-top-color: #fbbf24;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
 
-    "Amharic": {
-        "ai_assist_title": "የ AI ረዳት",
-        "chat_header_title": "CVForge የ AI ረዳት",
-        "chat_header_sub": "የእርስዎ የግል የሙያ እና ሲቪ ረዳት",
-        "stop_sound": "ድምፅ አቁም",
-        "default_welcome_msg": "ሰላም! ዛሬ ሲቪዎን እንዲያስተካክሉ፣ የሽፋን ደብዳቤዎችን እንዲያዘጋጁ ወይም ለቃለ መጠይቅ እንዲዘጋጁ እንዴት ልረዳዎ እችላለሁ?",
-        "listen": "ስማ",
-        "input_placeholder": "ለ AI ረዳት መልስ ይስጡ...",
-        "listening": "በمስማት ላይ...",
-        "copied": "✓ ተቀድቷል",
-        "copy": "ቅዳ",
-        "edit": "አርዕት",
-        "thinking": "በማሰብ ላይ...",
-        "network_error": "የኔትወርክ ስህተት። እባክዎ ግንኙነትዎን ይፈትሹ።",
-        "default_error": "ይቅርታ፣ ችግር አጋጥሞኛል። እባክዎ እንደገና ይሞክሩ።"
-    },
+        /* Bottom Footer / Input Bar Container with Safe Area Padding */
+        .drawer-footer {
+            padding: 12px 16px;
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
+            background-color: rgba(11, 15, 25, 0.95);
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+        .input-wrapper {
+            max-width: 760px;
+            width: 100%;
+        }
+        .chat-form {
+            display: flex;
+            align-items: flex-end;
+            background-color: #172033;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 24px;
+            padding: 8px 10px 8px 12px;
+            gap: 6px;
+            transition: border-color 0.2s;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            flex-wrap: nowrap;
+        }
+        .chat-form:focus-within {
+            border-color: #fbbf24;
+        }
+        .btn-attachment, .btn-mic {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: color 0.2s, background 0.2s;
+            flex-shrink: 0;
+            margin-bottom: 2px;
+        }
+        .btn-attachment:hover, .btn-mic:hover {
+            color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.06);
+        }
+        .recording-active {
+            color: #ef4444 !important;
+            animation: pulse-red 1.5s infinite;
+        }
+        @keyframes pulse-red {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); color: #f87171; }
+            100% { transform: scale(1); }
+        }
+        #globalChatInput {
+            flex-grow: 1;
+            min-width: 60px;
+            max-height: 120px;
+            resize: none;
+            background: none;
+            border: none;
+            padding: 8px 4px;
+            font-size: 14px;
+            font-family: inherit;
+            color: #f8fafc;
+            outline: none;
+            line-height: 1.4;
+        }
+        #globalChatInput::placeholder {
+            color: #64748b;
+        }
+        .btn-send {
+            background-color: #3b82f6;
+            color: #ffffff;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s, transform 0.1s;
+            flex-shrink: 0;
+            margin-bottom: 2px;
+        }
+        .btn-send:hover {
+            background-color: #2563eb;
+            transform: scale(1.05);
+        }
+        .btn-send:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+    </style>
 
-    "Afaan Oromoo": {
-        "ai_assist_title": "Gargaaraa AI",
-        "chat_header_title": "CVForge Gargaaraa AI",
-        "chat_header_sub": "Kopirootii hojii fi CVkee dhuunfaa",
-        "stop_sound": "Sagalee Dhaabi",
-        "default_welcome_msg": "Akkam jirtu! Har'a CVkee fooyyessuu, barruu dhiifamaa qopheessuu, ykn gaaffii fi deebii qopheessuuf akkamitti si gargaaru danda'a?",
-        "listen": "Dhaggeeffadhu",
-        "input_placeholder": "Gargaaraa AI-tti deebisi...",
-        "listening": "Dhaggeeffachaa jira...",
-        "copied": "✓ Koppii ta'eera",
-        "copy": "Koppii Gochuu",
-        "edit": "Sirreeffadhu",
-        "thinking": "Yaadaa jira...",
-        "network_error": "Dogoggora interneetii. Maaloo walqunnamtii keessan ilaala.",
-        "default_error": "Dhiifama, rakkoon uumameera. Maaloo irra deebi'aa yaalaa."
-    }
-}
+    <script>
+        let currentAttachedFile = null;
+        let speechRecognitionInstance = null;
+        let isRecordingVoice = false;
 
-AI_ASSIST_CHAT_DICT = AI_ASSIST_CHAT_TRANSLATIONS
+        function toggleAiChatDrawer() {
+            const drawer = document.getElementById('aiChatDrawer');
+            if (drawer) {
+                if (drawer.classList.contains('drawer-closed')) {
+                    drawer.classList.remove('drawer-closed');
+                    drawer.classList.add('drawer-open');
+                    document.getElementById('globalChatInput')?.focus();
+                } else {
+                    drawer.classList.remove('drawer-open');
+                    drawer.classList.add('drawer-closed');
+                    stopAiSpeech();
+                }
+            }
+        }
+
+        function autoResizeTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+        }
+
+        function handleFileSelected(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            currentAttachedFile = file;
+            
+            const previewEl = document.getElementById('attachedFilePreview');
+            const nameEl = document.getElementById('attachedFileName');
+            if (previewEl && nameEl) {
+                nameEl.textContent = file.name;
+                previewEl.style.display = 'flex';
+            }
+        }
+
+        function clearAttachedFile() {
+            currentAttachedFile = null;
+            const fileInput = document.getElementById('globalChatFileInput');
+            if (fileInput) fileInput.value = '';
+            const previewEl = document.getElementById('attachedFilePreview');
+            if (previewEl) previewEl.style.display = 'none';
+        }
+
+        function speakAiResponse(text) {
+            if (!('speechSynthesis' in window)) return;
+            const cleanText = text.replace(/[*_#`[\]()]/g, '');
+            window.speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = window.CVForgeLanguage ? window.CVForgeLanguage.code : 'en';
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+
+            const stopBtn = document.getElementById('btnStopSpeech');
+
+            utterance.onstart = () => {
+                if (stopBtn) stopBtn.style.display = 'flex';
+            };
+
+            utterance.onend = () => {
+                if (stopBtn) stopBtn.style.display = 'none';
+            };
+
+            utterance.onerror = () => {
+                if (stopBtn) stopBtn.style.display = 'none';
+            };
+
+            setTimeout(() => {
+                window.speechSynthesis.speak(utterance);
+            }, 100);
+        }
+
+        function stopAiSpeech() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+            const stopBtn = document.getElementById('btnStopSpeech');
+            if (stopBtn) stopBtn.style.display = 'none';
+        }
+
+        function toggleVoiceRecording() {
+            const micBtn = document.getElementById('btnVoiceRecord');
+            const inputField = document.getElementById('globalChatInput');
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("Speech recognition is not supported in this browser. Try Chrome or Safari.");
+                return;
+            }
+
+            if (isRecordingVoice) {
+                if (speechRecognitionInstance) {
+                    speechRecognitionInstance.stop();
+                }
+                return;
+            }
+
+            speechRecognitionInstance = new SpeechRecognition();
+            speechRecognitionInstance.lang = window.CVForgeLanguage ? window.CVForgeLanguage.code : 'en';
+            speechRecognitionInstance.interimResults = true;
+            speechRecognitionInstance.continuous = false;
+
+            speechRecognitionInstance.onstart = () => {
+                isRecordingVoice = true;
+                micBtn.classList.add('recording-active');
+                inputField.placeholder = "{{ t_deal('listening') }}";
+            };
+
+            speechRecognitionInstance.onresult = (event) => {
+                let transcript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    transcript += event.results[i][0].transcript;
+                }
+                inputField.value = transcript;
+                autoResizeTextarea(inputField);
+            };
+
+            speechRecognitionInstance.onerror = (event) => {
+                console.error("Speech recognition error", event.error);
+                stopVoiceRecordingState();
+            };
+
+            speechRecognitionInstance.onend = () => {
+                stopVoiceRecordingState();
+            };
+
+            speechRecognitionInstance.start();
+        }
+
+        function stopVoiceRecordingState() {
+            isRecordingVoice = false;
+            const micBtn = document.getElementById('btnVoiceRecord');
+            const inputField = document.getElementById('globalChatInput');
+            if (micBtn) micBtn.classList.remove('recording-active');
+            if (inputField) inputField.placeholder = "{{ t_deal('input_placeholder') }}";
+        }
+
+        function copyUserMessage(btnElement, textToCopy) {
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = btnElement.innerText;
+                btnElement.innerText = "{{ t_deal('copied') }}";
+                setTimeout(() => {
+                    btnElement.innerText = originalText;
+                }, 1800);
+            }).catch(err => {
+                console.error("Failed to copy message:", err);
+            });
+        }
+
+        function editUserMessage(rowId, textToEdit) {
+            const inputField = document.getElementById('globalChatInput');
+            if (inputField) {
+                inputField.value = textToEdit;
+                inputField.focus();
+                autoResizeTextarea(inputField);
+            }
+            document.getElementById(rowId)?.remove();
+        }
+
+        function escapeHtml(str) {
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        async function handleGlobalSendMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('globalChatInput');
+            let message = input.value.trim();
+            if (!message && !currentAttachedFile) return;
+
+            const messagesContainer = document.getElementById('globalChatMessages');
+            const sendBtn = document.getElementById('btnSendGlobalChat');
+
+            const msgRowId = 'user-msg-' + Date.now();
+
+            let displayContent = escapeHtml(message).replace(/\n/g, '<br>');
+            if (currentAttachedFile) {
+                displayContent += `<br><span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; background:rgba(255,255,255,0.15); padding:2px 6px; border-radius:4px; margin-top:4px;">📎 ${escapeHtml(currentAttachedFile.name)}</span>`;
+            }
+
+            const rawTextForJs = message.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+            messagesContainer.innerHTML += `
+                <div id="${msgRowId}" class="msg-row user-row">
+                    <div class="msg-bubble user-bubble">
+                        <div style="white-space: pre-wrap;">${displayContent}</div>
+                        <div class="msg-actions">
+                            <button type="button" class="msg-btn-action" onclick="copyUserMessage(this, '${rawTextForJs}')" title="Copy text">
+                                📋 {{ t_deal('copy') }}
+                            </button>
+                            <button type="button" class="msg-btn-action" onclick="editUserMessage('${msgRowId}', '${rawTextForJs}')" title="Edit message">
+                                ✏️ {{ t_deal('edit') }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            let payloadMessage = message;
+            if (currentAttachedFile) {
+                payloadMessage = `[Attached File: ${currentAttachedFile.name}] ${message}`;
+            }
+
+            input.value = '';
+            input.style.height = 'auto';
+            clearAttachedFile();
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            const loadingId = 'loading-' + Date.now();
+            messagesContainer.innerHTML += `
+                <div id="${loadingId}" class="msg-row bot-row">
+                    <div class="msg-avatar">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+                            <path d="M12 7v4"></path>
+                        </svg>
+                    </div>
+                    <div class="msg-bubble bot-bubble" style="display: flex; align-items: center; gap: 10px; color: #94a3b8;">
+                        <span class="typing-spinner"></span> {{ t_deal('thinking') }}
+                    </div>
+                </div>
+            `;
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            sendBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/v1/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: payloadMessage })
+                });
+                const data = await response.json();
+                document.getElementById(loadingId)?.remove();
+
+                if (response.ok && data.reply) {
+                    const cleanReplyForJs = data.reply.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ');
+                    messagesContainer.innerHTML += `
+                        <div class="msg-row bot-row">
+                            <div class="msg-avatar">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+                                    <path d="M12 7v4"></path>
+                                </svg>
+                            </div>
+                            <div class="msg-bubble bot-bubble">
+                                <div style="white-space: pre-wrap;">${escapeHtml(data.reply)}</div>
+                                <div class="msg-actions">
+                                    <button type="button" class="msg-btn-action" onclick="speakAiResponse('${cleanReplyForJs}')" title="Listen to response">
+                                        🔊 {{ t_deal('listen') }}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    speakAiResponse(data.reply);
+                } else {
+                    const errorText = data.error || '{{ t_deal('default_error') }}';
+                    messagesContainer.innerHTML += `
+                        <div class="msg-row bot-row">
+                            <div class="msg-bubble error-bubble">
+                                ${escapeHtml(errorText)}
+                            </div>
+                        </div>
+                    `;
+                    speakAiResponse(errorText);
+                }
+            } catch (err) {
+                document.getElementById(loadingId)?.remove();
+                const networkError = '{{ t_deal('network_error') }}';
+                messagesContainer.innerHTML += `
+                    <div class="msg-row bot-row">
+                        <div class="msg-bubble error-bubble">
+                            ${networkError}
+                        </div>
+                    </div>
+                `;
+                speakAiResponse(networkError);
+            } finally {
+                sendBtn.disabled = false;
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        }
+    </script>
