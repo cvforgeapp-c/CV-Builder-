@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ t_deal('AI Cold Outreach & Networking Generator — CVForge Pro') }}{% endblock %}
+{% block title %}{{ t_deal('AI Cold Outreach & Networking Generator') }} — CVForge Pro{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -765,7 +765,7 @@
 
         fetchBtn.disabled = true;
         fetchSpinner.style.display = 'block';
-        fetchBtnText.textContent = '{{ t_deal('Fetching...') }}';
+        fetchBtnText.textContent = "{{ t_deal('Fetching...') }}";
 
         try {
             const response = await fetch('/api/v1/premium/scrape-job', {
@@ -789,7 +789,7 @@
         } finally {
             fetchBtn.disabled = false;
             fetchSpinner.style.display = 'none';
-            fetchBtnText.textContent = '{{ t_deal('✨ Fetch Job') }}';
+            fetchBtnText.textContent = "{{ t_deal('✨ Fetch Job') }}";
         }
     }
 
@@ -797,7 +797,7 @@
         const text = document.getElementById(elementId).innerText;
         if (!text || text === '-' || text.includes('Select your settings')) return;
         navigator.clipboard.writeText(text);
-        showToast('{{ t_deal('Copied to clipboard!') }}');
+        showToast("{{ t_deal('Copied to clipboard!') }}");
     }
 
     /* Drag and Drop Handling */
@@ -840,7 +840,7 @@
         btn.disabled = true;
         btnSpinner.style.display = 'block';
         btnIcon.style.display = 'none';
-        btnText.textContent = '{{ t_deal('Generating Campaign...') }}';
+        btnText.textContent = "{{ t_deal('Generating Campaign...') }}";
 
         const formData = new FormData(e.target);
 
@@ -863,7 +863,7 @@
             
             document.getElementById('referralText').innerText = data.referral_request || '';
 
-            showToast('{{ t_deal('Outreach campaign generated!') }}');
+            showToast("{{ t_deal('Outreach campaign generated!') }}");
 
         } catch (err) {
             showToast(err.message || 'An error occurred', '❌');
@@ -871,7 +871,7 @@
             btn.disabled = false;
             btnSpinner.style.display = 'none';
             btnIcon.style.display = 'inline';
-            btnText.textContent = '{{ t_deal('Generate Outreach Campaign') }}';
+            btnText.textContent = "{{ t_deal('Generate Outreach Campaign') }}";
         }
     });
 </script>
