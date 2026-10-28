@@ -318,13 +318,15 @@
     <!-- ============================================================ -->
     <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
     <script>
-      try {
-        Paddle.Initialize({
-          token: "test_your_paddle_client_token_here" 
-        });
-      } catch (e) {
-        console.error("Paddle initialization error:", e);
-      }
+      document.addEventListener("DOMContentLoaded", function () {
+        try {
+          Paddle.Initialize({
+            token: "test_your_paddle_client_token_here" 
+          });
+        } catch (e) {
+          console.error("Paddle initialization error:", e);
+        }
+      });
 
       function openPaddleCheckout(priceId) {
         if (!window.Paddle) {
@@ -332,20 +334,27 @@
           return;
         }
         
-        Paddle.Checkout.open({
-          items: [
-            {
-              priceId: priceId,
-              quantity: 1
+        try {
+          Paddle.Checkout.open({
+            items: [
+              {
+                priceId: priceId,
+                quantity: 1
+              }
+            ],
+            customer: {
+              email: "{{ current_user.email if current_user.is_authenticated else '' }}"
+            },
+            settings: {
+              successUrl: window.location.origin + "/dashboard?payment=success",
+              displayMode: "overlay",
+              theme: "dark"
             }
-          ],
-          customer: {
-            email: "{{ current_user.email if current_user.is_authenticated else '' }}"
-          },
-          settings: {
-            successUrl: window.location.origin + "/dashboard?payment=success"
-          }
-        });
+          });
+        } catch (err) {
+          console.error("Paddle Checkout open error:", err);
+          alert("Could not open checkout modal. Please check your network or token configuration.");
+        }
       }
 
       function showCreditModal(customMessage, actionUrl) {
