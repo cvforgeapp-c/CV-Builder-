@@ -251,11 +251,9 @@ except ImportError:
     init_app_dictionary_pathway(premium_app)
   except ImportError:
     def t_deal(key, lang='English (US / UK)', default=None):
-      # Safe fallback mechanism checking emergency dict or returning clean capitalized title strings
       lang_dict = EMERGENCY_OUTREACH_DICT.get(lang, EMERGENCY_OUTREACH_DICT.get('English (US / UK)', {}))
       if key in lang_dict:
         return lang_dict[key]
-      # Fallback formatter to prevent uppercase keys rendering visually
       clean_fallback = key.replace('outreach_', '').replace('_', ' ').title()
       return default if default is not None else clean_fallback
     DEAL_SUPPORTED_LANGUAGES = []
@@ -358,6 +356,34 @@ login_manager.login_message_category = 'info'
 
 
 # ============================================================
+# PLANS CONFIGURATION IMPORT
+# ============================================================
+
+try:
+  from plans import PLANS
+except ImportError:
+  try:
+    from ..plans import PLANS
+  except ImportError:
+    PLANS = {}
+
+
+# ============================================================
+# USER SESSION LOADER MIDDLEWARE (REQUEST HOOK)
+# ============================================================
+
+@premium_app.before_request
+def load_logged_in_user():
+  user_id = session.get('user_id')
+  if user_id is None:
+    from flask import g
+    g.user = None
+  else:
+    from flask import g
+    g.user = db.session.get(User, user_id)
+
+
+# ============================================================
 # GLOBAL TRANSLATION CONTEXT PROCESSORS
 # ============================================================
 
@@ -426,12 +452,10 @@ def inject_global_translations():
     if not isinstance(key, str):
       return str(key)
     try:
-      # Try primary t_deal function first
       res = t_deal(key, lang=user_language, default=default)
       if res and res != key:
         return res
       
-      # Fallback check against emergency dictionary
       lang_dict = EMERGENCY_OUTREACH_DICT.get(user_language, EMERGENCY_OUTREACH_DICT.get('English (US / UK)', {}))
       if key in lang_dict:
         return lang_dict[key]
@@ -439,7 +463,6 @@ def inject_global_translations():
       if default is not None:
         return default
 
-      # Final clean UI text transformation instead of raw keys
       return key.replace('outreach_', '').replace('_', ' ').title()
     except Exception as exc:
       premium_app.logger.warning(
@@ -549,30 +572,25 @@ PADDLE_WEBHOOK_SECRET_KEY = os.getenv('PADDLE_WEBHOOK_SECRET_KEY') or os.getenv(
 )
 PADDLE_ENV = os.getenv('PADDLE_ENV', 'sandbox')
 
-# Updated Pricing Structure Mappings & Price IDs
 PADDLE_PRO_PRICE_ID = os.getenv('PADDLE_PRO_PRICE_ID', 'pri_pro_monthly_1799')
 PADDLE_ELITE_PRICE_ID = os.getenv(
     'PADDLE_ELITE_PRICE_ID', 'pri_expert_monthly_4399'
 )
 
 PRICE_MAP = {
-    # Monthly Subscriptions ($17.99 Pro, $43.99 Elite)
     PADDLE_PRO_PRICE_ID: {'type': 'sub', 'tier': 'pro', 'credits': 130},
     PADDLE_ELITE_PRICE_ID: {'type': 'sub', 'tier': 'elite', 'credits': 360},
-    # 7-Day One-Time Pass ($7.99)
     'pri_pass_7day_799': {
         'type': 'pass',
         'tier': 'pro',
         'credits': 60,
         'days': 7,
     },
-    # One-Time Credit Top-Up Packs ($2.99, $9.99, $24.99)
     'pri_topup_10_299': {'type': 'topup', 'credits': 10},
     'pri_topup_50_999': {'type': 'topup', 'credits': 50},
     'pri_topup_150_2499': {'type': 'topup', 'credits': 150},
 }
 
-# Feature Consumption Weights
 FEATURE_RULES = {
     'ats_optimizer': {'tier': 'free', 'cost': 3},
     'cover_letter': {'tier': 'pro', 'cost': 3},
@@ -643,7 +661,7 @@ def register():
           is_premium=False,
           subscription_status='free',
           monthly_cv_generations=0,
-          ai_credits_remaining=15,  # Updated starting credit balance
+          ai_credits_remaining=15,
           preferences_json={},
       )
 
@@ -2701,7 +2719,6 @@ OUTPUT FORMAT (JSON ONLY):
         'tailored_skills_soft', ''
     ).strip()
 
-    # PERSIST ALL TAILORED SECTIONS (SUMMARY, EXPERIENCE, SKILLS) INTO NEW RESUME RECORD
     import copy
 
     user_prefs = getattr(current_user, 'preferences_json', None) or {}
@@ -3331,7 +3348,6 @@ def paddle_webhook():
   price_id = items[0].get('price', {}).get('id') if items else None
   item_config = PRICE_MAP.get(price_id, {})
 
-  # 1. HANDLE SUBSCRIPTION CREATED / UPDATED / ACTIVATED
   if event_type in [
       'subscription.created',
       'subscription.activated',
@@ -3357,7 +3373,6 @@ def paddle_webhook():
           print(f'Paddle sub update error: {exc}')
           return jsonify({'error': 'Unable to update subscription status.'}), 500
 
-  # 2. HANDLE ONE-TIME TRANSACTIONS (Passes & Credit Top-Ups)
   elif event_type == 'transaction.completed':
     if price_id in PRICE_MAP and customer_email:
       user = User.query.filter_by(email=customer_email.lower()).first()
@@ -3386,7 +3401,6 @@ def paddle_webhook():
               500,
           )
 
-  # 3. HANDLE CANCELLATIONS / PAST DUE
   elif event_type in ['subscription.canceled', 'subscription.past_due']:
     subscription_id = event_data.get('id')
     if subscription_id:
@@ -3711,6 +3725,22 @@ Return ONLY a JSON object matching this structure:
 
 # Register premium blueprint onto the main Flask app instance
 premium_app.register_blueprint(premium_bp)
+
+# ============================================================
+# BLUEPRINT REGISTRATIONS (AI & WEBHOOKS)
+# ============================================================
+
+try:
+  from routes.ai import ai_bp
+  premium_app.register_blueprint(ai_bp, url_prefix='/api')
+except ImportError:
+  pass
+
+try:
+  from webhook import webhook_bp
+  premium_app.register_blueprint(webhook_bp, url_prefix='/api')
+except ImportError:
+  pass
 
 # ============================================================
 # Vercel Entry Point & Local Dev
