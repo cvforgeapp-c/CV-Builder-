@@ -41,7 +41,7 @@ for package in MODULE_DICTIONARIES:
 
 
 def t_deal(key: str, lang: str = "English (US / UK)", default: str = None) -> str:
-    """Lookup translation matching string literals or keys."""
+    """Lookup translation matching string literals or keys for the 3rd pathway."""
     if not isinstance(key, str):
         return str(key)
 
@@ -60,7 +60,7 @@ def t_deal(key: str, lang: str = "English (US / UK)", default: str = None) -> st
 
 
 def init_app_dictionary_pathway(app):
-    """Registers t_deal into Flask's Jinja context."""
+    """Registers t_deal into Flask's Jinja context without overlapping other context processors."""
     from flask import session, request
 
     @app.context_processor
@@ -71,6 +71,6 @@ def init_app_dictionary_pathway(app):
 
         return {
             "t_deal": lambda key, default=None: t_deal(key, lang=user_lang, default=default),
-            "current_lang": user_lang,
-            "supported_languages": SUPPORTED_LANGUAGES,
+            "deal_current_lang": user_lang,
+            "deal_supported_languages": SUPPORTED_LANGUAGES,
         }
