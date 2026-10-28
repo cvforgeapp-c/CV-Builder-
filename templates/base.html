@@ -1,1004 +1,445 @@
-<!DOCTYPE html>
-<html
-    lang="{{ html_lang_code | default('en') }}"
-    dir="{{ 'rtl' if current_language == 'Arabic' else 'ltr' }}"
-    data-cvforge-language="{{ current_language | default('English (US / UK)') }}"
->
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends "base.html" %}
 
-    <title>{% block title %}CVForge — AI-Powered ATS Resume Builder{% endblock %}</title>
+{% block title %}CVForge — Pricing & AI Plans{% endblock %}
 
-    <!-- Selected language -->
-    <meta
-        name="cvforge-language"
-        content="{{ current_language | default('English (US / UK)') }}"
-    >
+{% block content %}
+<!-- ============================================================ -->
+<!-- CVFORGE ULTRA-COMPACT PRICING SUITE                          -->
+<!-- ============================================================ -->
+<div class="cvforge-pricing-wrapper">
+    
+    <!-- Section Heading -->
+    <div class="pricing-header">
+        <div class="pricing-badge-wrapper">
+            <span class="pricing-badge">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 3px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                Investment in Your Career
+            </span>
+        </div>
+        <h2 class="pricing-title">Unlock Full AI Platform Access</h2>
+        <p class="pricing-subtitle">Choose your plan or pick a short-term trial pass to unlock all AI resume and career optimization tools.</p>
+    </div>
 
-    <meta
-        name="cvforge-language-code"
-        content="{{ html_lang_code | default('en') }}"
-    >
-
-    <!-- Page-specific CSS -->
-    {% block extra_css %}{% endblock %}
-
-    <style>
-        /* Global CSS reset */
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-        }
-
-        html,
-        body {
-            width: 100%;
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: #f8fafc;
-            color: #1e293b;
-            line-height: 1.6;
-            min-height: 100vh;
-        }
-
-        /* Arabic right-to-left support */
-        html[dir="rtl"] body {
-            direction: rtl;
-            text-align: right;
-        }
-
-        /* Right-to-left form controls */
-        html[dir="rtl"] input,
-        html[dir="rtl"] textarea,
-        html[dir="rtl"] select {
-            text-align: right;
-        }
-
-        /* Prevent media overflow */
-        img,
-        video,
-        canvas,
-        iframe {
-            max-width: 100%;
-        }
-
-        /* Prevent long headings and paragraphs from breaking layouts */
-        p,
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6 {
-            overflow-wrap: anywhere;
-        }
-
-        /* Accessible keyboard focus */
-        :focus-visible {
-            outline: 2px solid #1599A8;
-            outline-offset: 2px;
-        }
-    </style>
-
-    <!-- CVForge language configuration -->
-    <script>
-        (function () {
-            "use strict";
-
-            const userLang =
-                {{ (current_language | default('English (US / UK)')) | tojson }};
-
-            const languageCodes = {
-                "English (US / UK)": "en",
-                "Mandarin Chinese": "zh-CN",
-                "Spanish": "es",
-                "Hindi": "hi",
-                "Arabic": "ar",
-                "French": "fr",
-                "Portuguese": "pt",
-                "Russian": "ru",
-                "German": "de",
-                "Japanese": "ja",
-                "Korean": "ko",
-                "Italian": "it",
-                "Turkish": "tr",
-                "Dutch": "nl",
-                "Polish": "pl",
-                "Swedish": "sv",
-                "Swahili": "sw",
-                "Amharic": "am",
-                "Afaan Oromoo": "om"
-            };
-
-            const languageCode = languageCodes[userLang] || "en";
-            const direction = languageCode === "ar" ? "rtl" : "ltr";
-
-            /* Apply the selected language to the document */
-            document.documentElement.lang = languageCode;
-            document.documentElement.dir = direction;
-
-            /* Expose language information to page-level JavaScript */
-            window.CVForgeLanguage = Object.freeze({
-                name: userLang,
-                code: languageCode,
-                direction: direction
-            });
-
-            /*
-             * Remove legacy Google Translate cookies for the
-             * current hostname. CVForge uses translations.py
-             * instead of the Google Translate widget.
-             */
-            function removeGoogleTranslateCookies() {
-                const cookieNames = [
-                    "googtrans",
-                    "googtransopt"
-                ];
-
-                cookieNames.forEach(function (name) {
-                    document.cookie =
-                        name + "=; Max-Age=0; path=/; SameSite=Lax";
-                });
-            }
-
-            removeGoogleTranslateCookies();
-
-        })();
-    </script>
-
-    <!--
-        Translation dictionary for JavaScript.
-
-        The Flask context processor must provide
-        cvforge_translations for this variable to contain translations.
-    -->
-    <script>
-        window.CVForgeTranslations =
-            {{ cvforge_translations | default({}) | tojson }};
-    </script>
-
-    <!-- Optional page-specific translation data -->
-    {% block translation_data %}{% endblock %}
-
-</head>
-
-<body>
-
-    <!-- Main content supplied by each page -->
-    {% block content %}{% endblock %}
-
-    <!-- Page-specific JavaScript -->
-    {% block extra_js %}{% endblock %}
-
-    <!-- ========================================================== -->
-    <!-- ULTRA-CLEAN FULL-SCREEN AI ASSIST WIDGET (ALL PAGES)       -->
-    <!-- ========================================================== -->
-    <div id="cvforgeAiAssistRoot" style="position: fixed; bottom: 24px; right: 24px; z-index: 999999; font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;">
+    <!-- Pricing Grid -->
+    <div class="pricing-grid">
         
-        <!-- Floating Trigger Button -->
-        <button type="button" onclick="toggleAiChatDrawer()" id="aiAssistTriggerBtn" title="{{ t_deal('ai_assist_title') }}">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-            </svg>
-            <span class="btn-label">{{ t_deal('ai_assist_title') }}</span>
-        </button>
-
-        <!-- Full-Screen Chat Overlay Modal -->
-        <div id="aiChatDrawer" class="drawer-closed">
-            
-            <!-- Top App Bar -->
-            <div class="drawer-header">
-                <div class="header-title-box">
-                    <div class="bot-icon-badge">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                            <rect x="3" y="11" width="18" height="10" rx="2"></rect>
-                            <circle cx="12" cy="5" r="2"></circle>
-                            <path d="M12 7v4"></path>
-                            <line x1="8" y1="16" x2="8.01" y2="16"></line>
-                            <line x1="16" y1="16" x2="16.01" y2="16"></line>
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 class="header-heading">{{ t_deal('chat_header_title') }}</h3>
-                        <p class="header-sub">{{ t_deal('chat_header_sub') }}</p>
-                    </div>
+        <!-- Pro Plan (With Monthly & 7-Day Options) -->
+        <div class="pricing-card">
+            <div class="card-content">
+                <div class="card-title-row">
+                    <h3>Pro Plan & Trial</h3>
                 </div>
-
-                <!-- Stop Speech Button (Visible while AI is speaking) -->
-                <button type="button" id="btnStopSpeech" onclick="stopAiSpeech()" style="display: none; align-items: center; gap: 6px; background: rgba(239, 68, 68, 0.25); border: 1px solid rgba(239, 68, 68, 0.6); color: #fca5a5; padding: 6px 14px; border-radius: 9999px; font-size: 12px; font-weight: 600; cursor: pointer;">
-                    🔊 {{ t_deal('stop_sound') }}
-                </button>
-
-                <button type="button" onclick="toggleAiChatDrawer()" class="btn-close-drawer" title="Close">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Chat Feed (Centered Content Area) -->
-            <div id="globalChatMessages" class="messages-container">
-                <div class="msg-row bot-row">
-                    <div class="msg-avatar">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="11" width="18" height="10" rx="2"></rect>
-                            <path d="M12 7v4"></path>
-                        </svg>
+                
+                <!-- Dual Pricing Display -->
+                <div class="pro-pricing-options">
+                    <div class="price-tier-block">
+                        <div class="price-amount">$17.99 <span class="price-period">/ mo</span></div>
+                        <p class="price-subtext">130 AI credits monthly</p>
+                        <button type="button" onclick="openPaddleCheckout('pri_pro_monthly_1799')" class="btn-pricing btn-pro">
+                            Upgrade Monthly ($17.99)
+                        </button>
                     </div>
-                    <div class="msg-bubble bot-bubble">
-                        <div>{{ t_deal('default_welcome_msg') }}</div>
-                        <div class="msg-actions">
-                            <button type="button" class="msg-btn-action" onclick="speakAiResponse('{{ t_deal('default_welcome_msg') }}')" title="Listen to response">
-                                🔊 {{ t_deal('listen') }}
-                            </button>
-                        </div>
+
+                    <div class="price-divider"><span>OR</span></div>
+
+                    <div class="price-tier-block trial-block">
+                        <div class="price-amount">$7.99 <span class="price-period">/ 7 days</span></div>
+                        <p class="price-subtext">60 AI credits for 7 days</p>
+                        <button type="button" onclick="openPaddleCheckout('pri_pass_7day_799')" class="btn-pricing btn-trial">
+                            Get 7-Day Pass ($7.99)
+                        </button>
                     </div>
-                </div>
-            </div>
-
-            <!-- Bottom Floating Input Bar -->
-            <div class="drawer-footer">
-                <div class="input-wrapper">
-                    <form id="globalAiChatForm" onsubmit="handleGlobalSendMessage(event)" class="chat-form">
-                        
-                        <!-- Hidden File Input for Upload -->
-                        <input type="file" id="globalChatFileInput" style="display: none;" accept=".pdf,.doc,.docx,.txt,image/*" onchange="handleFileSelected(event)"/>
-                        
-                        <!-- Upload Button -->
-                        <button type="button" class="btn-attachment" onclick="document.getElementById('globalChatFileInput').click()" title="Upload file or document">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="12" y1="5" x2="12" y2="19"></line>
-                                <line x1="5" y1="12" x2="19" y2="12"></line>
-                            </svg>
-                        </button>
-
-                        <!-- Attached File Compact Chip (Right Next to Upload Icon) -->
-                        <div id="attachedFilePreview" style="display: none; align-items: center; gap: 4px; background: rgba(59, 130, 246, 0.25); border: 1px solid rgba(59, 130, 246, 0.5); padding: 3px 6px; border-radius: 6px; font-size: 11px; color: #93c5fd; max-width: 100px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; flex-shrink: 0;">
-                            📎 <span id="attachedFileName" style="overflow: hidden; text-overflow: ellipsis;"></span>
-                            <button type="button" onclick="clearAttachedFile()" style="background: none; border: none; color: #93c5fd; cursor: pointer; padding: 0; font-weight: bold; font-size: 12px;" title="Remove">&times;</button>
-                        </div>
-
-                        <!-- Auto-Expanding Multi-line Textarea -->
-                        <textarea id="globalChatInput" rows="1" placeholder="{{ t_deal('input_placeholder') }}" autocomplete="off" oninput="autoResizeTextarea(this)"></textarea>
-
-                        <!-- Voice Record Button -->
-                        <button type="button" id="btnVoiceRecord" class="btn-mic" onclick="toggleVoiceRecording()" title="Voice input">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
-                                <path d="M19 10v1a7 7 0 0 1-14 0v-1"></path>
-                                <line x1="12" y1="19" x2="12" y2="23"></line>
-                                <line x1="8" y1="23" x2="16" y2="23"></line>
-                            </svg>
-                        </button>
-
-                        <!-- Send Button -->
-                        <button type="submit" id="btnSendGlobalChat" class="btn-send" title="Send message">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                <line x1="12" y1="19" x2="12" y2="5"></line>
-                                <polyline points="5 12 12 5 19 12"></polyline>
-                            </svg>
-                        </button>
-                    </form>
                 </div>
             </div>
         </div>
+
+        <!-- Elite Expert Plan Card -->
+        <div class="pricing-card featured">
+            <div class="popular-badge">Most Popular</div>
+            <div class="card-content">
+                <div class="card-title-row">
+                    <h3 style="color: #fbbf24;">Elite Expert Plan</h3>
+                </div>
+                <div class="price-display" style="margin-top: 4px;">
+                    <span class="price-amount">$43.99</span>
+                    <span class="price-period"> / mo</span>
+                </div>
+                <p class="price-subtext" style="margin-bottom: 8px;">360 AI credits & Salary Negotiator</p>
+                <p class="card-desc">
+                    🔥 Full suite access, automated application copilot, and executive interview coach.
+                </p>
+            </div>
+            <button type="button" onclick="openPaddleCheckout('pri_expert_monthly_4399')" class="btn-pricing btn-elite">
+                Upgrade to Elite
+            </button>
+        </div>
+
     </div>
 
-    <!-- ========================================================== -->
-    <!-- INSUFFICIENT CREDITS MODAL COMPONENT                       -->
-    <!-- ========================================================== -->
-    <div id="creditInsufficiencyModal" style="display: none; position: fixed; inset: 0; z-index: 9999999; background: rgba(11, 15, 25, 0.8); backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 16px;">
-        <div style="background: #172033; border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 16px; max-width: 420px; width: 100%; padding: 24px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);">
-            <div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(239, 68, 68, 0.15); color: #f87171; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-            </div>
-            <h3 style="color: #ffffff; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Out of AI Credits</h3>
-            <p id="creditModalMessage" style="color: #94a3b8; font-size: 14px; margin: 0 0 20px 0; line-height: 1.5;">You have used all available AI generation credits. Please top up or upgrade your plan to continue.</p>
-            <div style="display: flex; gap: 10px;">
-                <button type="button" onclick="closeCreditModal()" style="flex: 1; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: #e2e8f0; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer;">Cancel</button>
-                <a id="creditModalActionBtn" href="/pricing#topups" style="flex: 1; background: #3b82f6; border: none; color: #ffffff; padding: 10px 16px; border-radius: 8px; font-weight: 600; text-decoration: none; display: flex; align-items: center; justify-content: center;">Refill Credits</a>
-            </div>
+    <!-- Credit Top-Ups Section -->
+    <div id="topups" class="topup-container">
+        <h3>Need More Credits?</h3>
+        <p class="topup-sub">Top up instantly without altering your monthly plan.</p>
+        
+        <div class="topup-options">
+            <button type="button" onclick="openPaddleCheckout('pri_topup_10_299')" class="btn-topup">
+                10 Credits <span class="topup-price">($2.99)</span>
+            </button>
+            <button type="button" onclick="openPaddleCheckout('pri_topup_50_999')" class="btn-topup">
+                50 Credits <span class="topup-price">($9.99)</span>
+            </button>
+            <button type="button" onclick="openPaddleCheckout('pri_topup_150_2499')" class="btn-topup">
+                150 Credits <span class="topup-price">($24.99)</span>
+            </button>
         </div>
     </div>
 
-    <!-- ============================================================ -->
-    <!-- PADDLE CHECKOUT SCRIPT & CREDIT MODAL HELPERS                -->
-    <!-- ============================================================ -->
-    <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        try {
-          Paddle.Initialize({
-            token: "test_your_paddle_client_token_here" 
-          });
-        } catch (e) {
-          console.error("Paddle initialization error:", e);
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Fallback Click Handler with Safety Check for Paddle SDK Loading -->
+<script>
+  function openPaddleCheckout(priceId) {
+    if (!window.Paddle) {
+      let attempts = 0;
+      const checkPaddle = setInterval(() => {
+        attempts++;
+        if (window.Paddle) {
+          clearInterval(checkPaddle);
+          executeCheckout(priceId);
+        } else if (attempts > 10) {
+          clearInterval(checkPaddle);
+          alert("Payment gateway is loading. Please check your connection or ad-blocker and try again.");
+        }
+      }, 300);
+      return;
+    }
+    executeCheckout(priceId);
+  }
+
+  function executeCheckout(priceId) {
+    try {
+      Paddle.Checkout.open({
+        items: [
+          {
+            priceId: priceId,
+            quantity: 1
+          }
+        ],
+        settings: {
+          successUrl: window.location.origin + "/dashboard?payment=success",
+          displayMode: "overlay",
+          theme: "dark"
         }
       });
+    } catch (err) {
+      console.error("Paddle Checkout error:", err);
+      alert("Unable to launch checkout. Please check your connection.");
+    }
+  }
+</script>
+{% endblock %}
 
-      function openPaddleCheckout(priceId) {
-        if (!window.Paddle) {
-          alert("Payment gateway is loading. Please try again in a moment.");
-          return;
-        }
-        
-        try {
-          Paddle.Checkout.open({
-            items: [
-              {
-                priceId: priceId,
-                quantity: 1
-              }
-            ],
-            customer: {
-              email: "{{ current_user.email if current_user.is_authenticated else '' }}"
-            },
-            settings: {
-              successUrl: window.location.origin + "/dashboard?payment=success",
-              displayMode: "overlay",
-              theme: "dark"
-            }
-          });
-        } catch (err) {
-          console.error("Paddle Checkout open error:", err);
-          alert("Could not open checkout modal. Please check your network or token configuration.");
-        }
-      }
+{% block extra_css %}
+<style>
+    .cvforge-pricing-wrapper {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 12px 12px;
+        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        color: #ffffff;
+        box-sizing: border-box;
+    }
 
-      function showCreditModal(customMessage, actionUrl) {
-          const modal = document.getElementById('creditInsufficiencyModal');
-          const msgEl = document.getElementById('creditModalMessage');
-          const btnEl = document.getElementById('creditModalActionBtn');
+    .pricing-header {
+        text-align: center;
+        max-width: 580px;
+        margin: 0 auto 20px auto;
+        padding: 0 8px;
+    }
 
-          if (customMessage && msgEl) {
-              msgEl.textContent = customMessage;
-          }
-          if (actionUrl && btnEl) {
-              btnEl.href = actionUrl;
-          }
-          if (modal) {
-              modal.style.display = 'flex';
-          }
-      }
+    .pricing-badge-wrapper {
+        display: inline-block;
+        margin-bottom: 6px;
+    }
 
-      function closeCreditModal() {
-          const modal = document.getElementById('creditInsufficiencyModal');
-          if (modal) {
-              modal.style.display = 'none';
-          }
-      }
-    </script>
+    .pricing-badge {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(147, 51, 234, 0.15) 100%);
+        color: #2563eb;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        padding: 3px 10px;
+        border-radius: 9999px;
+        font-size: 9px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        display: inline-flex;
+        align-items: center;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+    }
 
-    <style>
-        /* Trigger Button Styling */
-        #aiAssistTriggerBtn {
-            background-color: #02353C;
-            color: #fbbf24;
-            height: 52px;
-            padding: 0 18px;
-            border-radius: 9999px;
-            border: 2px solid rgba(251, 191, 36, 0.4);
-            box-shadow: 0 12px 30px -4px rgba(2, 53, 60, 0.5), 0 4px 12px rgba(0, 0, 0, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            outline: none;
-        }
-        #aiAssistTriggerBtn:hover {
-            transform: scale(1.08);
-            background-color: #034a54;
-            border-color: #fbbf24;
-            box-shadow: 0 16px 36px -4px rgba(2, 53, 60, 0.7);
-        }
-        #aiAssistTriggerBtn .btn-label {
-            color: #ffffff;
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 0.2px;
-            max-width: 0;
-            overflow: hidden;
-            white-space: nowrap;
-            transition: max-width 0.3s ease, padding 0.3s ease;
-        }
-        #aiAssistTriggerBtn:hover .btn-label {
-            max-width: 100px;
-            padding-right: 4px;
-        }
+    .pricing-title {
+        font-size: 21px;
+        font-weight: 800;
+        margin: 0 0 6px 0;
+        letter-spacing: -0.4px;
+        color: #0f172a !important;
+        line-height: 1.2;
+    }
 
-        /* Full-Screen Chat Overlay Container */
-        #aiChatDrawer {
-            position: fixed;
-            inset: 0;
-            width: 100vw;
-            height: 100dvh;
-            background-color: #0b0f19;
-            z-index: 9999999;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            transition: opacity 0.25s ease, transform 0.25s ease;
-        }
+    .pricing-subtitle {
+        color: #334155 !important;
+        font-size: 12px;
+        margin: 0;
+        line-height: 1.4;
+        font-weight: 500;
+    }
 
-        .drawer-closed {
-            opacity: 0;
-            pointer-events: none;
-            transform: scale(0.98);
-        }
-        .drawer-open {
-            opacity: 1;
-            pointer-events: auto;
-            transform: scale(1);
-        }
+    .pricing-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
 
-        /* Top App Bar */
-        .drawer-header {
-            padding: 16px 24px;
-            background-color: rgba(11, 15, 25, 0.95);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-shrink: 0;
-            backdrop-filter: blur(10px);
-        }
-        .header-title-box {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .bot-icon-badge {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            background-color: rgba(251, 191, 36, 0.15);
-            border: 1px solid rgba(251, 191, 36, 0.3);
-            color: #fbbf24;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        .header-heading {
-            font-size: 15px;
-            font-weight: 700;
-            color: #ffffff;
-            margin: 0;
-            letter-spacing: -0.2px;
-        }
-        .header-sub {
-            font-size: 12px;
-            color: #94a3b8;
-            margin: 2px 0 0 0;
-            font-weight: 400;
-        }
-        .btn-close-drawer {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #94a3b8;
-            cursor: pointer;
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-        .btn-close-drawer:hover {
-            color: #ffffff;
-            background-color: rgba(255, 255, 255, 0.12);
-        }
+    .pricing-card {
+        background: #111827;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 14px;
+        padding: 14px 14px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        box-shadow: 0 6px 16px -4px rgba(0,0,0,0.5);
+        color: #ffffff;
+    }
 
-        /* Chat Feed (Centered Max Width Container) */
-        .messages-container {
-            flex-grow: 1;
-            padding: 24px 16px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
+    .pricing-card.featured {
+        background: linear-gradient(145deg, #172033 0%, #0b0f19 100%);
+        border: 2px solid #fbbf24;
+        box-shadow: 0 8px 20px -4px rgba(251, 191, 36, 0.15);
+    }
+
+    .popular-badge {
+        position: absolute;
+        top: -9px;
+        right: 14px;
+        background: #fbbf24;
+        color: #0b0f19;
+        font-size: 8px;
+        font-weight: 800;
+        text-transform: uppercase;
+        padding: 2px 7px;
+        border-radius: 9999px;
+        letter-spacing: 0.5px;
+    }
+
+    .card-title-row h3 {
+        font-size: 15px;
+        font-weight: 700;
+        margin: 0 0 8px 0;
+        color: #ffffff;
+    }
+
+    .pro-pricing-options {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .price-tier-block {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 9px 10px;
+    }
+
+    .trial-block {
+        border-color: rgba(56, 189, 248, 0.4);
+        background: rgba(56, 189, 248, 0.05);
+    }
+
+    .price-amount {
+        font-size: 21px;
+        font-weight: 800;
+        color: #ffffff;
+        letter-spacing: -0.5px;
+    }
+
+    .price-period {
+        font-size: 11px;
+        color: #cbd5e1;
+        font-weight: normal;
+    }
+
+    .price-subtext {
+        font-size: 11px;
+        color: #cbd5e1;
+        margin: 1px 0 6px 0;
+    }
+
+    .price-divider {
+        text-align: center;
+        position: relative;
+        margin: 1px 0;
+    }
+
+    .price-divider span {
+        background: #111827;
+        padding: 0 6px;
+        font-size: 9px;
+        font-weight: 700;
+        color: #94a3b8;
+        position: relative;
+        z-index: 1;
+    }
+
+    .price-divider::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.12);
+    }
+
+    .price-display {
+        margin-bottom: 2px;
+    }
+
+    .card-desc {
+        color: #f1f5f9;
+        font-size: 12px;
+        line-height: 1.4;
+        margin: 0;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        padding-top: 8px;
+    }
+
+    .btn-pricing {
+        width: 100%;
+        padding: 8px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 12px;
+        cursor: pointer;
+        text-align: center;
+        border: none;
+        transition: transform 0.1s ease;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-pricing:active {
+        transform: scale(0.98);
+    }
+
+    .btn-pro {
+        background: #374151;
+        color: #ffffff;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .btn-trial {
+        background: #0284c7;
+        color: #ffffff;
+    }
+
+    .btn-elite {
+        background: #fbbf24;
+        color: #0b0f19;
+        font-weight: 800;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(251, 191, 36, 0.3);
+        margin-top: 12px;
+    }
+
+    .topup-container {
+        background: #111827;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 14px;
+        padding: 14px 12px;
+        text-align: center;
+        color: #ffffff;
+    }
+
+    .topup-container h3 {
+        font-size: 14px;
+        font-weight: 700;
+        margin: 0 0 2px 0;
+        color: #ffffff;
+    }
+
+    .topup-sub {
+        color: #cbd5e1;
+        font-size: 11px;
+        margin: 0 0 10px 0;
+    }
+
+    .topup-options {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .btn-topup {
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.15);
+        color: #ffffff;
+        padding: 9px 12px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 12px;
+        cursor: pointer;
+        width: 100%;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .topup-price {
+        color: #38bdf8;
+        margin-left: 4px;
+        font-weight: 700;
+    }
+
+    /* Desktop View */
+    @media (min-width: 768px) {
+        .cvforge-pricing-wrapper {
+            padding: 36px 16px;
+            max-width: 960px;
+        }
+        .pricing-header {
+            margin-bottom: 32px;
+        }
+        .pricing-title {
+            font-size: 32px;
+        }
+        .pricing-subtitle {
+            font-size: 14px;
+        }
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: 20px;
-            font-size: 14px;
-            max-width: 760px;
-            width: 100%;
-            margin: 0 auto;
+            margin-bottom: 20px;
         }
-        .msg-row {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
+        .pricing-card {
+            padding: 22px;
         }
-        .user-row {
-            justify-content: flex-end;
+        .topup-container {
+            padding: 22px;
         }
-        .bot-row {
-            justify-content: flex-start;
-        }
-        .msg-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 10px;
-            background-color: rgba(251, 191, 36, 0.15);
-            color: #fbbf24;
-            display: flex;
-            align-items: center;
+        .topup-options {
+            flex-direction: row;
             justify-content: center;
-            flex-shrink: 0;
-            margin-top: 2px;
+            gap: 10px;
         }
-        .msg-bubble {
-            padding: 14px 18px;
-            border-radius: 18px;
-            max-width: 85%;
-            line-height: 1.6;
-            word-break: break-word;
-            font-size: 14px;
-            position: relative;
+        .btn-topup {
+            width: auto;
+            padding: 10px 18px;
         }
-        .bot-bubble {
-            background-color: #172033;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: #e2e8f0;
-            border-top-left-radius: 4px;
-            display: flex;
-            flex-direction: column;
-        }
-        .user-bubble {
-            background-color: #059669;
-            color: #ffffff;
-            border-top-right-radius: 4px;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        /* Action Bar inside Messages */
-        .msg-actions {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 8px;
-            padding-top: 4px;
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
-            justify-content: flex-end;
-        }
-
-        .msg-btn-action {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: #ffffff;
-            font-size: 11px;
-            cursor: pointer;
-            padding: 4px 10px;
-            border-radius: 4px;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            transition: background 0.2s;
-        }
-        .msg-btn-action:hover {
-            background: rgba(255, 255, 255, 0.25);
-        }
-
-        .error-bubble {
-            background-color: #172033;
-            border: 1px solid rgba(239, 68, 68, 0.4);
-            color: #fca5a5;
-            border-top-left-radius: 4px;
-        }
-
-        /* Loading Spinner */
-        .typing-spinner {
-            display: inline-block;
-            width: 14px;
-            height: 14px;
-            border: 2px solid rgba(251, 191, 36, 0.3);
-            border-top-color: #fbbf24;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Bottom Footer / Input Bar Container with Safe Area Padding */
-        .drawer-footer {
-            padding: 12px 16px;
-            padding-bottom: max(20px, env(safe-area-inset-bottom));
-            background-color: rgba(11, 15, 25, 0.95);
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
-            flex-shrink: 0;
-            display: flex;
-            justify-content: center;
-            backdrop-filter: blur(10px);
-        }
-        .input-wrapper {
-            max-width: 760px;
-            width: 100%;
-        }
-        .chat-form {
-            display: flex;
-            align-items: flex-end;
-            background-color: #172033;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 24px;
-            padding: 8px 10px 8px 12px;
-            gap: 6px;
-            transition: border-color 0.2s;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-            flex-wrap: nowrap;
-        }
-        .chat-form:focus-within {
-            border-color: #fbbf24;
-        }
-        .btn-attachment, .btn-mic {
-            background: none;
-            border: none;
-            color: #94a3b8;
-            cursor: pointer;
-            padding: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: color 0.2s, background 0.2s;
-            flex-shrink: 0;
-            margin-bottom: 2px;
-        }
-        .btn-attachment:hover, .btn-mic:hover {
-            color: #ffffff;
-            background-color: rgba(255, 255, 255, 0.06);
-        }
-        .recording-active {
-            color: #ef4444 !important;
-            animation: pulse-red 1.5s infinite;
-        }
-        @keyframes pulse-red {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.15); color: #f87171; }
-            100% { transform: scale(1); }
-        }
-        #globalChatInput {
-            flex-grow: 1;
-            min-width: 60px;
-            max-height: 120px;
-            resize: none;
-            background: none;
-            border: none;
-            padding: 8px 4px;
-            font-size: 14px;
-            font-family: inherit;
-            color: #f8fafc;
-            outline: none;
-            line-height: 1.4;
-        }
-        #globalChatInput::placeholder {
-            color: #64748b;
-        }
-        .btn-send {
-            background-color: #3b82f6;
-            color: #ffffff;
-            border: none;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s, transform 0.1s;
-            flex-shrink: 0;
-            margin-bottom: 2px;
-        }
-        .btn-send:hover {
-            background-color: #2563eb;
-            transform: scale(1.05);
-        }
-        .btn-send:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-    </style>
-
-    <script>
-        let currentAttachedFile = null;
-        let speechRecognitionInstance = null;
-        let isRecordingVoice = false;
-
-        function toggleAiChatDrawer() {
-            const drawer = document.getElementById('aiChatDrawer');
-            if (drawer) {
-                if (drawer.classList.contains('drawer-closed')) {
-                    drawer.classList.remove('drawer-closed');
-                    drawer.classList.add('drawer-open');
-                    document.getElementById('globalChatInput')?.focus();
-                } else {
-                    drawer.classList.remove('drawer-open');
-                    drawer.classList.add('drawer-closed');
-                    stopAiSpeech();
-                }
-            }
-        }
-
-        function autoResizeTextarea(textarea) {
-            textarea.style.height = 'auto';
-            textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
-        }
-
-        function handleFileSelected(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            currentAttachedFile = file;
-            
-            const previewEl = document.getElementById('attachedFilePreview');
-            const nameEl = document.getElementById('attachedFileName');
-            if (previewEl && nameEl) {
-                nameEl.textContent = file.name;
-                previewEl.style.display = 'flex';
-            }
-        }
-
-        function clearAttachedFile() {
-            currentAttachedFile = null;
-            const fileInput = document.getElementById('globalChatFileInput');
-            if (fileInput) fileInput.value = '';
-            const previewEl = document.getElementById('attachedFilePreview');
-            if (previewEl) previewEl.style.display = 'none';
-        }
-
-        function speakAiResponse(text) {
-            if (!('speechSynthesis' in window)) return;
-            const cleanText = text.replace(/[*_#`[\]()]/g, '');
-            window.speechSynthesis.cancel();
-            
-            const utterance = new SpeechSynthesisUtterance(cleanText);
-            utterance.lang = window.CVForgeLanguage ? window.CVForgeLanguage.code : 'en';
-            utterance.rate = 1.0;
-            utterance.pitch = 1.0;
-
-            const stopBtn = document.getElementById('btnStopSpeech');
-
-            utterance.onstart = () => {
-                if (stopBtn) stopBtn.style.display = 'flex';
-            };
-
-            utterance.onend = () => {
-                if (stopBtn) stopBtn.style.display = 'none';
-            };
-
-            utterance.onerror = () => {
-                if (stopBtn) stopBtn.style.display = 'none';
-            };
-
-            setTimeout(() => {
-                window.speechSynthesis.speak(utterance);
-            }, 100);
-        }
-
-        function stopAiSpeech() {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-            }
-            const stopBtn = document.getElementById('btnStopSpeech');
-            if (stopBtn) stopBtn.style.display = 'none';
-        }
-
-        function toggleVoiceRecording() {
-            const micBtn = document.getElementById('btnVoiceRecord');
-            const inputField = document.getElementById('globalChatInput');
-
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                alert("Speech recognition is not supported in this browser. Try Chrome or Safari.");
-                return;
-            }
-
-            if (isRecordingVoice) {
-                if (speechRecognitionInstance) {
-                    speechRecognitionInstance.stop();
-                }
-                return;
-            }
-
-            speechRecognitionInstance = new SpeechRecognition();
-            speechRecognitionInstance.lang = window.CVForgeLanguage ? window.CVForgeLanguage.code : 'en';
-            speechRecognitionInstance.interimResults = true;
-            speechRecognitionInstance.continuous = false;
-
-            speechRecognitionInstance.onstart = () => {
-                isRecordingVoice = true;
-                micBtn.classList.add('recording-active');
-                inputField.placeholder = "{{ t_deal('listening') }}";
-            };
-
-            speechRecognitionInstance.onresult = (event) => {
-                let transcript = '';
-                for (let i = event.resultIndex; i < event.results.length; i++) {
-                    transcript += event.results[i][0].transcript;
-                }
-                inputField.value = transcript;
-                autoResizeTextarea(inputField);
-            };
-
-            speechRecognitionInstance.onerror = (event) => {
-                console.error("Speech recognition error", event.error);
-                stopVoiceRecordingState();
-            };
-
-            speechRecognitionInstance.onend = () => {
-                stopVoiceRecordingState();
-            };
-
-            speechRecognitionInstance.start();
-        }
-
-        function stopVoiceRecordingState() {
-            isRecordingVoice = false;
-            const micBtn = document.getElementById('btnVoiceRecord');
-            const inputField = document.getElementById('globalChatInput');
-            if (micBtn) micBtn.classList.remove('recording-active');
-            if (inputField) inputField.placeholder = "{{ t_deal('input_placeholder') }}";
-        }
-
-        function copyUserMessage(btnElement, textToCopy) {
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                const originalText = btnElement.innerText;
-                btnElement.innerText = "{{ t_deal('copied') }}";
-                setTimeout(() => {
-                    btnElement.innerText = originalText;
-                }, 1800);
-            }).catch(err => {
-                console.error("Failed to copy message:", err);
-            });
-        }
-
-        function editUserMessage(rowId, textToEdit) {
-            const inputField = document.getElementById('globalChatInput');
-            if (inputField) {
-                inputField.value = textToEdit;
-                inputField.focus();
-                autoResizeTextarea(inputField);
-            }
-            document.getElementById(rowId)?.remove();
-        }
-
-        function escapeHtml(str) {
-            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-        }
-
-        async function handleGlobalSendMessage(e) {
-            e.preventDefault();
-            const input = document.getElementById('globalChatInput');
-            let message = input.value.trim();
-            if (!message && !currentAttachedFile) return;
-
-            const messagesContainer = document.getElementById('globalChatMessages');
-            const sendBtn = document.getElementById('btnSendGlobalChat');
-
-            const msgRowId = 'user-msg-' + Date.now();
-
-            let displayContent = escapeHtml(message).replace(/\n/g, '<br>');
-            if (currentAttachedFile) {
-                displayContent += `<br><span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; background:rgba(255,255,255,0.15); padding:2px 6px; border-radius:4px; margin-top:4px;">📎 ${escapeHtml(currentAttachedFile.name)}</span>`;
-            }
-
-            const rawTextForJs = message.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-
-            messagesContainer.innerHTML += `
-                <div id="${msgRowId}" class="msg-row user-row">
-                    <div class="msg-bubble user-bubble">
-                        <div style="white-space: pre-wrap;">${displayContent}</div>
-                        <div class="msg-actions">
-                            <button type="button" class="msg-btn-action" onclick="copyUserMessage(this, '${rawTextForJs}')" title="Copy text">
-                                📋 {{ t_deal('copy') }}
-                            </button>
-                            <button type="button" class="msg-btn-action" onclick="editUserMessage('${msgRowId}', '${rawTextForJs}')" title="Edit message">
-                                ✏️ {{ t_deal('edit') }}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            let payloadMessage = message;
-            if (currentAttachedFile) {
-                payloadMessage = `[Attached File: ${currentAttachedFile.name}] ${message}`;
-            }
-
-            input.value = '';
-            input.style.height = 'auto';
-            clearAttachedFile();
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-            const loadingId = 'loading-' + Date.now();
-            messagesContainer.innerHTML += `
-                <div id="${loadingId}" class="msg-row bot-row">
-                    <div class="msg-avatar">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="11" width="18" height="10" rx="2"></rect>
-                            <path d="M12 7v4"></path>
-                        </svg>
-                    </div>
-                    <div class="msg-bubble bot-bubble" style="display: flex; align-items: center; gap: 10px; color: #94a3b8;">
-                        <span class="typing-spinner"></span> {{ t_deal('thinking') }}
-                    </div>
-                </div>
-            `;
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            sendBtn.disabled = true;
-
-            try {
-                const response = await fetch('/api/v1/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: payloadMessage })
-                });
-                const data = await response.json();
-                document.getElementById(loadingId)?.remove();
-
-                if (response.ok && data.reply) {
-                    const cleanReplyForJs = data.reply.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ');
-                    messagesContainer.innerHTML += `
-                        <div class="msg-row bot-row">
-                            <div class="msg-avatar">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="3" y="11" width="18" height="10" rx="2"></rect>
-                                    <path d="M12 7v4"></path>
-                                </svg>
-                            </div>
-                            <div class="msg-bubble bot-bubble">
-                                <div style="white-space: pre-wrap;">${escapeHtml(data.reply)}</div>
-                                <div class="msg-actions">
-                                    <button type="button" class="msg-btn-action" onclick="speakAiResponse('${cleanReplyForJs}')" title="Listen to response">
-                                        🔊 {{ t_deal('listen') }}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    speakAiResponse(data.reply);
-                } else {
-                    const errorText = (window.CVForgeTranslations && window.CVForgeTranslations.default_error) || data.error || '{{ t_deal('default_error') }}';
-                    messagesContainer.innerHTML += `
-                        <div class="msg-row bot-row">
-                            <div class="msg-bubble error-bubble">
-                                ${escapeHtml(errorText)}
-                            </div>
-                        </div>
-                    `;
-                    speakAiResponse(errorText);
-                }
-            } catch (err) {
-                document.getElementById(loadingId)?.remove();
-                const networkError = (window.CVForgeTranslations && window.CVForgeTranslations.network_error) || '{{ t_deal('network_error') }}';
-                messagesContainer.innerHTML += `
-                    <div class="msg-row bot-row">
-                        <div class="msg-bubble error-bubble">
-                            ${networkError}
-                        </div>
-                    </div>
-                `;
-                speakAiResponse(networkError);
-            } finally {
-                sendBtn.disabled = false;
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }
-        }
-    </script>
-
-</body>
-</html>
+    }
+</style>
+{% endblock %}
