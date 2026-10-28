@@ -190,37 +190,37 @@
                     <div class="space-y-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('resume_title') }}</label>
-                            <input type="text" name="title" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="{{ t('untitled_resume') }}" value="{{ resume.title if resume else '' }}" required class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
+                            <input type="text" name="title" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="{{ t('ph_resume_title') }}" value="{{ resume.title if resume else '' }}" required class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('job_title') }}</label>
-                                <input type="text" name="target_role" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. Vice President of Marketing / Senior Software Engineer" value="{{ resume.content_json.target_role if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
+                                <input type="text" name="target_role" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="{{ t('ph_target_role') }}" value="{{ resume.content_json.target_role if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('full_name') }}</label>
-                                <input type="text" name="full_name" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. Alex Morgan" value="{{ resume.content_json.full_name if resume and resume.content_json else '' }}" required class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
+                                <input type="text" name="full_name" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="{{ t('ph_full_name') }}" value="{{ resume.content_json.full_name if resume and resume.content_json else '' }}" required class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('email') }}</label>
-                                <input type="email" name="email" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. alex.morgan@example.com" value="{{ resume.content_json.email if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
+                                <input type="email" name="email" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="{{ t('ph_email') }}" value="{{ resume.content_json.email if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('phone') }}</label>
-                                <input type="tel" name="phone" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. +1 (555) 019-2834" value="{{ resume.content_json.phone if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
+                                <input type="tel" name="phone" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="{{ t('ph_phone') }}" value="{{ resume.content_json.phone if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('location') }}</label>
-                                <input type="text" name="location" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. New York, NY, USA" value="{{ resume.content_json.location if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
+                                <input type="text" name="location" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="{{ t('ph_location') }}" value="{{ resume.content_json.location if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('linkedin') }}</label>
-                                <input type="url" name="linkedin" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. https://linkedin.com/in/alexmorgan" value="{{ resume.content_json.linkedin if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
+                                <input type="url" name="linkedin" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="{{ t('ph_linkedin') }}" value="{{ resume.content_json.linkedin if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                             </div>
                             <div class="sm:col-span-2">
                                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('website') }}</label>
-                                <input type="url" name="portfolio" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. https://alexmorgan.com" value="{{ resume.content_json.portfolio if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
+                                <input type="url" name="portfolio" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="{{ t('ph_portfolio') }}" value="{{ resume.content_json.portfolio if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                             </div>
                         </div>
                     </div>
@@ -242,7 +242,7 @@
                             <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i> {{ t('generate_summary') }}
                         </button>
                     </div>
-                    <textarea id="summaryText" name="summary" rows="3" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="Write a brief 3-4 sentence overview of your professional background..." class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm leading-relaxed">{{ resume.content_json.summary if resume and resume.content_json else '' }}</textarea>
+                    <textarea id="summaryText" name="summary" rows="3" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="{{ t('ph_summary') }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm leading-relaxed">{{ resume.content_json.summary if resume and resume.content_json else '' }}</textarea>
                 </div>
 
                 <!-- SECTION 3: WORK EXPERIENCE WITH AI ASSIST -->
@@ -266,24 +266,24 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('company') }}</label>
-                                <input type="text" name="company" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. Deloitte / Google" value="{{ resume.content_json.company if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
+                                <input type="text" name="company" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="{{ t('ph_company') }}" value="{{ resume.content_json.company if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('position') }}</label>
-                                <input type="text" name="job_title" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. Senior Financial Analyst" value="{{ resume.content_json.job_title if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
+                                <input type="text" name="job_title" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="{{ t('ph_job_title') }}" value="{{ resume.content_json.job_title if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('location') }}</label>
-                                <input type="text" name="job_location" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. Chicago, IL, USA" value="{{ resume.content_json.job_location if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
+                                <input type="text" name="job_location" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="{{ t('ph_job_location') }}" value="{{ resume.content_json.job_location if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('start_date') }}</label>
-                                <input type="text" name="job_dates" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. Jan 2022 - Present" value="{{ resume.content_json.job_dates if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
+                                <input type="text" name="job_dates" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="{{ t('ph_job_dates') }}" value="{{ resume.content_json.job_dates if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                             </div>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('responsibilities') }}</label>
-                            <textarea id="experienceBulletsText" name="experience_bullets" rows="4" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="- Spearheaded cross-functional initiative that increased revenue by 18%" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm leading-relaxed">{{ resume.content_json.experience_bullets if resume and resume.content_json else '' }}</textarea>
+                            <textarea id="experienceBulletsText" name="experience_bullets" rows="4" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="{{ t('ph_experience_bullets') }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm leading-relaxed">{{ resume.content_json.experience_bullets if resume and resume.content_json else '' }}</textarea>
                         </div>
                     </div>
                 </div>
@@ -303,19 +303,19 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('degree') }}</label>
-                            <input type="text" name="education_degree" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. B.S. in Business Administration" value="{{ resume.content_json.education_degree if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
+                            <input type="text" name="education_degree" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="{{ t('ph_education_degree') }}" value="{{ resume.content_json.education_degree if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('school') }}</label>
-                            <input type="text" name="education_school" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. Harvard University, Cambridge, MA" value="{{ resume.content_json.education_school if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
+                            <input type="text" name="education_school" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="{{ t('ph_education_school') }}" value="{{ resume.content_json.education_school if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('graduation_date') }}</label>
-                            <input type="text" name="education_dates" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. May 2021" value="{{ resume.content_json.education_dates if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
+                            <input type="text" name="education_dates" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="{{ t('ph_education_dates') }}" value="{{ resume.content_json.education_dates if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('awards') }}</label>
-                            <input type="text" name="education_honors" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. Magna Cum Laude" value="{{ resume.content_json.education_honors if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
+                            <input type="text" name="education_honors" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="{{ t('ph_education_honors') }}" value="{{ resume.content_json.education_honors if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                         </div>
                     </div>
                 </div>
@@ -340,15 +340,15 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('skills') }}</label>
-                            <input id="skillsTechText" type="text" name="skills_tech" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. Python, Financial Modeling, SQL" value="{{ resume.content_json.skills_tech if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
+                            <input id="skillsTechText" type="text" name="skills_tech" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="{{ t('ph_skills_tech') }}" value="{{ resume.content_json.skills_tech if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('additional_info') }}</label>
-                            <input type="text" name="skills_soft" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. Cross-Functional Leadership, Strategic Planning" value="{{ resume.content_json.skills_soft if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
+                            <input type="text" name="skills_soft" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="{{ t('ph_skills_soft') }}" value="{{ resume.content_json.skills_soft if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                         </div>
                         <div class="sm:col-span-2">
                             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('certifications') }}</label>
-                            <input type="text" name="certifications" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. PMP, AWS Certified Solutions Architect" value="{{ resume.content_json.certifications if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
+                            <input type="text" name="certifications" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="{{ t('ph_certifications') }}" value="{{ resume.content_json.certifications if resume and resume.content_json else '' }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm">
                         </div>
                     </div>
                 </div>
@@ -373,11 +373,11 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('projects') }}</label>
-                            <textarea id="projectsText" name="projects" rows="3" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. Global Supply Chain Audit..." class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm leading-relaxed">{{ resume.content_json.projects if resume and resume.content_json else '' }}</textarea>
+                            <textarea id="projectsText" name="projects" rows="3" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="{{ t('ph_projects') }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm leading-relaxed">{{ resume.content_json.projects if resume and resume.content_json else '' }}</textarea>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">{{ t('languages') }}</label>
-                            <textarea name="languages" rows="3" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="e.g. English (Native), Spanish (Professional)" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm leading-relaxed">{{ resume.content_json.languages if resume and resume.content_json else '' }}</textarea>
+                            <textarea name="languages" rows="3" onfocus="zoomOutField(this)" oninput="zoomOutField(this)" onblur="zoomInField(this)" placeholder="{{ t('ph_languages') }}" class="input-forge w-full px-4 py-3.5 rounded-xl border border-slate-300 text-slate-900 bg-slate-50/50 text-sm leading-relaxed">{{ resume.content_json.languages if resume and resume.content_json else '' }}</textarea>
                         </div>
                     </div>
                 </div>
