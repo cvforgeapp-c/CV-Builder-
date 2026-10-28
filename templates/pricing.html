@@ -3,11 +3,16 @@
 <!-- ============================================================ -->
 <div class="cvforge-pricing-wrapper">
     
-    <!-- Section Heading -->
+    <!-- Section Heading (Upgraded for High Visibility & Professional UX) -->
     <div class="pricing-header">
-        <span class="pricing-badge">Investment in Your Career</span>
+        <div class="pricing-badge-wrapper">
+            <span class="pricing-badge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 4px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                Investment in Your Career
+            </span>
+        </div>
         <h2 class="pricing-title">Accelerate Your Job Search with AI</h2>
-        <p class="pricing-subtitle">Choose the plan that matches your career momentum or pick a short-term trial pass.</p>
+        <p class="pricing-subtitle">Choose the plan that matches your career momentum or pick a short-term trial pass to unlock full access.</p>
     </div>
 
     <!-- Pricing Grid -->
@@ -99,36 +104,50 @@
         box-sizing: border-box;
     }
 
+    /* Upgraded Header Styles with Enhanced Visibility */
     .pricing-header {
         text-align: center;
-        margin-bottom: 28px;
+        max-width: 680px;
+        margin: 0 auto 36px auto;
+        padding: 0 16px;
+    }
+
+    .pricing-badge-wrapper {
+        display: inline-block;
+        margin-bottom: 12px;
     }
 
     .pricing-badge {
-        background: rgba(59, 130, 246, 0.15);
-        color: #38bdf8;
-        border: 1px solid rgba(59, 130, 246, 0.3);
-        padding: 5px 12px;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(147, 51, 234, 0.2) 100%);
+        color: #60a5fa;
+        border: 1px solid rgba(59, 130, 246, 0.4);
+        padding: 6px 14px;
         border-radius: 9999px;
         font-size: 11px;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.8px;
+        display: inline-flex;
+        align-items: center;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
     }
 
     .pricing-title {
-        font-size: 22px;
+        font-size: 26px;
         font-weight: 800;
-        margin: 12px 0 8px 0;
-        letter-spacing: -0.3px;
+        margin: 0 0 10px 0;
+        letter-spacing: -0.5px;
         color: #ffffff;
+        line-height: 1.25;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
 
     .pricing-subtitle {
-        color: #94a3b8;
-        font-size: 13px;
+        color: #cbd5e1;
+        font-size: 14px;
         margin: 0;
-        line-height: 1.5;
+        line-height: 1.6;
+        font-weight: 400;
     }
 
     .pricing-grid {
@@ -342,8 +361,14 @@
         .cvforge-pricing-wrapper {
             padding: 60px 24px;
         }
+        .pricing-header {
+            margin-bottom: 52px;
+        }
         .pricing-title {
-            font-size: 36px;
+            font-size: 40px;
+        }
+        .pricing-subtitle {
+            font-size: 16px;
         }
         .pricing-grid {
             display: grid;
