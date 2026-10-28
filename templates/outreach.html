@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ t_deal('AI Cold Outreach & Networking Generator') }} — CVForge Pro{% endblock %}
+{% block title %}{{ t_deal('outreach_page_title') }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -491,21 +491,21 @@
 <header class="outreach-header">
     <div style="display: flex; align-items: center;">
         <a href="/" class="brand-title">
-            <span>CVForge</span>
+            <span>{{ t_deal('outreach_brand_name') }}</span>
         </a>
-        <span class="badge-pro">{{ t_deal('PRO SUITE') }}</span>
+        <span class="badge-pro">{{ t_deal('outreach_badge_pro') }}</span>
     </div>
     <div>
         <a href="/dashboard" style="text-decoration: none; color: var(--text-secondary); font-size: 13px; font-weight: 700;">
-            {{ t_deal('← Back to Dashboard') }}
+            {{ t_deal('outreach_back_dashboard') }}
         </a>
     </div>
 </header>
 
 <div class="outreach-container">
     <div class="page-heading">
-        <h1>{{ t_deal('Direct Cold Outreach & Networking Generator') }}</h1>
-        <p>{{ t_deal('Bypass the job portal black hole. Generate hyper-personalized LinkedIn connection notes, cold emails to hiring managers, and referral request templates.') }}</p>
+        <h1>{{ t_deal('outreach_main_title') }}</h1>
+        <p>{{ t_deal('outreach_main_subtitle') }}</p>
     </div>
 
     <div class="outreach-workspace">
@@ -513,20 +513,20 @@
         <!-- LEFT PANEL: INPUT FORM -->
         <div class="panel-card">
             <div class="panel-title">
-                <span class="step-badge">{{ t_deal('1. TARGET SETUP') }}</span>
-                <span>{{ t_deal('Outreach Parameters') }}</span>
+                <span class="step-badge">{{ t_deal('outreach_step_setup') }}</span>
+                <span>{{ t_deal('outreach_parameters_title') }}</span>
             </div>
 
             <form id="outreachForm" enctype="multipart/form-data">
                 
                 <div class="form-group">
-                    <label>{{ t_deal('Resume Source Profile') }}</label>
+                    <label>{{ t_deal('outreach_label_resume_source') }}</label>
                     <div class="source-segmented-control">
                         <button type="button" class="segment-btn active" id="btnSourceSaved" onclick="setResumeSource('saved')">
-                            📁 {{ t_deal('Saved Profile') }}
+                            📁 {{ t_deal('outreach_source_saved') }}
                         </button>
                         <button type="button" class="segment-btn" id="btnSourceUpload" onclick="setResumeSource('upload')">
-                            📱 {{ t_deal('Upload Local File') }}
+                            📱 {{ t_deal('outreach_source_upload') }}
                         </button>
                     </div>
 
@@ -535,7 +535,7 @@
                     <!-- Saved Resumes Dropdown -->
                     <div id="savedResumeContainer">
                         <select id="resumeSelect" name="resume_id" required>
-                            <option value="">{{ t_deal('-- Choose from saved profiles --') }}</option>
+                            <option value="">{{ t_deal('outreach_choose_profile') }}</option>
                             {% for resume in resumes %}
                                 <option value="{{ resume.id }}">{{ resume.title }}</option>
                             {% endfor %}
@@ -547,8 +547,8 @@
                         <div class="dropzone-box" id="dropzone" onclick="document.getElementById('resumeFile').click()">
                             <div id="dropzoneContent">
                                 <div class="dropzone-icon">📄</div>
-                                <div class="dropzone-text">{{ t_deal('Tap to select or drop resume file') }}</div>
-                                <div class="dropzone-subtext">{{ t_deal('PDF, DOC, or DOCX (Max 10MB)') }}</div>
+                                <div class="dropzone-text">{{ t_deal('outreach_dropzone_text') }}</div>
+                                <div class="dropzone-subtext">{{ t_deal('outreach_dropzone_subtext') }}</div>
                             </div>
                             <div class="file-badge" id="fileBadge" style="display: none;">
                                 <span id="fileNameDisplay" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">file.pdf</span>
@@ -561,52 +561,52 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>{{ t_deal('Target Company') }}</label>
-                        <input type="text" id="targetCompany" name="target_company" placeholder="{{ t_deal('e.g. Stripe, Google') }}" required />
+                        <label>{{ t_deal('outreach_label_target_company') }}</label>
+                        <input type="text" id="targetCompany" name="target_company" placeholder="{{ t_deal('outreach_placeholder_company') }}" required />
                     </div>
                     <div class="form-group">
-                        <label>{{ t_deal('Recipient Role') }}</label>
+                        <label>{{ t_deal('outreach_label_recipient_role') }}</label>
                         <select id="recipientRole" name="recipient_role">
-                            <option value="Hiring Manager">{{ t_deal('Hiring Manager') }}</option>
-                            <option value="Technical Recruiter">{{ t_deal('Technical Recruiter') }}</option>
-                            <option value="Team Peer / Engineer">{{ t_deal('Team Peer / Staff') }}</option>
-                            <option value="Company Alumni">{{ t_deal('Alumni / Connection') }}</option>
+                            <option value="Hiring Manager">{{ t_deal('outreach_role_hiring_manager') }}</option>
+                            <option value="Technical Recruiter">{{ t_deal('outreach_role_tech_recruiter') }}</option>
+                            <option value="Team Peer / Engineer">{{ t_deal('outreach_role_peer') }}</option>
+                            <option value="Company Alumni">{{ t_deal('outreach_role_alumni') }}</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>{{ t_deal('Recipient Name (Optional)') }}</label>
-                        <input type="text" id="recipientName" name="recipient_name" placeholder="{{ t_deal('e.g. Sarah Jenkins') }}" />
+                        <label>{{ t_deal('outreach_label_recipient_name') }}</label>
+                        <input type="text" id="recipientName" name="recipient_name" placeholder="{{ t_deal('outreach_placeholder_name') }}" />
                     </div>
                     <div class="form-group">
-                        <label>{{ t_deal('Communication Tone') }}</label>
+                        <label>{{ t_deal('outreach_label_tone') }}</label>
                         <select id="outreachTone" name="tone">
-                            <option value="Confident & Professional">{{ t_deal('Confident & Professional') }}</option>
-                            <option value="Direct & Concise">{{ t_deal('Direct & Concise') }}</option>
-                            <option value="Casual & Conversational">{{ t_deal('Casual & Conversational') }}</option>
+                            <option value="Confident & Professional">{{ t_deal('outreach_tone_confident') }}</option>
+                            <option value="Direct & Concise">{{ t_deal('outreach_tone_direct') }}</option>
+                            <option value="Casual & Conversational">{{ t_deal('outreach_tone_casual') }}</option>
                         </select>
                     </div>
                 </div>
 
                 <!-- TARGET ROLE / JOB CONTEXT WITH INTEGRATED FETCH URL -->
                 <div class="form-group">
-                    <label>{{ t_deal('Target Role or Job Context (Optional)') }}</label>
+                    <label>{{ t_deal('outreach_label_job_context') }}</label>
                     <div class="input-with-action">
-                        <input type="url" id="jobUrl" name="job_url" placeholder="{{ t_deal('Paste job URL to auto-fetch...') }}" />
+                        <input type="url" id="jobUrl" name="job_url" placeholder="{{ t_deal('outreach_placeholder_url') }}" />
                         <button type="button" class="btn-action-inline" id="fetchJobBtn" onclick="fetchJobContext()">
                             <div class="spinner-dark" id="fetchSpinner"></div>
-                            <span id="fetchBtnText">{{ t_deal('✨ Fetch Job') }}</span>
+                            <span id="fetchBtnText">{{ t_deal('outreach_btn_fetch_job') }}</span>
                         </button>
                     </div>
-                    <textarea id="jobContext" name="job_context" rows="3" placeholder="{{ t_deal('Paste position title or key job details to align AI tone...') }}"></textarea>
+                    <textarea id="jobContext" name="job_context" rows="3" placeholder="{{ t_deal('outreach_placeholder_context') }}"></textarea>
                 </div>
 
                 <button type="submit" class="btn-generate" id="generateBtn">
                     <div class="spinner" id="btnSpinner"></div>
                     <span id="btnIcon">🚀</span>
-                    <span id="btnText">{{ t_deal('Generate Outreach Campaign') }}</span>
+                    <span id="btnText">{{ t_deal('outreach_btn_generate') }}</span>
                 </button>
             </form>
         </div>
@@ -614,20 +614,20 @@
         <!-- RIGHT PANEL: GENERATED MESSAGES -->
         <div class="panel-card">
             <div class="panel-title">
-                <span class="step-badge">{{ t_deal('2. LIVE CAMPAIGN') }}</span>
-                <span>{{ t_deal('Tailored Messages') }}</span>
+                <span class="step-badge">{{ t_deal('outreach_step_campaign') }}</span>
+                <span>{{ t_deal('outreach_tailored_messages') }}</span>
             </div>
 
             <!-- TAB NAVIGATION -->
             <div class="tab-nav">
                 <button type="button" class="tab-btn active" onclick="switchTab('linkedin')">
-                    {{ t_deal('🔗 LinkedIn Note') }}
+                    {{ t_deal('outreach_tab_linkedin') }}
                 </button>
                 <button type="button" class="tab-btn" onclick="switchTab('email')">
-                    {{ t_deal('✉️ Cold Email') }}
+                    {{ t_deal('outreach_tab_email') }}
                 </button>
                 <button type="button" class="tab-btn" onclick="switchTab('referral')">
-                    {{ t_deal('🤝 Referral Pitch') }}
+                    {{ t_deal('outreach_tab_referral') }}
                 </button>
             </div>
 
@@ -635,10 +635,10 @@
             <div id="tab-linkedin" class="tab-content">
                 <div class="output-box">
                     <div class="output-header">
-                        <span class="output-title">{{ t_deal('LinkedIn Connection Note (< 300 chars)') }}</span>
-                        <button class="btn-copy" onclick="copyText('linkedinText')">📋 {{ t_deal('Copy') }}</button>
+                        <span class="output-title">{{ t_deal('outreach_linkedin_title') }}</span>
+                        <button class="btn-copy" onclick="copyText('linkedinText')">📋 {{ t_deal('outreach_btn_copy') }}</button>
                     </div>
-                    <div class="output-text" id="linkedinText">{{ t_deal('Select your settings and click generate to build your campaign...') }}</div>
+                    <div class="output-text" id="linkedinText">{{ t_deal('outreach_default_output') }}</div>
                     <div class="char-count" id="linkedinCharCount">0 / 300 chars</div>
                 </div>
             </div>
@@ -647,15 +647,15 @@
             <div id="tab-email" class="tab-content" style="display: none;">
                 <div class="output-box" style="margin-bottom: 12px;">
                     <div class="output-header">
-                        <span class="output-title">{{ t_deal('Subject Line Options') }}</span>
-                        <button class="btn-copy" onclick="copyText('emailSubject')">📋 {{ t_deal('Copy') }}</button>
+                        <span class="output-title">{{ t_deal('outreach_subject_options') }}</span>
+                        <button class="btn-copy" onclick="copyText('emailSubject')">📋 {{ t_deal('outreach_btn_copy') }}</button>
                     </div>
                     <div class="output-text" id="emailSubject" style="min-height: auto; font-weight: 700;">-</div>
                 </div>
                 <div class="output-box">
                     <div class="output-header">
-                        <span class="output-title">{{ t_deal('Email Body') }}</span>
-                        <button class="btn-copy" onclick="copyText('emailBody')">📋 {{ t_deal('Copy') }}</button>
+                        <span class="output-title">{{ t_deal('outreach_email_body') }}</span>
+                        <button class="btn-copy" onclick="copyText('emailBody')">📋 {{ t_deal('outreach_btn_copy') }}</button>
                     </div>
                     <div class="output-text" id="emailBody">-</div>
                 </div>
@@ -665,8 +665,8 @@
             <div id="tab-referral" class="tab-content" style="display: none;">
                 <div class="output-box">
                     <div class="output-header">
-                        <span class="output-title">{{ t_deal('Alumni / Peer Referral Pitch') }}</span>
-                        <button class="btn-copy" onclick="copyText('referralText')">📋 {{ t_deal('Copy') }}</button>
+                        <span class="output-title">{{ t_deal('outreach_referral_title') }}</span>
+                        <button class="btn-copy" onclick="copyText('referralText')">📋 {{ t_deal('outreach_btn_copy') }}</button>
                     </div>
                     <div class="output-text" id="referralText">-</div>
                 </div>
@@ -755,7 +755,7 @@
         const url = urlInput.value.trim();
 
         if (!url) {
-            showToast('Please enter a job URL first', '⚠️');
+            showToast("{{ t_deal('outreach_alert_enter_url') }}", '⚠️');
             return;
         }
 
@@ -765,7 +765,7 @@
 
         fetchBtn.disabled = true;
         fetchSpinner.style.display = 'block';
-        fetchBtnText.textContent = "{{ t_deal('Fetching...') }}";
+        fetchBtnText.textContent = "{{ t_deal('outreach_status_fetching') }}";
 
         try {
             const response = await fetch('/api/v1/premium/scrape-job', {
@@ -776,20 +776,20 @@
 
             const data = await response.json();
 
-            if (!response.ok) throw new Error(data.error || 'Failed to extract job content');
+            if (!response.ok) throw new Error(data.error || "{{ t_deal('outreach_error_scrape_failed') }}");
 
             if (data.job_description) {
                 document.getElementById('jobContext').value = data.job_description;
             }
 
-            showToast('Job context extracted successfully!');
+            showToast("{{ t_deal('outreach_success_scrape') }}");
 
         } catch (err) {
-            showToast(err.message || 'Could not fetch job link', '❌');
+            showToast(err.message || "{{ t_deal('outreach_error_scrape_failed') }}", '❌');
         } finally {
             fetchBtn.disabled = false;
             fetchSpinner.style.display = 'none';
-            fetchBtnText.textContent = "{{ t_deal('✨ Fetch Job') }}";
+            fetchBtnText.textContent = "{{ t_deal('outreach_btn_fetch_job') }}";
         }
     }
 
@@ -797,7 +797,7 @@
         const text = document.getElementById(elementId).innerText;
         if (!text || text === '-' || text.includes('Select your settings')) return;
         navigator.clipboard.writeText(text);
-        showToast("{{ t_deal('Copied to clipboard!') }}");
+        showToast("{{ t_deal('outreach_success_copied') }}");
     }
 
     /* Drag and Drop Handling */
@@ -827,7 +827,7 @@
         if (sourceType === 'upload') {
             const resumeFile = document.getElementById('resumeFile');
             if (!resumeFile.files || !resumeFile.files[0]) {
-                showToast('Please upload a resume file first', '⚠️');
+                showToast("{{ t_deal('outreach_alert_upload_resume') }}", '⚠️');
                 return;
             }
         }
@@ -840,7 +840,7 @@
         btn.disabled = true;
         btnSpinner.style.display = 'block';
         btnIcon.style.display = 'none';
-        btnText.textContent = "{{ t_deal('Generating Campaign...') }}";
+        btnText.textContent = "{{ t_deal('outreach_status_generating') }}";
 
         const formData = new FormData(e.target);
 
@@ -852,7 +852,7 @@
 
             const data = await response.json();
 
-            if (!response.ok) throw new Error(data.error || 'Generation failed');
+            if (!response.ok) throw new Error(data.error || "{{ t_deal('outreach_error_generation_failed') }}");
 
             // Render Output
             document.getElementById('linkedinText').innerText = data.linkedin_note || '';
@@ -863,15 +863,15 @@
             
             document.getElementById('referralText').innerText = data.referral_request || '';
 
-            showToast("{{ t_deal('Outreach campaign generated!') }}");
+            showToast("{{ t_deal('outreach_success_generated') }}");
 
         } catch (err) {
-            showToast(err.message || 'An error occurred', '❌');
+            showToast(err.message || "{{ t_deal('outreach_error_generation_failed') }}", '❌');
         } finally {
             btn.disabled = false;
             btnSpinner.style.display = 'none';
             btnIcon.style.display = 'inline';
-            btnText.textContent = "{{ t_deal('Generate Outreach Campaign') }}";
+            btnText.textContent = "{{ t_deal('outreach_btn_generate') }}";
         }
     });
 </script>
