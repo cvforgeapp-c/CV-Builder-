@@ -1,6 +1,11 @@
 """Common Pathway Aggregator for CVForge Dictionaries (`t_deal`)."""
 
 try:
+    from .ai_assist_chat_dict import AI_ASSIST_CHAT_DICT
+except ImportError:
+    AI_ASSIST_CHAT_DICT = {}
+
+try:
     from .outreach_dict import OUTREACH_DICT
 except ImportError:
     OUTREACH_DICT = {}
@@ -33,11 +38,14 @@ SUPPORTED_LANGUAGES = [
     "Polish",
     "Swedish",
     "Swahili",
+    "Amharic",
+    "Afaan Oromoo",
 ]
 
 TRANSLATIONS = {}
 
 MODULE_DICTIONARIES = [
+    AI_ASSIST_CHAT_DICT,
     OUTREACH_DICT,
     PORTAL_QA_DICT,
     SALARY_DICT,
