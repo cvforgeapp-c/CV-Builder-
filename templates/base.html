@@ -296,8 +296,25 @@
         </div>
     </div>
 
+    <!-- ========================================================== -->
+    <!-- INSUFFICIENT CREDITS MODAL COMPONENT                       -->
+    <!-- ========================================================== -->
+    <div id="creditInsufficiencyModal" style="display: none; position: fixed; inset: 0; z-index: 9999999; background: rgba(11, 15, 25, 0.8); backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 16px;">
+        <div style="background: #172033; border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 16px; max-width: 420px; width: 100%; padding: 24px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);">
+            <div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(239, 68, 68, 0.15); color: #f87171; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            </div>
+            <h3 style="color: #ffffff; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Out of AI Credits</h3>
+            <p id="creditModalMessage" style="color: #94a3b8; font-size: 14px; margin: 0 0 20px 0; line-height: 1.5;">You have used all available AI generation credits. Please top up or upgrade your plan to continue.</p>
+            <div style="display: flex; gap: 10px;">
+                <button type="button" onclick="closeCreditModal()" style="flex: 1; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: #e2e8f0; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer;">Cancel</button>
+                <a id="creditModalActionBtn" href="/pricing#topups" style="flex: 1; background: #3b82f6; border: none; color: #ffffff; padding: 10px 16px; border-radius: 8px; font-weight: 600; text-decoration: none; display: flex; align-items: center; justify-content: center;">Refill Credits</a>
+            </div>
+        </div>
+    </div>
+
     <!-- ============================================================ -->
-    <!-- PADDLE CHECKOUT SCRIPT INTEGRATION                           -->
+    <!-- PADDLE CHECKOUT SCRIPT & CREDIT MODAL HELPERS                -->
     <!-- ============================================================ -->
     <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
     <script>
@@ -329,6 +346,29 @@
             successUrl: window.location.origin + "/dashboard?payment=success"
           }
         });
+      }
+
+      function showCreditModal(customMessage, actionUrl) {
+          const modal = document.getElementById('creditInsufficiencyModal');
+          const msgEl = document.getElementById('creditModalMessage');
+          const btnEl = document.getElementById('creditModalActionBtn');
+
+          if (customMessage && msgEl) {
+              msgEl.textContent = customMessage;
+          }
+          if (actionUrl && btnEl) {
+              btnEl.href = actionUrl;
+          }
+          if (modal) {
+              modal.style.display = 'flex';
+          }
+      }
+
+      function closeCreditModal() {
+          const modal = document.getElementById('creditInsufficiencyModal');
+          if (modal) {
+              modal.style.display = 'none';
+          }
       }
     </script>
 
