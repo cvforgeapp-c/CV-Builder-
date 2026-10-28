@@ -172,8 +172,65 @@ except ImportError:
     MODULAR_TRANSLATIONS = {}
 
 # ============================================================
-# 3. 3RD MODULAR DICTIONARY PATHWAY SETUP (dictionary/dictionary_aggregator.py)
+# 3. 3RD MODULAR DICTIONARY PATHWAY SETUP & FALLBACK DICTIONARY
 # ============================================================
+
+EMERGENCY_OUTREACH_DICT = {
+    'English (US / UK)': {
+        'outreach_page_title': 'AI Cold Outreach & Referral Generator | CVForge Pro',
+        'outreach_brand_name': 'CVForge Pro',
+        'outreach_badge_pro': 'PRO',
+        'outreach_back_dashboard': '← Back to Dashboard',
+        'outreach_main_title': 'AI Cold Outreach & Referral Campaign Generator',
+        'outreach_main_subtitle': 'Generate hyper-personalized, high-converting LinkedIn connection notes, cold emails, and internal referral requests instantly.',
+        'outreach_step_setup': 'STEP 1',
+        'outreach_parameters_title': 'Outreach Parameters & Source',
+        'outreach_label_resume_source': 'Resume Source',
+        'outreach_source_saved': 'Saved Profile',
+        'outreach_source_upload': 'Upload CV',
+        'outreach_choose_profile': 'Select a saved resume profile...',
+        'outreach_dropzone_text': 'Click to upload CV document or drag and drop',
+        'outreach_dropzone_subtext': 'PDF, DOC, DOCX up to 10MB',
+        'outreach_label_target_company': 'Target Company',
+        'outreach_placeholder_company': 'e.g. Google, Stripe, OpenAI',
+        'outreach_label_recipient_role': 'Recipient Role',
+        'outreach_role_hiring_manager': 'Hiring Manager',
+        'outreach_role_tech_recruiter': 'Technical Recruiter',
+        'outreach_role_peer': 'Team Peer / Engineer',
+        'outreach_role_alumni': 'Company Alumni',
+        'outreach_label_recipient_name': "Recipient Name (Optional)",
+        'outreach_placeholder_name': 'e.g. Sarah Jenkins',
+        'outreach_label_tone': 'Outreach Tone',
+        'outreach_tone_confident': 'Confident & Professional',
+        'outreach_tone_direct': 'Direct & Concise',
+        'outreach_tone_casual': 'Casual & Conversational',
+        'outreach_label_job_context': 'Target Job Description / URL Context',
+        'outreach_placeholder_url': 'Paste job posting URL (LinkedIn, Greenhouse...)',
+        'outreach_btn_fetch_job': 'Fetch Job',
+        'outreach_placeholder_context': 'Or paste key job requirements, stack, or responsibilities...',
+        'outreach_btn_generate': 'Generate Outreach Campaign',
+        'outreach_step_campaign': 'STEP 2',
+        'outreach_tailored_messages': 'Tailored Outreach Messages',
+        'outreach_tab_linkedin': '🔗 LinkedIn Note',
+        'outreach_tab_email': '✉️ Cold Email',
+        'outreach_tab_referral': '🤝 Referral Request',
+        'outreach_linkedin_title': 'LinkedIn Connection Note (Under 300 Chars)',
+        'outreach_btn_copy': 'Copy',
+        'outreach_default_output': 'Configure your parameters on the left and click Generate Outreach Campaign to build your tailored messages.',
+        'outreach_subject_options': 'Email Subject Line Options',
+        'outreach_email_body': 'Cold Email Body',
+        'outreach_referral_title': 'Internal Referral / Alumni Request Message',
+        'outreach_alert_enter_url': 'Please enter a valid job URL to fetch.',
+        'outreach_status_fetching': 'Fetching...',
+        'outreach_error_scrape_failed': 'Failed to scrape job description from URL.',
+        'outreach_success_scrape': 'Job description successfully extracted!',
+        'outreach_success_copied': 'Copied to clipboard successfully!',
+        'outreach_alert_upload_resume': 'Please upload a resume file to proceed.',
+        'outreach_status_generating': 'Generating Campaign...',
+        'outreach_error_generation_failed': 'Failed to generate outreach campaign.',
+        'outreach_success_generated': 'Outreach campaign generated successfully!',
+    }
+}
 
 try:
   from dictionary.dictionary_aggregator import (
@@ -194,7 +251,13 @@ except ImportError:
     init_app_dictionary_pathway(premium_app)
   except ImportError:
     def t_deal(key, lang='English (US / UK)', default=None):
-      return str(key)
+      # Safe fallback mechanism checking emergency dict or returning clean capitalized title strings
+      lang_dict = EMERGENCY_OUTREACH_DICT.get(lang, EMERGENCY_OUTREACH_DICT.get('English (US / UK)', {}))
+      if key in lang_dict:
+        return lang_dict[key]
+      # Fallback formatter to prevent uppercase keys rendering visually
+      clean_fallback = key.replace('outreach_', '').replace('_', ' ').title()
+      return default if default is not None else clean_fallback
     DEAL_SUPPORTED_LANGUAGES = []
     DEAL_TRANSLATIONS = {}
 
@@ -363,14 +426,29 @@ def inject_global_translations():
     if not isinstance(key, str):
       return str(key)
     try:
-      return t_deal(key, lang=user_language, default=default)
+      # Try primary t_deal function first
+      res = t_deal(key, lang=user_language, default=default)
+      if res and res != key:
+        return res
+      
+      # Fallback check against emergency dictionary
+      lang_dict = EMERGENCY_OUTREACH_DICT.get(user_language, EMERGENCY_OUTREACH_DICT.get('English (US / UK)', {}))
+      if key in lang_dict:
+        return lang_dict[key]
+
+      if default is not None:
+        return default
+
+      # Final clean UI text transformation instead of raw keys
+      return key.replace('outreach_', '').replace('_', ' ').title()
     except Exception as exc:
       premium_app.logger.warning(
           'Deal translation failed for key %r: %s',
           key,
           type(exc).__name__,
       )
-      return default if default is not None else str(key)
+      lang_dict = EMERGENCY_OUTREACH_DICT.get('English (US / UK)', {})
+      return lang_dict.get(key, key.replace('outreach_', '').replace('_', ' ').title())
 
   try:
     active_dictionary = TRANSLATIONS.get(user_language, {})
