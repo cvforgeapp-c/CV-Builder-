@@ -1,3 +1,5 @@
+"""AI Salary Negotiator & Compensation Suite translations for all supported global languages."""
+
 SALARY_NEGOTIATOR_TRANSLATIONS = {
     "English (US / UK)": {
         "sal_page_title": "AI Salary Negotiator & Compensation Suite — CVForge Pro",
@@ -438,7 +440,7 @@ SALARY_NEGOTIATOR_TRANSLATIONS = {
         "sal_btn_copy_script": "Metni Kopyala",
         "sal_err_failed": "Tazminat paketi değerlendirilemedi.",
         "sal_btn_evaluating": "Paket İnceleniyor...",
-        "sal_btn_copied": "Kopyalandı!"
+        "sal_btn_copied": "Kopylandı!"
     },
 
     "Dutch": {
@@ -645,3 +647,6 @@ SALARY_NEGOTIATOR_TRANSLATIONS = {
         "sal_btn_copied": "Koppii ta'eera!"
     }
 }
+
+# Alias for standard aggregator unpacking
+SALARY_DICT = SALARY_NEGOTIATOR_TRANSLATIONS
