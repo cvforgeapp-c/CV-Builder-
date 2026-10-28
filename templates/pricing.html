@@ -1,3 +1,8 @@
+{% extends "base.html" %}
+
+{% block title %}CVForge — Pricing & AI Plans{% endblock %}
+
+{% block content %}
 <!-- ============================================================ -->
 <!-- CVFORGE RESPONSIVE PRICING & 7-DAY PASS SUITE               -->
 <!-- ============================================================ -->
@@ -90,15 +95,30 @@
     </div>
 
 </div>
+{% endblock %}
 
-<!-- Direct Click Handler for Mobile/Desktop Taps -->
+{% block extra_js %}
+<!-- Fallback Click Handler with Safety Check for Paddle SDK Loading -->
 <script>
   function openPaddleCheckout(priceId) {
     if (!window.Paddle) {
-      alert("Payment gateway is loading. Please try again in a moment.");
+      let attempts = 0;
+      const checkPaddle = setInterval(() => {
+        attempts++;
+        if (window.Paddle) {
+          clearInterval(checkPaddle);
+          executeCheckout(priceId);
+        } else if (attempts > 10) {
+          clearInterval(checkPaddle);
+          alert("Payment gateway is loading. Please check your connection or ad-blocker and try again.");
+        }
+      }, 300);
       return;
     }
-    
+    executeCheckout(priceId);
+  }
+
+  function executeCheckout(priceId) {
     try {
       Paddle.Checkout.open({
         items: [
@@ -119,7 +139,9 @@
     }
   }
 </script>
+{% endblock %}
 
+{% block extra_css %}
 <style>
     .cvforge-pricing-wrapper {
         max-width: 1040px;
@@ -418,3 +440,4 @@
         }
     }
 </style>
+{% endblock %}
