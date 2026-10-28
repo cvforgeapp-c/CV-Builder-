@@ -1,8 +1,19 @@
 """Common Pathway Aggregator for CVForge Dictionaries (`t_deal`)."""
 
-from .outreach_dict import OUTREACH_DICT
-from .portal_qa_dict import PORTAL_QA_DICT
-from .salary_dict import SALARY_DICT
+try:
+    from .outreach_dict import OUTREACH_DICT
+except ImportError:
+    OUTREACH_DICT = {}
+
+try:
+    from .portal_qa_dict import PORTAL_QA_DICT
+except ImportError:
+    PORTAL_QA_DICT = {}
+
+try:
+    from .salary_dict import SALARY_DICT
+except ImportError:
+    SALARY_DICT = {}
 
 SUPPORTED_LANGUAGES = [
     "English (US / UK)",
@@ -33,11 +44,12 @@ MODULE_DICTIONARIES = [
 ]
 
 for package in MODULE_DICTIONARIES:
-    for lang, trans_dict in package.items():
-        if lang not in TRANSLATIONS:
-            TRANSLATIONS[lang] = {}
-        if isinstance(trans_dict, dict):
-            TRANSLATIONS[lang].update(trans_dict)
+    if isinstance(package, dict):
+        for lang, trans_dict in package.items():
+            if lang not in TRANSLATIONS:
+                TRANSLATIONS[lang] = {}
+            if isinstance(trans_dict, dict):
+                TRANSLATIONS[lang].update(trans_dict)
 
 
 def t_deal(key: str, lang: str = "English (US / UK)", default: str = None) -> str:
@@ -55,7 +67,7 @@ def t_deal(key: str, lang: str = "English (US / UK)", default: str = None) -> st
         lang_dict.get(key)
         or fallback_dict.get(key)
         or default
-        or key
+        or key.replace('_', ' ').title()
     )
 
 
@@ -66,10 +78,8 @@ def init_app_dictionary_pathway(app):
 
     @app.context_processor
     def inject_deal_translator():
-        # Check session first, then cookies, then fall back to default
         user_lang = session.get("language") or request.cookies.get("language")
         
-        # If authenticated, check user database profile preferences if session is missing
         if (not user_lang or user_lang not in SUPPORTED_LANGUAGES) and current_user and getattr(current_user, "is_authenticated", False):
             prefs = getattr(current_user, "preferences_json", None) or {}
             if isinstance(prefs, dict):
