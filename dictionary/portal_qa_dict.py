@@ -1,4 +1,6 @@
-PORTAL_QA_TRANSLATIONS = {
+"""AI Application Essay & Portal Q&A Assistant translations for all supported global languages."""
+
+PORTAL_QA_DICT = {
     "English (US / UK)": {
         "portal_qa_title": "AI Application Essay & Portal Q&A Assistant",
         "nav_brand_name": "CVForge",
@@ -135,7 +137,7 @@ PORTAL_QA_TRANSLATIONS = {
         "label_job_title": "Título del Puesto",
         "placeholder_job_title": "ej. Ingeniero de Software, Gerente de Producto",
         "label_prompt_question": "Pregunta de Ensayo / Prompt del Portal",
-        "placeholder_prompt_question": "ej. Describa un momento en que resolvió un conflicto dentro de un equipo multifuncional, o por qué desea unirse a nuestra división de ingeniería.",
+        "placeholder_prompt_question": "ej. Describa un momento en que resolvió un conflicto dentro de un equipo multifuncional, o por qué desea unirse a nuestra división de ingeniería?",
         "label_max_words": "Límite Máximo de Palabras",
         "placeholder_max_words": "ej. 250 (Opcional)",
         "label_response_tone": "Tono de la Respuesta",
@@ -149,7 +151,7 @@ PORTAL_QA_TRANSLATIONS = {
         "placeholder_custom_context": "ej. Resalte mi trabajo en el proyecto de migración de base de datos de microservicios o liderando el equipo.",
         "helper_custom_context": "Opcional. Déjelo en blanco para permitir que la IA seleccione la experiencia que mejor coincida de su perfil guardado.",
         "btn_generate_answer": "Generar Respuesta Personalizada",
-        "empty_state_title": " Listo para Redactar Respuestas del Portal",
+        "empty_state_title": "Listo para Redactar Respuestas del Portal",
         "empty_state_desc": "Proporcione un ensayo de postulación a la izquierda para generar un análisis STAR estructurado y texto formateado.",
         "loading_synthesizing_star": "Sintetizando estructura STAR y redactando respuesta de ensayo...",
         "star_breakdown_title": "Desglose del Marco STAR",
@@ -215,7 +217,7 @@ PORTAL_QA_TRANSLATIONS = {
         "badge_structured": "संरचित",
         "star_situation_label": "परिस्थिति (Situation):",
         "star_task_label": "कार्य (Task):",
-        "star_action_label": "कारਵਾਈ (Action):",
+        "star_action_label": "कारвай (Action):",
         "star_result_label": "परिणाम (Result):",
         "final_answer_title": "अंतिम फ़ॉर्मेटेड उत्तर",
         "btn_copy_response": "प्रतिक्रिया कॉपी करें",
@@ -580,7 +582,7 @@ PORTAL_QA_TRANSLATIONS = {
         "warning_exceeds_word_limit": "指定された文字・語数制限を超えています！",
         "word_count_suffix": "語 (words)",
         "alert_enter_valid_url": "有効な求人URLを先に入力してください。",
-        "status_fetching_job": "求人ページの detalhes と企業情報を取得中...",
+        "status_fetching_job": "求人ページの詳細は企業情報を取得中...",
         "status_fetching_btn": "取得中...",
         "error_scrape_failed": "URLから求人コンテキストを抽出しませんでした。",
         "status_autofill_success": "企業および求人の詳細が正常に自動入力されました！",
@@ -1035,7 +1037,7 @@ PORTAL_QA_TRANSLATIONS = {
         "helper_custom_context": "አማራጭ። AI ከተቀመጠው መገለጫዎ ጋር የሚስማማውን ምርጥ ልምድ እንዲመርጥ ባዶ ይተዉት።",
         "btn_generate_answer": "ብጁ ምላሽ ፍጠር",
         "empty_state_title": "የፖርታል ምላሾችን ለማዘጋጀት ዝግጁ",
-        "empty_state_desc": " የተዋቀረ የ STAR ትንታኔ እና የተቀረጸ 텍ስት ለመፍጠር በግራ በኩል የማመልከቻ ድርሰት መጠየቂያ ያቅርቡ።",
+        "empty_state_desc": "የተዋቀረ የ STAR ትንታኔ እና የተቀረጸ 텍ስት ለመፍጠር በግራ በኩል የማመልከቻ ድርሰት መጠየቂያ ያቅርቡ።",
         "loading_synthesizing_star": "የ STAR አወቃቀርን በማቀናጀት እና የድርሰት ምላሽ በማዘጋጀት ላይ...",
         "star_breakdown_title": "የ STAR ማዕቀፍ ዝርዝር",
         "badge_structured": "የተዋቀረ",
@@ -1120,3 +1122,6 @@ PORTAL_QA_TRANSLATIONS = {
         "status_copied": "Koppii ta'eera!"
     }
 }
+
+# Alias for standard aggregator unpacking
+PORTAL_QA_TRANSLATIONS = PORTAL_QA_DICT
