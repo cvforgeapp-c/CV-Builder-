@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ t_deal('AI Salary Negotiator & Compensation Suite — CVForge Pro') }}{% endblock %}
+{% block title %}{{ t_deal('sal_page_title') }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -496,18 +496,8 @@
         display: none;
     }
 
-    .skeleton-loader {
-        display: none;
-        animation: pulse 1.5s infinite ease-in-out;
-    }
-
     @keyframes spin {
         to { transform: rotate(360deg); }
-    }
-
-    @keyframes pulse {
-        0%, 100% { opacity: 0.6; }
-        50% { opacity: 0.3; }
     }
 </style>
 {% endblock %}
@@ -522,14 +512,14 @@
                 <path d="M16 8L2 15L22 22L16 8Z" fill="var(--brand-teal)"/>
                 <path d="M16 8L8 2L2 15L16 8Z" fill="var(--brand-gold)"/>
             </svg>
-            {{ t_deal('CVForge') }}
+            CVForge
         </a>
-        <span class="badge-pro">{{ t_deal('Executive Pro Feature') }}</span>
+        <span class="badge-pro">{{ t_deal('sal_badge_pro') }}</span>
     </div>
     <div>
         <a href="/dashboard" class="btn-back">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            {{ t_deal('Back to Dashboard') }}
+            {{ t_deal('sal_btn_back_dashboard') }}
         </a>
     </div>
 </header>
@@ -538,9 +528,9 @@
     <div class="page-heading">
         <h1>
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--brand-teal)" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            {{ t_deal('AI Salary Negotiator & Compensation Suite') }}
+            {{ t_deal('sal_heading') }}
         </h1>
-        <p>{{ t_deal('Evaluate job offers against industry benchmarks, map key negotiation leverage points, and generate high-converting, professional counter-offer email scripts.') }}</p>
+        <p>{{ t_deal('sal_subheading') }}</p>
     </div>
 
     <div class="sal-grid">
@@ -552,7 +542,7 @@
                     <span class="panel-title-icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
                     </span>
-                    {{ t_deal('Offer Package Details') }}
+                    {{ t_deal('sal_section_input') }}
                 </div>
             </div>
 
@@ -561,16 +551,16 @@
             <form id="negotiatorForm">
                 <div class="form-row-2">
                     <div class="form-group">
-                        <label for="companyName">{{ t_deal('Company Name') }}</label>
+                        <label for="companyName">{{ t_deal('sal_label_company') }}</label>
                         <div class="input-wrapper">
                             <span class="input-icon">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v8h20v-8a2 2 0 0 0-2-2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
                             </span>
-                            <input type="text" id="companyName" name="company_name" placeholder="{{ t_deal('e.g. Stripe, Google, OpenAI') }}" required />
+                            <input type="text" id="companyName" name="company_name" placeholder="{{ t_deal('sal_placeholder_company') }}" required />
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="currencySelect">{{ t_deal('Currency') }}</label>
+                        <label for="currencySelect">{{ t_deal('sal_label_currency') }}</label>
                         <div class="input-wrapper">
                             <span class="input-icon">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
@@ -605,25 +595,25 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="jobTitle">{{ t_deal('Job Title & Level') }}</label>
+                    <label for="jobTitle">{{ t_deal('sal_label_job_title') }}</label>
                     <div class="input-wrapper">
                         <span class="input-icon">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
                         </span>
-                        <input type="text" id="jobTitle" name="job_title" placeholder="{{ t_deal('e.g. Senior Full Stack Engineer, L5') }}" required />
+                        <input type="text" id="jobTitle" name="job_title" placeholder="{{ t_deal('sal_placeholder_job_title') }}" required />
                     </div>
                 </div>
 
                 <div class="form-row-2">
                     <div class="form-group">
-                        <label for="baseSalary">{{ t_deal('Offered Base') }}</label>
+                        <label for="baseSalary">{{ t_deal('sal_label_company') }} (Offered Base)</label>
                         <div class="input-wrapper">
                             <span class="input-icon" id="currencySymbolPrefix" style="font-weight: 700; font-size: 13px;">$</span>
                             <input type="text" id="baseSalary" name="base_salary" placeholder="130,000" required />
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="targetSalary">{{ t_deal('Target Base') }}</label>
+                        <label for="targetSalary">Target Base</label>
                         <div class="input-wrapper">
                             <span class="input-icon" id="currencySymbolPrefixTarget" style="font-weight: 700; font-size: 13px;">$</span>
                             <input type="text" id="targetSalary" name="target_salary" placeholder="150,000" />
@@ -632,37 +622,37 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="bonusEquity">{{ t_deal('Bonus, Stock & Sign-on Options') }}</label>
+                    <label for="bonusEquity">{{ t_deal('sal_label_bonus_equity') }}</label>
                     <div class="input-wrapper">
                         <span class="input-icon" id="currencySymbolPrefixBonus" style="font-weight: 700; font-size: 13px;">$</span>
-                        <input type="text" id="bonusEquity" name="bonus_equity" placeholder="{{ t_deal('e.g. 15k sign-on, 10% bonus, 40k RSUs / 4 yrs') }}" />
+                        <input type="text" id="bonusEquity" name="bonus_equity" placeholder="{{ t_deal('sal_placeholder_notes') }}" />
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="negotiationTone">{{ t_deal('Negotiation Tone & Strategy') }}</label>
+                    <label for="negotiationTone">{{ t_deal('sal_label_tone') }}</label>
                     <div class="input-wrapper">
                         <span class="input-icon">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                         </span>
                         <select id="negotiationTone" name="tone">
-                            <option value="Professional & Firm" selected>{{ t_deal('Professional & Firm (Recommended)') }}</option>
-                            <option value="Enthusiastic & Collaborative">{{ t_deal('Enthusiastic & Collaborative') }}</option>
-                            <option value="Direct & High Leverage">{{ t_deal('Direct & High Leverage (Competing Offers)') }}</option>
+                            <option value="Professional & Firm" selected>{{ t_deal('sal_tone_firm') }}</option>
+                            <option value="Enthusiastic & Collaborative">{{ t_deal('sal_tone_collaborative') }}</option>
+                            <option value="Direct & High Leverage">{{ t_deal('sal_tone_high_leverage') }}</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="perksNotes">{{ t_deal('Additional Perks, Context, or Competing Offers') }}</label>
-                    <textarea id="perksNotes" name="perks_notes" rows="3" placeholder="{{ t_deal('e.g. Competing offer from Competitor X, remote flexibility preferences...') }}"></textarea>
-                    <span class="form-hint">{{ t_deal('More context allows AI to formulate a much stronger counter-offer stance.') }}</span>
+                    <label for="perksNotes">{{ t_deal('sal_label_notes') }}</label>
+                    <textarea id="perksNotes" name="perks_notes" rows="3" placeholder="{{ t_deal('sal_placeholder_notes') }}"></textarea>
+                    <span class="form-hint">{{ t_deal('sal_hint_notes') }}</span>
                 </div>
 
                 <button type="submit" class="btn-evaluate" id="evaluateBtn">
                     <span class="spinner" id="btnSpinner"></span>
                     <svg id="btnIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                    <span id="btnText">{{ t_deal('Evaluate Offer & Build Counter-Offer') }}</span>
+                    <span id="btnText">{{ t_deal('sal_btn_evaluate') }}</span>
                 </button>
             </form>
         </div>
@@ -674,7 +664,7 @@
                     <span class="panel-title-icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                     </span>
-                    {{ t_deal('Negotiation Blueprint') }}
+                    {{ t_deal('sal_section_output') }}
                 </div>
                 <span id="offerGradeBadge" class="grade-badge">Grade: --</span>
             </div>
@@ -684,8 +674,8 @@
                 <div class="empty-state-icon">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 </div>
-                <h4>{{ t_deal('No Offer Evaluated Yet') }}</h4>
-                <p>{{ t_deal('Fill in your compensation package details on the left and click evaluate to generate your custom negotiation strategy.') }}</p>
+                <h4>{{ t_deal('sal_empty_title') }}</h4>
+                <p>{{ t_deal('sal_empty_sub') }}</p>
             </div>
 
             <!-- RESULTS CONTENT CONTAINER (Hidden by default) -->
@@ -695,14 +685,14 @@
                 <div class="summary-box">
                     <div class="summary-box-title">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                        {{ t_deal('Offer Evaluation Summary') }}
+                        {{ t_deal('sal_summary_label') }}
                     </div>
                     <p class="summary-box-p" id="evaluationSummaryText"></p>
                 </div>
 
                 <!-- STRATEGY LEVERAGE POINTS -->
                 <div class="strategy-section">
-                    <div class="section-label">{{ t_deal('Key Negotiation Leverage Points') }}</div>
+                    <div class="section-label">{{ t_deal('sal_leverage_label') }}</div>
                     <ul class="strategy-list" id="strategyListContainer">
                         <!-- Populated via JS -->
                     </ul>
@@ -710,7 +700,7 @@
 
                 <!-- COUNTER-OFFER EMAIL GENERATOR -->
                 <div class="strategy-section" style="margin-bottom: 0;">
-                    <div class="section-label">{{ t_deal('Counter-Offer Email Script') }}</div>
+                    <div class="section-label">{{ t_deal('sal_script_label') }}</div>
                     
                     <div class="email-preview-container">
                         <div class="email-header-bar">
@@ -720,10 +710,10 @@
                     </div>
 
                     <div class="output-footer">
-                        <span class="char-counter" id="charCounter">0 characters</span>
+                        <span class="char-counter" id="charCounter">0 {{ t_deal('sal_char_counter') }}</span>
                         <button type="button" class="btn-copy-tab" id="copyEmailBtn">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                            {{ t_deal('Copy Email Script') }}
+                            {{ t_deal('sal_btn_copy_script') }}
                         </button>
                     </div>
                 </div>
@@ -771,7 +761,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateCharCount() {
         const length = emailBodyBox.value.length;
-        charCounter.textContent = `${length} characters`;
+        charCounter.textContent = `${length} {{ t_deal('sal_char_counter') }}`;
     }
 
     emailBodyBox.addEventListener('input', updateCharCount);
@@ -799,7 +789,7 @@ document.addEventListener('DOMContentLoaded', () => {
         evaluateBtn.disabled = true;
         btnSpinner.style.display = 'inline-block';
         btnIcon.style.display = 'none';
-        btnText.textContent = 'Evaluating & Building Strategy...';
+        btnText.textContent = "{{ t_deal('sal_btn_evaluating') }}";
 
         try {
             const response = await fetch('/api/v1/premium/evaluate-offer', {
@@ -824,7 +814,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || 'Failed to evaluate offer.');
+                throw new Error(data.error || "{{ t_deal('sal_err_failed') }}");
             }
 
             // Populate Results
@@ -854,13 +844,13 @@ document.addEventListener('DOMContentLoaded', () => {
             resultsContainer.style.display = 'block';
 
         } catch (err) {
-            formErrorBanner.textContent = err.message || 'An unexpected error occurred.';
+            formErrorBanner.textContent = err.message || "{{ t_deal('sal_err_failed') }}";
             formErrorBanner.style.display = 'block';
         } finally {
             evaluateBtn.disabled = false;
             btnSpinner.style.display = 'none';
             btnIcon.style.display = 'inline-block';
-            btnText.textContent = 'Evaluate Offer & Build Counter-Offer';
+            btnText.textContent = "{{ t_deal('sal_btn_evaluate') }}";
         }
     });
 
@@ -871,7 +861,7 @@ document.addEventListener('DOMContentLoaded', () => {
             copyEmailBtn.classList.add('copied');
             copyEmailBtn.innerHTML = `
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-                Copied to Clipboard!
+                {{ t_deal('sal_btn_copied') }}
             `;
             setTimeout(() => {
                 copyEmailBtn.classList.remove('copied');
