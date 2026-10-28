@@ -682,4 +682,203 @@
             <!-- EMPTY PLACEHOLDER STATE -->
             <div class="empty-state" id="resultPlaceholder">
                 <div class="empty-state-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <h4>{{ t_deal('No Offer Evaluated Yet') }}</h4>
+                <p>{{ t_deal('Fill in your compensation package details on the left and click evaluate to generate your custom negotiation strategy.') }}</p>
+            </div>
+
+            <!-- RESULTS CONTENT CONTAINER (Hidden by default) -->
+            <div id="resultsContainer" style="display: none;">
+                
+                <!-- EVALUATION SUMMARY -->
+                <div class="summary-box">
+                    <div class="summary-box-title">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                        {{ t_deal('Offer Evaluation Summary') }}
+                    </div>
+                    <p class="summary-box-p" id="evaluationSummaryText"></p>
+                </div>
+
+                <!-- STRATEGY LEVERAGE POINTS -->
+                <div class="strategy-section">
+                    <div class="section-label">{{ t_deal('Key Negotiation Leverage Points') }}</div>
+                    <ul class="strategy-list" id="strategyListContainer">
+                        <!-- Populated via JS -->
+                    </ul>
+                </div>
+
+                <!-- COUNTER-OFFER EMAIL GENERATOR -->
+                <div class="strategy-section" style="margin-bottom: 0;">
+                    <div class="section-label">{{ t_deal('Counter-Offer Email Script') }}</div>
+                    
+                    <div class="email-preview-container">
+                        <div class="email-header-bar">
+                            <p class="email-subject" id="emailSubjectText">Subject: --</p>
+                        </div>
+                        <textarea class="email-body-box" id="emailBodyBox"></textarea>
+                    </div>
+
+                    <div class="output-footer">
+                        <span class="char-counter" id="charCounter">0 characters</span>
+                        <button type="button" class="btn-copy-tab" id="copyEmailBtn">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                            {{ t_deal('Copy Email Script') }}
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const currencySelect = document.getElementById('currencySelect');
+    const currencySymbolPrefix = document.getElementById('currencySymbolPrefix');
+    const currencySymbolPrefixTarget = document.getElementById('currencySymbolPrefixTarget');
+    const currencySymbolPrefixBonus = document.getElementById('currencySymbolPrefixBonus');
+    
+    function updateCurrencySymbols() {
+        const selectedOption = currencySelect.options[currencySelect.selectedIndex];
+        const symbol = selectedOption.getAttribute('data-symbol') || '$';
+        if (currencySymbolPrefix) currencySymbolPrefix.textContent = symbol;
+        if (currencySymbolPrefixTarget) currencySymbolPrefixTarget.textContent = symbol;
+        if (currencySymbolPrefixBonus) currencySymbolPrefixBonus.textContent = symbol;
+    }
+
+    currencySelect.addEventListener('change', updateCurrencySymbols);
+    updateCurrencySymbols();
+
+    const form = document.getElementById('negotiatorForm');
+    const evaluateBtn = document.getElementById('evaluateBtn');
+    const btnSpinner = document.getElementById('btnSpinner');
+    const btnIcon = document.getElementById('btnIcon');
+    const btnText = document.getElementById('btnText');
+    const formErrorBanner = document.getElementById('formErrorBanner');
+    
+    const resultPlaceholder = document.getElementById('resultPlaceholder');
+    const resultsContainer = document.getElementById('resultsContainer');
+    const offerGradeBadge = document.getElementById('offerGradeBadge');
+    const evaluationSummaryText = document.getElementById('evaluationSummaryText');
+    const strategyListContainer = document.getElementById('strategyListContainer');
+    const emailSubjectText = document.getElementById('emailSubjectText');
+    const emailBodyBox = document.getElementById('emailBodyBox');
+    const charCounter = document.getElementById('charCounter');
+    const copyEmailBtn = document.getElementById('copyEmailBtn');
+
+    function updateCharCount() {
+        const length = emailBodyBox.value.length;
+        charCounter.textContent = `${length} characters`;
+    }
+
+    emailBodyBox.addEventListener('input', updateCharCount);
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        formErrorBanner.style.display = 'none';
+        formErrorBanner.textContent = '';
+
+        const companyName = document.getElementById('companyName').value.trim();
+        const currency = currencySelect.value;
+        const jobTitle = document.getElementById('jobTitle').value.trim();
+        const baseSalary = document.getElementById('baseSalary').value.trim();
+        const targetSalary = document.getElementById('targetSalary').value.trim();
+        const bonusEquity = document.getElementById('bonusEquity').value.trim();
+        const tone = document.getElementById('negotiationTone').value;
+        const perksNotes = document.getElementById('perksNotes').value.trim();
+
+        if (!companyName || !jobTitle || !baseSalary) {
+            formErrorBanner.textContent = 'Please fill in all required offer details.';
+            formErrorBanner.style.display = 'block';
+            return;
+        }
+
+        evaluateBtn.disabled = true;
+        btnSpinner.style.display = 'inline-block';
+        btnIcon.style.display = 'none';
+        btnText.textContent = 'Evaluating & Building Strategy...';
+
+        try {
+            const response = await fetch('/api/v1/premium/evaluate-offer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    company_name: companyName,
+                    job_title: jobTitle,
+                    currency: currency,
+                    base_salary: baseSalary,
+                    target_salary: targetSalary,
+                    bonus_equity: bonusEquity,
+                    location_remote: '',
+                    perks_notes: perksNotes,
+                    tone: tone
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to evaluate offer.');
+            }
+
+            // Populate Results
+            offerGradeBadge.textContent = `Grade: ${data.offer_grade || 'Competitive'}`;
+            offerGradeBadge.style.display = 'inline-block';
+            
+            evaluationSummaryText.textContent = data.evaluation_summary || '';
+
+            strategyListContainer.innerHTML = '';
+            if (Array.isArray(data.strategy_points)) {
+                data.strategy_points.forEach(point => {
+                    const li = document.createElement('li');
+                    li.className = 'strategy-item';
+                    li.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span>${point}</span>
+                    `;
+                    strategyListContainer.appendChild(li);
+                });
+            }
+
+            emailSubjectText.textContent = `Subject: ${data.counter_email_subject || 'Compensation Review & Next Steps'}`;
+            emailBodyBox.value = data.counter_email_body || '';
+            updateCharCount();
+
+            resultPlaceholder.style.display = 'none';
+            resultsContainer.style.display = 'block';
+
+        } catch (err) {
+            formErrorBanner.textContent = err.message || 'An unexpected error occurred.';
+            formErrorBanner.style.display = 'block';
+        } finally {
+            evaluateBtn.disabled = false;
+            btnSpinner.style.display = 'none';
+            btnIcon.style.display = 'inline-block';
+            btnText.textContent = 'Evaluate Offer & Build Counter-Offer';
+        }
+    });
+
+    copyEmailBtn.addEventListener('click', () => {
+        emailBodyBox.select();
+        navigator.clipboard.writeText(emailBodyBox.value).then(() => {
+            const originalText = copyEmailBtn.innerHTML;
+            copyEmailBtn.classList.add('copied');
+            copyEmailBtn.innerHTML = `
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                Copied to Clipboard!
+            `;
+            setTimeout(() => {
+                copyEmailBtn.classList.remove('copied');
+                copyEmailBtn.innerHTML = originalText;
+            }, 2000);
+        });
+    });
+});
+</script>
+{% endblock %}
