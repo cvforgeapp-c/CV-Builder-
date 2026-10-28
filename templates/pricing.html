@@ -3,7 +3,7 @@
 <!-- ============================================================ -->
 <div class="cvforge-pricing-wrapper">
     
-    <!-- Section Heading (Non-White Header Text) -->
+    <!-- Section Heading -->
     <div class="pricing-header">
         <div class="pricing-badge-wrapper">
             <span class="pricing-badge">
@@ -30,7 +30,7 @@
                     <div class="price-tier-block">
                         <div class="price-amount">$17.99 <span class="price-period">/ month</span></div>
                         <p class="price-subtext">Includes 130 AI credits monthly</p>
-                        <button onclick="openPaddleCheckout('pri_pro_monthly_1799')" class="btn-pricing btn-pro">
+                        <button type="button" onclick="openPaddleCheckout('pri_pro_monthly_1799')" class="btn-pricing btn-pro">
                             Upgrade Monthly ($17.99)
                         </button>
                     </div>
@@ -40,7 +40,7 @@
                     <div class="price-tier-block trial-block">
                         <div class="price-amount">$7.99 <span class="price-period">/ 7 days</span></div>
                         <p class="price-subtext">Includes 60 AI credits for 7 days</p>
-                        <button onclick="openPaddleCheckout('pri_pass_7day_799')" class="btn-pricing btn-trial">
+                        <button type="button" onclick="openPaddleCheckout('pri_pass_7day_799')" class="btn-pricing btn-trial">
                             Get 7-Day Pass ($7.99)
                         </button>
                     </div>
@@ -64,7 +64,7 @@
                     🔥 Full suite access, automated application copilot, executive interview coach, and priority support.
                 </p>
             </div>
-            <button onclick="openPaddleCheckout('pri_expert_monthly_4399')" class="btn-pricing btn-elite">
+            <button type="button" onclick="openPaddleCheckout('pri_expert_monthly_4399')" class="btn-pricing btn-elite">
                 Upgrade to Elite
             </button>
         </div>
@@ -77,13 +77,13 @@
         <p class="topup-sub">Top up instantly without altering your monthly subscription plan.</p>
         
         <div class="topup-options">
-            <button onclick="openPaddleCheckout('pri_topup_10_299')" class="btn-topup">
+            <button type="button" onclick="openPaddleCheckout('pri_topup_10_299')" class="btn-topup">
                 10 Credits <span class="topup-price">($2.99)</span>
             </button>
-            <button onclick="openPaddleCheckout('pri_topup_50_999')" class="btn-topup">
+            <button type="button" onclick="openPaddleCheckout('pri_topup_50_999')" class="btn-topup">
                 50 Credits <span class="topup-price">($9.99)</span>
             </button>
-            <button onclick="openPaddleCheckout('pri_topup_150_2499')" class="btn-topup">
+            <button type="button" onclick="openPaddleCheckout('pri_topup_150_2499')" class="btn-topup">
                 150 Credits <span class="topup-price">($24.99)</span>
             </button>
         </div>
@@ -91,9 +91,35 @@
 
 </div>
 
-<!-- ============================================================ -->
-<!-- RESPONSIVE CSS STYLES                                        -->
-<!-- ============================================================ -->
+<!-- Direct Click Handler for Mobile/Desktop Taps -->
+<script>
+  function openPaddleCheckout(priceId) {
+    if (!window.Paddle) {
+      alert("Payment gateway is loading. Please try again in a moment.");
+      return;
+    }
+    
+    try {
+      Paddle.Checkout.open({
+        items: [
+          {
+            priceId: priceId,
+            quantity: 1
+          }
+        ],
+        settings: {
+          successUrl: window.location.origin + "/dashboard?payment=success",
+          displayMode: "overlay",
+          theme: "dark"
+        }
+      });
+    } catch (err) {
+      console.error("Paddle Checkout error:", err);
+      alert("Unable to launch checkout. Please check your connection.");
+    }
+  }
+</script>
+
 <style>
     .cvforge-pricing-wrapper {
         max-width: 1040px;
@@ -131,18 +157,17 @@
         box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
     }
 
-    /* Upgraded Non-White Header Text Colors */
     .pricing-title {
         font-size: 28px;
         font-weight: 800;
         margin: 0 0 10px 0;
         letter-spacing: -0.5px;
-        color: #0f172a !important; /* Deep dark metallic contrast */
+        color: #0f172a !important;
         line-height: 1.25;
     }
 
     .pricing-subtitle {
-        color: #334155 !important; /* Slate dark gray for optimal readability */
+        color: #334155 !important;
         font-size: 14px;
         margin: 0;
         line-height: 1.6;
@@ -196,7 +221,6 @@
         color: #ffffff;
     }
 
-    /* Pro 7-Day & Monthly Split */
     .pro-pricing-options {
         display: flex;
         flex-direction: column;
@@ -283,6 +307,7 @@
         text-align: center;
         border: none;
         transition: transform 0.1s ease;
+        -webkit-tap-highlight-color: transparent;
     }
 
     .btn-pricing:active {
@@ -310,7 +335,6 @@
         margin-top: 24px;
     }
 
-    /* Top-Up Section */
     .topup-container {
         background: #111827;
         border: 1px solid rgba(255, 255, 255, 0.15);
@@ -349,6 +373,7 @@
         font-size: 14px;
         cursor: pointer;
         width: 100%;
+        -webkit-tap-highlight-color: transparent;
     }
 
     .topup-price {
@@ -357,7 +382,6 @@
         font-weight: 700;
     }
 
-    /* Desktop View */
     @media (min-width: 768px) {
         .cvforge-pricing-wrapper {
             padding: 60px 24px;
