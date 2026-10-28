@@ -60,13 +60,3 @@ PLANS = {
     }
 }
 
-# Credit cost per AI operation
-CREDIT_COSTS = {
-    "ats_optimize": 2,
-    "cover_letter": 3,
-    "linkedin_optimize": 3,
-    "interview_prep": 4,
-    "salary_negotiate": 5,
-    "outreach_email": 2,
-    "job_qa": 1,
-}
