@@ -359,6 +359,19 @@ def inject_global_translations():
       )
       return default if default is not None else str(key)
 
+  def translate_deal(key, default=None):
+    if not isinstance(key, str):
+      return str(key)
+    try:
+      return t_deal(key, lang=user_language, default=default)
+    except Exception as exc:
+      premium_app.logger.warning(
+          'Deal translation failed for key %r: %s',
+          key,
+          type(exc).__name__,
+      )
+      return default if default is not None else str(key)
+
   try:
     active_dictionary = TRANSLATIONS.get(user_language, {})
     if not active_dictionary:
@@ -374,6 +387,7 @@ def inject_global_translations():
       'supported_languages': SUPPORTED_LANGUAGES,
       't': translate,
       't_modular': translate_modular,
+      't_deal': translate_deal,
       'cvforge_translations': javascript_translations,
   }
 
