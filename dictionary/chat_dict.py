@@ -1,4 +1,6 @@
-"""AI Assist Chat & Base Layout translations for all supported global languages."""
+"""AI Assist Chat & Base Layout translations for all 17 supported global languages.
+Fully synchronized key mapping to prevent fallback failures across all variants.
+"""
 
 AI_ASSIST_CHAT_TRANSLATIONS = {
     "English (US / UK)": {
@@ -243,7 +245,7 @@ AI_ASSIST_CHAT_TRANSLATIONS = {
         "ai_assist_title": "Asystent AI",
         "chat_header_title": "CVForge Asystent AI",
         "chat_header_sub": "Twój osobisty drugi pilot ds. kariery i CV",
-        "stop_sound": "Zatrzymaj dźwięk",
+        "stop_sound": "Zatrzymaj dźwięк",
         "default_welcome_msg": "Witaj! W czym mogę Ci dzisiaj pomóc w optymalizacji CV, pisaniu listów motywacyjnych lub przygotowaniu do rozmów kwalifikacyjnych?",
         "listen": "Posłuchaj",
         "input_placeholder": "Odpowiedz Asystentowi AI...",
@@ -298,7 +300,7 @@ AI_ASSIST_CHAT_TRANSLATIONS = {
         "default_welcome_msg": "ሰላም! ዛሬ ሲቪዎን እንዲያስተካክሉ፣ የሽፋን ደብዳቤዎችን እንዲያዘጋጁ ወይም ለቃለ መጠይቅ እንዲዘጋጁ እንዴት ልረዳዎ እችላለሁ?",
         "listen": "ስማ",
         "input_placeholder": "ለ AI ረዳት መልስ ይስጡ...",
-        "listening": በመስማት ላይ...",
+        "listening": "በمስማት ላይ...",
         "copied": "✓ ተቀድቷል",
         "copy": "ቅዳ",
         "edit": "አርዕት",
@@ -324,3 +326,5 @@ AI_ASSIST_CHAT_TRANSLATIONS = {
         "default_error": "Dhiifama, rakkoon uumameera. Maaloo irra deebi'aa yaalaa."
     }
 }
+
+AI_ASSIST_CHAT_DICT = AI_ASSIST_CHAT_TRANSLATIONS
