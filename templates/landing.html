@@ -506,167 +506,131 @@
         </div>
     </section>
 
-    <!-- 3-TIER PRICING SECTION (Tailwind Grid Architecture) -->
-    <section class="py-16 px-4 md:px-8 bg-slate-950 text-slate-100" id="pricing">
-      <div class="max-w-7xl mx-auto text-center mb-16">
-        <span class="text-xs font-bold tracking-widest text-emerald-400 uppercase bg-emerald-950/60 border border-emerald-800/50 py-1.5 px-3 rounded-full">
-          {{ t('pricing_title') }}
-        </span>
-        <h2 class="text-3xl md:text-5xl font-extrabold tracking-tight mt-4 mb-4 text-white">
-          Invest in Your Career Acceleration
-        </h2>
-        <p class="text-slate-400 max-w-2xl mx-auto text-base md:text-lg">
-          {{ t('pricing_subtitle') }}
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto items-stretch">
-        
-        <!-- FREE TIER -->
-        <div class="flex flex-col rounded-2xl bg-slate-900/80 border border-slate-800 p-8 shadow-xl relative backdrop-blur-sm transition-transform hover:scale-[1.01]">
-          <div class="mb-6">
-            <h3 class="text-xl font-bold text-white">{{ t('plan_free_title') }}</h3>
-            <p class="text-slate-400 text-sm mt-1">For testing features and basic profile building.</p>
-            <div class="mt-4 flex items-baseline">
-              <span class="text-4xl font-extrabold tracking-tight text-white">{{ t('plan_free_price') }}</span>
-              <span class="ml-1 text-sm text-slate-500">/ {{ t('plan_free_period') }}</span>
-            </div>
-          </div>
-
-          <div class="border-t border-slate-800 pt-6 flex-1">
-            <ul class="space-y-4 text-sm text-slate-300 text-left">
-              <li class="flex items-center gap-3">
-                <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                <span><strong>15 AI Credits</strong> (One-time base)</span>
-              </li>
-              <li class="flex items-center gap-3">
-                <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                <span>{{ t('feat_create_edit') }}</span>
-              </li>
-              <li class="flex items-center gap-3">
-                <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                <span>Interactive Job Application Kanban Tracker</span>
-              </li>
-              <li class="flex items-center gap-3 text-slate-500">
-                <svg class="w-5 h-5 text-slate-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                <span><span>{{ t('feat_pdf_download') }} (Standard ATS)</span></span>
-              </li>
-              <li class="flex items-center gap-3 text-slate-500">
-                <svg class="w-5 h-5 text-slate-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                <span>AI Application Copilot & Salary Negotiator</span>
-              </li>
-            </ul>
-          </div>
-
-          <div class="mt-8">
-            <a href="/editor" class="w-full inline-block bg-slate-800 hover:bg-slate-700 text-white font-medium py-3 px-4 rounded-xl text-center transition-colors">
-              {{ t('start_free') }}
-            </a>
-          </div>
+    <!-- PROFESSIONAL BRAND PRICING SECTION -->
+    <section style="padding: 80px 5%; background: #f8fafc;" id="pricing">
+        <div style="max-width: 1100px; margin: 0 auto; text-align: center; margin-bottom: 50px;">
+            <span style="font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #b45309; background: #fef3c7; padding: 6px 16px; border-radius: 20px; border: 1px solid #fde68a;">
+                {{ t('pricing_title') }}
+            </span>
+            <h2 style="font-size: 36px; font-weight: 800; color: #0f172a; margin-top: 16px; margin-bottom: 12px; letter-spacing: -0.5px;">
+                Invest in Your Career Acceleration
+            </h2>
+            <p style="font-size: 16px; color: #64748b; max-width: 600px; margin: 0 auto;">
+                {{ t('pricing_subtitle') }}
+            </p>
         </div>
 
-        <!-- PRO PLAN (HIGHLIGHTED) -->
-        <div class="flex flex-col rounded-2xl bg-gradient-to-b from-emerald-950/40 via-slate-900 to-slate-900 border-2 border-emerald-500/80 p-8 shadow-2xl relative transition-transform hover:scale-[1.02]">
-          <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-emerald-500 text-slate-950 font-bold text-xs uppercase tracking-wider py-1 px-3 rounded-full shadow-md">
-            {{ t('popular_badge_text') }}
-          </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 35px; max-width: 1100px; margin: 0 auto; align-items: stretch;">
+            
+            <!-- FREE TIER CARD -->
+            <div style="background: #ffffff; border-radius: 24px; padding: 40px 30px; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.03); display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+                <div>
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h3 style="font-size: 20px; font-weight: 700; color: #0f172a; margin-bottom: 12px;">{{ t('plan_free_title') }}</h3>
+                        <div style="font-size: 42px; font-weight: 800; color: #0f172a; line-height: 1;">{{ t('plan_free_price') }}</div>
+                        <div style="font-size: 13px; color: #64748b; font-weight: 500; margin-top: 6px;">{{ t('plan_free_period') }}</div>
+                        <div style="font-size: 13px; color: #02353C; font-weight: 700; margin-top: 8px; background: #f1f5f9; display: inline-block; padding: 4px 12px; border-radius: 8px;">15 credits total</div>
+                    </div>
 
-          <div class="mb-6">
-            <h3 class="text-xl font-bold text-white flex items-center justify-between">
-              {{ t('plan_pro_title') }}
-              <span class="text-xs bg-emerald-500/20 text-emerald-400 py-1 px-2.5 rounded-lg border border-emerald-500/30">PRO</span>
-            </h3>
-            <p class="text-slate-400 text-sm mt-1">For active job seekers applying at scale.</p>
-            <div class="mt-4 flex items-baseline">
-              <span class="text-4xl font-extrabold tracking-tight text-white">$17.99</span>
-              <span class="ml-1 text-sm text-slate-400">/ month</span>
+                    <ul style="list-style: none; margin-bottom: 35px; display: flex; flex-direction: column; gap: 14px; text-align: left;">
+                        <li style="font-size: 14px; color: #334155; display: flex; align-items: center; gap: 12px;">
+                            <span style="color: #16a34a; font-weight: bold; font-size: 16px;">✓</span> {{ t('feat_create_edit') }}
+                        </li>
+                        <li style="font-size: 14px; color: #334155; display: flex; align-items: center; gap: 12px;">
+                            <span style="color: #16a34a; font-weight: bold; font-size: 16px;">✓</span> {{ t('feat_std_templates') }}
+                        </li>
+                        <li style="font-size: 14px; color: #334155; display: flex; align-items: center; gap: 12px;">
+                            <span style="color: #16a34a; font-weight: bold; font-size: 16px;">✓</span> {{ t('feat_pdf_download') }} (Standard ATS)
+                        </li>
+                        <li style="font-size: 14px; color: #94a3b8; display: flex; align-items: center; gap: 12px; text-decoration: line-through;">
+                            <span style="color: #cbd5e1; font-weight: bold; font-size: 16px;">✕</span> Interactive Job Kanban Tracker
+                        </li>
+                        <li style="font-size: 14px; color: #94a3b8; display: flex; align-items: center; gap: 12px; text-decoration: line-through;">
+                            <span style="color: #cbd5e1; font-weight: bold; font-size: 16px;">✕</span> AI Application Copilot Suite
+                        </li>
+                    </ul>
+                </div>
+
+                <a href="/editor" style="display: block; width: 100%; background: #f1f5f9; color: #0f172a; text-align: center; padding: 14px; border-radius: 12px; font-weight: 700; text-decoration: none; transition: background 0.2s;">
+                    {{ t('start_free') }}
+                </a>
             </div>
-            <p class="text-xs text-emerald-400 mt-1">{{ t('plan_pro_yearly_subtext') }}</p>
-          </div>
 
-          <div class="border-t border-slate-800 pt-6 flex-1">
-            <ul class="space-y-4 text-sm text-slate-200 text-left">
-              <li class="flex items-center gap-3">
-                <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                <span><strong>130 AI Credits</strong> per month</span>
-              </li>
-              <li class="flex items-center gap-3">
-                <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                <span><strong>AI Application Copilot</strong> (1-click suite)</span>
-              </li>
-              <li class="flex items-center gap-3">
-                <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                <span>{{ t('feat_jd_keyword_matcher') }}</span>
-              </li>
-              <li class="flex items-center gap-3">
-                <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                <span>{{ t('feat_targeted_cover_letter') }} & {{ t('feat_interview_practice') }}</span>
-              </li>
-              <li class="flex items-center gap-3">
-                <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                <span><strong>PDF Template Studio</strong> (Custom ReportLab layouts)</span>
-              </li>
-              <li class="flex items-center gap-3">
-                <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                <span>17-Language Multi-Language Translation Support</span>
-              </li>
-            </ul>
-          </div>
+            <!-- PRO PLAN CARD (HIGHLIGHTED WITH GOLD BORDER & BADGE) -->
+            <div style="background: linear-gradient(180deg, #fffdfa 0%, #ffffff 100%); border-radius: 24px; padding: 40px 30px; border: 2.5px solid #d99a2b; box-shadow: 0 20px 40px -10px rgba(217, 154, 43, 0.2); display: flex; flex-direction: column; justify-content: space-between; position: relative; transform: translateY(-6px);">
+                <!-- Floating Popular Badge -->
+                <div style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #e5a93c 0%, #b45309 100%); color: #ffffff; font-size: 11px; font-weight: 800; padding: 5px 18px; border-radius: 20px; letter-spacing: 0.8px; text-transform: uppercase; box-shadow: 0 4px 12px rgba(180, 83, 9, 0.3);">
+                    ★ POPULAR
+                </div>
 
-          <div class="mt-8">
-            <a href="/pricing" class="w-full inline-block bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3 px-4 rounded-xl text-center transition-colors shadow-lg shadow-emerald-500/20">
-              {{ t('btn_get_premium') }}
-            </a>
-          </div>
-        </div>
+                <div>
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h3 style="font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 10px;">{{ t('plan_pro_title') }}</h3>
+                        <div style="font-size: 42px; font-weight: 800; color: #0f172a; line-height: 1;">$17,99 <span style="font-size: 15px; color: #64748b; font-weight: 500;">/month</span></div>
+                        <div style="font-size: 13px; color: #b45309; font-weight: 700; margin-top: 8px;">130 credits/month</div>
+                    </div>
 
-        <!-- ELITE PLAN -->
-        <div class="flex flex-col rounded-2xl bg-slate-900/80 border border-slate-800 p-8 shadow-xl relative backdrop-blur-sm transition-transform hover:scale-[1.01]">
-          <div class="mb-6">
-            <h3 class="text-xl font-bold text-white flex items-center justify-between">
-              Elite Executive
-              <span class="text-xs bg-amber-500/20 text-amber-400 py-1 px-2.5 rounded-lg border border-amber-500/30">ELITE</span>
-            </h3>
-            <p class="text-slate-400 text-sm mt-1">For senior professionals and high-stakes offers.</p>
-            <div class="mt-4 flex items-baseline">
-              <span class="text-4xl font-extrabold tracking-tight text-white">$43.99</span>
-              <span class="ml-1 text-sm text-slate-500">/ month</span>
+                    <ul style="list-style: none; margin-bottom: 35px; display: flex; flex-direction: column; gap: 14px; text-align: left;">
+                        <li style="font-size: 14px; color: #1e293b; font-weight: 600; display: flex; align-items: center; gap: 12px;">
+                            <span style="color: #16a34a; font-weight: bold; font-size: 16px;">✓</span> AI Application Copilot Suite
+                        </li>
+                        <li style="font-size: 14px; color: #334155; display: flex; align-items: center; gap: 12px;">
+                            <span style="color: #16a34a; font-weight: bold; font-size: 16px;">✓</span> {{ t('feat_jd_keyword_matcher') }}
+                        </li>
+                        <li style="font-size: 14px; color: #334155; display: flex; align-items: center; gap: 12px;">
+                            <span style="color: #16a34a; font-weight: bold; font-size: 16px;">✓</span> {{ t('feat_premium_templates') }} (PDF Studio)
+                        </li>
+                        <li style="font-size: 14px; color: #334155; display: flex; align-items: center; gap: 12px;">
+                            <span style="color: #16a34a; font-weight: bold; font-size: 16px;">✓</span> {{ t('feat_targeted_cover_letter') }}
+                        </li>
+                        <li style="font-size: 14px; color: #334155; display: flex; align-items: center; gap: 12px;">
+                            <span style="color: #16a34a; font-weight: bold; font-size: 16px;">✓</span> {{ t('feat_interview_practice') }}
+                        </li>
+                        <li style="font-size: 14px; color: #334155; display: flex; align-items: center; gap: 12px;">
+                            <span style="color: #16a34a; font-weight: bold; font-size: 16px;">✓</span> 17-Language Multi-Language Support
+                        </li>
+                        <li style="font-size: 14px; color: #94a3b8; display: flex; align-items: center; gap: 12px; text-decoration: line-through;">
+                            <span style="color: #cbd5e1; font-weight: bold; font-size: 16px;">✕</span> AI Salary Negotiator
+                        </li>
+                    </ul>
+                </div>
+
+                <a href="/pricing" style="display: block; width: 100%; background: linear-gradient(135deg, #e5a93c 0%, #d99a2b 100%); color: #02353C; text-align: center; padding: 15px; border-radius: 12px; font-weight: 800; text-decoration: none; box-shadow: 0 4px 15px rgba(229, 169, 60, 0.4); transition: transform 0.2s;">
+                    {{ t('btn_get_premium') }}
+                </a>
             </div>
-          </div>
 
-          <div class="border-t border-slate-800 pt-6 flex-1">
-            <ul class="space-y-4 text-sm text-slate-300 text-left">
-              <li class="flex items-center gap-3">
-                <svg class="w-5 h-5 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                <span><strong>360 AI Credits</strong> per month</span>
-              </li>
-              <li class="flex items-center gap-3">
-                <svg class="w-5 h-5 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                <span><strong>AI Salary Negotiator</strong> (Counter-offer strategies)</span>
-              </li>
-              <li class="flex items-center gap-3">
-                <svg class="w-5 h-5 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                <span>Highest Priority Gemini 3.8 Flash Generation Speed</span>
-              </li>
-              <li class="flex items-center gap-3">
-                <svg class="w-5 h-5 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                <span>All Pro Features & PDF Studio Included</span>
-              </li>
-              <li class="flex items-center gap-3">
-                <svg class="w-5 h-5 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                <span>{{ t('feat_priority_support') }} Channel</span>
-              </li>
-            </ul>
-          </div>
+            <!-- ELITE / EXPERT CARD -->
+            <div style="background: #ffffff; border-radius: 24px; padding: 40px 30px; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.03); display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+                <div>
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h3 style="font-size: 20px; font-weight: 700; color: #0f172a; margin-bottom: 10px;">Elite Executive</h3>
+                        <div style="font-size: 42px; font-weight: 800; color: #0f172a; line-height: 1;">$43,99 <span style="font-size: 15px; color: #64748b; font-weight: 500;">/month</span></div>
+                        <div style="font-size: 13px; color: #02353C; font-weight: 700; margin-top: 8px;">360 credits/month</div>
+                    </div>
 
-          <div class="mt-8">
-            <a href="/pricing" class="w-full inline-block bg-slate-800 hover:bg-slate-700 text-white font-medium py-3 px-4 rounded-xl text-center transition-colors">
-              Unlock Elite Access
-            </a>
-          </div>
+                    <ul style="list-style: none; margin-bottom: 35px; display: flex; flex-direction: column; gap: 14px; text-align: left;">
+                        <li style="font-size: 14px; color: #1e293b; font-weight: 600; display: flex; align-items: center; gap: 12px;">
+                            <span style="color: #16a34a; font-weight: bold; font-size: 16px;">✓</span> All Pro Features Included
+                        </li>
+                        <li style="font-size: 14px; color: #334155; display: flex; align-items: center; gap: 12px;">
+                            <span style="color: #16a34a; font-weight: bold; font-size: 16px;">✓</span> <strong>AI Salary Negotiator</strong>
+                        </li>
+                        <li style="font-size: 14px; color: #334155; display: flex; align-items: center; gap: 12px;">
+                            <span style="color: #16a34a; font-weight: bold; font-size: 16px;">✓</span> Highest Priority Generation Speed
+                        </li>
+                        <li style="font-size: 14px; color: #334155; display: flex; align-items: center; gap: 12px;">
+                            <span style="color: #16a34a; font-weight: bold; font-size: 16px;">✓</span> {{ t('feat_priority_support') }} Channel
+                        </li>
+                    </ul>
+                </div>
+
+                <a href="/pricing" style="display: block; width: 100%; background: #0f172a; color: #ffffff; text-align: center; padding: 14px; border-radius: 12px; font-weight: 700; text-decoration: none; transition: background 0.2s;">
+                    Unlock Elite
+                </a>
+            </div>
+
         </div>
-
-      </div>
     </section>
 
     <!-- FOOTER -->
