@@ -172,6 +172,34 @@ except ImportError:
     MODULAR_TRANSLATIONS = {}
 
 # ============================================================
+# 3. 3RD MODULAR DICTIONARY PATHWAY SETUP (dictionary/dictionary_aggregator.py)
+# ============================================================
+
+try:
+  from dictionary.dictionary_aggregator import (
+      SUPPORTED_LANGUAGES as DEAL_SUPPORTED_LANGUAGES,
+      TRANSLATIONS as DEAL_TRANSLATIONS,
+      init_app_dictionary_pathway,
+      t_deal,
+  )
+  init_app_dictionary_pathway(premium_app)
+except ImportError:
+  try:
+    from ..dictionary.dictionary_aggregator import (
+        SUPPORTED_LANGUAGES as DEAL_SUPPORTED_LANGUAGES,
+        TRANSLATIONS as DEAL_TRANSLATIONS,
+        init_app_dictionary_pathway,
+        t_deal,
+    )
+    init_app_dictionary_pathway(premium_app)
+  except ImportError:
+    def t_deal(key, lang='English (US / UK)', default=None):
+      return str(key)
+    DEAL_SUPPORTED_LANGUAGES = []
+    DEAL_TRANSLATIONS = {}
+
+
+# ============================================================
 # USER LANGUAGE PREFERENCE HELPER
 # ============================================================
 
