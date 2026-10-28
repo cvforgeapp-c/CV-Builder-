@@ -60,13 +60,22 @@ def t_deal(key: str, lang: str = "English (US / UK)", default: str = None) -> st
 
 
 def init_app_dictionary_pathway(app):
-    """Registers t_deal into Flask's Jinja context without overlapping other context processors."""
+    """Registers t_deal into Flask's Jinja context cleanly, respecting session preferences."""
     from flask import session, request
+    from flask_login import current_user
 
     @app.context_processor
     def inject_deal_translator():
-        user_lang = session.get("language") or request.cookies.get("language") or "English (US / UK)"
-        if user_lang not in SUPPORTED_LANGUAGES:
+        # Check session first, then cookies, then fall back to default
+        user_lang = session.get("language") or request.cookies.get("language")
+        
+        # If authenticated, check user database profile preferences if session is missing
+        if (not user_lang or user_lang not in SUPPORTED_LANGUAGES) and current_user and getattr(current_user, "is_authenticated", False):
+            prefs = getattr(current_user, "preferences_json", None) or {}
+            if isinstance(prefs, dict):
+                user_lang = prefs.get("language") or prefs.get("aiPreferences", {}).get("aiLanguage")
+
+        if not user_lang or user_lang not in SUPPORTED_LANGUAGES:
             user_lang = "English (US / UK)"
 
         return {
