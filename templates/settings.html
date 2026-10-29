@@ -396,6 +396,26 @@
 
         .btn-danger:hover { background: #dc2626; }
 
+        /* Dedicated Inline Error Display Card Container */
+        .error-alert-banner {
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 14px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .error-alert-banner i {
+            color: #dc2626;
+            font-size: 16px;
+        }
+
         /* Deletion Modal */
         .modal-overlay {
             position: fixed;
@@ -543,6 +563,13 @@
                     <h2 class="card-title">{{ t('language_card_title') }}</h2>
                     <p class="card-subtitle">{{ t('language_card_subtitle') }}</p>
                 </div>
+                
+                <!-- DEDICATED ERROR STATE DISPLAY CONTAINER -->
+                <div id="languageErrorContainer" class="error-alert-banner" style="display: none;">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span id="languageErrorText"></span>
+                </div>
+
                 <form class="form-grid" id="languageForm">
                     <div class="form-group full-width">
                         <label for="globalLanguage">{{ t('default_global_language_label') }}</label>
@@ -861,10 +888,38 @@
                 saveFormToAPI('/api/v1/settings/profile', getFormObject('profileForm'));
             });
 
-            document.getElementById('languageForm').addEventListener('submit', (e) => {
+            // --- Language Form Submit with Dedicated Page Error State Handling ---
+            document.getElementById('languageForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
-                // Pass true to reload so language templates render immediately in the newly chosen language
-                saveFormToAPI('/api/v1/settings/language', getFormObject('languageForm'), true);
+                const errorContainer = document.getElementById('languageErrorContainer');
+                const errorText = document.getElementById('languageErrorText');
+                
+                // Hide existing errors before new request
+                errorContainer.style.display = 'none';
+                errorText.textContent = '';
+
+                try {
+                    const endpoint = '/api/v1/settings/language';
+                    const formDataObj = getFormObject('languageForm');
+
+                    const response = await fetch(endpoint, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formDataObj)
+                    });
+                    
+                    const res = await parseJsonResponse(response);
+                    if (!response.ok) throw new Error(res.error || "Failed to save language preferences");
+                    
+                    showToast(res.message || "Language updated successfully");
+                    setTimeout(() => { window.location.reload(); }, 600);
+
+                } catch (err) {
+                    // Display error directly in dedicated page error banner container
+                    errorText.textContent = err.message || "An unexpected error occurred while saving language preference.";
+                    errorContainer.style.display = 'flex';
+                    showToast("Failed to save language preferences", true);
+                }
             });
 
             document.getElementById('aiForm').addEventListener('submit', (e) => {
