@@ -530,20 +530,28 @@ def generate_with_gemini(prompt, api_key=None, max_tokens=2048, is_elite=False):
 
   client = genai.Client(api_key=api_key)
 
-  # Elite tier optimization: route to ultra-fast flash model for highest priority generation speed
-  model_name = 'gemini-2.5-flash' if is_elite else 'gemini-3.8-flash'
-
-  config = (
-      types.GenerateContentConfig(
-          max_output_tokens=max_tokens,
-          temperature=0.2 if is_elite else 0.7 # Lower temperature increases generation speed and stability
-      )
-      if types
-      else None
-  )
+  # Maintain gemini-3.8-flash for all users, but optimize speed parameters for Elite users
+  if is_elite:
+    config = (
+        types.GenerateContentConfig(
+            max_output_tokens=max_tokens,
+            temperature=0.2  # Lower temperature speeds up token generation for Elite users
+        )
+        if types
+        else None
+    )
+  else:
+    config = (
+        types.GenerateContentConfig(
+            max_output_tokens=max_tokens,
+            temperature=0.7
+        )
+        if types
+        else None
+    )
 
   response = client.models.generate_content(
-      model=model_name,
+      model='gemini-3.8-flash',
       contents=full_prompt,
       config=config,
   )
@@ -561,7 +569,7 @@ def generate_ai_text(prompt, max_tokens=2048):
   if not gemini_key:
     raise RuntimeError('GEMINI_API_KEY environment variable is missing.')
 
-  # Determine if current user has Elite/Highest Priority status
+  # Automatically detect if current user has Elite/Highest Priority status
   is_elite_user = False
   try:
     if current_user and current_user.is_authenticated:
