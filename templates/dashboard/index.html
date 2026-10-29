@@ -244,7 +244,7 @@
                     {% if not resumes or resumes|length == 0 %}
                     <div class="mt-1.5 p-2 bg-amber-500/10 border border-amber-500/20 rounded-lg text-[11px] text-amber-300 flex items-center justify-between">
                       <span>Want better tailored results? Build your base CV in CVForge Studio first.</span>
-                      <a href="/editor" class="underline font-bold hover:text-amber-200 whitespace-nowrap ml-2">Open Studio →</a>
+                      <a href="/editor" onclick="checkResumeLimit(event)" class="underline font-bold hover:text-amber-200 whitespace-nowrap ml-2">Open Studio →</a>
                     </div>
                     {% endif %}
                   </div>
@@ -603,7 +603,7 @@
                     <h2 class="text-base sm:text-lg font-bold text-slate-900">{{ t('my_saved_resumes') }}</h2>
                     <p class="text-slate-500 text-[11px] hidden sm:block">{{ t('manage_docs_sub') }}</p>
                 </div>
-                <a href="/editor" class="inline-flex items-center gap-1.5 bg-[#02353C] hover:bg-[#034a54] text-white font-bold text-xs px-3.5 py-2 rounded-lg shadow-2xs transition-all whitespace-nowrap">
+                <a href="/editor" onclick="checkResumeLimit(event)" class="inline-flex items-center gap-1.5 bg-[#02353C] hover:bg-[#034a54] text-white font-bold text-xs px-3.5 py-2 rounded-lg shadow-2xs transition-all whitespace-nowrap">
                     <i class="fa-solid fa-plus text-[10px] text-amber-400"></i>
                     <span>{{ t('create_cv') }}</span>
                 </a>
@@ -657,7 +657,7 @@
                           <h3 class="text-sm font-bold text-slate-800">{{ t('no_resumes_yet') }}</h3>
                           <p class="text-slate-500 text-xs">{{ t('no_resumes_sub') }}</p>
                     </div>
-                    <a href="/editor" class="inline-flex items-center gap-1.5 bg-[#02353C] hover:bg-[#034a54] text-white font-bold text-xs px-4 py-2.5 rounded-lg shadow-2xs transition-all">
+                    <a href="/editor" onclick="checkResumeLimit(event)" class="inline-flex items-center gap-1.5 bg-[#02353C] hover:bg-[#034a54] text-white font-bold text-xs px-4 py-2.5 rounded-lg shadow-2xs transition-all">
                         <i class="fa-solid fa-plus text-amber-400 text-[10px]"></i>
                         {{ t('build_first_cv') }}
                     </a>
@@ -700,6 +700,17 @@
 
 {% block extra_js %}
     <script>
+        // Check if free user has reached 1 resume limit before heading to editor
+        function checkResumeLimit(e) {
+            const isFreeTier = {{ ('true' if not user or (not user.is_premium and getattr(user, 'tier', 'free') == 'free') else 'false') }};
+            const resumeCount = {{ resumes|length if resumes else 0 }};
+
+            if (isFreeTier && resumeCount >= 1) {
+                e.preventDefault();
+                showCreditModal("Free tier allows saving only 1 resume. Upgrade to Pro or Elite for unlimited storage and editing.", "/pricing");
+            }
+        }
+
         // Load active stored preferences and avatar into the Dashboard UI
         async function loadStoredSettings() {
             try {
@@ -1043,7 +1054,7 @@
               if (data.button_action === 'REFILL_CREDIT') {
                 refillLink.classList.remove('hidden');
               }
-              errorAlert.classList.remove('hidden');
+              errorAlert.classList.add('hidden');
             }
           } catch (err) {
             document.getElementById('copilotLoadingState').classList.add('hidden');
