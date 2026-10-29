@@ -703,7 +703,7 @@
     <script>
         // Check if free user has reached 1 resume limit before heading to editor
         function checkResumeLimit(e) {
-            const isFreeTier = {{ ('true' if not user or (not user.is_premium and getattr(user, 'tier', 'free') == 'free') else 'false') }};
+            const isFreeTier = {{ ('true' if not user or (not user.is_premium and (user.tier is not defined or user.tier == 'free')) else 'false') }};
             const resumeCount = {{ resumes|length if resumes else 0 }};
 
             // If free tier and user already has 1 or more resumes, block navigation and show modal
@@ -1056,7 +1056,7 @@
               if (data.button_action === 'REFILL_CREDIT') {
                 refillLink.classList.remove('hidden');
               }
-              errorAlert.classList.remove('hidden');
+              errorAlert.classList.add('hidden');
             }
           } catch (err) {
             document.getElementById('copilotLoadingState').classList.add('hidden');
