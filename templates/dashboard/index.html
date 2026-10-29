@@ -483,45 +483,76 @@
           </div>
         </div>
 
-        <!-- 4. CVFORGE PRO CAREER SUITE (QUICK-ACCESS INTEGRATED GRID WITH DYNAMIC TIER LOCKS) -->
+        <!-- 4. CVFORGE PRO CAREER SUITE (ORDERED: FREE -> PRO -> ELITE) -->
+        {% set user_tier = user.tier if user and user.tier else ('pro' if user and user.is_premium else 'free') %}
+        
         <div class="bg-white rounded-xl p-4 border border-slate-200/90 shadow-2xs space-y-3">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
                 <div class="flex items-center gap-2">
                     <div class="w-7 h-7 rounded-lg bg-amber-400/20 text-amber-600 flex items-center justify-center text-xs font-bold">
-                        <i class="fa-solid fa-bolt"></i>
+                        <i class="fa-solid fa-layer-group"></i>
                     </div>
                     <h2 class="text-sm sm:text-base font-extrabold text-[#02353C]">{{ t('career_suite_title') }}</h2>
                 </div>
-                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-gradient-to-r from-amber-400 to-amber-500 text-[#02353C] shadow-2xs">
-                    <i class="fa-solid fa-crown text-[9px]"></i> {{ t('unlocked_suite') }}
-                </span>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Free, Pro & Elite Modules</span>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 
-                <!-- ATS Optimizer (Free Tier) -->
-                <a href="/ats" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
+                <!-- ================= FREE FEATURES ================= -->
+                <!-- 1. Job Tracker (Free) -->
+                <a href="/tracker" class="p-3.5 rounded-xl bg-slate-50 hover:bg-slate-100/90 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2.5">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
-                            <i class="fa-solid fa-file-shield text-amber-500"></i> {{ t('suite_ats_title') }}
+                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-2">
+                            <i class="fa-solid fa-kanban text-amber-500"></i> {{ t('suite_tracker_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <span class="text-[9px] font-extrabold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">Free</span>
                     </div>
-                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_ats_desc') }}</p>
+                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_tracker_desc') }}</p>
                 </a>
 
-                <!-- Cover Letter Generator (Pro Tier) -->
-                {% set user_tier = user.tier if user and user.tier else ('pro' if user and user.is_premium else 'free') %}
-                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2 relative overflow-hidden">
+                <!-- 2. PDF Template Studio (Unlocked for Free) -->
+                <a href="/pdf-studio" class="p-3.5 rounded-xl bg-slate-50 hover:bg-slate-100/90 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-2">
+                            <i class="fa-solid fa-palette text-amber-500"></i> {{ t('suite_pdf_title') }}
+                        </span>
+                        <span class="text-[9px] font-extrabold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">Free</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_pdf_desc') }}</p>
+                </a>
+
+
+                <!-- ================= PRO FEATURES ================= -->
+                <!-- 3. ATS Optimizer (Locked for Pro) -->
+                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 transition-all flex flex-col justify-between gap-2.5 relative overflow-hidden">
                     {% if user_tier == 'free' and not (user and user.is_premium) %}
-                    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-3xs z-10 flex flex-col items-center justify-center p-2 text-center">
-                        <i class="fa-solid fa-lock text-amber-400 text-sm mb-1"></i>
-                        <span class="text-[10px] font-bold text-white mb-1">Pro Career Suite Feature</span>
+                    <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-3xs z-10 flex flex-col items-center justify-center p-2 text-center">
+                        <i class="fa-solid fa-lock text-amber-400 text-base mb-1"></i>
+                        <span class="text-[10px] font-bold text-white mb-1">Pro Career Feature</span>
                         <a href="/pricing" class="text-[10px] bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold px-2.5 py-1 rounded shadow-2xs">Upgrade to Pro</a>
                     </div>
                     {% endif %}
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] flex items-center gap-1.5">
+                        <span class="text-xs font-bold text-[#02353C] flex items-center gap-2">
+                            <i class="fa-solid fa-file-shield text-amber-500"></i> {{ t('suite_ats_title') }}
+                        </span>
+                        <span class="text-[9px] font-extrabold px-2 py-0.5 rounded bg-amber-100 text-amber-800">Pro</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_ats_desc') }}</p>
+                </div>
+
+                <!-- 4. Cover Letter Generator (Pro) -->
+                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 transition-all flex flex-col justify-between gap-2.5 relative overflow-hidden">
+                    {% if user_tier == 'free' and not (user and user.is_premium) %}
+                    <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-3xs z-10 flex flex-col items-center justify-center p-2 text-center">
+                        <i class="fa-solid fa-lock text-amber-400 text-base mb-1"></i>
+                        <span class="text-[10px] font-bold text-white mb-1">Pro Career Feature</span>
+                        <a href="/pricing" class="text-[10px] bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold px-2.5 py-1 rounded shadow-2xs">Upgrade to Pro</a>
+                    </div>
+                    {% endif %}
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-[#02353C] flex items-center gap-2">
                             <i class="fa-solid fa-envelope-open-text text-amber-500"></i> {{ t('suite_cover_title') }}
                         </span>
                         <a href="/cover-letter" class="text-[10px] font-bold text-emerald-700 underline">Open</a>
@@ -529,17 +560,17 @@
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_cover_desc') }}</p>
                 </div>
 
-                <!-- Interview AI Coach (Pro Tier) -->
-                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2 relative overflow-hidden">
+                <!-- 5. Interview AI Coach (Pro) -->
+                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 transition-all flex flex-col justify-between gap-2.5 relative overflow-hidden">
                     {% if user_tier == 'free' and not (user and user.is_premium) %}
-                    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-3xs z-10 flex flex-col items-center justify-center p-2 text-center">
-                        <i class="fa-solid fa-lock text-amber-400 text-sm mb-1"></i>
-                        <span class="text-[10px] font-bold text-white mb-1">Pro Career Suite Feature</span>
+                    <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-3xs z-10 flex flex-col items-center justify-center p-2 text-center">
+                        <i class="fa-solid fa-lock text-amber-400 text-base mb-1"></i>
+                        <span class="text-[10px] font-bold text-white mb-1">Pro Career Feature</span>
                         <a href="/pricing" class="text-[10px] bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold px-2.5 py-1 rounded shadow-2xs">Upgrade to Pro</a>
                     </div>
                     {% endif %}
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] flex items-center gap-1.5">
+                        <span class="text-xs font-bold text-[#02353C] flex items-center gap-2">
                             <i class="fa-solid fa-comments text-amber-500"></i> {{ t('suite_interview_title') }}
                         </span>
                         <a href="/interview" class="text-[10px] font-bold text-emerald-700 underline">Open</a>
@@ -547,82 +578,17 @@
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_interview_desc') }}</p>
                 </div>
 
-                <!-- Application Tracker (Free Tier) -->
-                <a href="/tracker" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
-                            <i class="fa-solid fa-kanban text-amber-500"></i> {{ t('suite_tracker_title') }}
-                        </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
-                    </div>
-                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_tracker_desc') }}</p>
-                </a>
-
-                <!-- AI Salary Negotiator (Elite Executive Tier) -->
-                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2 relative overflow-hidden">
-                    {% if user_tier != 'elite' %}
-                    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-3xs z-10 flex flex-col items-center justify-center p-2 text-center">
-                        <i class="fa-solid fa-lock text-amber-400 text-sm mb-1"></i>
-                        <span class="text-[10px] font-bold text-white mb-1">Elite Executive Feature</span>
-                        <a href="/pricing" class="text-[10px] bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold px-2.5 py-1 rounded shadow-2xs">Upgrade to Elite</a>
-                    </div>
-                    {% endif %}
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] flex items-center gap-1.5">
-                            <i class="fa-solid fa-calculator text-amber-500"></i> {{ t('suite_salary_title') }}
-                        </span>
-                        <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">Elite</span>
-                    </div>
-                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_salary_desc') }}</p>
-                </div>
-
-                <!-- AI Application Essay & Portal Q&A Assistant (Elite Executive Tier) -->
-                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2 relative overflow-hidden">
-                    {% if user_tier != 'elite' %}
-                    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-3xs z-10 flex flex-col items-center justify-center p-2 text-center">
-                        <i class="fa-solid fa-lock text-amber-400 text-sm mb-1"></i>
-                        <span class="text-[10px] font-bold text-white mb-1">Elite Executive Feature</span>
-                        <a href="/pricing" class="text-[10px] bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold px-2.5 py-1 rounded shadow-2xs">Upgrade to Elite</a>
-                    </div>
-                    {% endif %}
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] flex items-center gap-1.5">
-                            <i class="fa-solid fa-pen-nib text-amber-500"></i> {{ t('suite_portal_qa_title') }}
-                        </span>
-                        <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">Elite</span>
-                    </div>
-                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_portal_qa_desc') }}</p>
-                </div>
-
-                <!-- Cold Outreach Generator (Elite Executive Tier) -->
-                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2 relative overflow-hidden">
-                    {% if user_tier != 'elite' %}
-                    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-3xs z-10 flex flex-col items-center justify-center p-2 text-center">
-                        <i class="fa-solid fa-lock text-amber-400 text-sm mb-1"></i>
-                        <span class="text-[10px] font-bold text-white mb-1">Elite Executive Feature</span>
-                        <a href="/pricing" class="text-[10px] bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold px-2.5 py-1 rounded shadow-2xs">Upgrade to Elite</a>
-                    </div>
-                    {% endif %}
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] flex items-center gap-1.5">
-                            <i class="fa-solid fa-paper-plane text-amber-500"></i> {{ t('suite_outreach_title') }}
-                        </span>
-                        <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">Elite</span>
-                    </div>
-                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_outreach_desc') }}</p>
-                </div>
-
-                <!-- LinkedIn Optimizer (Pro Tier) -->
-                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2 relative overflow-hidden">
+                <!-- 6. LinkedIn Optimizer (Pro) -->
+                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 transition-all flex flex-col justify-between gap-2.5 relative overflow-hidden">
                     {% if user_tier == 'free' and not (user and user.is_premium) %}
-                    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-3xs z-10 flex flex-col items-center justify-center p-2 text-center">
-                        <i class="fa-solid fa-lock text-amber-400 text-sm mb-1"></i>
-                        <span class="text-[10px] font-bold text-white mb-1">Pro Career Suite Feature</span>
+                    <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-3xs z-10 flex flex-col items-center justify-center p-2 text-center">
+                        <i class="fa-solid fa-lock text-amber-400 text-base mb-1"></i>
+                        <span class="text-[10px] font-bold text-white mb-1">Pro Career Feature</span>
                         <a href="/pricing" class="text-[10px] bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold px-2.5 py-1 rounded shadow-2xs">Upgrade to Pro</a>
                     </div>
                     {% endif %}
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#0a66c2] flex items-center gap-1.5">
+                        <span class="text-xs font-bold text-blue-700 flex items-center gap-2">
                             <i class="fa-brands fa-linkedin text-blue-600"></i> {{ t('suite_linkedin_title') }}
                         </span>
                         <a href="/linkedin" class="text-[10px] font-bold text-emerald-700 underline">Open</a>
@@ -630,22 +596,60 @@
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_linkedin_desc') }}</p>
                 </div>
 
-                <!-- PDF Studio (Pro Tier) -->
-                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2 relative overflow-hidden">
-                    {% if user_tier == 'free' and not (user and user.is_premium) %}
-                    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-3xs z-10 flex flex-col items-center justify-center p-2 text-center">
-                        <i class="fa-solid fa-lock text-amber-400 text-sm mb-1"></i>
-                        <span class="text-[10px] font-bold text-white mb-1">Pro Career Suite Feature</span>
-                        <a href="/pricing" class="text-[10px] bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold px-2.5 py-1 rounded shadow-2xs">Upgrade to Pro</a>
+
+                <!-- ================= ELITE FEATURES ================= -->
+                <!-- 7. AI Salary Negotiator (Elite) -->
+                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 transition-all flex flex-col justify-between gap-2.5 relative overflow-hidden">
+                    {% if user_tier != 'elite' %}
+                    <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-3xs z-10 flex flex-col items-center justify-center p-2 text-center">
+                        <i class="fa-solid fa-lock text-amber-400 text-base mb-1"></i>
+                        <span class="text-[10px] font-bold text-white mb-1">Elite Executive Feature</span>
+                        <a href="/pricing" class="text-[10px] bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold px-2.5 py-1 rounded shadow-2xs">Upgrade to Elite</a>
                     </div>
                     {% endif %}
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] flex items-center gap-1.5">
-                            <i class="fa-solid fa-palette text-amber-500"></i> {{ t('suite_pdf_title') }}
+                        <span class="text-xs font-bold text-[#02353C] flex items-center gap-2">
+                            <i class="fa-solid fa-calculator text-amber-500"></i> {{ t('suite_salary_title') }}
                         </span>
-                        <a href="/pdf-studio" class="text-[10px] font-bold text-emerald-700 underline">Open</a>
+                        <span class="text-[9px] font-extrabold px-2 py-0.5 rounded bg-purple-100 text-purple-800">Elite</span>
                     </div>
-                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_pdf_desc') }}</p>
+                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_salary_desc') }}</p>
+                </div>
+
+                <!-- 8. Portal Q&A Assistant (Elite) -->
+                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 transition-all flex flex-col justify-between gap-2.5 relative overflow-hidden">
+                    {% if user_tier != 'elite' %}
+                    <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-3xs z-10 flex flex-col items-center justify-center p-2 text-center">
+                        <i class="fa-solid fa-lock text-amber-400 text-base mb-1"></i>
+                        <span class="text-[10px] font-bold text-white mb-1">Elite Executive Feature</span>
+                        <a href="/pricing" class="text-[10px] bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold px-2.5 py-1 rounded shadow-2xs">Upgrade to Elite</a>
+                    </div>
+                    {% endif %}
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-[#02353C] flex items-center gap-2">
+                            <i class="fa-solid fa-pen-nib text-amber-500"></i> {{ t('suite_portal_qa_title') }}
+                        </span>
+                        <span class="text-[9px] font-extrabold px-2 py-0.5 rounded bg-purple-100 text-purple-800">Elite</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_portal_qa_desc') }}</p>
+                </div>
+
+                <!-- 9. Cold Outreach Generator (Elite) -->
+                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 transition-all flex flex-col justify-between gap-2.5 relative overflow-hidden">
+                    {% if user_tier != 'elite' %}
+                    <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-3xs z-10 flex flex-col items-center justify-center p-2 text-center">
+                        <i class="fa-solid fa-lock text-amber-400 text-base mb-1"></i>
+                        <span class="text-[10px] font-bold text-white mb-1">Elite Executive Feature</span>
+                        <a href="/pricing" class="text-[10px] bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold px-2.5 py-1 rounded shadow-2xs">Upgrade to Elite</a>
+                    </div>
+                    {% endif %}
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-[#02353C] flex items-center gap-2">
+                            <i class="fa-solid fa-paper-plane text-amber-500"></i> {{ t('suite_outreach_title') }}
+                        </span>
+                        <span class="text-[9px] font-extrabold px-2 py-0.5 rounded bg-purple-100 text-purple-800">Elite</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_outreach_desc') }}</p>
                 </div>
 
             </div>
