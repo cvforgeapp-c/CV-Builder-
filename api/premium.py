@@ -604,6 +604,63 @@ FEATURE_RULES = {
 }
 
 # ============================================================
+# DEVELOPER ACCESS & TIER DECORATOR GUARDS
+# ============================================================
+
+DEVELOPER_EMAILS = {
+    'subhnllha@gmail.com',
+}
+
+
+def is_developer_user(user):
+  email = (getattr(user, 'email', '') or '').strip().lower()
+  return email in DEVELOPER_EMAILS
+
+
+def has_premium_access(user):
+  return is_developer_user(user) or bool(getattr(user, 'is_premium', False))
+
+
+def tier_required(min_tier='pro'):
+    """
+    Enforces minimum subscription tier: 'free', 'pro', or 'elite'
+    """
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            if not current_user.is_authenticated:
+                return redirect(url_for('auth.login'))
+            
+            if is_developer_user(current_user):
+                return f(*args, **kwargs)
+
+            user_tier = getattr(current_user, 'tier', 'free')
+            if not user_tier:
+                user_tier = 'pro' if getattr(current_user, 'is_premium', False) else 'free'
+            
+            tier_levels = {'free': 0, 'pro': 1, 'elite': 2}
+            is_prem = bool(getattr(current_user, 'is_premium', False))
+            user_level = 2 if is_prem and user_tier == 'elite' else (1 if is_prem else tier_levels.get(user_tier, 0))
+            required_level = tier_levels.get(min_tier, 1)
+            
+            if user_level < required_level:
+                if request.is_json or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return jsonify({
+                        "success": False,
+                        "error": f"This feature requires the {min_tier.capitalize()} tier or higher.",
+                        "code": "UPGRADE_REQUIRED",
+                        "button_action": "UPGRADE_REQUIRED",
+                        "required_tier": min_tier
+                    }), 403
+                flash(f"This feature requires the {min_tier.capitalize()} tier or higher.", "error")
+                return redirect(url_for('pricing'))
+                
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
+
+
+# ============================================================
 # LOGIN MANAGER USER LOADER
 # ============================================================
 
@@ -660,6 +717,7 @@ def register():
           updated_at=now,
           is_premium=False,
           subscription_status='free',
+          tier='free',
           monthly_cv_generations=0,
           ai_credits_remaining=15,
           preferences_json={},
@@ -929,7 +987,7 @@ def preview():
 
 
 # ============================================================
-# CVFORGE PRO CAREER SUITE FEATURE ROUTES
+# CVFORGE PRO CAREER SUITE FEATURE ROUTES (WITH TIER GUARDS)
 # ============================================================
 
 
@@ -944,6 +1002,7 @@ def ats_optimizer():
 
 @premium_app.route('/cover-letter')
 @login_required
+@tier_required('pro')
 def cover_letter():
   resumes = Resume.query.filter_by(user_id=current_user.id).all()
   try:
@@ -978,6 +1037,7 @@ def cover_letter():
 
 @premium_app.route('/interview')
 @login_required
+@tier_required('pro')
 def interview_prep():
   return render_template('dashboard/interview_prep.html', user=current_user)
 
@@ -990,6 +1050,7 @@ def job_tracker():
 
 @premium_app.route('/matcher')
 @login_required
+@tier_required('pro')
 def keyword_matcher():
   resumes = Resume.query.filter_by(user_id=current_user.id).all()
   return render_template(
@@ -999,6 +1060,7 @@ def keyword_matcher():
 
 @premium_app.route('/outreach')
 @login_required
+@tier_required('elite')
 def cold_outreach():
   resumes = Resume.query.filter_by(user_id=current_user.id).all()
   return render_template('outreach.html', resumes=resumes, user=current_user)
@@ -1006,6 +1068,7 @@ def cold_outreach():
 
 @premium_app.route('/salary-negotiator')
 @login_required
+@tier_required('elite')
 def salary_negotiator():
   resumes = Resume.query.filter_by(user_id=current_user.id).all()
   return render_template(
@@ -1015,6 +1078,7 @@ def salary_negotiator():
 
 @premium_app.route('/portal-qa')
 @login_required
+@tier_required('elite')
 def portal_qa_page():
   resumes = Resume.query.filter_by(user_id=current_user.id).all()
   return render_template('portal_qa.html', resumes=resumes, user=current_user)
@@ -1022,6 +1086,7 @@ def portal_qa_page():
 
 @premium_app.route('/linkedin')
 @login_required
+@tier_required('pro')
 def linkedin_optimizer():
   resumes = Resume.query.filter_by(user_id=current_user.id).all()
   return render_template(
@@ -1031,6 +1096,7 @@ def linkedin_optimizer():
 
 @premium_app.route('/pdf-studio', methods=['GET', 'POST'])
 @login_required
+@tier_required('pro')
 def pdf_studio():
   resume_id = request.args.get('resume_id') or request.form.get('resume_id')
 
@@ -1099,6 +1165,7 @@ def pdf_studio():
 
 @premium_app.route('/support')
 @login_required
+@tier_required('elite')
 def priority_support():
   return render_template('dashboard/priority_support.html', user=current_user)
 
@@ -1390,26 +1457,46 @@ Output MUST be strictly valid JSON matching this schema:
 # CVFORGE STUDIO AI ASSIST, RESUME SAVING & PDF EXPORT ENDPOINTS
 # ============================================================
 
+@premium_app.route('/api/v1/credits/topup', methods=['POST'])
+@login_required
+def topup_credits():
+    data = request.get_json() or {}
+    package_type = data.get('package', 'small_pack')
+    
+    # Top-ups add shared AI generation credits rather than full tier upgrades
+    topup_credits_map = {
+        'small_pack': 10,
+        'medium_pack': 50,
+        'bulk_pack': 150
+    }
+    added = topup_credits_map.get(package_type, 10)
+    current_user.ai_credits_remaining = (current_user.ai_credits_remaining or 0) + added
+    db.session.commit()
+    
+    return jsonify({
+        "success": True, 
+        "new_credits": current_user.ai_credits_remaining,
+        "message": f"Successfully added {added} AI credits."
+    })
+
+
 # 1. AI Assist Credit Deduction & Studio Processing (1 credit per use)
 @premium_app.route('/api/v1/ai-assist', methods=['POST'])
 @login_required
 def ai_assist():
-    # Check if user has enough credits
     user_credits = getattr(current_user, 'ai_credits_remaining', 0) or 0
-    if user_credits < 1:
+    if not has_premium_access(current_user) and user_credits < 1:
         return jsonify({
             "error": "Out of AI credits",
             "code": "INSUFFICIENT_CREDITS"
         }), 402
 
-    # Deduct 1 credit for AI Assist
-    current_user.ai_credits_remaining = user_credits - 1
+    if not has_premium_access(current_user):
+        current_user.ai_credits_remaining = user_credits - 1
 
-    # Extract user input message from request
     req_data = request.get_json() or {}
     user_message = req_data.get('message', '')
 
-    # Generate AI response using CVForge AI text generator
     try:
         prompt = f"CVForge Studio AI Assistant request:\n{user_message}"
         ai_reply = generate_ai_text(prompt, max_tokens=1024)
@@ -1437,14 +1524,13 @@ def save_resume():
     if not isinstance(data, dict):
       return jsonify({'error': 'Invalid resume data structure.'}), 400
 
-    # Check if free tier user already has 1 saved resume
-    is_free_tier = getattr(current_user, 'tier', 'free') == 'free' and not has_premium_access(current_user)
+    user_tier = getattr(current_user, 'tier', 'free')
+    is_free_tier = user_tier == 'free' and not has_premium_access(current_user)
     existing_resumes_count = Resume.query.filter_by(user_id=current_user.id).count()
 
     resume_id = request.args.get('id') or data.get('id')
     existing_resume = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first() if resume_id else None
 
-    # If it's a new resume and free tier already has 1 resume, block it
     if is_free_tier and existing_resumes_count >= 1 and not existing_resume:
         return jsonify({
             "error": "Free tier is limited to 1 saved resume. Please upgrade to Pro or Elite to save more.",
@@ -1555,29 +1641,26 @@ def save_resume():
 def export_pdf():
     export_cost = 2
     user_credits = getattr(current_user, 'ai_credits_remaining', 0) or 0
-    if not has_premium_access(current_user) and user_credits < export_cost:
+    user_tier = getattr(current_user, 'tier', 'free')
+    is_free_tier = user_tier == 'free' and not has_premium_access(current_user)
+
+    if is_free_tier and user_credits < export_cost:
         return jsonify({
             "error": "PDF Export requires 2 AI credits. You do not have enough credits.",
             "code": "INSUFFICIENT_CREDITS"
         }), 402
 
-    # Deduct 2 credits if not premium
-    if not has_premium_access(current_user):
-      current_user.ai_credits_remaining = user_credits - export_cost
-    
-    # If free tier, lock further editing on this resume object post-export
-    is_free_tier = getattr(current_user, 'tier', 'free') == 'free' and not has_premium_access(current_user)
     if is_free_tier:
-        req_data = request.get_json(silent=True) or {}
-        resume_id = req_data.get('resume_id') or request.args.get('id')
-        if resume_id:
-            resume = Resume.query.get(resume_id)
-            if resume and str(resume.user_id) == str(current_user.id):
-                resume.is_locked = True  # Locks editing post-export for free users
+      current_user.ai_credits_remaining = user_credits - export_cost
+      req_data = request.get_json(silent=True) or {}
+      resume_id = req_data.get('resume_id') or request.args.get('id')
+      if resume_id:
+          resume = Resume.query.get(resume_id)
+          if resume and str(resume.user_id) == str(current_user.id):
+              resume.is_locked = True
 
     db.session.commit()
 
-    # Generate and return PDF file response or download confirmation
     return jsonify({
         "success": True, 
         "message": "PDF exported successfully.",
@@ -1730,24 +1813,6 @@ def delete_job_application(app_id):
 
 
 premium_app.register_blueprint(tracker_api_bp)
-
-# ============================================================
-# DEVELOPER ACCESS & AI GENERATION ENDPOINTS
-# ============================================================
-
-DEVELOPER_EMAILS = {
-    'subhnllha@gmail.com',
-}
-
-
-def is_developer_user(user):
-  email = (getattr(user, 'email', '') or '').strip().lower()
-  return email in DEVELOPER_EMAILS
-
-
-def has_premium_access(user):
-  return is_developer_user(user) or bool(getattr(user, 'is_premium', False))
-
 
 # ============================================================
 # GLOBAL AI CHAT ENDPOINT (GEMINI 3.8 FLASH)
@@ -2162,7 +2227,7 @@ def get_settings():
               },
           ),
           'subscription': {
-              'tier': 'Pro' if has_premium_access(current_user) else 'Free'
+              'tier': getattr(current_user, 'tier', 'Pro' if has_premium_access(current_user) else 'Free')
           },
       }),
       200,
@@ -3442,7 +3507,7 @@ def paddle_webhook():
       if user:
         try:
           user.is_premium = True
-          user.subscription_tier = item_config['tier']
+          user.tier = item_config.get('tier', 'pro')
           user.subscription_status = 'active'
           user.ai_credits_remaining = item_config['credits']
           user.paddle_subscription_id = event_data.get('id')
@@ -3461,7 +3526,7 @@ def paddle_webhook():
             expiry_date = datetime.utcnow() + timedelta(
                 days=item_config['days']
             )
-            user.subscription_tier = 'pro'
+            user.tier = 'pro'
             user.ai_credits_remaining = (
                 user.ai_credits_remaining or 0
             ) + item_config['credits']
@@ -3489,7 +3554,7 @@ def paddle_webhook():
       if user:
         try:
           user.is_premium = False
-          user.subscription_tier = 'free'
+          user.tier = 'free'
           user.subscription_status = event_data.get('status', 'canceled')
           db.session.commit()
         except Exception as exc:
@@ -3503,19 +3568,6 @@ def paddle_webhook():
 @premium_bp.route('/analyze-ats', methods=['POST'])
 @login_required
 def analyze_ats():
-  if not has_premium_access(current_user):
-    return (
-        jsonify({
-            'error': (
-                'Your premium subscription has expired. Please renew your'
-                ' subscription to access ATS optimization features.'
-            ),
-            'code': 'SUBSCRIPTION_EXPIRED',
-            'button_action': 'PAY',
-        }),
-        403,
-    )
-
   if request.is_json:
     data = request.get_json(silent=True) or {}
   else:
