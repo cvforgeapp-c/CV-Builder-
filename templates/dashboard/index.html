@@ -494,7 +494,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
                 
-                <!-- Application Tracker -->
+                <!-- 1. Application Tracker (Unlocked & Free) -->
                 <a href="/tracker" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
@@ -505,7 +505,7 @@
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_tracker_desc') }}</p>
                 </a>
 
-                <!-- PDF Studio -->
+                <!-- 2. PDF Studio (Unlocked & Free) -->
                 <a href="/pdf-studio" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
@@ -516,82 +516,156 @@
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_pdf_desc') }}</p>
                 </a>
 
-                <!-- ATS Optimizer -->
-                <a href="/ats" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
+                {% set user_is_prem = user and user.is_premium %}
+                {% set user_tier = (user.tier if user and user.tier is defined else ('pro' if user_is_prem else 'free')) %}
+                {% set user_level = 2 if (user_is_prem and user_tier == 'elite') else (1 if user_is_prem or user_tier == 'pro' else 0) %}
+
+                <!-- 3. ATS Optimizer (Pro Tier Required) -->
+                {% set req_level_ats = 1 %}
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 transition-all flex flex-col justify-between gap-2 relative {% if user_level < req_level_ats %}opacity-85{% else %}hover:bg-slate-100/80 group{% endif %}">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
+                        <span class="text-xs font-bold text-[#02353C] {% if user_level >= req_level_ats %}group-hover:text-emerald-700{% endif %} transition-colors flex items-center gap-1.5">
                             <i class="fa-solid fa-file-shield text-amber-500"></i> {{ t('suite_ats_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        {% if user_level < req_level_ats %}
+                            <a href="/pricing" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-extrabold bg-amber-400 hover:bg-amber-300 text-[#02353C] shadow-2xs transition-transform hover:scale-105 shrink-0" title="Upgrade to Pro to unlock">
+                                <i class="fa-solid fa-lock text-[8px]"></i> Unlock Pro
+                            </a>
+                        {% else %}
+                            <a href="/ats"><i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i></a>
+                        {% endif %}
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_ats_desc') }}</p>
-                </a>
+                    {% if user_level < req_level_ats %}
+                        <a href="/ats" class="absolute inset-0 z-10" onclick="event.preventDefault(); window.location.href='/pricing';"></a>
+                    {% endif %}
+                </div>
 
-                <!-- Cover Letter Generator -->
-                <a href="/cover-letter" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
+                <!-- 4. Cover Letter Generator (Pro Tier Required) -->
+                {% set req_level_cover = 1 %}
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 transition-all flex flex-col justify-between gap-2 relative {% if user_level < req_level_cover %}opacity-85{% else %}hover:bg-slate-100/80 group{% endif %}">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
+                        <span class="text-xs font-bold text-[#02353C] {% if user_level >= req_level_cover %}group-hover:text-emerald-700{% endif %} transition-colors flex items-center gap-1.5">
                             <i class="fa-solid fa-envelope-open-text text-amber-500"></i> {{ t('suite_cover_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        {% if user_level < req_level_cover %}
+                            <a href="/pricing" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-extrabold bg-amber-400 hover:bg-amber-300 text-[#02353C] shadow-2xs transition-transform hover:scale-105 shrink-0" title="Upgrade to Pro to unlock">
+                                <i class="fa-solid fa-lock text-[8px]"></i> Unlock Pro
+                            </a>
+                        {% else %}
+                            <a href="/cover-letter"><i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i></a>
+                        {% endif %}
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_cover_desc') }}</p>
-                </a>
+                    {% if user_level < req_level_cover %}
+                        <a href="/cover-letter" class="absolute inset-0 z-10" onclick="event.preventDefault(); window.location.href='/pricing';"></a>
+                    {% endif %}
+                </div>
 
-                <!-- Interview AI Coach -->
-                <a href="/interview" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
+                <!-- 5. Interview AI Coach (Pro Tier Required) -->
+                {% set req_level_interview = 1 %}
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 transition-all flex flex-col justify-between gap-2 relative {% if user_level < req_level_interview %}opacity-85{% else %}hover:bg-slate-100/80 group{% endif %}">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
+                        <span class="text-xs font-bold text-[#02353C] {% if user_level >= req_level_interview %}group-hover:text-emerald-700{% endif %} transition-colors flex items-center gap-1.5">
                             <i class="fa-solid fa-comments text-amber-500"></i> {{ t('suite_interview_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        {% if user_level < req_level_interview %}
+                            <a href="/pricing" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-extrabold bg-amber-400 hover:bg-amber-300 text-[#02353C] shadow-2xs transition-transform hover:scale-105 shrink-0" title="Upgrade to Pro to unlock">
+                                <i class="fa-solid fa-lock text-[8px]"></i> Unlock Pro
+                            </a>
+                        {% else %}
+                            <a href="/interview"><i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i></a>
+                        {% endif %}
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_interview_desc') }}</p>
-                </a>
+                    {% if user_level < req_level_interview %}
+                        <a href="/interview" class="absolute inset-0 z-10" onclick="event.preventDefault(); window.location.href='/pricing';"></a>
+                    {% endif %}
+                </div>
 
-                <!-- AI Salary Negotiator -->
-                <a href="/salary-negotiator" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
+                <!-- 6. AI Salary Negotiator (Elite Tier Required) -->
+                {% set req_level_salary = 2 %}
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 transition-all flex flex-col justify-between gap-2 relative {% if user_level < req_level_salary %}opacity-85{% else %}hover:bg-slate-100/80 group{% endif %}">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
+                        <span class="text-xs font-bold text-[#02353C] {% if user_level >= req_level_salary %}group-hover:text-emerald-700{% endif %} transition-colors flex items-center gap-1.5">
                             <i class="fa-solid fa-calculator text-amber-500"></i> {{ t('suite_salary_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        {% if user_level < req_level_salary %}
+                            <a href="/pricing" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-extrabold bg-amber-400 hover:bg-amber-300 text-[#02353C] shadow-2xs transition-transform hover:scale-105 shrink-0" title="Upgrade to Elite to unlock">
+                                <i class="fa-solid fa-lock text-[8px]"></i> Unlock Elite
+                            </a>
+                        {% else %}
+                            <a href="/salary-negotiator"><i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i></a>
+                        {% endif %}
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_salary_desc') }}</p>
-                </a>
+                    {% if user_level < req_level_salary %}
+                        <a href="/salary-negotiator" class="absolute inset-0 z-10" onclick="event.preventDefault(); window.location.href='/pricing';"></a>
+                    {% endif %}
+                </div>
 
-                <!-- AI Application Essay & Portal Q&A Assistant -->
-                <a href="/portal-qa" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
+                <!-- 7. AI Application Essay & Portal Q&A Assistant (Elite Tier Required) -->
+                {% set req_level_portal = 2 %}
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 transition-all flex flex-col justify-between gap-2 relative {% if user_level < req_level_portal %}opacity-85{% else %}hover:bg-slate-100/80 group{% endif %}">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
+                        <span class="text-xs font-bold text-[#02353C] {% if user_level >= req_level_portal %}group-hover:text-emerald-700{% endif %} transition-colors flex items-center gap-1.5">
                             <i class="fa-solid fa-pen-nib text-amber-500"></i> {{ t('suite_portal_qa_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        {% if user_level < req_level_portal %}
+                            <a href="/pricing" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-extrabold bg-amber-400 hover:bg-amber-300 text-[#02353C] shadow-2xs transition-transform hover:scale-105 shrink-0" title="Upgrade to Elite to unlock">
+                                <i class="fa-solid fa-lock text-[8px]"></i> Unlock Elite
+                            </a>
+                        {% else %}
+                            <a href="/portal-qa"><i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i></a>
+                        {% endif %}
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_portal_qa_desc') }}</p>
-                </a>
+                    {% if user_level < req_level_portal %}
+                        <a href="/portal-qa" class="absolute inset-0 z-10" onclick="event.preventDefault(); window.location.href='/pricing';"></a>
+                    {% endif %}
+                </div>
 
-                <!-- Cold Outreach Generator -->
-                <a href="/outreach" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
+                <!-- 8. Cold Outreach Generator (Elite Tier Required) -->
+                {% set req_level_outreach = 2 %}
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 transition-all flex flex-col justify-between gap-2 relative {% if user_level < req_level_outreach %}opacity-85{% else %}hover:bg-slate-100/80 group{% endif %}">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
+                        <span class="text-xs font-bold text-[#02353C] {% if user_level >= req_level_outreach %}group-hover:text-emerald-700{% endif %} transition-colors flex items-center gap-1.5">
                             <i class="fa-solid fa-paper-plane text-amber-500"></i> {{ t('suite_outreach_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        {% if user_level < req_level_outreach %}
+                            <a href="/pricing" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-extrabold bg-amber-400 hover:bg-amber-300 text-[#02353C] shadow-2xs transition-transform hover:scale-105 shrink-0" title="Upgrade to Elite to unlock">
+                                <i class="fa-solid fa-lock text-[8px]"></i> Unlock Elite
+                            </a>
+                        {% else %}
+                            <a href="/outreach"><i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i></a>
+                        {% endif %}
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_outreach_desc') }}</p>
-                </a>
+                    {% if user_level < req_level_outreach %}
+                        <a href="/outreach" class="absolute inset-0 z-10" onclick="event.preventDefault(); window.location.href='/pricing';"></a>
+                    {% endif %}
+                </div>
 
-                <!-- LinkedIn Optimizer -->
-                <a href="/linkedin" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
+                <!-- 9. LinkedIn Optimizer (Pro Tier Required) -->
+                {% set req_level_linkedin = 1 %}
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 transition-all flex flex-col justify-between gap-2 relative {% if user_level < req_level_linkedin %}opacity-85{% else %}hover:bg-slate-100/80 group{% endif %}">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold text-[#0a66c2] transition-colors flex items-center gap-1.5">
                             <i class="fa-brands fa-linkedin text-blue-600"></i> {{ t('suite_linkedin_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        {% if user_level < req_level_linkedin %}
+                            <a href="/pricing" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-extrabold bg-amber-400 hover:bg-amber-300 text-[#02353C] shadow-2xs transition-transform hover:scale-105 shrink-0" title="Upgrade to Pro to unlock">
+                                <i class="fa-solid fa-lock text-[8px]"></i> Unlock Pro
+                            </a>
+                        {% else %}
+                            <a href="/linkedin"><i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i></a>
+                        {% endif %}
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_linkedin_desc') }}</p>
-                </a>
+                    {% if user_level < req_level_linkedin %}
+                        <a href="/linkedin" class="absolute inset-0 z-10" onclick="event.preventDefault(); window.location.href='/pricing';"></a>
+                    {% endif %}
+                </div>
 
             </div>
         </div>
