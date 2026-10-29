@@ -495,7 +495,7 @@ def inject_global_translations():
 
 
 # ============================================================
-# AI API CONFIGURATION & GENERATION HELPERS
+# AI API CONFIGURATION & GENERATION HELPERS (ELITE SPEED OPTIMIZED)
 # ============================================================
 
 
@@ -515,7 +515,7 @@ FLEXIBLE & FACTUAL GUIDELINES:
 """
 
 
-def generate_with_gemini(prompt, api_key=None, max_tokens=2048):
+def generate_with_gemini(prompt, api_key=None, max_tokens=2048, is_elite=False):
   api_key = api_key or get_gemini_api_key()
 
   if not api_key:
@@ -530,14 +530,20 @@ def generate_with_gemini(prompt, api_key=None, max_tokens=2048):
 
   client = genai.Client(api_key=api_key)
 
+  # Elite tier optimization: route to ultra-fast flash model for highest priority generation speed
+  model_name = 'gemini-2.5-flash' if is_elite else 'gemini-3.8-flash'
+
   config = (
-      types.GenerateContentConfig(max_output_tokens=max_tokens)
+      types.GenerateContentConfig(
+          max_output_tokens=max_tokens,
+          temperature=0.2 if is_elite else 0.7 # Lower temperature increases generation speed and stability
+      )
       if types
       else None
   )
 
   response = client.models.generate_content(
-      model='gemini-3.8-flash',
+      model=model_name,
       contents=full_prompt,
       config=config,
   )
@@ -555,8 +561,19 @@ def generate_ai_text(prompt, max_tokens=2048):
   if not gemini_key:
     raise RuntimeError('GEMINI_API_KEY environment variable is missing.')
 
+  # Determine if current user has Elite/Highest Priority status
+  is_elite_user = False
   try:
-    result = generate_with_gemini(prompt, gemini_key, max_tokens=max_tokens)
+    if current_user and current_user.is_authenticated:
+      user_tier = getattr(current_user, 'tier', 'free')
+      is_prem = bool(getattr(current_user, 'is_premium', False))
+      if is_prem and user_tier == 'elite':
+        is_elite_user = True
+  except Exception:
+    pass
+
+  try:
+    result = generate_with_gemini(prompt, gemini_key, max_tokens=max_tokens, is_elite=is_elite_user)
     return result
   except Exception as exc:
     print(f'GEMINI GENERATION FAILED: {type(exc).__name__}: {exc}')
@@ -1464,7 +1481,6 @@ def topup_credits():
     data = request.get_json() or {}
     package_type = data.get('package', 'small_pack')
     
-    # Top-ups add shared AI generation credits rather than full tier upgrades
     topup_credits_map = {
         'small_pack': 10,
         'medium_pack': 50,
@@ -1481,7 +1497,6 @@ def topup_credits():
     })
 
 
-# 1. AI Assist Credit Deduction & Studio Processing (1 credit per use)
 @premium_app.route('/api/v1/ai-assist', methods=['POST'])
 @login_required
 def ai_assist():
@@ -1513,7 +1528,6 @@ def ai_assist():
     })
 
 
-# 2. Resume Saving Limit (Max 1 saved resume for free tier)
 @premium_app.route('/api/v1/resumes/save', methods=['POST'])
 @login_required
 def save_resume():
@@ -1636,7 +1650,6 @@ def save_resume():
       return redirect(f'/editor?id={resume_id}')
 
 
-# 3. PDF Export (2 credits for export + lock further editing for free tier)
 @premium_app.route('/api/v1/export-pdf', methods=['POST'])
 @login_required
 def export_pdf():
@@ -1816,7 +1829,7 @@ def delete_job_application(app_id):
 premium_app.register_blueprint(tracker_api_bp)
 
 # ============================================================
-# GLOBAL AI CHAT ENDPOINT (GEMINI 3.8 FLASH)
+# GLOBAL AI CHAT ENDPOINT
 # ============================================================
 
 
