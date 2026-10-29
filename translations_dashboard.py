@@ -1363,7 +1363,7 @@ DASHBOARD_TRANSLATIONS = {
         "suite_tracker_title": "Kifuatiliaji cha Kazi",
         "suite_tracker_desc": "Fuatilia maombi yako kwenye ubao shirikishi wa Kanban.",
         "suite_matcher_title": "Kulinganisha Maneno Muhimu",
-        "suite_matcher_ndesc": "Chomoa ujuzi na uweke maneno muhimu yaliyokosekana kwenye CV.",
+        "suite_matcher_desc": "Chomoa ujuzi na uweke maneno muhimu yaliyokosekana kwenye CV.",
         "suite_salary_title": "Mpatanishi wa Mishahara wa AI",
         "suite_salary_desc": "Tathmini matoleo ya kazi na utengeneze mikakati ya ofa pinzani inayotegemea data.",
         "suite_portal_qa_title": "Msaidizi wa Maswali na Majibu ya Lango la Kazi la AI",
@@ -1402,4 +1402,11 @@ DASHBOARD_TRANSLATIONS = {
         "target_company": "KAMPUNI INAYOLENGWA *",
         "target_company_placeholder": "k.m. Stripe, Google, Acme Corp",
         "target_role": "JUKUMU LINALOLENGWA *",
-        "target
+        "target_role_placeholder": "k.m. Mhandisi Mwandamizi wa Frontend",
+        "job_posting_text": "MAANDISHI AU MAELEZO YA NAFASI YA KAZI *",
+        "fetch_from_url": "Chota kutoka URL",
+        "job_posting_placeholder": "Bandika maelezo kamili ya kazi, majukumu, na sifa zinazohitajika hapa...",
+        "cost_credits": "Gharama: Salio 9",
+        "generate_package": "Tengeneza Kifurushi →",
+    }
+}
