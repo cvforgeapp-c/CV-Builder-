@@ -122,11 +122,24 @@
                     <span>{{ t('pdf_studio', 'PDF Studio') }}</span>
                 </a>
                 
-                <!-- CORRECTED EDIT CV BUTTON WITH ACTIVE RESUME ID & PRO/LIMIT GUARD -->
-                <a href="/editor?id={{ resume.id if resume else '' }}" onclick="handleEditCvClick(event, '{{ resume.id if resume else '' }}')" class="bg-white/10 hover:bg-white/20 text-white font-semibold text-xs px-3.5 py-2 rounded-xl transition-all flex items-center gap-2 border border-white/10">
-                    <i class="fa-solid fa-pen-to-square text-amber-400"></i>
-                    <span>{{ t('edit_cv', 'Edit CV') }}</span>
-                </a>
+                {% set user_is_prem = user and user.is_premium %}
+                {% set user_tier = (user.tier if user and user.tier is defined else ('pro' if user_is_prem else 'free')) %}
+
+                <!-- EDIT CV BUTTON (GUARDED / LOCKED FOR FREE TIER) -->
+                {% if user_is_prem or user_tier != 'free' %}
+                    <a href="/editor?id={{ resume.id if resume else '' }}" class="bg-white/10 hover:bg-white/20 text-white font-semibold text-xs px-3.5 py-2 rounded-xl transition-all flex items-center gap-2 border border-white/10">
+                        <i class="fa-solid fa-pen-to-square text-amber-400"></i>
+                        <span>{{ t('edit_cv', 'Edit CV') }}</span>
+                    </a>
+                {% else %}
+                    <a href="/pricing" class="bg-white/10 hover:bg-white/20 text-white font-semibold text-xs px-3 py-2 rounded-xl transition-all flex items-center gap-2 border border-white/10" title="Upgrade to Pro to unlock editing">
+                        <i class="fa-solid fa-pen-to-square text-amber-400"></i>
+                        <span>{{ t('edit_cv', 'Edit CV') }}</span>
+                        <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-extrabold bg-amber-400 text-[#02353C] shadow-2xs ml-1">
+                            <i class="fa-solid fa-lock text-[7px]"></i> Pro
+                        </span>
+                    </a>
+                {% endif %}
 
                 <button onclick="handleExportPdfAction('/api/v1/export-pdf?id={{ resume.id if resume else '' }}')" class="bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-300 hover:to-amber-400 text-[#02353C] font-extrabold text-xs px-4.5 py-2 rounded-xl transition-all shadow-md flex items-center gap-2 active:scale-95">
                     <i class="fa-solid fa-file-pdf text-sm"></i>
@@ -640,29 +653,6 @@
 
 {% block extra_js %}
 <script>
-    // Guarded Edit CV Click Handler for Pro/Elite vs Free Tier
-    async function handleEditCvClick(event, resumeId) {
-        if (event) {
-            event.preventDefault();
-        }
-
-        const isFreeTier = {{ ('true' if not user or (not user.is_premium and (user.tier is not defined or user.tier == 'free')) else 'false') }};
-        const resumeCount = {{ resumes|length if resumes else 1 }};
-
-        // If free user has reached limit, trigger upgrade modal
-        if (isFreeTier && resumeCount > 1) {
-            showCreditModal("Free tier allows saving only 1 resume. Upgrade to Pro or Elite for unlimited storage and editing.", "/pricing");
-            return;
-        }
-
-        // Direct navigation to the editor studio with the target resume ID
-        if (resumeId) {
-            window.location.href = `/editor?id=${resumeId}`;
-        } else {
-            window.location.href = '/editor';
-        }
-    }
-
     // PDF Export & Print Action Handler
     async function handleExportPdfAction(actionUrl) {
         try {
