@@ -593,13 +593,13 @@ PRICE_MAP = {
 }
 
 FEATURE_RULES = {
-    'ats_optimizer': {'tier': 'free', 'cost': 3},
+    'ats_optimizer': {'tier': 'pro', 'cost': 3},
     'cover_letter': {'tier': 'pro', 'cost': 3},
     'cold_outreach': {'tier': 'pro', 'cost': 5},
     'portal_qa': {'tier': 'pro', 'cost': 6},
     'linkedin_optimizer': {'tier': 'pro', 'cost': 4},
     'interview_coach': {'tier': 'pro', 'cost': 5},
-    'pdf_studio': {'tier': 'pro', 'cost': 5},
+    'pdf_studio': {'tier': 'free', 'cost': 5},
     'salary_negotiator': {'tier': 'elite', 'cost': 10},
     'application_copilot': {'tier': 'pro', 'cost': 9},
 }
@@ -994,6 +994,7 @@ def preview():
 
 @premium_app.route('/ats')
 @login_required
+@tier_required('pro')
 def ats_optimizer():
   resumes = Resume.query.filter_by(user_id=current_user.id).all()
   return render_template(
@@ -1097,7 +1098,6 @@ def linkedin_optimizer():
 
 @premium_app.route('/pdf-studio', methods=['GET', 'POST'])
 @login_required
-@tier_required('pro')
 def pdf_studio():
   resume_id = request.args.get('resume_id') or request.form.get('resume_id')
 
@@ -2269,6 +2269,16 @@ def update_settings_section(section):
       current_user.full_name = data['fullName']
 
   elif section == 'language':
+    if not has_premium_access(current_user):
+      return (
+          jsonify({
+              'error': 'Multi-language customization requires a Pro or Elite subscription.',
+              'code': 'UPGRADE_REQUIRED',
+              'required_tier': 'pro'
+          }),
+          403,
+      )
+
     selected_language = data.get('language') or data.get('aiLanguage') or ''
 
     if not isinstance(selected_language, str):
@@ -2320,6 +2330,16 @@ def update_settings_section(section):
     ai_preferences.update(data)
 
     if 'aiLanguage' in data:
+      if not has_premium_access(current_user):
+        return (
+            jsonify({
+                'error': 'Multi-language customization requires a Pro or Elite subscription.',
+                'code': 'UPGRADE_REQUIRED',
+                'required_tier': 'pro'
+            }),
+            403,
+        )
+
       selected_language = data['aiLanguage']
 
       if (
