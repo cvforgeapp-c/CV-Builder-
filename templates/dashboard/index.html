@@ -147,7 +147,7 @@
                 </div>
                 <div>
                     <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ t('credits') }}</p>
-                    <p class="text-base sm:text-xl font-extrabold text-slate-900">{{ user.ai_credits_remaining if (user and user.ai_credits_remaining is defined and user.ai_credits_remaining is not none) else 3 }}</p>
+                    <p class="text-base sm:text-xl font-extrabold text-slate-900" id="userCreditVal">{{ user.ai_credits_remaining if (user and user.ai_credits_remaining is defined and user.ai_credits_remaining is not none) else 3 }}</p>
                 </div>
             </div>
 
@@ -904,6 +904,13 @@
         // COPILOT MODAL & BRANDED URL FETCHER LOGIC
         // ==========================================================
         function openCopilotModal() {
+          // Check if current user credits are below 9 before opening the Copilot suite
+          const currentCredits = parseInt(document.getElementById('userCreditVal').innerText.trim()) || 0;
+          if (currentCredits < 9) {
+              showCreditModal("You need at least 9 AI credits to run the Application Copilot suite. Please refill your credits.", "/pricing#topups");
+              return;
+          }
+
           const modal = document.getElementById('copilotModal');
           modal.classList.remove('hidden');
           modal.scrollTop = 0;
@@ -1041,6 +1048,14 @@
         // MAIN PIPELINE EXECUTION
         // ==========================================================
         async function runCopilotPipeline() {
+          // Verify credits client-side before submission (must be >= 9 credits)
+          const currentCredits = parseInt(document.getElementById('userCreditVal').innerText.trim()) || 0;
+          if (currentCredits < 9) {
+              closeCopilotModal();
+              showCreditModal("You need at least 9 AI credits to run the Application Copilot suite. Please refill your credits.", "/pricing#topups");
+              return;
+          }
+
           const company = document.getElementById('copilotCompany').value.trim();
           const role = document.getElementById('copilotRole').value.trim();
           const description = document.getElementById('copilotJobDescription').value.trim();
@@ -1075,6 +1090,14 @@
             });
 
             const data = await response.json();
+
+            if (response.status === 402 || data.code === "INSUFFICIENT_CREDITS") {
+              document.getElementById('copilotLoadingState').classList.add('hidden');
+              document.getElementById('copilotFormContainer').classList.remove('hidden');
+              closeCopilotModal();
+              showCreditModal("You have run out of credits! Application Copilot costs 9 credits.", "/pricing#topups");
+              return;
+            }
 
             if (response.ok && data.success) {
               const pkg = data.copilot_package;
@@ -1130,13 +1153,13 @@
               if (data.button_action === 'REFILL_CREDIT') {
                 refillLink.classList.remove('hidden');
               }
-              errorAlert.classList.add('hidden');
+              errorAlert.classList.remove('hidden');
             }
           } catch (err) {
             document.getElementById('copilotLoadingState').classList.add('hidden');
             document.getElementById('copilotFormContainer').classList.remove('hidden');
             errorMsg.innerText = "A network error occurred. Please try again.";
-            errorAlert.classList.add('hidden');
+            errorAlert.classList.remove('hidden');
           }
         }
     </script>
