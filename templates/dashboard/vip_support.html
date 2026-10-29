@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>VIP Priority Support | CVForge Elite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-6">
+    <div class="max-w-3xl mx-auto">
+        <a href="/dashboard" class="text-emerald-400 hover:underline text-sm mb-4 inline-block">← Back to Dashboard</a>
+        <div class="bg-slate-900 border border-emerald-500/30 rounded-xl p-8 shadow-2xl">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="bg-emerald-500/20 text-emerald-400 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Elite Tier Exclusive</span>
+                <h1 class="text-2xl font-bold">VIP Priority Support Channel</h1>
+            </div>
+            <p class="text-slate-400 mb-6 text-sm">
+                As an Elite member, your queries bypass standard queues and are routed directly to our senior executive career advisors and core engineering team. Guaranteed response time: <strong>Under 2 hours</strong>.
+            </p>
+
+            <form id="vipSupportForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-slate-300">Issue Subject</label>
+                    <input type="text" id="subject" required placeholder="e.g. Custom Template Formatting or API Integration Inquiry" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-slate-200 focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-slate-300">Detailed Description</label>
+                    <textarea id="message" rows="5" required placeholder="Describe your request or technical issue in detail..." class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-slate-200 focus:outline-none focus:border-emerald-500"></textarea>
+                </div>
+                <button type="submit" id="submitBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-lg transition-all shadow-lg shadow-emerald-900/20">
+                    Dispatch VIP Ticket
+                </button>
+            </form>
+            <div id="responseMsg" class="mt-4 text-center text-sm hidden"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('vipSupportForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const subject = document.getElementById('subject').value;
+            const message = document.getElementById('message').value;
+            const btn = document.getElementById('submitBtn');
+            const msgBox = document.getElementById('responseMsg');
+
+            btn.disabled = true;
+            btn.textContent = 'Submitting Ticket...';
+            msgBox.classList.add('hidden');
+
+            try {
+                const res = await fetch('/vip-support', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ subject, message })
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    msgBox.className = 'mt-4 text-center text-sm text-emerald-400 font-medium';
+                    msgBox.textContent = data.message;
+                    msgBox.classList.remove('hidden');
+                    document.getElementById('vipSupportForm').reset();
+                } else {
+                    throw new Error(data.error || 'Failed to submit ticket');
+                }
+            } catch (err) {
+                msgBox.className = 'mt-4 text-center text-sm text-rose-400 font-medium';
+                msgBox.textContent = err.message;
+                msgBox.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Dispatch VIP Ticket';
+            }
+        });
+    </script>
+</body>
+</html>
