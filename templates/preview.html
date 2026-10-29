@@ -121,11 +121,11 @@
                     <i class="fa-solid fa-palette text-amber-400"></i>
                     <span>{{ t('pdf_studio', 'PDF Studio') }}</span>
                 </a>
-                <a href="/editor?id={{ resume.id if resume else '' }}" class="bg-white/10 hover:bg-white/20 text-white font-semibold text-xs px-3.5 py-2 rounded-xl transition-all flex items-center gap-2 border border-white/10">
+                <a href="/editor?id={{ resume.id if resume else '' }}" onclick="handlePreviewAction('/api/v1/resumes/edit-check?id={{ resume.id if resume else '' }}', event)" class="bg-white/10 hover:bg-white/20 text-white font-semibold text-xs px-3.5 py-2 rounded-xl transition-all flex items-center gap-2 border border-white/10">
                     <i class="fa-solid fa-pen-to-square text-amber-400"></i>
                     <span>{{ t('edit_cv', 'Edit CV') }}</span>
                 </a>
-                <button onclick="window.print()" class="bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-300 hover:to-amber-400 text-[#02353C] font-extrabold text-xs px-4.5 py-2 rounded-xl transition-all shadow-md flex items-center gap-2 active:scale-95">
+                <button onclick="handlePreviewAction('/api/v1/export-pdf?id={{ resume.id if resume else '' }}')" class="bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-300 hover:to-amber-400 text-[#02353C] font-extrabold text-xs px-4.5 py-2 rounded-xl transition-all shadow-md flex items-center gap-2 active:scale-95">
                     <i class="fa-solid fa-file-pdf text-sm"></i>
                     <span>{{ t('download_pdf_print', 'Download PDF / Print') }}</span>
                 </button>
@@ -633,4 +633,61 @@
         {% endif %}
 
     </main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function handlePreviewAction(actionUrl, event) {
+        if (event) {
+            event.preventDefault();
+        }
+
+        try {
+            const response = await fetch(actionUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            const data = await response.json();
+
+            // 1. Handle Insufficient Credits (PDF Export costs credits)
+            if (response.status === 402 || data.code === "INSUFFICIENT_CREDITS") {
+                showCreditModal("You have run out of credits! AI Assist costs 1 credit and PDF exports cost 2 credits.", "/pricing#topups");
+                return;
+            }
+
+            // 2. Handle Resume Limit / Locked Editing Status for Free Tier
+            if (response.status === 403 && data.code === "RESUME_LIMIT_REACHED") {
+                showCreditModal("Free tier allows saving only 1 resume. Upgrade to Pro or Elite for unlimited storage and editing.", "/pricing");
+                return;
+            }
+
+            if (response.ok && data.success) {
+                if (data.redirect_url) {
+                    window.location.href = data.redirect_url;
+                } else if (actionUrl.includes('export-pdf')) {
+                    // Handle direct download or trigger print if endpoint returns success
+                    window.print();
+                } else {
+                    window.location.href = event ? event.currentTarget.href : window.location.href;
+                }
+            } else if (event && event.currentTarget && event.currentTarget.href) {
+                // Fallback to normal navigation if endpoint check passes
+                window.location.href = event.currentTarget.href;
+            } else {
+                window.print();
+            }
+        } catch (err) {
+            console.error("Preview action network error:", err);
+            if (event && event.currentTarget && event.currentTarget.href) {
+                window.location.href = event.currentTarget.href;
+            } else {
+                window.print();
+            }
+        }
+    }
+</script>
 {% endblock %}
