@@ -273,10 +273,9 @@
                     <textarea id="copilotJobDescription" rows="5" placeholder="{{ t('job_posting_placeholder') }}" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3.5 text-slate-200 text-sm focus:outline-none focus:border-emerald-500 transition-colors resize-none"></textarea>
                   </div>
 
-                  <!-- Error Alert Box -->
-                  <div id="copilotErrorAlert" class="hidden p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs flex items-center justify-between">
+                  <!-- Error Alert Box (Original Plain Text Error Style) -->
+                  <div id="copilotErrorAlert" class="hidden p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded-lg">
                     <span id="copilotErrorMsg">An error occurred.</span>
-                    <a href="/pricing" id="refillLink" class="hidden underline font-bold hover:text-red-300">Refill Credits</a>
                   </div>
 
                   <!-- Submit Footer -->
@@ -478,7 +477,9 @@
           </div>
         </div>
 
-        <!-- 4. CVFORGE PRO CAREER SUITE (QUICK-ACCESS INTEGRATED GRID) -->
+        <!-- 4. CVFORGE PRO CAREER SUITE (ORIGINAL ORDER RESTORED) -->
+        {% set user_tier = user.tier if user and user.tier else ('pro' if user and user.is_premium else 'free') %}
+        
         <div class="bg-white rounded-xl p-4 border border-slate-200/90 shadow-2xs space-y-3">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
@@ -488,13 +489,13 @@
                     <h2 class="text-sm sm:text-base font-extrabold text-[#02353C]">{{ t('career_suite_title') }}</h2>
                 </div>
                 <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-gradient-to-r from-amber-400 to-amber-500 text-[#02353C] shadow-2xs">
-                    <i class="fa-solid fa-crown text-[9px]"></i> {{ t('unlocked_suite') }}
+                    <i class="fa-solid fa-crown text-[9px]"></i> Unlock Suite
                 </span>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
                 
-                <!-- ATS Optimizer -->
+                <!-- ATS Optimizer (Free Tier) -->
                 <a href="/ats" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
@@ -505,29 +506,43 @@
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_ats_desc') }}</p>
                 </a>
 
-                <!-- Cover Letter Generator -->
-                <a href="/cover-letter" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
+                <!-- Cover Letter Generator (Pro Tier) -->
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2 relative overflow-hidden">
+                    {% if user_tier == 'free' and not (user and user.is_premium) %}
+                    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-3xs z-10 flex flex-col items-center justify-center p-2 text-center">
+                        <i class="fa-solid fa-lock text-amber-400 text-sm mb-1"></i>
+                        <span class="text-[10px] font-bold text-white mb-1">Pro Career Suite Feature</span>
+                        <a href="/pricing" class="text-[10px] bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold px-2.5 py-1 rounded shadow-2xs">Upgrade to Pro</a>
+                    </div>
+                    {% endif %}
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
+                        <span class="text-xs font-bold text-[#02353C] flex items-center gap-1.5">
                             <i class="fa-solid fa-envelope-open-text text-amber-500"></i> {{ t('suite_cover_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <a href="/cover-letter" class="text-[10px] font-bold text-emerald-700 underline">Open</a>
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_cover_desc') }}</p>
-                </a>
+                </div>
 
-                <!-- Interview AI Coach -->
-                <a href="/interview" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
+                <!-- Interview AI Coach (Pro Tier) -->
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2 relative overflow-hidden">
+                    {% if user_tier == 'free' and not (user and user.is_premium) %}
+                    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-3xs z-10 flex flex-col items-center justify-center p-2 text-center">
+                        <i class="fa-solid fa-lock text-amber-400 text-sm mb-1"></i>
+                        <span class="text-[10px] font-bold text-white mb-1">Pro Career Suite Feature</span>
+                        <a href="/pricing" class="text-[10px] bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold px-2.5 py-1 rounded shadow-2xs">Upgrade to Pro</a>
+                    </div>
+                    {% endif %}
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
+                        <span class="text-xs font-bold text-[#02353C] flex items-center gap-1.5">
                             <i class="fa-solid fa-comments text-amber-500"></i> {{ t('suite_interview_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <a href="/interview" class="text-[10px] font-bold text-emerald-700 underline">Open</a>
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_interview_desc') }}</p>
-                </a>
+                </div>
 
-                <!-- Application Tracker -->
+                <!-- Application Tracker (Free Tier) -->
                 <a href="/tracker" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
@@ -538,60 +553,95 @@
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_tracker_desc') }}</p>
                 </a>
 
-                <!-- AI Salary Negotiator -->
-                <a href="/salary-negotiator" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
+                <!-- AI Salary Negotiator (Elite Executive Tier) -->
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2 relative overflow-hidden">
+                    {% if user_tier != 'elite' %}
+                    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-3xs z-10 flex flex-col items-center justify-center p-2 text-center">
+                        <i class="fa-solid fa-lock text-amber-400 text-sm mb-1"></i>
+                        <span class="text-[10px] font-bold text-white mb-1">Elite Executive Feature</span>
+                        <a href="/pricing" class="text-[10px] bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold px-2.5 py-1 rounded shadow-2xs">Upgrade to Elite</a>
+                    </div>
+                    {% endif %}
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
+                        <span class="text-xs font-bold text-[#02353C] flex items-center gap-1.5">
                             <i class="fa-solid fa-calculator text-amber-500"></i> {{ t('suite_salary_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">Elite</span>
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_salary_desc') }}</p>
-                </a>
+                </div>
 
-                <!-- AI Application Essay & Portal Q&A Assistant -->
-                <a href="/portal-qa" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
+                <!-- AI Application Essay & Portal Q&A Assistant (Elite Executive Tier) -->
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2 relative overflow-hidden">
+                    {% if user_tier != 'elite' %}
+                    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-3xs z-10 flex flex-col items-center justify-center p-2 text-center">
+                        <i class="fa-solid fa-lock text-amber-400 text-sm mb-1"></i>
+                        <span class="text-[10px] font-bold text-white mb-1">Elite Executive Feature</span>
+                        <a href="/pricing" class="text-[10px] bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold px-2.5 py-1 rounded shadow-2xs">Upgrade to Elite</a>
+                    </div>
+                    {% endif %}
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
+                        <span class="text-xs font-bold text-[#02353C] flex items-center gap-1.5">
                             <i class="fa-solid fa-pen-nib text-amber-500"></i> {{ t('suite_portal_qa_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">Elite</span>
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_portal_qa_desc') }}</p>
-                </a>
+                </div>
 
-                <!-- Cold Outreach Generator -->
-                <a href="/outreach" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
+                <!-- Cold Outreach Generator (Elite Executive Tier) -->
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2 relative overflow-hidden">
+                    {% if user_tier != 'elite' %}
+                    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-3xs z-10 flex flex-col items-center justify-center p-2 text-center">
+                        <i class="fa-solid fa-lock text-amber-400 text-sm mb-1"></i>
+                        <span class="text-[10px] font-bold text-white mb-1">Elite Executive Feature</span>
+                        <a href="/pricing" class="text-[10px] bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold px-2.5 py-1 rounded shadow-2xs">Upgrade to Elite</a>
+                    </div>
+                    {% endif %}
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
+                        <span class="text-xs font-bold text-[#02353C] flex items-center gap-1.5">
                             <i class="fa-solid fa-paper-plane text-amber-500"></i> {{ t('suite_outreach_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">Elite</span>
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_outreach_desc') }}</p>
-                </a>
+                </div>
 
-                <!-- LinkedIn Optimizer -->
-                <a href="/linkedin" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
+                <!-- LinkedIn Optimizer (Pro Tier) -->
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2 relative overflow-hidden">
+                    {% if user_tier == 'free' and not (user and user.is_premium) %}
+                    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-3xs z-10 flex flex-col items-center justify-center p-2 text-center">
+                        <i class="fa-solid fa-lock text-amber-400 text-sm mb-1"></i>
+                        <span class="text-[10px] font-bold text-white mb-1">Pro Career Suite Feature</span>
+                        <a href="/pricing" class="text-[10px] bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold px-2.5 py-1 rounded shadow-2xs">Upgrade to Pro</a>
+                    </div>
+                    {% endif %}
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#0a66c2] transition-colors flex items-center gap-1.5">
+                        <span class="text-xs font-bold text-[#0a66c2] flex items-center gap-1.5">
                             <i class="fa-brands fa-linkedin text-blue-600"></i> {{ t('suite_linkedin_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <a href="/linkedin" class="text-[10px] font-bold text-emerald-700 underline">Open</a>
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_linkedin_desc') }}</p>
-                </a>
+                </div>
 
-                <!-- PDF Studio -->
-                <a href="/pdf-studio" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
+                <!-- PDF Studio (Pro Tier) -->
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2 relative overflow-hidden">
+                    {% if user_tier == 'free' and not (user and user.is_premium) %}
+                    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-3xs z-10 flex flex-col items-center justify-center p-2 text-center">
+                        <i class="fa-solid fa-lock text-amber-400 text-sm mb-1"></i>
+                        <span class="text-[10px] font-bold text-white mb-1">Pro Career Suite Feature</span>
+                        <a href="/pricing" class="text-[10px] bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold px-2.5 py-1 rounded shadow-2xs">Upgrade to Pro</a>
+                    </div>
+                    {% endif %}
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
+                        <span class="text-xs font-bold text-[#02353C] flex items-center gap-1.5">
                             <i class="fa-solid fa-palette text-amber-500"></i> {{ t('suite_pdf_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <a href="/pdf-studio" class="text-[10px] font-bold text-emerald-700 underline">Open</a>
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_pdf_desc') }}</p>
-                </a>
+                </div>
 
             </div>
         </div>
@@ -706,14 +756,13 @@
             const isFreeTier = {{ ('true' if not user or (not user.is_premium and (user.tier is not defined or user.tier == 'free')) else 'false') }};
             const resumeCount = {{ resumes|length if resumes else 0 }};
 
-            // If free tier and user already has 1 or more resumes, block navigation and show modal
             if (isFreeTier && resumeCount >= 1) {
                 e.preventDefault();
-                showCreditModal("Free tier allows saving only 1 resume. Upgrade to Pro or Elite for unlimited storage and editing.", "/pricing");
+                alert("Free tier allows saving only 1 resume. Upgrade to Pro or Elite for unlimited storage and editing.");
+                window.location.href = "/pricing";
             }
         }
 
-        // Load active stored preferences and avatar into the Dashboard UI
         async function loadStoredSettings() {
             try {
                 const response = await fetch('/api/v1/settings');
@@ -749,7 +798,6 @@
             }
         }
 
-        // Fetch live job application count from tracker API
         async function loadDashboardApplicationCount() {
             try {
                 const res = await fetch('/api/v1/tracker');
@@ -772,7 +820,6 @@
             loadDashboardApplicationCount();
         });
 
-        // Resume Deletion Script
         let targetResumeId = null;
 
         function confirmDeleteResume(resumeId, title) {
@@ -826,9 +873,6 @@
             }
         });
 
-        // ==========================================================
-        // COPILOT MODAL & BRANDED URL FETCHER LOGIC
-        // ==========================================================
         function openCopilotModal() {
           const modal = document.getElementById('copilotModal');
           modal.classList.remove('hidden');
@@ -897,9 +941,6 @@
           }
         }
 
-        // ==========================================================
-        // ACTION BUTTON HELPERS (COPY & DIRECT PDF EXPORT)
-        // ==========================================================
         function copyCoverLetterText() {
           const text = document.getElementById('copilotCoverLetterText').value;
           if (!text) return;
@@ -924,7 +965,6 @@
           });
         }
 
-        // Dedicated PDF Export Endpoint Trigger for Cover Letter
         async function exportCoverLetterPdf() {
           const content = document.getElementById('copilotCoverLetterText').value.trim();
           const company = document.getElementById('copilotCompany').value.trim() || 'Company';
@@ -963,9 +1003,6 @@
           }
         }
 
-        // ==========================================================
-        // MAIN PIPELINE EXECUTION
-        // ==========================================================
         async function runCopilotPipeline() {
           const company = document.getElementById('copilotCompany').value.trim();
           const role = document.getElementById('copilotRole').value.trim();
@@ -974,10 +1011,8 @@
 
           const errorAlert = document.getElementById('copilotErrorAlert');
           const errorMsg = document.getElementById('copilotErrorMsg');
-          const refillLink = document.getElementById('refillLink');
 
           errorAlert.classList.add('hidden');
-          refillLink.classList.add('hidden');
 
           if (!description || !company || !role) {
             errorMsg.innerText = "Please fill in company, target role, and job description.";
@@ -1006,7 +1041,6 @@
               const pkg = data.copilot_package;
               const targetResumeId = pkg.generated_resume_id || resumeId;
 
-              // Populate Score & Full ATS Keywords
               document.getElementById('copilotAtsScore').innerText = (pkg.ats_score || 85) + '%';
               
               const matchedContainer = document.getElementById('copilotMatchedKeywords');
@@ -1024,7 +1058,6 @@
                   .join('');
               }
 
-              // Populate Generated Assets
               document.getElementById('copilotTailoredSummary').innerText = pkg.tailored_summary || '';
               
               if (document.getElementById('copilotTailoredExperience')) {
@@ -1039,7 +1072,6 @@
               document.getElementById('copilotEmailSubject').innerText = pkg.cold_email_subject || '';
               document.getElementById('copilotEmailBody').innerText = pkg.cold_email_body || '';
 
-              // Dynamic Redirect Links for Edit & Preview/Download pointing to the newly generated resume ID
               const editCvBtn = document.getElementById('copilotEditCvBtn');
               if (editCvBtn) editCvBtn.href = `/editor?id=${targetResumeId || ''}`;
 
@@ -1053,10 +1085,7 @@
               document.getElementById('copilotFormContainer').classList.remove('hidden');
 
               errorMsg.innerText = data.error || "Execution failed.";
-              if (data.button_action === 'REFILL_CREDIT') {
-                refillLink.classList.remove('hidden');
-              }
-              errorAlert.classList.add('hidden');
+              errorAlert.classList.remove('hidden');
             }
           } catch (err) {
             document.getElementById('copilotLoadingState').classList.add('hidden');
