@@ -740,34 +740,6 @@
             {% endif %}
         </div>
 
-        <!-- 6. VIP PRIORITY SUPPORT CHANNEL (ELITE TIER CARD) -->
-        {% set req_level_vip = 2 %}
-        <div class="bg-gradient-to-r from-slate-900 via-[#02353C] to-slate-900 text-white rounded-xl p-4 sm:p-5 shadow-sm border border-amber-500/30 relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
-                <i class="fa-solid fa-headset text-9xl text-amber-400"></i>
-            </div>
-            <div class="space-y-1.5 max-w-2xl relative z-10">
-                <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-amber-400/20 border border-amber-400/30 rounded-full text-[10px] font-bold text-amber-300">
-                    <i class="fa-solid fa-crown text-[9px]"></i> Elite Tier Exclusive
-                </div>
-                <h2 class="text-lg sm:text-xl font-bold tracking-tight text-white">VIP Priority Support Channel</h2>
-                <p class="text-slate-300 text-xs leading-relaxed">
-                    Bypass standard queues and connect directly with senior executive career advisors and core engineers with a guaranteed 2-hour response time.
-                </p>
-            </div>
-            <div class="relative z-10 shrink-0">
-                {% if user_level >= req_level_vip %}
-                    <a href="/vip-support" class="bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold px-4 py-2.5 rounded-lg shadow-sm transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center gap-2 text-xs">
-                        <i class="fa-solid fa-headset text-xs"></i> Access VIP Support
-                    </a>
-                {% else %}
-                    <a href="/pricing" class="bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold px-4 py-2.5 rounded-lg shadow-sm transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center gap-2 text-xs" title="Upgrade to Elite to unlock">
-                        <i class="fa-solid fa-lock text-xs"></i> Unlock Elite Support
-                    </a>
-                {% endif %}
-            </div>
-        </div>
-
     </main>
 
     <!-- RESUME DELETION MODAL -->
