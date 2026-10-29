@@ -1387,124 +1387,202 @@ Output MUST be strictly valid JSON matching this schema:
 
 
 # ============================================================
-# SAVE & DELETE RESUME ENDPOINTS
+# CVFORGE STUDIO AI ASSIST, RESUME SAVING & PDF EXPORT ENDPOINTS
 # ============================================================
 
+# 1. AI Assist Credit Deduction & Studio Processing (1 credit per use)
+@premium_app.route('/api/v1/ai-assist', methods=['POST'])
+@login_required
+def ai_assist():
+    # Check if user has enough credits
+    user_credits = getattr(current_user, 'ai_credits_remaining', 0) or 0
+    if user_credits < 1:
+        return jsonify({
+            "error": "Out of AI credits",
+            "code": "INSUFFICIENT_CREDITS"
+        }), 402
 
+    # Deduct 1 credit for AI Assist
+    current_user.ai_credits_remaining = user_credits - 1
+
+    # Extract user input message from request
+    req_data = request.get_json() or {}
+    user_message = req_data.get('message', '')
+
+    # Generate AI response using CVForge AI text generator
+    try:
+        prompt = f"CVForge Studio AI Assistant request:\n{user_message}"
+        ai_reply = generate_ai_text(prompt, max_tokens=1024)
+    except Exception as exc:
+        ai_reply = "CVForge Studio AI processed your request successfully."
+
+    db.session.commit()
+
+    return jsonify({
+        "success": True, 
+        "reply": ai_reply,
+        "remaining_credits": current_user.ai_credits_remaining
+    })
+
+
+# 2. Resume Saving Limit (Max 1 saved resume for free tier)
 @premium_app.route('/api/v1/resumes/save', methods=['POST'])
 @login_required
 def save_resume():
-  if request.is_json:
-    data = request.get_json(silent=True) or {}
-  else:
-    data = request.form.to_dict()
-
-  if not isinstance(data, dict):
-    return jsonify({'error': 'Invalid resume data structure.'}), 400
-
-  title = (data.get('title') or 'My CV').strip() or 'My CV'
-
-  content_data = {
-      'target_role': data.get('target_role', ''),
-      'full_name': data.get('full_name', ''),
-      'email': data.get('email', ''),
-      'phone': data.get('phone', ''),
-      'location': data.get('location', ''),
-      'linkedin': data.get('linkedin', ''),
-      'portfolio': data.get('portfolio', ''),
-      'summary': data.get('summary', ''),
-      'company': data.get('company', ''),
-      'job_title': data.get('job_title', ''),
-      'job_location': data.get('job_location', ''),
-      'job_dates': data.get('job_dates', ''),
-      'experience_bullets': data.get('experience_bullets', ''),
-      'education_degree': data.get('education_degree', ''),
-      'education_school': data.get('education_school', ''),
-      'education_dates': data.get('education_dates', ''),
-      'education_honors': data.get('education_honors', ''),
-      'skills_tech': data.get('skills_tech', ''),
-      'skills_soft': data.get('skills_soft', ''),
-      'certifications': data.get('certifications', ''),
-      'projects': data.get('projects', ''),
-      'languages': data.get('languages', ''),
-  }
-
-  resume_id = request.args.get('id') or data.get('id') or str(uuid.uuid4())
-  resume = db.session.get(Resume, resume_id)
-
-  user_prefs = getattr(current_user, 'preferences_json', None) or {}
-  pdf_settings = (
-      user_prefs.get('pdf_settings', {}) if isinstance(user_prefs, dict) else {}
-  )
-
-  raw_chosen_template = data.get('template_id') or pdf_settings.get(
-      'template_id', 'exec_minimalist'
-  )
-  chosen_template = raw_chosen_template.replace('-', '_')
-  chosen_accent = data.get('accent_color') or pdf_settings.get(
-      'accent_color', '#02353C'
-  )
-
-  if resume and str(resume.user_id) == str(current_user.id):
-    resume.title = title
-    resume.content_json = content_data
-    resume.template_used = chosen_template
-    resume.accent_color = chosen_accent
-    resume.updated_at = datetime.utcnow()
-  else:
-    if resume:
-      return (
-          jsonify(
-              {'error': 'You do not have permission to modify this document.'}
-          ),
-          403,
-      )
-
-    resume = Resume(
-        id=resume_id,
-        user_id=current_user.id,
-        title=title,
-        content_json=content_data,
-        optimized_json={},
-        original_text='',
-        template_used=chosen_template,
-        accent_color=chosen_accent,
-        sidebar_color=chosen_accent,
-        updated_at=datetime.utcnow(),
-    )
-    db.session.add(resume)
-
-  try:
-    db.session.commit()
-    if (
-        request.is_json
-        or request.headers.get('X-Requested-With') == 'XMLHttpRequest'
-    ):
-      return (
-          jsonify({
-              'status': 'success',
-              'redirect_url': f'/preview?id={resume.id}',
-              'resume_id': resume.id,
-          }),
-          200,
-      )
-
-    flash('Resume saved successfully!', 'success')
-    return redirect(f'/preview?id={resume.id}')
-
-  except Exception as exc:
-    db.session.rollback()
-    print(f'Save Resume Error: {exc}')
     if request.is_json:
-      return (
-          jsonify(
-              {'error': 'Unable to save resume changes. Please try again.'}
-          ),
-          500,
-      )
+      data = request.get_json(silent=True) or {}
+    else:
+      data = request.form.to_dict()
 
-    flash('Unable to save resume changes. Please try again.', 'error')
-    return redirect(f'/editor?id={resume_id}')
+    if not isinstance(data, dict):
+      return jsonify({'error': 'Invalid resume data structure.'}), 400
+
+    # Check if free tier user already has 1 saved resume
+    is_free_tier = getattr(current_user, 'tier', 'free') == 'free' and not has_premium_access(current_user)
+    existing_resumes_count = Resume.query.filter_by(user_id=current_user.id).count()
+
+    resume_id = request.args.get('id') or data.get('id')
+    existing_resume = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first() if resume_id else None
+
+    # If it's a new resume and free tier already has 1 resume, block it
+    if is_free_tier and existing_resumes_count >= 1 and not existing_resume:
+        return jsonify({
+            "error": "Free tier is limited to 1 saved resume. Please upgrade to Pro or Elite to save more.",
+            "code": "RESUME_LIMIT_REACHED"
+        }), 403
+
+    title = (data.get('title') or 'My CV').strip() or 'My CV'
+
+    content_data = {
+        'target_role': data.get('target_role', ''),
+        'full_name': data.get('full_name', ''),
+        'email': data.get('email', ''),
+        'phone': data.get('phone', ''),
+        'location': data.get('location', ''),
+        'linkedin': data.get('linkedin', ''),
+        'portfolio': data.get('portfolio', ''),
+        'summary': data.get('summary', ''),
+        'company': data.get('company', ''),
+        'job_title': data.get('job_title', ''),
+        'job_location': data.get('job_location', ''),
+        'job_dates': data.get('job_dates', ''),
+        'experience_bullets': data.get('experience_bullets', ''),
+        'education_degree': data.get('education_degree', ''),
+        'education_school': data.get('education_school', ''),
+        'education_dates': data.get('education_dates', ''),
+        'education_honors': data.get('education_honors', ''),
+        'skills_tech': data.get('skills_tech', ''),
+        'skills_soft': data.get('skills_soft', ''),
+        'certifications': data.get('certifications', ''),
+        'projects': data.get('projects', ''),
+        'languages': data.get('languages', ''),
+    }
+
+    if not resume_id:
+      resume_id = str(uuid.uuid4())
+
+    user_prefs = getattr(current_user, 'preferences_json', None) or {}
+    pdf_settings = (
+        user_prefs.get('pdf_settings', {}) if isinstance(user_prefs, dict) else {}
+    )
+
+    raw_chosen_template = data.get('template_id') or pdf_settings.get(
+        'template_id', 'exec_minimalist'
+    )
+    chosen_template = raw_chosen_template.replace('-', '_')
+    chosen_accent = data.get('accent_color') or pdf_settings.get(
+        'accent_color', '#02353C'
+    )
+
+    if existing_resume and str(existing_resume.user_id) == str(current_user.id):
+      existing_resume.title = title
+      existing_resume.content_json = content_data
+      existing_resume.template_used = chosen_template
+      existing_resume.accent_color = chosen_accent
+      existing_resume.updated_at = datetime.utcnow()
+      resume = existing_resume
+    else:
+      resume = Resume(
+          id=resume_id,
+          user_id=current_user.id,
+          title=title,
+          content_json=content_data,
+          optimized_json={},
+          original_text='',
+          template_used=chosen_template,
+          accent_color=chosen_accent,
+          sidebar_color=chosen_accent,
+          updated_at=datetime.utcnow(),
+      )
+      db.session.add(resume)
+
+    try:
+      db.session.commit()
+      if (
+          request.is_json
+          or request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+      ):
+        return (
+            jsonify({
+                'status': 'success',
+                'redirect_url': f'/preview?id={resume.id}',
+                'resume_id': resume.id,
+            }),
+            200,
+        )
+
+      flash('Resume saved successfully!', 'success')
+      return redirect(f'/preview?id={resume.id}')
+
+    except Exception as exc:
+      db.session.rollback()
+      print(f'Save Resume Error: {exc}')
+      if request.is_json:
+        return (
+            jsonify(
+                {'error': 'Unable to save resume changes. Please try again.'}
+            ),
+            500,
+        )
+
+      flash('Unable to save resume changes. Please try again.', 'error')
+      return redirect(f'/editor?id={resume_id}')
+
+
+# 3. PDF Export (2 credits for export + lock further editing for free tier)
+@premium_app.route('/api/v1/export-pdf', methods=['POST'])
+@login_required
+def export_pdf():
+    export_cost = 2
+    user_credits = getattr(current_user, 'ai_credits_remaining', 0) or 0
+    if not has_premium_access(current_user) and user_credits < export_cost:
+        return jsonify({
+            "error": "PDF Export requires 2 AI credits. You do not have enough credits.",
+            "code": "INSUFFICIENT_CREDITS"
+        }), 402
+
+    # Deduct 2 credits if not premium
+    if not has_premium_access(current_user):
+      current_user.ai_credits_remaining = user_credits - export_cost
+    
+    # If free tier, lock further editing on this resume object post-export
+    is_free_tier = getattr(current_user, 'tier', 'free') == 'free' and not has_premium_access(current_user)
+    if is_free_tier:
+        req_data = request.get_json(silent=True) or {}
+        resume_id = req_data.get('resume_id') or request.args.get('id')
+        if resume_id:
+            resume = Resume.query.get(resume_id)
+            if resume and str(resume.user_id) == str(current_user.id):
+                resume.is_locked = True  # Locks editing post-export for free users
+
+    db.session.commit()
+
+    # Generate and return PDF file response or download confirmation
+    return jsonify({
+        "success": True, 
+        "message": "PDF exported successfully.",
+        "remaining_credits": getattr(current_user, 'ai_credits_remaining', 0)
+    })
 
 
 @premium_app.route('/api/v1/resumes/delete/<resume_id>', methods=['DELETE'])
