@@ -349,7 +349,7 @@
                         
                         <!-- Dual CTA Group as inspected in ATS Engine -->
                         <div class="flex items-center gap-2 shrink-0">
-                          <a id="copilotEditCvBtn" href="#" class="text-[11px] bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold px-2.5 py-1 rounded-md transition-colors flex items-center gap-1">
+                          <a id="copilotEditCvBtn" href="#" onclick="checkResumeLimit(event)" class="text-[11px] bg-amber-400 hover:bg-amber-300 text-[#02353C] font-extrabold px-2.5 py-1 rounded-md transition-colors flex items-center gap-1">
                             <i class="fa-solid fa-pen-to-square text-[10px]"></i> Edit in Editor
                           </a>
                           <a id="copilotPreviewCvBtn" href="#" class="text-[11px] bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold px-2.5 py-1 rounded-md transition-colors flex items-center gap-1">
@@ -633,7 +633,8 @@
 
                             <div class="px-3.5 py-2 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between text-xs font-semibold">
                                 <div class="flex items-center gap-3">
-                                    <a href="/editor?id={{ resume.id }}" class="text-[#02353C] hover:text-emerald-700 flex items-center gap-1">
+                                    <!-- SECURED EDIT BUTTON WITH RESUME LIMIT CHECK -->
+                                    <a href="/editor?id={{ resume.id }}" onclick="checkResumeLimit(event)" class="text-[#02353C] hover:text-emerald-700 flex items-center gap-1">
                                         <i class="fa-solid fa-pen-to-square text-[11px]"></i> {{ t('edit') }}
                                     </a>
                                     <a href="/preview?id={{ resume.id }}" class="text-slate-500 hover:text-slate-900 flex items-center gap-1" title="{{ t('view_pdf') }}">
@@ -705,6 +706,7 @@
             const isFreeTier = {{ ('true' if not user or (not user.is_premium and getattr(user, 'tier', 'free') == 'free') else 'false') }};
             const resumeCount = {{ resumes|length if resumes else 0 }};
 
+            // If free tier and user already has 1 or more resumes, block navigation and show modal
             if (isFreeTier && resumeCount >= 1) {
                 e.preventDefault();
                 showCreditModal("Free tier allows saving only 1 resume. Upgrade to Pro or Elite for unlimited storage and editing.", "/pricing");
@@ -1054,7 +1056,7 @@
               if (data.button_action === 'REFILL_CREDIT') {
                 refillLink.classList.remove('hidden');
               }
-              errorAlert.classList.add('hidden');
+              errorAlert.classList.remove('hidden');
             }
           } catch (err) {
             document.getElementById('copilotLoadingState').classList.add('hidden');
