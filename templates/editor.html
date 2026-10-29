@@ -500,6 +500,38 @@
             }
         });
 
+        async function sendStudioAiAssist(promptText) {
+            const messagesContainer = document.getElementById('studioChatMessages');
+            
+            try {
+                const response = await fetch('/api/v1/ai-assist', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: promptText })
+                });
+                
+                const data = await response.json();
+
+                if (response.status === 402 || data.code === "INSUFFICIENT_CREDITS") {
+                    // Automatically launch the credit modal defined in base.html
+                    showCreditModal("You have used your free AI trial credits. Each AI Assist uses 1 credit.", "/pricing#topups");
+                    return;
+                }
+
+                if (response.ok && data.reply) {
+                    // Append assistant reply to studio chat
+                    appendStudioMessage('bot', data.reply);
+                    // Update user credit counter on UI if displayed
+                    updateCreditDisplay(data.remaining_credits);
+                } else {
+                    alert(data.error || "AI Assistant encountered an error.");
+                }
+            } catch (err) {
+                console.error("AI Assist network error:", err);
+                alert("Network connection error. Please try again.");
+            }
+        }
+
         async function generateAIField(fieldType, targetElementId) {
             const targetArea = document.getElementById(targetElementId);
             
