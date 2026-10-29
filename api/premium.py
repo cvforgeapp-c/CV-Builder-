@@ -1197,6 +1197,39 @@ def priority_support():
 
 
 # ============================================================
+# VIP PRIORITY SUPPORT CHANNEL (ELITE TIER EXCLUSIVE)
+# ============================================================
+
+@premium_app.route('/vip-support', methods=['GET', 'POST'])
+@login_required
+@tier_required('elite')
+def vip_priority_support():
+  if request.method == 'POST':
+    data = request.get_json(silent=True) or {}
+    subject = (data.get('subject') or '').strip()
+    message = (data.get('message') or '').strip()
+
+    if not subject or not message:
+      return jsonify({'error': 'Subject and message are required for VIP support tickets.'}), 400
+
+    try:
+      # Here you can log the ticket or forward to your support desk pipeline
+      ticket_id = str(uuid.uuid4())
+      premium_app.logger.info(f"VIP Support Ticket [{ticket_id}] from Elite User {current_user.email}: {subject}")
+      
+      return jsonify({
+          'success': True,
+          'ticket_id': ticket_id,
+          'message': 'Your VIP priority support ticket has been dispatched successfully. An elite specialist will respond within 2 hours.'
+      }), 200
+    except Exception as exc:
+      premium_app.logger.error(f"VIP support ticket error: {exc}")
+      return jsonify({'error': 'Unable to submit ticket at this moment.'}), 500
+
+  return render_template('dashboard/vip_support.html', user=current_user)
+
+
+# ============================================================
 # LINKEDIN OPTIMIZER API ENDPOINTS
 # ============================================================
 
