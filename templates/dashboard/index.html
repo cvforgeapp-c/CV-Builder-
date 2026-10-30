@@ -503,26 +503,30 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
                 
                 <!-- 1. Application Tracker (Unlocked & Free) -->
-                <a href="/tracker" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
                             <i class="fa-solid fa-kanban text-amber-500"></i> {{ t('suite_tracker_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <a href="/tracker" class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-[10px] font-extrabold bg-emerald-600 hover:bg-emerald-500 text-white shadow-2xs transition-transform hover:scale-105 shrink-0">
+                            Open <i class="fa-solid fa-arrow-right text-[9px]"></i>
+                        </a>
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_tracker_desc') }}</p>
-                </a>
+                </div>
 
                 <!-- 2. PDF Studio (Unlocked & Free) -->
-                <a href="/pdf-studio" class="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 transition-all group flex flex-col justify-between gap-2">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold text-[#02353C] group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
                             <i class="fa-solid fa-palette text-amber-500"></i> {{ t('suite_pdf_title') }}
                         </span>
-                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <a href="/pdf-studio" class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-[10px] font-extrabold bg-emerald-600 hover:bg-emerald-500 text-white shadow-2xs transition-transform hover:scale-105 shrink-0">
+                            Open <i class="fa-solid fa-arrow-right text-[9px]"></i>
+                        </a>
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_pdf_desc') }}</p>
-                </a>
+                </div>
 
                 {% set user_is_prem = user and user.is_premium %}
                 {% set user_tier = (user.tier if user and user.tier is defined else ('pro' if user_is_prem else 'free')) %}
@@ -536,11 +540,13 @@
                             <i class="fa-solid fa-file-shield text-amber-500"></i> {{ t('suite_ats_title') }}
                         </span>
                         {% if user_level < req_level_ats %}
-                            <a href="/pricing" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-extrabold bg-amber-400 hover:bg-amber-300 text-[#02353C] shadow-2xs transition-transform hover:scale-105 shrink-0" title="Upgrade to Pro to unlock">
-                                <i class="fa-solid fa-lock text-[8px]"></i> Unlock Pro
+                            <a href="/pricing" class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-[10px] font-extrabold bg-amber-400 hover:bg-amber-300 text-[#02353C] shadow-2xs transition-transform hover:scale-105 shrink-0" title="Upgrade to Pro to unlock">
+                                <i class="fa-solid fa-lock text-[9px]"></i> Unlock Pro
                             </a>
                         {% else %}
-                            <a href="/ats"><i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i></a>
+                            <a href="/ats" class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-[10px] font-extrabold bg-emerald-600 hover:bg-emerald-500 text-white shadow-2xs transition-transform hover:scale-105 shrink-0">
+                                Open <i class="fa-solid fa-arrow-right text-[9px]"></i>
+                            </a>
                         {% endif %}
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_ats_desc') }}</p>
@@ -557,11 +563,13 @@
                             <i class="fa-solid fa-envelope-open-text text-amber-500"></i> {{ t('suite_cover_title') }}
                         </span>
                         {% if user_level < req_level_cover %}
-                            <a href="/pricing" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-extrabold bg-amber-400 hover:bg-amber-300 text-[#02353C] shadow-2xs transition-transform hover:scale-105 shrink-0" title="Upgrade to Pro to unlock">
-                                <i class="fa-solid fa-lock text-[8px]"></i> Unlock Pro
+                            <a href="/pricing" class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-[10px] font-extrabold bg-amber-400 hover:bg-amber-300 text-[#02353C] shadow-2xs transition-transform hover:scale-105 shrink-0" title="Upgrade to Pro to unlock">
+                                <i class="fa-solid fa-lock text-[9px]"></i> Unlock Pro
                             </a>
                         {% else %}
-                            <a href="/cover-letter"><i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i></a>
+                            <a href="/cover-letter" class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-[10px] font-extrabold bg-emerald-600 hover:bg-emerald-500 text-white shadow-2xs transition-transform hover:scale-105 shrink-0">
+                                Open <i class="fa-solid fa-arrow-right text-[9px]"></i>
+                            </a>
                         {% endif %}
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_cover_desc') }}</p>
@@ -578,11 +586,13 @@
                             <i class="fa-solid fa-comments text-amber-500"></i> {{ t('suite_interview_title') }}
                         </span>
                         {% if user_level < req_level_interview %}
-                            <a href="/pricing" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-extrabold bg-amber-400 hover:bg-amber-300 text-[#02353C] shadow-2xs transition-transform hover:scale-105 shrink-0" title="Upgrade to Pro to unlock">
-                                <i class="fa-solid fa-lock text-[8px]"></i> Unlock Pro
+                            <a href="/pricing" class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-[10px] font-extrabold bg-amber-400 hover:bg-amber-300 text-[#02353C] shadow-2xs transition-transform hover:scale-105 shrink-0" title="Upgrade to Pro to unlock">
+                                <i class="fa-solid fa-lock text-[9px]"></i> Unlock Pro
                             </a>
                         {% else %}
-                            <a href="/interview"><i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i></a>
+                            <a href="/interview" class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-[10px] font-extrabold bg-emerald-600 hover:bg-emerald-500 text-white shadow-2xs transition-transform hover:scale-105 shrink-0">
+                                Open <i class="fa-solid fa-arrow-right text-[9px]"></i>
+                            </a>
                         {% endif %}
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_interview_desc') }}</p>
@@ -599,11 +609,13 @@
                             <i class="fa-solid fa-calculator text-amber-500"></i> {{ t('suite_salary_title') }}
                         </span>
                         {% if user_level < req_level_salary %}
-                            <a href="/pricing" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-extrabold bg-amber-400 hover:bg-amber-300 text-[#02353C] shadow-2xs transition-transform hover:scale-105 shrink-0" title="Upgrade to Elite to unlock">
-                                <i class="fa-solid fa-lock text-[8px]"></i> Unlock Elite
+                            <a href="/pricing" class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-[10px] font-extrabold bg-amber-400 hover:bg-amber-300 text-[#02353C] shadow-2xs transition-transform hover:scale-105 shrink-0" title="Upgrade to Elite to unlock">
+                                <i class="fa-solid fa-lock text-[9px]"></i> Unlock Elite
                             </a>
                         {% else %}
-                            <a href="/salary-negotiator"><i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i></a>
+                            <a href="/salary-negotiator" class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-[10px] font-extrabold bg-emerald-600 hover:bg-emerald-500 text-white shadow-2xs transition-transform hover:scale-105 shrink-0">
+                                Open <i class="fa-solid fa-arrow-right text-[9px]"></i>
+                            </a>
                         {% endif %}
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_salary_desc') }}</p>
@@ -620,11 +632,13 @@
                             <i class="fa-solid fa-pen-nib text-amber-500"></i> {{ t('suite_portal_qa_title') }}
                         </span>
                         {% if user_level < req_level_portal %}
-                            <a href="/pricing" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-extrabold bg-amber-400 hover:bg-amber-300 text-[#02353C] shadow-2xs transition-transform hover:scale-105 shrink-0" title="Upgrade to Elite to unlock">
-                                <i class="fa-solid fa-lock text-[8px]"></i> Unlock Elite
+                            <a href="/pricing" class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-[10px] font-extrabold bg-amber-400 hover:bg-amber-300 text-[#02353C] shadow-2xs transition-transform hover:scale-105 shrink-0" title="Upgrade to Elite to unlock">
+                                <i class="fa-solid fa-lock text-[9px]"></i> Unlock Elite
                             </a>
                         {% else %}
-                            <a href="/portal-qa"><i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i></a>
+                            <a href="/portal-qa" class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-[10px] font-extrabold bg-emerald-600 hover:bg-emerald-500 text-white shadow-2xs transition-transform hover:scale-105 shrink-0">
+                                Open <i class="fa-solid fa-arrow-right text-[9px]"></i>
+                            </a>
                         {% endif %}
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_portal_qa_desc') }}</p>
@@ -641,11 +655,13 @@
                             <i class="fa-solid fa-paper-plane text-amber-500"></i> {{ t('suite_outreach_title') }}
                         </span>
                         {% if user_level < req_level_outreach %}
-                            <a href="/pricing" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-extrabold bg-amber-400 hover:bg-amber-300 text-[#02353C] shadow-2xs transition-transform hover:scale-105 shrink-0" title="Upgrade to Elite to unlock">
-                                <i class="fa-solid fa-lock text-[8px]"></i> Unlock Elite
+                            <a href="/pricing" class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-[10px] font-extrabold bg-amber-400 hover:bg-amber-300 text-[#02353C] shadow-2xs transition-transform hover:scale-105 shrink-0" title="Upgrade to Elite to unlock">
+                                <i class="fa-solid fa-lock text-[9px]"></i> Unlock Elite
                             </a>
                         {% else %}
-                            <a href="/outreach"><i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i></a>
+                            <a href="/outreach" class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-[10px] font-extrabold bg-emerald-600 hover:bg-emerald-500 text-white shadow-2xs transition-transform hover:scale-105 shrink-0">
+                                Open <i class="fa-solid fa-arrow-right text-[9px]"></i>
+                            </a>
                         {% endif %}
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_outreach_desc') }}</p>
@@ -662,11 +678,13 @@
                             <i class="fa-brands fa-linkedin text-blue-600"></i> {{ t('suite_linkedin_title') }}
                         </span>
                         {% if user_level < req_level_linkedin %}
-                            <a href="/pricing" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-extrabold bg-amber-400 hover:bg-amber-300 text-[#02353C] shadow-2xs transition-transform hover:scale-105 shrink-0" title="Upgrade to Pro to unlock">
-                                <i class="fa-solid fa-lock text-[8px]"></i> Unlock Pro
+                            <a href="/pricing" class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-[10px] font-extrabold bg-amber-400 hover:bg-amber-300 text-[#02353C] shadow-2xs transition-transform hover:scale-105 shrink-0" title="Upgrade to Pro to unlock">
+                                <i class="fa-solid fa-lock text-[9px]"></i> Unlock Pro
                             </a>
                         {% else %}
-                            <a href="/linkedin"><i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i></a>
+                            <a href="/linkedin" class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-[10px] font-extrabold bg-emerald-600 hover:bg-emerald-500 text-white shadow-2xs transition-transform hover:scale-105 shrink-0">
+                                Open <i class="fa-solid fa-arrow-right text-[9px]"></i>
+                            </a>
                         {% endif %}
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">{{ t('suite_linkedin_desc') }}</p>
@@ -683,11 +701,13 @@
                             <i class="fa-solid fa-headset text-amber-500"></i> VIP Priority Support
                         </span>
                         {% if user_level < req_level_vip %}
-                            <a href="/pricing" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-extrabold bg-amber-400 hover:bg-amber-300 text-[#02353C] shadow-2xs transition-transform hover:scale-105 shrink-0" title="Upgrade to Elite to unlock">
-                                <i class="fa-solid fa-lock text-[8px]"></i> Unlock Elite
+                            <a href="/pricing" class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-[10px] font-extrabold bg-amber-400 hover:bg-amber-300 text-[#02353C] shadow-2xs transition-transform hover:scale-105 shrink-0" title="Upgrade to Elite to unlock">
+                                <i class="fa-solid fa-lock text-[9px]"></i> Unlock Elite
                             </a>
                         {% else %}
-                            <a href="/vip-support"><i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i></a>
+                            <a href="/vip-support" class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-[10px] font-extrabold bg-emerald-600 hover:bg-emerald-500 text-white shadow-2xs transition-transform hover:scale-105 shrink-0">
+                                Open <i class="fa-solid fa-arrow-right text-[9px]"></i>
+                            </a>
                         {% endif %}
                     </div>
                     <p class="text-[11px] text-slate-500 leading-snug">Direct queue routing to senior executive career advisors & core engineers.</p>
