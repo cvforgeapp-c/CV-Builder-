@@ -85,24 +85,9 @@ premium_app.config['SECRET_KEY'] = (
 # ============================================================
 
 try:
-  from models import CoverLetter, JobApplication, Resume, User, db
+  from models import CoverLetter, JobApplication, Resume, SupportTicket, User, db
 except ImportError:
-  from ..models import CoverLetter, JobApplication, Resume, User, db
-
-
-# ============================================================
-# SUPPORT TICKET DATABASE MODEL (INTERNAL STORAGE)
-# ============================================================
-class SupportTicket(db.Model):
-    __tablename__ = 'support_tickets'
-
-    id = db.Column(db.String(36), primary_key=True)
-    user_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
-    email = db.Column(db.String(120), nullable=False)
-    subject = db.Column(db.String(200), nullable=False)
-    message = db.Column(db.Text, nullable=False)
-    status = db.Column(db.String(20), default='open')  # 'open', 'in_progress', 'resolved'
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+  from ..models import CoverLetter, JobApplication, Resume, SupportTicket, User, db
 
 
 # 1. LEGACY CORE PATHWAY (translations.py)
