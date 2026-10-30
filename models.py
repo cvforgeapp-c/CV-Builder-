@@ -6,6 +6,7 @@ db = SQLAlchemy()
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
+    __table_args__ = {'extend_existing': True}
     
     id = db.Column(db.String(36), primary_key=True)
     email = db.Column(db.String(255), unique=True, nullable=False)
@@ -40,6 +41,7 @@ class User(UserMixin, db.Model):
 
 class Resume(db.Model):
     __tablename__ = 'resumes'
+    __table_args__ = {'extend_existing': True}
     
     id = db.Column(db.String(36), primary_key=True)
     user_id = db.Column("userId", db.String(36), db.ForeignKey('users.id'), nullable=False)
@@ -55,6 +57,7 @@ class Resume(db.Model):
 
 class JobApplication(db.Model):
     __tablename__ = 'job_applications'
+    __table_args__ = {'extend_existing': True}
     
     id = db.Column(db.String(36), primary_key=True)
     user_id = db.Column("user_id", db.String(36), db.ForeignKey('users.id'), nullable=False)
@@ -70,6 +73,7 @@ class JobApplication(db.Model):
 
 class CoverLetter(db.Model):
     __tablename__ = 'cover_letters'
+    __table_args__ = {'extend_existing': True}
     
     id = db.Column(db.String(36), primary_key=True)
     user_id = db.Column("userId", db.String(36), db.ForeignKey('users.id'), nullable=False)
@@ -85,6 +89,7 @@ class CoverLetter(db.Model):
 
 class SupportTicket(db.Model):
     __tablename__ = 'support_tickets'
+    __table_args__ = {'extend_existing': True}
 
     id = db.Column(db.String(36), primary_key=True)
     user_id = db.Column("user_id", db.String(36), db.ForeignKey('users.id'), nullable=False)
