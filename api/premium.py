@@ -89,6 +89,22 @@ try:
 except ImportError:
   from ..models import CoverLetter, JobApplication, Resume, User, db
 
+
+# ============================================================
+# SUPPORT TICKET DATABASE MODEL (INTERNAL STORAGE)
+# ============================================================
+class SupportTicket(db.Model):
+    __tablename__ = 'support_tickets'
+
+    id = db.Column(db.String(36), primary_key=True)
+    user_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+    subject = db.Column(db.String(200), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    status = db.Column(db.String(20), default='open')  # 'open', 'in_progress', 'resolved'
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
 # 1. LEGACY CORE PATHWAY (translations.py)
 try:
   from translations import (
@@ -551,12 +567,11 @@ def generate_with_gemini(prompt, api_key=None, max_tokens=2048, is_elite=False):
 
   client = genai.Client(api_key=api_key)
 
-  # Maintain gemini-3.8-flash for all users, but optimize speed parameters for Elite users
   if is_elite:
     config = (
         types.GenerateContentConfig(
             max_output_tokens=max_tokens,
-            temperature=0.2  # Lower temperature speeds up token generation for Elite users
+            temperature=0.2
         )
         if types
         else None
@@ -590,7 +605,6 @@ def generate_ai_text(prompt, max_tokens=2048):
   if not gemini_key:
     raise RuntimeError('GEMINI_API_KEY environment variable is missing.')
 
-  # Automatically detect if current user has Elite/Highest Priority status or is the developer
   is_elite_user = False
   try:
     if current_user and current_user.is_authenticated:
@@ -672,9 +686,6 @@ def has_premium_access(user):
 
 
 def tier_required(min_tier='pro'):
-    """
-    Enforces minimum subscription tier: 'free', 'pro', or 'elite'
-    """
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
@@ -1221,7 +1232,7 @@ def priority_support():
 
 
 # ============================================================
-# VIP PRIORITY SUPPORT CHANNEL (ELITE TIER EXCLUSIVE)
+# VIP PRIORITY SUPPORT CHANNEL (ELITE TIER EXCLUSIVE) - BACKEND UPDATE
 # ============================================================
 
 @premium_app.route('/vip-support', methods=['GET', 'POST'])
@@ -1236,9 +1247,23 @@ def vip_priority_support():
     if not subject or not message:
       return jsonify({'error': 'Subject and message are required for VIP support tickets.'}), 400
 
+    ticket_id = str(uuid.uuid4())
+
     try:
-      # Here you can log the ticket or forward to your support desk pipeline
-      ticket_id = str(uuid.uuid4())
+      # 1. Save ticket persistently into PostgreSQL database
+      ticket = SupportTicket(
+          id=ticket_id,
+          user_id=current_user.id,
+          email=current_user.email,
+          subject=subject,
+          message=message,
+          status='open',
+          created_at=datetime.utcnow()
+      )
+      db.session.add(ticket)
+      db.session.commit()
+
+      # 2. Log ticket dispatch
       premium_app.logger.info(f"VIP Support Ticket [{ticket_id}] from Elite User {current_user.email}: {subject}")
       
       return jsonify({
@@ -1246,8 +1271,10 @@ def vip_priority_support():
           'ticket_id': ticket_id,
           'message': 'Your VIP priority support ticket has been dispatched successfully. An elite specialist will respond within 2 hours.'
       }), 200
+
     except Exception as exc:
-      premium_app.logger.error(f"VIP support ticket error: {exc}")
+      db.session.rollback()
+      premium_app.logger.error(f"VIP support ticket DB error: {exc}")
       return jsonify({'error': 'Unable to submit ticket at this moment.'}), 500
 
   return render_template('dashboard/vip_support.html', user=current_user)
@@ -3953,7 +3980,6 @@ Return ONLY a JSON object matching this structure:
     )
 
 
-# Register premium blueprint onto the main Flask app instance
 premium_app.register_blueprint(premium_bp)
 
 # ============================================================
