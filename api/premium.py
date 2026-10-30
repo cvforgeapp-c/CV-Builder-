@@ -381,7 +381,14 @@ def load_logged_in_user():
     g.user = None
   else:
     from flask import g
-    g.user = db.session.get(User, user_id)
+    user = db.session.get(User, user_id)
+    if user and is_developer_user(user):
+      user.is_premium = True
+      user.tier = 'elite'
+      user.subscription_status = 'active'
+      if (user.ai_credits_remaining or 0) < 9999:
+        user.ai_credits_remaining = 9999
+    g.user = user
 
 
 # ============================================================
@@ -569,14 +576,17 @@ def generate_ai_text(prompt, max_tokens=2048):
   if not gemini_key:
     raise RuntimeError('GEMINI_API_KEY environment variable is missing.')
 
-  # Automatically detect if current user has Elite/Highest Priority status
+  # Automatically detect if current user has Elite/Highest Priority status or is the developer
   is_elite_user = False
   try:
     if current_user and current_user.is_authenticated:
-      user_tier = getattr(current_user, 'tier', 'free')
-      is_prem = bool(getattr(current_user, 'is_premium', False))
-      if is_prem and user_tier == 'elite':
+      if is_developer_user(current_user):
         is_elite_user = True
+      else:
+        user_tier = getattr(current_user, 'tier', 'free')
+        is_prem = bool(getattr(current_user, 'is_premium', False))
+        if is_prem and user_tier == 'elite':
+          is_elite_user = True
   except Exception:
     pass
 
