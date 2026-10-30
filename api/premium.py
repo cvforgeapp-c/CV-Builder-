@@ -1281,6 +1281,38 @@ def vip_priority_support():
 
 
 # ============================================================
+# ADMIN TICKETS MANAGEMENT ROUTES
+# ============================================================
+
+@premium_app.route('/admin/tickets')
+@login_required
+def admin_tickets():
+    # Strictly restrict to developer account
+    if not is_developer_user(current_user):
+        flash("Unauthorized access.", "error")
+        return redirect('/dashboard')
+
+    # Fetch all support tickets sorted by newest first
+    tickets = SupportTicket.query.order_by(SupportTicket.created_at.desc()).all()
+    return render_template('dashboard/admin_tickets.html', tickets=tickets, user=current_user)
+
+
+@premium_app.route('/admin/tickets/resolve/<ticket_id>', methods=['POST'])
+@login_required
+def resolve_ticket(ticket_id):
+    if not is_developer_user(current_user):
+        return jsonify({'error': 'Unauthorized'}), 403
+
+    ticket = SupportTicket.query.get(ticket_id)
+    if ticket:
+        ticket.status = 'resolved'
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Ticket marked as resolved.'})
+    
+    return jsonify({'error': 'Ticket not found'}), 404
+
+
+# ============================================================
 # LINKEDIN OPTIMIZER API ENDPOINTS
 # ============================================================
 
