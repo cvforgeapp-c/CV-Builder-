@@ -35,6 +35,7 @@ class User(UserMixin, db.Model):
     resumes = db.relationship('Resume', backref='owner', lazy=True)
     applications = db.relationship('JobApplication', backref='owner', lazy=True)
     cover_letters = db.relationship('CoverLetter', backref='owner', lazy=True)
+    support_tickets = db.relationship('SupportTicket', backref='owner', lazy=True)
 
 
 class Resume(db.Model):
@@ -80,3 +81,15 @@ class CoverLetter(db.Model):
     content = db.Column("content", db.Text, nullable=False)
     created_at = db.Column("createdAt", db.DateTime, default=datetime.utcnow)
     updated_at = db.Column("updatedAt", db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class SupportTicket(db.Model):
+    __tablename__ = 'support_tickets'
+
+    id = db.Column(db.String(36), primary_key=True)
+    user_id = db.Column("user_id", db.String(36), db.ForeignKey('users.id'), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+    subject = db.Column(db.String(200), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    status = db.Column(db.String(20), default='open')  # 'open', 'in_progress', 'resolved'
+    created_at = db.Column("createdAt", db.DateTime, default=datetime.utcnow)
