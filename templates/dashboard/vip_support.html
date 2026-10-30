@@ -1,49 +1,123 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VIP Priority Support | CVForge Elite</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen p-6">
-    <div class="max-w-3xl mx-auto">
-        <a href="/dashboard" class="text-emerald-400 hover:underline text-sm mb-4 inline-block">← Back to Dashboard</a>
-        <div class="bg-slate-900 border border-emerald-500/30 rounded-xl p-8 shadow-2xl">
-            <div class="flex items-center gap-3 mb-6">
-                <span class="bg-emerald-500/20 text-emerald-400 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Elite Tier Exclusive</span>
-                <h1 class="text-2xl font-bold">VIP Priority Support Channel</h1>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-emerald-500 selection:text-white">
+
+    <!-- Top Navigation Bar -->
+    <header class="w-full border-b border-slate-900 bg-slate-950/80 backdrop-blur-md sticky top-0 z-30">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+            <a href="/dashboard" class="inline-flex items-center gap-2 text-slate-400 hover:text-emerald-400 text-sm font-medium transition-colors">
+                <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+            </a>
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Elite Secure Line</span>
             </div>
-            <p class="text-slate-400 mb-6 text-sm">
-                As an Elite member, your queries bypass standard queues and are routed directly to our senior executive career advisors and core engineering team. Guaranteed response time: <strong>Under 2 hours</strong>.
-            </p>
-
-            <form id="vipSupportForm" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium mb-1 text-slate-300">Issue Subject</label>
-                    <input type="text" id="subject" required placeholder="e.g. Custom Template Formatting or API Integration Inquiry" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-slate-200 focus:outline-none focus:border-emerald-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium mb-1 text-slate-300">Detailed Description</label>
-                    <textarea id="message" rows="5" required placeholder="Describe your request or technical issue in detail..." class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-slate-200 focus:outline-none focus:border-emerald-500"></textarea>
-                </div>
-                <button type="submit" id="submitBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-lg transition-all shadow-lg shadow-emerald-900/20">
-                    Dispatch VIP Ticket
-                </button>
-            </form>
-            <div id="responseMsg" class="mt-4 text-center text-sm hidden"></div>
         </div>
-    </div>
+    </header>
 
+    <!-- Main Content Container -->
+    <main class="flex-grow flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
+        <div class="w-full max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- Left Info Panel (Desktop Context) -->
+            <div class="lg:col-span-5 space-y-6">
+                <div>
+                    <div class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-4">
+                        <i class="fa-solid fa-crown text-[10px]"></i> Elite Tier Exclusive
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-3">
+                        VIP Priority Support Channel
+                    </h1>
+                    <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
+                        As an Elite member, your requests completely bypass standard public queues and route directly to our senior executive career advisors and core engineering team.
+                    </p>
+                </div>
+
+                <!-- SLA Guarantee Box -->
+                <div class="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-5 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+                            <i class="fa-solid fa-bolt text-lg"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-sm font-semibold text-white">Guaranteed Response</h2>
+                            <p class="text-xs text-emerald-400 font-medium">Under 2 hours turnaround time</p>
+                        </div>
+                    </div>
+                    <div class="border-t border-slate-800 pt-3 text-xs text-slate-400 space-y-2">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-check text-emerald-400"></i> Direct Senior Engineer Routing
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-check text-emerald-400"></i> Custom API & Template Assistance
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Interactive Form Card -->
+            <div class="lg:col-span-7 bg-slate-900/90 border border-emerald-500/30 rounded-2xl p-6 sm:p-8 shadow-2xl shadow-emerald-950/20 backdrop-blur-xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 transform translate-x-6 -translate-y-6 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none"></div>
+
+                <form id="vipSupportForm" class="space-y-5 relative z-10">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">Issue Subject</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 pointer-events-none">
+                                <i class="fa-solid fa-tag text-sm"></i>
+                            </span>
+                            <input type="text" id="subject" required placeholder="e.g., Custom Template Formatting or API Integration" 
+                                class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">Detailed Description</label>
+                        <div class="relative">
+                            <span class="absolute top-3.5 left-3.5 text-slate-500 pointer-events-none">
+                                <i class="fa-solid fa-pen-to-square text-sm"></i>
+                            </span>
+                            <textarea id="message" rows="5" required placeholder="Describe your request or technical issue in detail..." 
+                                class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all resize-none"></textarea>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submitBtn" 
+                        class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]">
+                        <i class="fa-solid fa-paper-plane text-xs"></i> Dispatch VIP Ticket
+                    </button>
+                </form>
+
+                <!-- Response Alert Box -->
+                <div id="responseMsg" class="mt-4 p-4 rounded-xl text-sm font-medium hidden text-center transition-all"></div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full border-t border-slate-900 py-6 text-center text-xs text-slate-500">
+        &copy; 2026 CVForge Elite. All rights reserved.
+    </footer>
+
+    <!-- Script Handling -->
     <script>
         document.getElementById('vipSupportForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const subject = document.getElementById('subject').value;
-            const message = document.getElementById('message').value;
+            const subject = document.getElementById('subject').value.trim();
+            const message = document.getElementById('message').value.trim();
             const btn = document.getElementById('submitBtn');
             const msgBox = document.getElementById('responseMsg');
 
             btn.disabled = true;
-            btn.textContent = 'Submitting Ticket...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Submitting VIP Ticket...';
             msgBox.classList.add('hidden');
 
             try {
@@ -55,20 +129,18 @@
                 const data = await res.json();
 
                 if (res.ok) {
-                    msgBox.className = 'mt-4 text-center text-sm text-emerald-400 font-medium';
-                    msgBox.textContent = data.message;
-                    msgBox.classList.remove('hidden');
+                    msgBox.className = 'mt-4 p-4 rounded-xl text-sm font-medium bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 block';
+                    msgBox.innerHTML = `<i class="fa-solid fa-circle-check mr-1.5"></i> ${data.message || 'Ticket dispatched successfully!'}`;
                     document.getElementById('vipSupportForm').reset();
                 } else {
                     throw new Error(data.error || 'Failed to submit ticket');
                 }
             } catch (err) {
-                msgBox.className = 'mt-4 text-center text-sm text-rose-400 font-medium';
-                msgBox.textContent = err.message;
-                msgBox.classList.remove('hidden');
+                msgBox.className = 'mt-4 p-4 rounded-xl text-sm font-medium bg-rose-500/10 border border-rose-500/30 text-rose-400 block';
+                msgBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1.5"></i> ${err.message}`;
             } finally {
                 btn.disabled = false;
-                btn.textContent = 'Dispatch VIP Ticket';
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane text-xs"></i> Dispatch VIP Ticket';
             }
         });
     </script>
