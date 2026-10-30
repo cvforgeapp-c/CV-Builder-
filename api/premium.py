@@ -1217,7 +1217,7 @@ def priority_support():
 
 
 # ============================================================
-# VIP PRIORITY SUPPORT CHANNEL (ELITE TIER EXCLUSIVE) - BACKEND UPDATE
+# VIP PRIORITY SUPPORT CHANNEL & DEVELOPER RESOLUTION CONSOLE
 # ============================================================
 
 @premium_app.route('/vip-support', methods=['GET', 'POST'])
@@ -1226,6 +1226,22 @@ def priority_support():
 def vip_priority_support():
   if request.method == 'POST':
     data = request.get_json(silent=True) or {}
+    action = data.get('action')
+
+    # Developer action to update ticket status (e.g., resolve/reopen)
+    if action == 'update_status':
+      if not is_developer_user(current_user):
+        return jsonify({'error': 'Unauthorized'}), 403
+      ticket_id = data.get('ticket_id')
+      new_status = data.get('status', 'resolved')
+      ticket = SupportTicket.query.filter_by(id=ticket_id).first()
+      if ticket:
+        ticket.status = new_status
+        db.session.commit()
+        return jsonify({'success': True, 'message': f'Ticket {ticket_id} updated to {new_status}.'})
+      return jsonify({'error': 'Ticket not found'}), 404
+
+    # Regular user/dev ticket submission
     subject = (data.get('subject') or '').strip()
     message = (data.get('message') or '').strip()
 
@@ -1262,7 +1278,12 @@ def vip_priority_support():
       premium_app.logger.error(f"VIP support ticket DB error: {exc}")
       return jsonify({'error': 'Unable to submit ticket at this moment.'}), 500
 
-  return render_template('dashboard/vip_support.html', user=current_user)
+  # If GET request, check if user is developer to fetch ALL tickets, otherwise render standard view
+  if is_developer_user(current_user):
+    all_tickets = SupportTicket.query.order_by(SupportTicket.created_at.desc()).all()
+    return render_template('dashboard/vip_support.html', user=current_user, tickets=all_tickets)
+
+  return render_template('dashboard/vip_support.html', user=current_user, tickets=[])
 
 
 # ============================================================
