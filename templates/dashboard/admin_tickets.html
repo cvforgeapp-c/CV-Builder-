@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP Support Management | CVForge Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-6">
+    <div class="max-w-6xl mx-auto space-y-6">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+            <div>
+                <a href="/dashboard" class="text-emerald-400 hover:underline text-sm inline-block mb-1">← Back to Dashboard</a>
+                <h1 class="text-2xl font-bold tracking-tight text-white">Elite VIP Support Queue</h1>
+            </div>
+            <span class="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold px-3 py-1 rounded-full uppercase">
+                Admin Secure View
+            </span>
+        </div>
+
+        <!-- Ticket Grid / Table -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
+            {% if tickets %}
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-slate-950/60 text-slate-400 border-b border-slate-800 uppercase text-xs tracking-wider">
+                                <th class="p-4">Status</th>
+                                <th class="p-4">User Email</th>
+                                <th class="p-4">Subject & Message</th>
+                                <th class="p-4">Dispatched At</th>
+                                <th class="p-4 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/60">
+                            {% for ticket in tickets %}
+                            <tr class="hover:bg-slate-800/40 transition-colors" id="row-{{ ticket.id }}">
+                                <td class="p-4 align-top">
+                                    <span id="badge-{{ ticket.id }}" class="px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider {{ 'bg-amber-500/10 text-amber-400 border border-amber-500/30' if ticket.status == 'open' else 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' }}">
+                                        {{ ticket.status }}
+                                    </span>
+                                </td>
+                                <td class="p-4 align-top font-medium text-slate-200">
+                                    {{ ticket.email }}
+                                </td>
+                                <td class="p-4 align-top space-y-1 max-w-md">
+                                    <p class="font-semibold text-white">{{ ticket.subject }}</p>
+                                    <p class="text-slate-400 text-xs whitespace-pre-wrap leading-relaxed">{{ ticket.message }}</p>
+                                </td>
+                                <td class="p-4 align-top text-xs text-slate-400 whitespace-nowrap">
+                                    {{ ticket.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                </td>
+                                <td class="p-4 align-top text-right">
+                                    {% if ticket.status == 'open' %}
+                                    <button onclick="resolveTicket('{{ ticket.id }}')" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-all shadow-md">
+                                        Mark Resolved
+                                    </button>
+                                    {% else %}
+                                    <span class="text-xs text-slate-500 italic">Closed</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="p-12 text-center text-slate-500">
+                    <i class="fa-solid fa-inbox text-3xl mb-3 text-slate-600"></i>
+                    <p class="text-sm">No VIP support tickets submitted yet.</p>
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <script>
+        async function resolveTicket(ticketId) {
+            try {
+                const res = await fetch(`/admin/tickets/resolve/${ticketId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    const badge = document.getElementById(`badge-${ticketId}`);
+                    badge.className = 'px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/30';
+                    badge.textContent = 'resolved';
+                    
+                    // Remove action button
+                    event.target.remove();
+                } else {
+                    alert(data.error || 'Failed to update ticket.');
+                }
+            } catch (err) {
+                alert('Network error while resolving ticket.');
+            }
+        }
+    </script>
+</body>
+</html>
