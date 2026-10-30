@@ -141,6 +141,38 @@
 
     <!-- Script Handling -->
     <script>
+        // Store the initial ticket count loaded on page render
+        let lastTicketCount = {{ tickets|length if tickets else 0 }};
+
+        // Trigger notification chime on load if open tickets exist
+        window.addEventListener('DOMContentLoaded', () => {
+            const openTickets = document.querySelectorAll('.badge-open, [data-status="open"], span.bg-amber-500\\/10');
+            if (openTickets.length > 0 && lastTicketCount > 0) {
+                playAlarmChime();
+            }
+        });
+
+        // Built-in Web Audio API Chime (No external audio file required)
+        function playAlarmChime() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5 note
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.2);
+            } catch (e) {
+                console.log('Audio Context restricted until user interaction.');
+            }
+        }
+
         async function updateTicketStatus(ticketId, newStatus) {
             try {
                 const res = await fetch('/vip-support', {
