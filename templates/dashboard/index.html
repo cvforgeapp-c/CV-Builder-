@@ -17,15 +17,23 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-14">
                 
-                <!-- BRAND LOGO -->
-                <a href="/" class="flex items-center space-x-2 group">
-                    <div class="w-8 h-8 rounded-lg bg-amber-400 text-[#02353C] flex items-center justify-center font-extrabold text-base shadow-sm group-hover:scale-105 transition-transform">
-                        <i class="fa-solid fa-file-invoice"></i>
-                    </div>
-                    <span class="font-extrabold text-lg tracking-tight text-white">
-                        CVForge
-                    </span>
-                </a>
+                <!-- BRAND LOGO & DEV VIP SUPPORT LINK -->
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="flex items-center space-x-2 group">
+                        <div class="w-8 h-8 rounded-lg bg-amber-400 text-[#02353C] flex items-center justify-center font-extrabold text-base shadow-sm group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-file-invoice"></i>
+                        </div>
+                        <span class="font-extrabold text-lg tracking-tight text-white">
+                            CVForge
+                        </span>
+                    </a>
+
+                    {% if current_user.email == 'subhnllha@gmail.com' %}
+                    <a href="/vip-support" class="inline-flex items-center gap-2 text-emerald-400 font-semibold hover:underline text-xs bg-white/10 px-2.5 py-1 rounded-md border border-white/10 transition-all">
+                        <i class="fa-solid fa-crown text-amber-400"></i> VIP Support (Dev)
+                    </a>
+                    {% endif %}
+                </div>
 
                 <!-- HEADER ACTIONS -->
                 <div class="flex items-center space-x-2">
@@ -1161,7 +1169,7 @@
             document.getElementById('copilotLoadingState').classList.add('hidden');
             document.getElementById('copilotFormContainer').classList.remove('hidden');
             errorMsg.innerText = "A network error occurred. Please try again.";
-            errorAlert.classList.remove('hidden');
+            errorAlert.classList.add('hidden');
           }
         }
     </script>
