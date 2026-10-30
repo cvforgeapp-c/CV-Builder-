@@ -667,6 +667,27 @@
                     {% endif %}
                 </div>
 
+                <!-- 10. VIP Priority Support (Elite Tier Required) -->
+                {% set req_level_vip = 2 %}
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 transition-all flex flex-col justify-between gap-2 relative {% if user_level < req_level_vip %}opacity-85{% else %}hover:bg-slate-100/80 group{% endif %}">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-[#02353C] {% if user_level >= req_level_vip %}group-hover:text-emerald-700{% endif %} transition-colors flex items-center gap-1.5">
+                            <i class="fa-solid fa-headset text-amber-500"></i> VIP Priority Support
+                        </span>
+                        {% if user_level < req_level_vip %}
+                            <a href="/pricing" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-extrabold bg-amber-400 hover:bg-amber-300 text-[#02353C] shadow-2xs transition-transform hover:scale-105 shrink-0" title="Upgrade to Elite to unlock">
+                                <i class="fa-solid fa-lock text-[8px]"></i> Unlock Elite
+                            </a>
+                        {% else %}
+                            <a href="/vip-support"><i class="fa-solid fa-arrow-right text-[10px] text-slate-400 group-hover:translate-x-0.5 transition-transform"></i></a>
+                        {% endif %}
+                    </div>
+                    <p class="text-[11px] text-slate-500 leading-snug">Direct queue routing to senior executive career advisors & core engineers.</p>
+                    {% if user_level < req_level_vip %}
+                        <a href="/vip-support" class="absolute inset-0 z-10" onclick="event.preventDefault(); window.location.href='/pricing';"></a>
+                    {% endif %}
+                </div>
+
             </div>
         </div>
 
@@ -780,14 +801,12 @@
             const isFreeTier = {{ ('true' if not user or (not user.is_premium and (user.tier is not defined or user.tier == 'free')) else 'false') }};
             const resumeCount = {{ resumes|length if resumes else 0 }};
 
-            // If free tier and user already has 1 or more resumes, block navigation and show modal
             if (isFreeTier && resumeCount >= 1) {
                 e.preventDefault();
                 showCreditModal("Free tier allows saving only 1 resume. Upgrade to Pro or Elite for unlimited storage and editing.", "/pricing");
             }
         }
 
-        // Load active stored preferences and avatar into the Dashboard UI
         async function loadStoredSettings() {
             try {
                 const response = await fetch('/api/v1/settings');
@@ -823,7 +842,6 @@
             }
         }
 
-        // Fetch live job application count from tracker API
         async function loadDashboardApplicationCount() {
             try {
                 const res = await fetch('/api/v1/tracker');
@@ -846,7 +864,6 @@
             loadDashboardApplicationCount();
         });
 
-        // Resume Deletion Script
         let targetResumeId = null;
 
         function confirmDeleteResume(resumeId, title) {
@@ -900,11 +917,7 @@
             }
         });
 
-        // ==========================================================
-        // COPILOT MODAL & BRANDED URL FETCHER LOGIC
-        // ==========================================================
         function openCopilotModal() {
-          // Check if current user credits are below 9 before opening the Copilot suite
           const currentCredits = parseInt(document.getElementById('userCreditVal').innerText.trim()) || 0;
           if (currentCredits < 9) {
               showCreditModal("You need at least 9 AI credits to run the Application Copilot suite. Please refill your credits.", "/pricing#topups");
@@ -978,9 +991,6 @@
           }
         }
 
-        // ==========================================================
-        // ACTION BUTTON HELPERS (COPY & DIRECT PDF EXPORT)
-        // ==========================================================
         function copyCoverLetterText() {
           const text = document.getElementById('copilotCoverLetterText').value;
           if (!text) return;
@@ -1005,7 +1015,6 @@
           });
         }
 
-        // Dedicated PDF Export Endpoint Trigger for Cover Letter
         async function exportCoverLetterPdf() {
           const content = document.getElementById('copilotCoverLetterText').value.trim();
           const company = document.getElementById('copilotCompany').value.trim() || 'Company';
@@ -1044,11 +1053,7 @@
           }
         }
 
-        // ==========================================================
-        // MAIN PIPELINE EXECUTION
-        // ==========================================================
         async function runCopilotPipeline() {
-          // Verify credits client-side before submission (must be >= 9 credits)
           const currentCredits = parseInt(document.getElementById('userCreditVal').innerText.trim()) || 0;
           if (currentCredits < 9) {
               closeCopilotModal();
@@ -1103,7 +1108,6 @@
               const pkg = data.copilot_package;
               const targetResumeId = pkg.generated_resume_id || resumeId;
 
-              // Populate Score & Full ATS Keywords
               document.getElementById('copilotAtsScore').innerText = (pkg.ats_score || 85) + '%';
               
               const matchedContainer = document.getElementById('copilotMatchedKeywords');
@@ -1121,7 +1125,6 @@
                   .join('');
               }
 
-              // Populate Generated Assets
               document.getElementById('copilotTailoredSummary').innerText = pkg.tailored_summary || '';
               
               if (document.getElementById('copilotTailoredExperience')) {
@@ -1136,7 +1139,6 @@
               document.getElementById('copilotEmailSubject').innerText = pkg.cold_email_subject || '';
               document.getElementById('copilotEmailBody').innerText = pkg.cold_email_body || '';
 
-              // Dynamic Redirect Links for Edit & Preview/Download pointing to the newly generated resume ID
               const editCvBtn = document.getElementById('copilotEditCvBtn');
               if (editCvBtn) editCvBtn.href = `/editor?id=${targetResumeId || ''}`;
 
