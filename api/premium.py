@@ -392,6 +392,20 @@ def load_logged_in_user():
 
 
 # ============================================================
+# TEMPLATE OVERRIDE TO UNLOCK ELITE FOR DEVELOPER
+# ============================================================
+
+@premium_app.context_processor
+def override_developer_tier():
+    if current_user and current_user.is_authenticated:
+        if is_developer_user(current_user):
+            current_user.is_premium = True
+            current_user.tier = 'elite'
+            current_user.subscription_status = 'active'
+    return dict()
+
+
+# ============================================================
 # GLOBAL TRANSLATION CONTEXT PROCESSORS
 # ============================================================
 
