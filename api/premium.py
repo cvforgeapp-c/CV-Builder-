@@ -3582,14 +3582,18 @@ def get_user_status():
 
 @premium_bp.route('/webhook', methods=['POST'])
 def paddle_webhook():
-    # 1. Get the signature header from Paddle
+    # TEMPORARY LOGGING: Inspect incoming headers and raw body
     signature_header = request.headers.get('Paddle-Signature', '')
+    premium_app.logger.info(f"--- PADDLE WEBHOOK RECEIVED ---")
+    premium_app.logger.info(f"All Headers: {dict(request.headers)}")
+    premium_app.logger.info(f"Paddle-Signature Header: {signature_header}")
     
-    if not signature_header:
-        return jsonify({"error": "Missing Paddle-Signature header"}), 400
-
-    # 2. Get the raw request body (must be bytes for signature verification)
     raw_body = request.get_data()
+    premium_app.logger.info(f"Raw Body Preview: {raw_body[:200]}")
+
+    if not signature_header:
+        premium_app.logger.warning("Missing Paddle-Signature header in webhook request.")
+        return jsonify({"error": "Missing Paddle-Signature header"}), 400
 
     # 3. Verify the webhook signature (Paddle Billing / v2 signature format)
     try:
@@ -3598,6 +3602,7 @@ def paddle_webhook():
         incoming_signature = elements.get('h1')
 
         if not timestamp or not incoming_signature:
+            premium_app.logger.warning("Invalid signature format parsed from header.")
             return jsonify({"error": "Invalid signature format"}), 400
 
         signed_payload = f"{timestamp}:".encode('utf-8') + raw_body
@@ -3609,9 +3614,11 @@ def paddle_webhook():
         ).hexdigest()
 
         if not hmac.compare_digest(computed_signature, incoming_signature) and PADDLE_WEBHOOK_SECRET_KEY:
+            premium_app.logger.warning(f"Signature mismatch! Computed: {computed_signature}, Incoming: {incoming_signature}")
             return jsonify({"error": "Invalid signature"}), 401
 
     except Exception as e:
+        premium_app.logger.error(f"Signature verification exception: {str(e)}")
         return jsonify({"error": f"Signature verification failed: {str(e)}"}), 400
 
     # 4. Parse the verified JSON event payload
@@ -3986,7 +3993,7 @@ Return ONLY a JSON object matching this structure:
     )
 
 
-premium_app.register_blueprint(premium_bp)
+premium_bp.register_blueprint(premium_bp)
 
 # ============================================================
 # BLUEPRINT REGISTRATIONS (AI & WEBHOOKS)
