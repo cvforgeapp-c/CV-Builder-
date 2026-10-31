@@ -98,28 +98,46 @@
 {% endblock %}
 
 {% block extra_js %}
-<!-- Load Paddle v2 SDK & Secure Sandbox Checkout Configuration -->
-<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+<!-- Load Paddle v2 SDK & Secure Sandbox Checkout Configuration with onload fallback -->
+<script src="https://cdn.paddle.com/paddle/v2/paddle.js" async onload="initPaddle()"></script>
 <script>
-  if (typeof Paddle !== 'undefined') {
-    // Explicitly target Sandbox environment for test tokens
-    Paddle.Environment.set('sandbox');
-    Paddle.Initialize({ 
-      token: 'test_3504a1d0c470a5b4d94e9f9c06c' 
-    });
+  let isPaddleReady = false;
+
+  function initPaddle() {
+    if (typeof Paddle !== 'undefined') {
+      try {
+        // Explicitly target Sandbox environment for test tokens
+        Paddle.Environment.set('sandbox');
+        Paddle.Initialize({ 
+          token: 'test_3504a1d0c470a5b4d94e9f9c06c' 
+        });
+        isPaddleReady = true;
+        console.log("Paddle v2 initialized successfully.");
+      } catch (err) {
+        console.error("Paddle initialization exception:", err);
+      }
+    }
   }
 
+  // Fallback check on DOM load if onload didn't fire instantly
+  document.addEventListener("DOMContentLoaded", function() {
+    setTimeout(initPaddle, 500);
+  });
+
   function openPaddleCheckout(priceId) {
-    if (typeof Paddle === 'undefined') {
+    if (!isPaddleReady || typeof Paddle === 'undefined' || !Paddle.Checkout) {
+      initPaddle();
+      
       let attempts = 0;
       const checkPaddle = setInterval(() => {
         attempts++;
-        if (typeof Paddle !== 'undefined') {
+        if (typeof Paddle !== 'undefined' && Paddle.Checkout) {
           clearInterval(checkPaddle);
+          isPaddleReady = true;
           executeCheckout(priceId);
-        } else if (attempts > 10) {
+        } else if (attempts > 15) {
           clearInterval(checkPaddle);
-          alert("Payment gateway failed to load. Please check your connection or ad-blocker and try again.");
+          alert("Payment gateway failed to load. Please check your network connection, disable ad-blockers, and try again.");
         }
       }, 300);
       return;
@@ -146,8 +164,8 @@
         }
       });
     } catch (err) {
-      console.error("Paddle Checkout error:", err);
-      alert("Unable to launch checkout modal. Please check your token configuration.");
+      console.error("Paddle Checkout modal error:", err);
+      alert("Unable to launch checkout modal. Please verify your token configuration.");
     }
   }
 </script>
