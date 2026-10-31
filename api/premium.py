@@ -2711,58 +2711,6 @@ def export_user_data_direct():
 
 
 # ============================================================
-# PADDLE WEBHOOK VERIFICATION
-# ============================================================
-
-
-def verify_paddle_webhook(request_data, signature_header):
-  if (
-      not PADDLE_WEBHOOK_SECRET_KEY
-      or not signature_header
-      or not isinstance(signature_header, str)
-  ):
-    return False
-
-  try:
-    components = {}
-    for item in signature_header.split(';'):
-      item = item.strip()
-      if '=' in item:
-        parts = item.split('=', 1)
-        if len(parts) != 2:
-          continue
-        key, value = parts[0].strip(), parts[1].strip()
-        if key and value:
-          components[key] = value
-
-    timestamp = components.get('ts')
-    received_signature = components.get('h1')
-
-    if not timestamp or not received_signature:
-      return False
-
-    decoded_body = (
-        request_data.decode('utf-8')
-        if isinstance(request_data, bytes)
-        else str(request_data)
-    )
-
-    signed_payload = f'{timestamp}:{decoded_body}'
-
-    digest = hmac.new(
-        PADDLE_WEBHOOK_SECRET_KEY.encode('utf-8'),
-        signed_payload.encode('utf-8'),
-        hashlib.sha256,
-    ).hexdigest()
-
-    return hmac.compare_digest(digest, received_signature)
-
-  except Exception as exc:
-    print(f'Paddle HMAC Verification Error: {exc}')
-    return False
-
-
-# ============================================================
 # PREMIUM API BLUEPRINT
 # ============================================================
 
@@ -3632,105 +3580,121 @@ def get_user_status():
   )
 
 
-@premium_bp.route('/webhook/paddle', methods=['POST'])
+@premium_bp.route('/webhook', methods=['POST'])
 def paddle_webhook():
-  signature = request.headers.get('Paddle-Signature')
-  payload = request.get_data()
+    # 1. Get the signature header from Paddle
+    signature_header = request.headers.get('Paddle-Signature', '')
+    
+    if not signature_header:
+        return jsonify({"error": "Missing Paddle-Signature header"}), 400
 
-  is_verified = verify_paddle_webhook(payload, signature)
-  if not is_verified and PADDLE_WEBHOOK_SECRET_KEY:
-    premium_app.logger.warning("Paddle webhook signature verification failed.")
-    return jsonify({'error': 'Invalid webhook signature.'}), 400
+    # 2. Get the raw request body (must be bytes for signature verification)
+    raw_body = request.get_data()
 
-  data = request.get_json(silent=True) or {}
-  if not isinstance(data, dict):
-    return jsonify({'error': 'Invalid webhook payload structure.'}), 400
+    # 3. Verify the webhook signature (Paddle Billing / v2 signature format)
+    try:
+        elements = dict(item.split('=') for item in signature_header.split(';'))
+        timestamp = elements.get('ts')
+        incoming_signature = elements.get('h1')
 
-  event_type = data.get('event_type')
-  event_data = data.get('data', {})
-  if not isinstance(event_data, dict):
-    event_data = {}
+        if not timestamp or not incoming_signature:
+            return jsonify({"error": "Invalid signature format"}), 400
 
-  customer_email = (
-      event_data.get('customer', {}).get('email')
-      or event_data.get('customer_email')
-      or event_data.get('custom_data', {}).get('email')
-  )
+        signed_payload = f"{timestamp}:".encode('utf-8') + raw_body
+        
+        computed_signature = hmac.new(
+            PADDLE_WEBHOOK_SECRET_KEY.encode('utf-8'),
+            signed_payload,
+            hashlib.sha256
+        ).hexdigest()
 
-  items = event_data.get('items', [])
-  price_id = None
-  if items and isinstance(items, list):
-    first_item = items[0]
-    if isinstance(first_item, dict):
-      price_id = first_item.get('price', {}).get('id') or first_item.get('price_id')
+        if not hmac.compare_digest(computed_signature, incoming_signature) and PADDLE_WEBHOOK_SECRET_KEY:
+            return jsonify({"error": "Invalid signature"}), 401
 
-  item_config = PRICE_MAP.get(price_id, {})
+    except Exception as e:
+        return jsonify({"error": f"Signature verification failed: {str(e)}"}), 400
 
-  premium_app.logger.info(f"Received Paddle Webhook: {event_type} for email: {customer_email}, price_id: {price_id}")
+    # 4. Parse the verified JSON event payload
+    event_data = request.get_json(silent=True) or {}
+    if not isinstance(event_data, dict):
+        event_data = {}
 
-  if event_type in [
-      'subscription.created',
-      'subscription.activated',
-      'subscription.updated',
-  ]:
-    subscription_status = event_data.get('status')
-    if customer_email:
-      user = User.query.filter_by(email=customer_email.lower()).first()
-      if user:
-        try:
-          user.is_premium = True
-          user.tier = item_config.get('tier', 'pro')
-          user.subscription_status = 'active'
-          user.ai_credits_remaining = (user.ai_credits_remaining or 0) + item_config.get('credits', 130)
-          user.paddle_subscription_id = event_data.get('id')
-          db.session.commit()
-          premium_app.logger.info(f"Successfully fulfilled subscription credits for {customer_email}")
-        except Exception as exc:
-          db.session.rollback()
-          premium_app.logger.error(f'Paddle sub update error: {exc}')
-          return jsonify({'error': 'Unable to update subscription status.'}), 500
+    event_type = event_data.get('event_type')
+    data = event_data.get('data', {})
+    if not isinstance(data, dict):
+        data = {}
 
-  elif event_type in ['transaction.completed', 'transaction.paid']:
-    if customer_email:
-      user = User.query.filter_by(email=customer_email.lower()).first()
-      if user:
-        try:
-          credits_to_add = item_config.get('credits', 60)
-          if item_config.get('type') == 'pass':
-            expiry_date = datetime.utcnow() + timedelta(
-                days=item_config.get('days', 7)
-            )
-            user.tier = 'pro'
-            user.ai_credits_remaining = (user.ai_credits_remaining or 0) + credits_to_add
-            user.pass_expires_at = expiry_date
-          else:
-            user.ai_credits_remaining = (user.ai_credits_remaining or 0) + credits_to_add
-          
-          db.session.commit()
-          premium_app.logger.info(f"Successfully fulfilled transaction credits for {customer_email}")
-        except Exception as exc:
-          db.session.rollback()
-          premium_app.logger.error(f'Paddle transaction update error: {exc}')
-          return jsonify({'error': 'Unable to process purchase transaction.'}), 500
+    customer_email = (
+        data.get('customer', {}).get('email')
+        or data.get('customer_email')
+        or data.get('custom_data', {}).get('email')
+    )
 
-  elif event_type in ['subscription.canceled', 'subscription.past_due']:
-    subscription_id = event_data.get('id')
-    if subscription_id:
-      user = User.query.filter_by(
-          paddle_subscription_id=subscription_id
-      ).first()
-      if user:
-        try:
-          user.is_premium = False
-          user.tier = 'free'
-          user.subscription_status = event_data.get('status', 'canceled')
-          db.session.commit()
-        except Exception as exc:
-          db.session.rollback()
-          print(f'Paddle cancellation update error: {exc}')
-          return jsonify({'error': 'Unable to update subscription status.'}), 500
+    items = data.get('items', [])
+    price_id = None
+    if items and isinstance(items, list):
+        first_item = items[0]
+        if isinstance(first_item, dict):
+            price_id = first_item.get('price', {}).get('id') or first_item.get('price_id')
 
-  return jsonify({'status': 'success'}), 200
+    item_config = PRICE_MAP.get(price_id, {})
+
+    premium_app.logger.info(f"Received verified Paddle event: {event_type} for email: {customer_email}, price_id: {price_id}")
+
+    # 5. Handle specific event types & fulfill DB records
+    if event_type in ['subscription.created', 'subscription.activated', 'subscription.updated']:
+        if customer_email:
+            user = User.query.filter_by(email=customer_email.lower()).first()
+            if user:
+                try:
+                    user.is_premium = True
+                    user.tier = item_config.get('tier', 'pro')
+                    user.subscription_status = 'active'
+                    user.ai_credits_remaining = (user.ai_credits_remaining or 0) + item_config.get('credits', 130)
+                    user.paddle_subscription_id = data.get('id')
+                    db.session.commit()
+                except Exception as exc:
+                    db.session.rollback()
+                    premium_app.logger.error(f'Paddle sub update error: {exc}')
+                    return jsonify({'error': 'Unable to update subscription status.'}), 500
+
+    elif event_type in ['transaction.completed', 'transaction.paid']:
+        if customer_email:
+            user = User.query.filter_by(email=customer_email.lower()).first()
+            if user:
+                try:
+                    credits_to_add = item_config.get('credits', 60)
+                    if item_config.get('type') == 'pass':
+                        expiry_date = datetime.utcnow() + timedelta(days=item_config.get('days', 7))
+                        user.tier = 'pro'
+                        user.ai_credits_remaining = (user.ai_credits_remaining or 0) + credits_to_add
+                        user.pass_expires_at = expiry_date
+                    else:
+                        user.ai_credits_remaining = (user.ai_credits_remaining or 0) + credits_to_add
+                    
+                    db.session.commit()
+                except Exception as exc:
+                    db.session.rollback()
+                    premium_app.logger.error(f'Paddle transaction update error: {exc}')
+                    return jsonify({'error': 'Unable to process purchase transaction.'}), 500
+
+    elif event_type in ['subscription.canceled', 'subscription.past_due']:
+        subscription_id = data.get('id')
+        if subscription_id:
+            user = User.query.filter_by(paddle_subscription_id=subscription_id).first()
+            if user:
+                try:
+                    user.is_premium = False
+                    user.tier = 'free'
+                    user.subscription_status = data.get('status', 'canceled')
+                    db.session.commit()
+                except Exception as exc:
+                    db.session.rollback()
+                    premium_app.logger.error(f'Paddle cancellation update error: {exc}')
+                    return jsonify({'error': 'Unable to update subscription status.'}), 500
+
+    # 6. Return 2xx response quickly
+    return jsonify({"status": "success"}), 200
 
 
 @premium_bp.route('/analyze-ats', methods=['POST'])
