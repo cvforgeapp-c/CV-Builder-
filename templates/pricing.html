@@ -122,6 +122,11 @@
 
     try {
       Paddle.Checkout.open({
+        settings: {
+          successUrl: window.location.origin + "/dashboard?payment=success",
+          displayMode: "overlay",
+          theme: "dark"
+        },
         items: [
           {
             priceId: priceId,
@@ -130,11 +135,6 @@
         ],
         customer: {
           email: "{{ current_user.email if current_user.is_authenticated else '' }}"
-        },
-        settings: {
-          successUrl: window.location.origin + "/dashboard?payment=success",
-          displayMode: "overlay",
-          theme: "dark"
         }
       });
     } catch (err) {
