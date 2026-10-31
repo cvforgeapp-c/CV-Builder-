@@ -98,11 +98,12 @@
 {% endblock %}
 
 {% block extra_js %}
-<!-- Load Paddle v2 SDK & Secure Checkout Integration -->
+<!-- Load Paddle v2 SDK & Secure Sandbox Checkout Configuration -->
 <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 <script>
-  // Initialize Paddle Sandbox/Client Token explicitly so the modal can bind
   if (typeof Paddle !== 'undefined') {
+    // Explicitly target Sandbox environment for test tokens
+    Paddle.Environment.set('sandbox');
     Paddle.Initialize({ 
       token: 'test_3504a1d0c470a5b4d94e9f9c06c' 
     });
