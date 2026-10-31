@@ -98,54 +98,28 @@
 {% endblock %}
 
 {% block extra_js %}
-<!-- Load Paddle v2 SDK & Secure Sandbox Checkout Configuration with onload fallback -->
-<script src="https://cdn.paddle.com/paddle/v2/paddle.js" async onload="initPaddle()"></script>
+<!-- Load Paddle v2 SDK -->
+<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 <script>
-  let isPaddleReady = false;
-
-  function initPaddle() {
-    if (typeof Paddle !== 'undefined') {
-      try {
-        // Explicitly target Sandbox environment for test tokens
-        Paddle.Environment.set('sandbox');
-        Paddle.Initialize({ 
-          token: 'test_3504a1d0c470a5b4d94e9f9c06c' 
-        });
-        isPaddleReady = true;
-        console.log("Paddle v2 initialized successfully.");
-      } catch (err) {
-        console.error("Paddle initialization exception:", err);
+  // Initialize Paddle as soon as script loads
+  if (typeof Paddle !== 'undefined') {
+    Paddle.Environment.set('sandbox'); // Switch to 'live' if using live production IDs & tokens
+    Paddle.Initialize({ 
+      token: 'test_3504a1d0c470a5b4d94e9f9c06c',
+      eventCallback: function(data) {
+        console.log("Paddle Event Fired:", data);
       }
-    }
+    });
   }
-
-  // Fallback check on DOM load if onload didn't fire instantly
-  document.addEventListener("DOMContentLoaded", function() {
-    setTimeout(initPaddle, 500);
-  });
 
   function openPaddleCheckout(priceId) {
-    if (!isPaddleReady || typeof Paddle === 'undefined' || !Paddle.Checkout) {
-      initPaddle();
-      
-      let attempts = 0;
-      const checkPaddle = setInterval(() => {
-        attempts++;
-        if (typeof Paddle !== 'undefined' && Paddle.Checkout) {
-          clearInterval(checkPaddle);
-          isPaddleReady = true;
-          executeCheckout(priceId);
-        } else if (attempts > 15) {
-          clearInterval(checkPaddle);
-          alert("Payment gateway failed to load. Please check your network connection, disable ad-blockers, and try again.");
-        }
-      }, 300);
+    console.log("Attempting to open checkout for price ID:", priceId);
+
+    if (typeof Paddle === 'undefined' || !Paddle.Checkout) {
+      alert("Paddle SDK is not loaded. Please disable ad-blockers and refresh.");
       return;
     }
-    executeCheckout(priceId);
-  }
 
-  function executeCheckout(priceId) {
     try {
       Paddle.Checkout.open({
         items: [
@@ -164,8 +138,8 @@
         }
       });
     } catch (err) {
-      console.error("Paddle Checkout modal error:", err);
-      alert("Unable to launch checkout modal. Please verify your token configuration.");
+      console.error("Detailed Paddle Checkout Exception:", err);
+      alert("Checkout error: " + (err.message || JSON.stringify(err)));
     }
   }
 </script>
