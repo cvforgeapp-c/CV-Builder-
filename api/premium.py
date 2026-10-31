@@ -3651,18 +3651,30 @@ def paddle_webhook():
   if not isinstance(event_data, dict):
     event_data = {}
 
+  # Safely extract customer email guarding against NoneType errors
+  customer_data = event_data.get('customer') if isinstance(event_data, dict) else None
+  if not isinstance(customer_data, dict):
+    customer_data = {}
+
+  custom_data = event_data.get('custom_data') if isinstance(event_data, dict) else None
+  if not isinstance(custom_data, dict):
+    custom_data = {}
+
   customer_email = (
-      event_data.get('customer', {}).get('email')
+      customer_data.get('email')
       or event_data.get('customer_email')
-      or event_data.get('custom_data', {}).get('email')
+      or custom_data.get('email')
   )
+  if customer_email:
+    customer_email = customer_email.strip().lower()
 
   items = event_data.get('items', [])
   price_id = None
   if items and isinstance(items, list):
     first_item = items[0]
     if isinstance(first_item, dict):
-      price_id = first_item.get('price', {}).get('id') or first_item.get('price_id')
+      price_obj = first_item.get('price') if isinstance(first_item.get('price'), dict) else {}
+      price_id = price_obj.get('id') or first_item.get('price_id')
 
   item_config = PRICE_MAP.get(price_id, {})
 
