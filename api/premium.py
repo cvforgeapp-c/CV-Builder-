@@ -3582,7 +3582,6 @@ def get_user_status():
 
 @premium_bp.route('/webhook', methods=['POST'])
 def paddle_webhook():
-    # TEMPORARY LOGGING: Inspect incoming headers and raw body
     signature_header = request.headers.get('Paddle-Signature', '')
     premium_app.logger.info(f"--- PADDLE WEBHOOK RECEIVED ---")
     premium_app.logger.info(f"All Headers: {dict(request.headers)}")
@@ -3595,7 +3594,6 @@ def paddle_webhook():
         premium_app.logger.warning("Missing Paddle-Signature header in webhook request.")
         return jsonify({"error": "Missing Paddle-Signature header"}), 400
 
-    # 3. Verify the webhook signature (Paddle Billing / v2 signature format)
     try:
         elements = dict(item.split('=') for item in signature_header.split(';'))
         timestamp = elements.get('ts')
@@ -3621,7 +3619,6 @@ def paddle_webhook():
         premium_app.logger.error(f"Signature verification exception: {str(e)}")
         return jsonify({"error": f"Signature verification failed: {str(e)}"}), 400
 
-    # 4. Parse the verified JSON event payload
     event_data = request.get_json(silent=True) or {}
     if not isinstance(event_data, dict):
         event_data = {}
@@ -3648,7 +3645,6 @@ def paddle_webhook():
 
     premium_app.logger.info(f"Received verified Paddle event: {event_type} for email: {customer_email}, price_id: {price_id}")
 
-    # 5. Handle specific event types & fulfill DB records
     if event_type in ['subscription.created', 'subscription.activated', 'subscription.updated']:
         if customer_email:
             user = User.query.filter_by(email=customer_email.lower()).first()
@@ -3700,7 +3696,6 @@ def paddle_webhook():
                     premium_app.logger.error(f'Paddle cancellation update error: {exc}')
                     return jsonify({'error': 'Unable to update subscription status.'}), 500
 
-    # 6. Return 2xx response quickly
     return jsonify({"status": "success"}), 200
 
 
@@ -3993,7 +3988,8 @@ Return ONLY a JSON object matching this structure:
     )
 
 
-premium_bp.register_blueprint(premium_bp)
+# Register premium_bp onto the app correctly (removing the faulty self-registration)
+premium_app.register_blueprint(premium_bp)
 
 # ============================================================
 # BLUEPRINT REGISTRATIONS (AI & WEBHOOKS)
