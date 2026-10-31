@@ -98,19 +98,27 @@
 {% endblock %}
 
 {% block extra_js %}
-<!-- Fallback Click Handler with Safety Check for Paddle SDK Loading & Pre-filled Customer Details -->
+<!-- Load Paddle v2 SDK & Secure Checkout Integration -->
+<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 <script>
+  // Initialize Paddle Sandbox/Client Token explicitly so the modal can bind
+  if (typeof Paddle !== 'undefined') {
+    Paddle.Initialize({ 
+      token: 'test_3504a1d0c470a5b4d94e9f9c06c' 
+    });
+  }
+
   function openPaddleCheckout(priceId) {
-    if (!window.Paddle) {
+    if (typeof Paddle === 'undefined') {
       let attempts = 0;
       const checkPaddle = setInterval(() => {
         attempts++;
-        if (window.Paddle) {
+        if (typeof Paddle !== 'undefined') {
           clearInterval(checkPaddle);
           executeCheckout(priceId);
         } else if (attempts > 10) {
           clearInterval(checkPaddle);
-          alert("Payment gateway is loading. Please check your connection or ad-blocker and try again.");
+          alert("Payment gateway failed to load. Please check your connection or ad-blocker and try again.");
         }
       }, 300);
       return;
@@ -138,7 +146,7 @@
       });
     } catch (err) {
       console.error("Paddle Checkout error:", err);
-      alert("Unable to launch checkout. Please check your connection.");
+      alert("Unable to launch checkout modal. Please check your token configuration.");
     }
   }
 </script>
