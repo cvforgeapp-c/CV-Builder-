@@ -98,7 +98,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<!-- Fallback Click Handler with Safety Check for Paddle SDK Loading -->
+<!-- Fallback Click Handler with Safety Check for Paddle SDK Loading & Pre-filled Customer Details -->
 <script>
   function openPaddleCheckout(priceId) {
     if (!window.Paddle) {
@@ -127,6 +127,9 @@
             quantity: 1
           }
         ],
+        customer: {
+          email: "{{ current_user.email if current_user.is_authenticated else '' }}"
+        },
         settings: {
           successUrl: window.location.origin + "/dashboard?payment=success",
           displayMode: "overlay",
