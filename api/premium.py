@@ -3632,7 +3632,7 @@ def get_user_status():
   )
 
 
-@premium_bp.route('/webhook/paddle', methods=['POST'])
+@premium_bp.route('/webhook', methods=['POST'])
 def paddle_webhook():
   signature = request.headers.get('Paddle-Signature')
   payload = request.get_data()
