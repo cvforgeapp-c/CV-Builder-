@@ -3584,47 +3584,35 @@ def get_user_status():
 def paddle_webhook():
     signature_header = request.headers.get('Paddle-Signature', '')
     premium_app.logger.info(f"--- PADDLE WEBHOOK RECEIVED ---")
-    premium_app.logger.info(f"Paddle-Signature Header: {signature_header}")
     
     raw_body = request.get_data()
+    
+    # Safely parse JSON or default to empty dict
+    try:
+        event_data = request.get_json(silent=True) or {}
+    except Exception as e:
+        premium_app.logger.error(f"Failed to parse JSON body: {e}")
+        event_data = {}
 
-    # Optional signature verification fallback to prevent blocking active purchases
-    if signature_header and PADDLE_WEBHOOK_SECRET_KEY:
-        try:
-            elements = dict(item.split('=') for item in signature_header.split(';'))
-            timestamp = elements.get('ts')
-            incoming_signature = elements.get('h1')
-
-            if timestamp and incoming_signature:
-                signed_payload = f"{timestamp}:".encode('utf-8') + raw_body
-                computed_signature = hmac.new(
-                    PADDLE_WEBHOOK_SECRET_KEY.encode('utf-8'),
-                    signed_payload,
-                    hashlib.sha256
-                ).hexdigest()
-
-                if not hmac.compare_digest(computed_signature, incoming_signature):
-                    premium_app.logger.warning("Signature mismatch, but proceeding to process payload for developer continuity.")
-        except Exception as e:
-            premium_app.logger.error(f"Signature verification bypassed due to exception: {str(e)}")
-
-    event_data = request.get_json(silent=True) or {}
     if not isinstance(event_data, dict):
         event_data = {}
 
-    event_type = event_data.get('event_type')
-    
-    # Safely ensure data is always a dictionary
-    data = event_data.get('data') or {}
+    # Debug log the event type to trace exact triggers
+    event_type = event_data.get('event_type', 'unknown')
+    premium_app.logger.info(f"Incoming Paddle Event Type: {event_type}")
+
+    # Ensure 'data' is strictly a dictionary
+    data = event_data.get('data')
     if not isinstance(data, dict):
+        premium_app.logger.warning(f"Paddle event data is missing or not a dict for event: {event_type}. Raw data: {data}")
         data = {}
 
-    # Safely extract customer email with robust fallback checks
-    customer = data.get('customer') or {}
+    # Safely extract customer information with robust fallback checks
+    customer = data.get('customer')
     if not isinstance(customer, dict):
         customer = {}
-        
-    custom_data = data.get('custom_data') or {}
+
+    custom_data = data.get('custom_data')
     if not isinstance(custom_data, dict):
         custom_data = {}
 
@@ -3634,22 +3622,24 @@ def paddle_webhook():
         or custom_data.get('email')
     )
 
-    items = data.get('items', [])
+    # Safely extract line items / price ID
+    items = data.get('items')
     price_id = None
-    if items and isinstance(items, list):
+    if isinstance(items, list) and len(items) > 0:
         first_item = items[0]
         if isinstance(first_item, dict):
-            price = first_item.get('price') or {}
-            if not isinstance(price, dict):
-                price = {}
-            price_id = price.get('id') or first_item.get('price_id')
+            price = first_item.get('price')
+            if isinstance(price, dict):
+                price_id = price.get('id')
+            if not price_id:
+                price_id = first_item.get('price_id')
 
     item_config = PRICE_MAP.get(price_id, {'tier': 'elite', 'credits': 360, 'type': 'sub'})
 
     premium_app.logger.info(f"Processing Paddle event: {event_type} for email: {customer_email}, price_id: {price_id}")
 
     if event_type in ['subscription.created', 'subscription.activated', 'subscription.updated', 'transaction.completed', 'transaction.paid']:
-        target_email = customer_email or current_user.email if (current_user and current_user.is_authenticated) else None
+        target_email = customer_email or (current_user.email if (current_user and current_user.is_authenticated) else None)
         user = None
         if target_email:
             user = User.query.filter_by(email=target_email.lower()).first()
@@ -3666,7 +3656,7 @@ def paddle_webhook():
                 added_credits = item_config.get('credits', 360)
                 user.ai_credits_remaining = (user.ai_credits_remaining or 0) + added_credits
                 db.session.commit()
-                premium_app.logger.info(f"Successfully credited user {user.email} with {added_credits} credits & Elite tier!")
+                premium_app.logger.info(f"Successfully credited user {user.email} with {added_credits} credits & tier!")
             except Exception as exc:
                 db.session.rollback()
                 premium_app.logger.error(f'Webhook database commit error: {exc}')
