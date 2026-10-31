@@ -615,29 +615,29 @@ def generate_ai_text(prompt, max_tokens=2048):
 # PADDLE CONFIGURATION & PRICING STRUCTURE
 # ============================================================
 
-PADDLE_API_KEY = os.getenv('PADDLE_API_KEY') or os.getenv('paddle_api_key')
-PADDLE_WEBHOOK_SECRET_KEY = os.getenv('PADDLE_WEBHOOK_SECRET_KEY') or os.getenv(
-    'paddle_webhook_secret_key'
+PADDLE_API_KEY = os.getenv('apikey_01m4c4q7dr8mpms2ep46pvdw4p') or os.getenv('apikey_01m4c4q7dr8mpms2ep46pvdw4p')
+PADDLE_WEBHOOK_SECRET_KEY = os.getenv('test_3504a1d0c470a5b4d94e9f9c06c') or os.getenv(
+    'test_3504a1d0c470a5b4d94e9f9c06c'
 )
 PADDLE_ENV = os.getenv('PADDLE_ENV', 'sandbox')
 
-PADDLE_PRO_PRICE_ID = os.getenv('PADDLE_PRO_PRICE_ID', 'pri_pro_monthly_1799')
+PADDLE_PRO_PRICE_ID = os.getenv('PADDLE_PRO_PRICE_ID', 'pri_01m4d2rrt0fhcjjs0xqjq7j47c')
 PADDLE_ELITE_PRICE_ID = os.getenv(
-    'PADDLE_ELITE_PRICE_ID', 'pri_expert_monthly_4399'
+    'PADDLE_ELITE_PRICE_ID', 'pri_01m67413nxz9zzgt2nr5f7yzq6'
 )
 
 PRICE_MAP = {
     PADDLE_PRO_PRICE_ID: {'type': 'sub', 'tier': 'pro', 'credits': 130},
     PADDLE_ELITE_PRICE_ID: {'type': 'sub', 'tier': 'elite', 'credits': 360},
-    'pri_pass_7day_799': {
+    'pri_01m4d2p8x8q31fby0erpdrkxqr': {
         'type': 'pass',
         'tier': 'pro',
         'credits': 60,
         'days': 7,
     },
-    'pri_topup_10_299': {'type': 'topup', 'credits': 10},
-    'pri_topup_50_999': {'type': 'topup', 'credits': 50},
-    'pri_topup_150_2499': {'type': 'topup', 'credits': 150},
+    'pri_01m6747ggdwekqga2hayypgv6e': {'type': 'topup', 'credits': 10},
+    'pri_01m674aehgmsttpcjpe4ejhqhx': {'type': 'topup', 'credits': 50},
+    'pri_01m674bxn36am0w4mq8bq23sas': {'type': 'topup', 'credits': 150},
 }
 
 FEATURE_RULES = {
