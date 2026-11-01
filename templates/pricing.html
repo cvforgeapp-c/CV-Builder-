@@ -98,28 +98,36 @@
 {% endblock %}
 
 {% block extra_js %}
-<!-- Load Paddle v2 SDK -->
+<!-- Load Paddle v2 SDK & Secure Sandbox Checkout Configuration -->
 <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 <script>
-  // Initialize Paddle as soon as script loads
   if (typeof Paddle !== 'undefined') {
-    Paddle.Environment.set('sandbox'); // Switch to 'live' if using live production IDs & tokens
+    // Explicitly target Sandbox environment for test tokens
+    Paddle.Environment.set('sandbox');
     Paddle.Initialize({ 
-      token: 'test_3504a1d0c470a5b4d94e9f9c06c',
-      eventCallback: function(data) {
-        console.log("Paddle Event Fired:", data);
-      }
+      token: 'test_3504a1d0c470a5b4d94e9f9c06c' 
     });
   }
 
   function openPaddleCheckout(priceId) {
-    console.log("Attempting to open checkout for price ID:", priceId);
-
-    if (typeof Paddle === 'undefined' || !Paddle.Checkout) {
-      alert("Paddle SDK is not loaded. Please disable ad-blockers and refresh.");
+    if (typeof Paddle === 'undefined') {
+      let attempts = 0;
+      const checkPaddle = setInterval(() => {
+        attempts++;
+        if (typeof Paddle !== 'undefined') {
+          clearInterval(checkPaddle);
+          executeCheckout(priceId);
+        } else if (attempts > 10) {
+          clearInterval(checkPaddle);
+          alert("Payment gateway failed to load. Please check your connection or ad-blocker and try again.");
+        }
+      }, 300);
       return;
     }
+    executeCheckout(priceId);
+  }
 
+  function executeCheckout(priceId) {
     try {
       Paddle.Checkout.open({
         items: [
@@ -138,8 +146,8 @@
         }
       });
     } catch (err) {
-      console.error("Detailed Paddle Checkout Exception:", err);
-      alert("Checkout error: " + (err.message || JSON.stringify(err)));
+      console.error("Paddle Checkout error:", err);
+      alert("Unable to launch checkout modal. Please check your token configuration.");
     }
   }
 </script>
