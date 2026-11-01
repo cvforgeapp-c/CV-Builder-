@@ -3613,25 +3613,14 @@ def paddle_webhook():
         event_data = {}
 
     event_type = event_data.get('event_type')
-    
-    # Safely ensure data is always a dictionary
-    data = event_data.get('data') or {}
+    data = event_data.get('data', {})
     if not isinstance(data, dict):
         data = {}
 
-    # Safely extract customer email with robust fallback checks
-    customer = data.get('customer') or {}
-    if not isinstance(customer, dict):
-        customer = {}
-        
-    custom_data = data.get('custom_data') or {}
-    if not isinstance(custom_data, dict):
-        custom_data = {}
-
     customer_email = (
-        customer.get('email')
+        data.get('customer', {}).get('email')
         or data.get('customer_email')
-        or custom_data.get('email')
+        or data.get('custom_data', {}).get('email')
     )
 
     items = data.get('items', [])
@@ -3639,10 +3628,7 @@ def paddle_webhook():
     if items and isinstance(items, list):
         first_item = items[0]
         if isinstance(first_item, dict):
-            price = first_item.get('price') or {}
-            if not isinstance(price, dict):
-                price = {}
-            price_id = price.get('id') or first_item.get('price_id')
+            price_id = first_item.get('price', {}).get('id') or first_item.get('price_id')
 
     item_config = PRICE_MAP.get(price_id, {'tier': 'elite', 'credits': 360, 'type': 'sub'})
 
