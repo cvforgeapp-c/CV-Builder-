@@ -615,10 +615,9 @@ def generate_ai_text(prompt, max_tokens=2048):
 # PADDLE CONFIGURATION & PRICING STRUCTURE
 # ============================================================
 
-PADDLE_API_KEY = os.getenv('apikey_01m4c4q7dr8mpms2ep46pvdw4p') or os.getenv('apikey_01m4c4q7dr8mpms2ep46pvdw4p')
-PADDLE_WEBHOOK_SECRET_KEY = os.getenv('test_3504a1d0c470a5b4d94e9f9c06c') or os.getenv(
-    'test_3504a1d0c470a5b4d94e9f9c06c'
-)
+PADDLE_API_KEY = os.getenv('PADDLE_API_KEY') or os.getenv('apikey_01m4c4q7dr8mpms2ep46pvdw4p')
+PADDLE_CLIENT_TOKEN = os.getenv('PADDLE_CLIENT_TOKEN') or 'test_3504a1d0c470a5b4d94e9f9c06c'
+PADDLE_WEBHOOK_SECRET_KEY = os.getenv('PADDLE_WEBHOOK_SECRET') or ''
 PADDLE_ENV = os.getenv('PADDLE_ENV', 'sandbox')
 
 PADDLE_PRO_PRICE_ID = os.getenv('PADDLE_PRO_PRICE_ID', 'pri_01m4d2rrt0fhcjjs0xqjq7j47c')
